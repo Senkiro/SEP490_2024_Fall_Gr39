@@ -23,21 +23,20 @@ public class SecurityConfig {
     private String signerKey;
 
     @Bean
-    public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request ->
-                request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("SCOPE_" + ADMIN_SCOPE)
-                        .anyRequest().authenticated())
-                        .logout((logout) -> logout.logoutSuccessUrl("/auth/login"));
+                        request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                                .requestMatchers(AUTH_WHITELIST).permitAll()
+                                .requestMatchers("/admin/**").hasAuthority("SCOPE_" + ADMIN_SCOPE)
+                                .requestMatchers("/fja-fap/user/**").authenticated()
+                                .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
+                .csrf(AbstractHttpConfigurer::disable);
 
-        http.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
-
-
-        http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
+
 
     @Bean
     JwtDecoder jwtDecoder(){
@@ -50,6 +49,7 @@ public class SecurityConfig {
     private static final String ADMIN_SCOPE = "ADMIN";
     private final String[] PUBLIC_ENDPOINTS = {
             "/auth/**",
+            "/fja-fap/auth/**",
     };
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**",
