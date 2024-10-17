@@ -1,21 +1,32 @@
 <template>
-  <div id="app">
-    <Header />
-    <router-view></router-view>
-  </div>
+  <component :is="layout"></component>
 </template>
-
 <script>
-import Header from './components/layout/header.vue';
+// layouts
+import appLayout from "./layouts/app-layout.vue";
+import authLayout from "./layouts/auth-layout.vue";
+
+// import "@/assets/sass/app.scss";
 
 export default {
-  name: 'App',
+  metaInfo: {
+    title: "Nihon Study Guide",
+    titleTemplate: "%s | Nihon - KKK",
+  },
   components: {
-    Header
-  }
-}
+    app: appLayout,
+    auth: authLayout,
+  },
+  computed: {
+    layout() {
+      return this.$route.meta.layout === "auth" ? authLayout : appLayout;
+    },
+  },
+  data() {
+    return {};
+  },
+  mounted() {
+  },
+  methods: {},
+};
 </script>
-
-<style>
-/* CSS nếu có */
-</style>
