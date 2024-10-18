@@ -1,4 +1,4 @@
-package com.example.NihonStudyGuide.dto.request.user;
+package com.nsg.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;

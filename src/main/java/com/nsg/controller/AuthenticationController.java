@@ -2,10 +2,13 @@ package com.nsg.controller;
 
 
 import com.nsg.dto.request.user.AuthRequest;
+import com.nsg.dto.request.user.ForgetPasswordRequest;
 import com.nsg.dto.request.user.RegisterRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.user.AuthResponse;
 import com.nsg.dto.response.user.RegisterResponse;
+import com.nsg.entity.UserEntity;
+import com.nsg.service.UserService;
 import com.nsg.service.imp.AuthServiceImp;
 
 

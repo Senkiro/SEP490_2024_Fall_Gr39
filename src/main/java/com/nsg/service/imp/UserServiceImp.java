@@ -1,12 +1,14 @@
 package com.nsg.service.imp;
 
 
+import com.nsg.Mapper.UserMapper;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.UserRepository;
+import com.nsg.service.EmailService;
 import com.nsg.service.UserService;
 
 import lombok.RequiredArgsConstructor;
