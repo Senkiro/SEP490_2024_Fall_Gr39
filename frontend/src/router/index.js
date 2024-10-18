@@ -1,15 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LoginPage from '../view/LoginPage.vue';
-import UserManagement from '../view/userManagement.vue';
 
 const routes = [
-    { path: '/login', name: 'LoginPage', component: LoginPage },
     {
-        path: '/user-management',
-        name: 'UserManagement',
-        component: UserManagement,
-        meta: { requiresAuth: true }
-    }
+        path: '/login',
+        name: 'LoginPage',
+        component: () => import('../view/auth/LoginPage.vue'),
+        meta: { layout: 'auth', requiresAuth: false },
+    },
+    {
+        path: '/forgot-password',
+        name: 'ForgotPasswordPage',
+        component: () => import('../view/auth/ForgotPasswordPage.vue'),
+        meta: { layout: 'auth', requiresAuth: false },
+    },
+    {
+        path: '/staff',
+        name: 'StaffHomePage',
+        component: () => import('../view/dashboard/StaffHomepage.vue'),
+        meta: { layout: 'app', requiresAuth: false },
+    },
+
 ];
 
 const router = createRouter({
