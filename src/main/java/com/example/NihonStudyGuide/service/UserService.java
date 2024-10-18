@@ -15,7 +15,13 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     UserEntity getUserById(String userId);
 
+    UserEntity getUserByEmail(String email);
+
     UserEntity updateUser(String userId, UserUpdateRequest request);
+
+    String resetPassword(UserEntity user, String newpass);
+
+    String forgetPassword(UserEntity user, String toEmail);
 
     void deleteUser(String userId);
 }
