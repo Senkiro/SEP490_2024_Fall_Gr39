@@ -1,8 +1,6 @@
 package com.nsg.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +13,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Admin {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "admin_id", columnDefinition = "VARCHAR(36)")
+    String adminId;
+
+
     @Column(name = "email")
     String email;
 }

@@ -1,8 +1,6 @@
 package com.nsg.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +15,7 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamTypeRate {
-
+    @Id
     @Column(name = "exam_type")
     Integer examType;
 

@@ -1,8 +1,6 @@
 package com.nsg.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +13,11 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventFeedback {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "event_feedback_id", columnDefinition = "VARCHAR(36)")
+    String eventFeedbackId;
+
 
     @Column(name = "feedback_grade")
     String feedbackGrade;
