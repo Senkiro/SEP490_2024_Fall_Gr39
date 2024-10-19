@@ -25,4 +25,12 @@ public class Mark {
     @Column(name = "comment")
     String comment;
 
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    StudentEntity studentEntity;
+
+    @ManyToOne
+            @JoinColumn(name = "exam_id")
+    Exam exam;
+
 }

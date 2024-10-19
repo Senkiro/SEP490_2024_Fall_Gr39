@@ -18,7 +18,11 @@ public class Admin {
     @Column(name = "admin_id", columnDefinition = "VARCHAR(36)")
     String adminId;
 
-
     @Column(name = "email")
     String email;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    UserEntity user;
 }

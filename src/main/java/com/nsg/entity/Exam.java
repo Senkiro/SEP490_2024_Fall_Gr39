@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Exam")
@@ -28,4 +29,14 @@ public class Exam {
 
     @Column(name = "created_at")
     Date createdAt;
+
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<Session> sessionList;
+
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<Mark> markList;
+
+    @ManyToOne
+    @JoinColumn(name = "exam_type")
+    ExamTypeRate examTypeRate;
 }

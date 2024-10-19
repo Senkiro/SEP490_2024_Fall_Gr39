@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Lesson")
@@ -28,5 +29,8 @@ public class Lesson {
 
     @Column(name = "created_at")
     Date createdAt;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lesson", fetch = FetchType.EAGER)
+    List<Session> sessionList;
 
 }

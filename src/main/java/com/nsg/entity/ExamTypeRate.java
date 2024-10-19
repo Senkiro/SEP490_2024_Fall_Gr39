@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "ExamTypeRate")
@@ -24,5 +25,8 @@ public class ExamTypeRate {
 
     @Column(name = "exam_name")
     Date examName;
+
+    @OneToMany(mappedBy = "examTypeRate", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<Exam> examList;
 
 }

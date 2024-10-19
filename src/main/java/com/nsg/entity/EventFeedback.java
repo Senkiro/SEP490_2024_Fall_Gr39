@@ -25,4 +25,12 @@ public class EventFeedback {
     @Column(name = "feedback_content")
     String feedbackContent;
 
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    Event event;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    StudentEntity studentEntity;
+
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Room")
 @Getter
@@ -20,4 +22,7 @@ public class Room {
 
     @Column(name = "room_number")
     String roomNumber;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "room", fetch = FetchType.EAGER)
+    List<Session> sessionList;
 }
