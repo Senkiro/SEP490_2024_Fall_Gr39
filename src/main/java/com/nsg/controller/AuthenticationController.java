@@ -2,19 +2,24 @@ package com.nsg.controller;
 
 
 import com.nsg.dto.request.user.AuthRequest;
+import com.nsg.dto.request.user.ForgetPasswordRequest;
 import com.nsg.dto.request.user.RegisterRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.user.AuthResponse;
 import com.nsg.dto.response.user.RegisterResponse;
+import com.nsg.entity.UserEntity;
+import com.nsg.service.UserService;
 import com.nsg.service.imp.AuthServiceImp;
+
+
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.SecureRandom;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 //@SecurityRequirement(name = "Authorization")
 public class AuthenticationController {
     AuthServiceImp authService;
+
+    UserService userService;
+
     @PostMapping("/login")
     ApiResponse<AuthResponse> login(@RequestBody AuthRequest request){
         var result = authService.authenticate(request);
@@ -45,6 +53,19 @@ public class AuthenticationController {
                         .result(authService.register(request))
                         .message("Register successfully!")
                         .build();
+    }
+
+    //send email with new password
+    @PostMapping("/forget-password")
+    String sendEmail(@RequestBody @Valid ForgetPasswordRequest request) {
+        //get email user inputed
+        String toEmail = request.getEmail();
+
+        //get User by email
+        UserEntity user = userService.getUserByEmail(toEmail);
+
+        return userService.forgetPassword(user, toEmail);
+
     }
 
 }

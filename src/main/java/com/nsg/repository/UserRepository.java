@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface UserRepository extends BaseRepository<UserEntity, String> {
     Optional<UserEntity> findByUsername(String username);
 
+    Optional<UserEntity> findByEmail(String email);
+
     //check username existed
     boolean existsByUsername(String username);
 

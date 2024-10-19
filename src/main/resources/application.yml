@@ -13,8 +13,20 @@
       driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
       hibernate:
-        ddl-auto: none
+        ddl-auto: update
       show-sql: true
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: hoangson00as@gmail.com
+      password: dyyiimysveqeooyt
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+              required: true
 
   signer:
     key: owyceV4tzWzKJ2zMWYJkg2fV4QcPjHJlYt3QRfLoBsRuB6G6BRkURMevCbCEC7mb
