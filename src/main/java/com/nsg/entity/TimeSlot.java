@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "TimeSlot")
@@ -27,9 +28,12 @@ public class TimeSlot {
     @Column(name = "start_time")
     Date startTime;
 
+    @Column(name = "end_time")
     Date endTime;
 
     Date createdAt;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "timeSlot", fetch = FetchType.EAGER)
+    List<Session> sessionList;
 
 }

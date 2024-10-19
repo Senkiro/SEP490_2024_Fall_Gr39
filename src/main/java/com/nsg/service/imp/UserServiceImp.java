@@ -71,14 +71,14 @@ public class UserServiceImp implements UserService {
         }
 
         //else: create new user
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setUsername(request.getUsername());
-        user.setGender(request.isGender());
+//        user.setFirstName(request.getFirstName());
+//        user.setLastName(request.getLastName());
+//        user.setUsername(request.getUsername());
+//        user.setGender(request.isGender());
         user.setPassword(request.getPassword());
-        user.setDob(request.getDob());
-        user.setAddress(request.getAddress());
-        user.setImg(request.getImg());
+//        user.setDob(request.getDob());
+//        user.setAddress(request.getAddress());
+//        user.setImg(request.getImg());
         user.setEmail(request.getEmail());
         user.setRoles("CUSTOMER");
         user.setActive(true);
@@ -106,13 +106,13 @@ public class UserServiceImp implements UserService {
     public UserEntity updateUser(String userId, UserUpdateRequest request) {
         UserEntity user = getUserById(userId);
 
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setGender(request.isGender());
+//        user.setFirstName(request.getFirstName());
+//        user.setLastName(request.getLastName());
+//        user.setGender(request.isGender());
         user.setPassword(request.getPassword());
-        user.setDob(request.getDob());
-        user.setAddress(request.getAddress());
-        user.setImg(request.getImg());
+//        user.setDob(request.getDob());
+//        user.setAddress(request.getAddress());
+//        user.setImg(request.getImg());
 
         return userRepository.save(user);
     }

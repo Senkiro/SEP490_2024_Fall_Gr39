@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Class")
@@ -25,4 +26,10 @@ public class Class {
 
     @Column(name = "class_colour")
     Date classColour;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
+    List<StudentEntity> studentEntityList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
+    List<Session> sessionList;
 }

@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Guide {
+public class Guide extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "guide_id", columnDefinition = "VARCHAR(36)")
@@ -26,8 +26,6 @@ public class Guide {
     @Column(name = "guide_content")
     String guideContent;
 
-    @Column(name = "created_at")
-    Date createdAt;
 
-    String created_by;
+
 }

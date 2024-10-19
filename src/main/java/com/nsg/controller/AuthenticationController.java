@@ -1,13 +1,16 @@
 package com.nsg.controller;
 
 
+import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.user.AuthRequest;
 import com.nsg.dto.request.user.ForgetPasswordRequest;
 import com.nsg.dto.request.user.RegisterRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.user.AuthResponse;
 import com.nsg.dto.response.user.RegisterResponse;
+import com.nsg.entity.Batch;
 import com.nsg.entity.UserEntity;
+import com.nsg.service.BatchService;
 import com.nsg.service.UserService;
 import com.nsg.service.imp.AuthServiceImp;
 
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -66,6 +70,21 @@ public class AuthenticationController {
 
         return userService.forgetPassword(user, toEmail);
 
+    }
+
+    @Autowired
+    BatchService batchService;
+    //test batch
+    @GetMapping("/batch")
+    List<Batch> getAllBatch(){
+        return batchService.getAllBatch();
+    }
+
+    @PostMapping("/get-batch")
+    Batch saveBatch(@RequestBody BatchCreationRequest request){
+        batchService.saveBatch(request);
+        Batch batch = batchService.getBatch(request.getBatchName());
+        return batch;
     }
 
 }

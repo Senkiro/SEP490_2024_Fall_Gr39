@@ -27,4 +27,9 @@ public class Staff {
     @Column(name = "phone")
     String phone;
 
+    @OneToOne
+            @MapsId
+            @JoinColumn(name = "user_id")
+    UserEntity user;
+
 }

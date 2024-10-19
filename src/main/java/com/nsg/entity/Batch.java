@@ -1,13 +1,11 @@
 package com.nsg.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Batch")
@@ -30,4 +28,7 @@ public class Batch {
 
     @Column(name = "year")
     int year;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "batch", fetch = FetchType.EAGER)
+    List<StudentEntity> studentEntityList;
 }

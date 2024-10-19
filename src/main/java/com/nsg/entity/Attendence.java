@@ -18,10 +18,17 @@ public class Attendence {
     @Column(name = "attendence_id", columnDefinition = "VARCHAR(36)")
     String attendenceId;
 
-
     @Column(name = "status")
     String status;
 
     @Column(name = "note")
     String note;
+
+    @ManyToOne
+    @JoinColumn(name = "session_id", referencedColumnName = "session_id")
+    Session session;
+
+    @ManyToOne
+            @JoinColumn(name = "student_id")
+    StudentEntity studentEntity;
 }
