@@ -1,14 +1,14 @@
 <template>
   <component :is="layout"></component>
+  <VsxIcon :iconName="iconName" color="blue" size="50" type="linear" />
 </template>
 <script>
 // layouts
 import appLayout from "./layouts/app-layout.vue";
 import authLayout from "./layouts/auth-layout.vue";
 
-// import "@/assets/sass/app.scss";
-
 export default {
+  props:['iconName'],
   metaInfo: {
     title: "Nihon Study Guide",
     titleTemplate: "%s | Nihon - KKK",

@@ -4,19 +4,32 @@ const routes = [
     {
         path: '/login',
         name: 'LoginPage',
-        component: () => import('../view/auth/LoginPage.vue'),
+        component: () => import('../view/auth/loginPage.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
     {
         path: '/forgot-password',
         name: 'ForgotPasswordPage',
-        component: () => import('../view/auth/ForgotPasswordPage.vue'),
+        component: () => import('../view/auth/forgotPasswordPage.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
+    //staff router
     {
         path: '/staff',
         name: 'StaffHomePage',
-        component: () => import('../view/dashboard/StaffHomepage.vue'),
+        component: () => import('../view/dashboard/staffHomepage.vue'),
+        meta: { layout: 'app', requiresAuth: false },
+    },
+    {
+        path: '/staff/batch-record',
+        name: 'BatchRecord',
+        component: () => import('../view/staff/batch_record.vue'),
+        meta: { layout: 'app', requiresAuth: false },
+    },
+    {
+        path: '/staff/batch-detail',
+        name: 'BatchDetail',
+        component: () => import('../view/staff/batch_detail.vue'),
         meta: { layout: 'app', requiresAuth: false },
     },
 

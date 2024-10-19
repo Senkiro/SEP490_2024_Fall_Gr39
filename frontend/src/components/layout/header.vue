@@ -1,20 +1,31 @@
 <template>
   <header class="header">
     <div class="header-left">
-      <span class="breadcrumb">Homepage</span>
-      <span class="separator">|</span>
-      <span class="breadcrumb">Batch Record</span>
+      <slot name="breadcrumb">
+        <span class="breadcrumb">Trang chủ</span>
+        <span class="separator">|</span>
+        <span class="breadcrumb">Bản ghi lô hàng</span>
+      </slot>
     </div>
     <div class="header-right">
-<!--      <img src="@/assets/icons/user-icon.svg" alt="User Icon" class="icon" />-->
-<!--      <img src="@/assets/icons/arrow-icon.svg" alt="Arrow Icon" class="icon" />-->
+      <slot name="user-actions">
+        <VsxIcon iconName="User" :size="32" color="#5584FF" type="linear" />
+        <VsxIcon iconName="Logout" :size="32" color="#5584FF" type="linear" />
+      </slot>
     </div>
+
   </header>
 </template>
 
 <script>
+import {VsxIcon} from "vue-iconsax";
+
 export default {
   name: "AppHeader",
+  components: {
+    VsxIcon
+  },
+  props:['iconName']
 };
 </script>
 
@@ -49,10 +60,9 @@ export default {
 }
 
 .icon {
-  width: 24px;
-  height: 24px;
-  margin-left: 10px;
-  cursor: pointer;
+  width: 32px; /* tăng kích thước để dễ kiểm tra */
+  height: 32px;
+  color: #000; /* thử thêm màu đen để dễ nhận thấy */
 }
 
 .icon:hover {

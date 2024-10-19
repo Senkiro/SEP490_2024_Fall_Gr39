@@ -27,7 +27,7 @@ export default {
 <style scoped>
 /* Đảm bảo bố cục hiển thị đúng */
 .sidebar {
-  width: 200px; /* Đặt kích thước cụ thể cho Sidebar */
+  width: 150px; /* Đặt kích thước cụ thể cho Sidebar */
 }
 .layout {
   display: flex;
@@ -35,7 +35,7 @@ export default {
 
 .content {
   flex: 1;
-  margin-left: 236px; /* Đảm bảo phù hợp với chiều rộng của Sidebar */
+  margin-left: 180px; /* Đảm bảo phù hợp với chiều rộng của Sidebar */
   padding: 20px;
 }
 
