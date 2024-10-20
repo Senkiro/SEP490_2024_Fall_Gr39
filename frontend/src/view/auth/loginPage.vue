@@ -50,8 +50,8 @@ export default {
 
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem('jwtToken', data.result.token);
-          localStorage.setItem('userRole', data.result.scope);
+          sessionStorage.setItem('jwtToken', data.result.token);
+          sessionStorage.setItem('userRole', data.result.scope);
           this.redirectUser(data.result.scope);
           console.log(data.result.scope);
         } else {

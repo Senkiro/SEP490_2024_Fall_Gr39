@@ -47,8 +47,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('jwtToken');
-    const userRole = localStorage.getItem('userRole');
+    const token = sessionStorage.getItem('jwtToken');
+    const userRole = sessionStorage.getItem('userRole');
 
     console.log('Navigating to:', to.path);
     console.log('User Role:', userRole);
@@ -68,6 +68,5 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
-
 
 export default router;
