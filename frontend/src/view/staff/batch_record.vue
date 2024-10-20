@@ -1,17 +1,17 @@
 <template>
-  <div class="batch-record">
-    <header class="batch-record-header">
+  <div class="batchEntity-record">
+    <header class="batchEntity-record-header">
       <h1>Batch Record</h1>
-      <div class="batch-record-actions">
+      <div class="batchEntity-record-actions">
         <button class="btn btn-chart">
           <VsxIcon iconName="Chart" size="20" /> View statistical chart
         </button>
         <button class="btn btn-add" @click="showAddBatchPopup = true">
-          <VsxIcon iconName="Add" size="20" /> Add batch
+          <VsxIcon iconName="Add" size="20" /> Add batchEntity
         </button>
       </div>
     </header>
-    <table class="batch-table">
+    <table class="batchEntity-table">
       <thead>
       <tr>
         <th>No</th>
@@ -25,18 +25,18 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(batch, index) in batches" :key="batch.id">
+      <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
         <td>{{ index + 1 }}</td>
-        <td>{{ batch.name }}</td>
-        <td>{{ batch.year }}</td>
-        <td>{{ batch.startTime }}</td>
-        <td>{{ batch.endTime }}</td>
-        <td>{{ batch.numberOfStudents }}</td>
-        <td :class="{'status-progress': batch.status === 'On progress', 'status-graduated': batch.status === 'Graduated'}">
-          {{ batch.status }}
+        <td>{{ batchEntity.name }}</td>
+        <td>{{ batchEntity.year }}</td>
+        <td>{{ batchEntity.startTime }}</td>
+        <td>{{ batchEntity.endTime }}</td>
+        <td>{{ batchEntity.numberOfStudents }}</td>
+        <td :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
+          {{ batchEntity.status }}
         </td>
         <td>
-          <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewBatchDetail(batch)" />
+          <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewBatchDetail(batchEntity)" />
         </td>
       </tr>
       </tbody>
@@ -44,7 +44,7 @@
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
-        <h2>Add batch</h2>
+        <h2>Add batchEntity</h2>
         <form @submit.prevent="addBatch">
           <div class="form-group">
             <label for="batchName">Batch name <span class="required">*</span></label>
@@ -93,9 +93,9 @@ export default {
     };
   },
   methods: {
-    viewBatchDetail(batch) {
-      // Logic for navigating to batch detail page
-      this.$router.push({ name: 'BatchDetail', params: { batchId: batch.id } });
+    viewBatchDetail(batchEntity) {
+      // Logic for navigating to batchEntity detail page
+      this.$router.push({ name: 'BatchDetail', params: { batchId: batchEntity.id } });
     },
     addBatch() {
       const newBatch = {
@@ -116,30 +116,30 @@ export default {
 </script>
 
 <style scoped>
-.batch-record {
+.batchEntity-record {
   padding: 20px;
   max-width: 1200px;
   margin: auto;
 }
 
-.batch-record-header {
+.batchEntity-record-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.batch-record-header h1 {
+.batchEntity-record-header h1 {
   font-size: 24px;
   font-weight: bold;
 }
 
-.batch-record-actions {
+.batchEntity-record-actions {
   display: flex;
   gap: 10px;
 }
 
-.batch-record-actions .btn {
+.batchEntity-record-actions .btn {
   display: flex;
   align-items: center;
   padding: 10px 15px;
@@ -160,18 +160,18 @@ export default {
   color: #fff;
 }
 
-.batch-table {
+.batchEntity-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.batch-table th, .batch-table td {
+.batchEntity-table th, .batchEntity-table td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
-.batch-table th {
+.batchEntity-table th {
   background-color: #f4f4f4;
   font-weight: bold;
 }

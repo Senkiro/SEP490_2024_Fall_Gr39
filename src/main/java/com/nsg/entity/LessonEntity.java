@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Lesson")
+@Table(name = "LessonEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Lesson {
+public class LessonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "lesson_id", columnDefinition = "VARCHAR(36)")
@@ -30,7 +30,7 @@ public class Lesson {
     @Column(name = "created_at")
     Date createdAt;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lesson", fetch = FetchType.EAGER)
-    List<Session> sessionList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 
 }

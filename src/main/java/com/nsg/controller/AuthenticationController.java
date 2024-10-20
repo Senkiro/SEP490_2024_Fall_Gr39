@@ -8,7 +8,7 @@ import com.nsg.dto.request.user.RegisterRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.user.AuthResponse;
 import com.nsg.dto.response.user.RegisterResponse;
-import com.nsg.entity.Batch;
+import com.nsg.entity.BatchEntity;
 import com.nsg.entity.UserEntity;
 import com.nsg.service.BatchService;
 import com.nsg.service.UserService;
@@ -22,7 +22,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.SecureRandom;
 import java.util.List;
 
 @RestController
@@ -74,17 +73,17 @@ public class AuthenticationController {
 
     @Autowired
     BatchService batchService;
-    //test batch
+    //test batchEntity
     @GetMapping("/batch")
-    List<Batch> getAllBatch(){
+    List<BatchEntity> getAllBatch(){
         return batchService.getAllBatch();
     }
 
     @PostMapping("/get-batch")
-    Batch saveBatch(@RequestBody BatchCreationRequest request){
+    BatchEntity saveBatch(@RequestBody BatchCreationRequest request){
         batchService.saveBatch(request);
-        Batch batch = batchService.getBatch(request.getBatchName());
-        return batch;
+        BatchEntity batchEntity = batchService.getBatch(request.getBatchName());
+        return batchEntity;
     }
 
 }

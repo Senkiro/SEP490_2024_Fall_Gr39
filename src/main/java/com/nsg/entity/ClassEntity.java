@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Class")
+@Table(name = "ClassEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Class {
+public class ClassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "class_id", columnDefinition = "VARCHAR(36)")
@@ -31,5 +31,5 @@ public class Class {
     List<StudentEntity> studentEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
-    List<Session> sessionList;
+    List<SessionEntity> sessionEntityList;
 }

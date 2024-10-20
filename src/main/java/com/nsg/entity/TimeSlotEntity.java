@@ -9,14 +9,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "TimeSlot")
+@Table(name = "TimeSlotEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TimeSlot {
+public class TimeSlotEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "time_slot_id", columnDefinition = "VARCHAR(36)")
@@ -33,7 +33,7 @@ public class TimeSlot {
 
     Date createdAt;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "timeSlot", fetch = FetchType.EAGER)
-    List<Session> sessionList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "timeSlotEntity", fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 
 }

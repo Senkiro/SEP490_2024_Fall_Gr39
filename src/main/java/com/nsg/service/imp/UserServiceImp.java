@@ -80,7 +80,7 @@ public class UserServiceImp implements UserService {
 //        user.setAddress(request.getAddress());
 //        user.setImg(request.getImg());
         user.setEmail(request.getEmail());
-        user.setRoles("CUSTOMER");
+//        user.setRoles("CUSTOMER");
         user.setActive(true);
 
         return userRepository.save(user);
@@ -179,7 +179,7 @@ public class UserServiceImp implements UserService {
 
         //set content for email
         String fromEmail = "hoangson00as@gmail.com";
-        String subject = "New password for your account";
+        String subject = "NewEntity password for your account";
         String body = "Your new password is: ";
 
         //validate email
@@ -188,7 +188,7 @@ public class UserServiceImp implements UserService {
         String newpass = generateRandomPassword();
         body = body + newpass;
 
-        System.out.println("New pass: "+newpass);
+        System.out.println("NewEntity pass: "+newpass);
 
         //try:
         try{

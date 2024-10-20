@@ -22,15 +22,15 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository){
         return args -> {
-            if(userRepository.findByUsername("admin").isEmpty()){
+            if(userRepository.findByUsername("adminEntity").isEmpty()){
                 UserEntity user = UserEntity.builder()
-                        .username("admin")
+                        .username("adminEntity")
                         .password(passwordEncoder.encode("admin1"))
-                        .roles("ADMIN")
+//                        .roles("ADMIN")
                         .isActive(true)
                         .build();
                 userRepository.save(user);
-                log.warn("admin user has been created !");
+                log.warn("adminEntity user has been created !");
             }
         };
     }

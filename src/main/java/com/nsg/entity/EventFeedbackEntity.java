@@ -5,14 +5,14 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "EventFeedback")
+@Table(name = "EventFeedbackEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventFeedback {
+public class EventFeedbackEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "event_feedback_id", columnDefinition = "VARCHAR(36)")
@@ -27,7 +27,7 @@ public class EventFeedback {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    Event event;
+    EventEntity eventEntity;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

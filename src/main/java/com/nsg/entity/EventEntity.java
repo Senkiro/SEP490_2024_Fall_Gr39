@@ -4,18 +4,17 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Event")
+@Table(name = "EventEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Event {
+public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "event_id", columnDefinition = "VARCHAR(36)")
@@ -33,10 +32,10 @@ public class Event {
     @Column(name = "description")
     String description;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<Session> sessionList;
+    @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<EventFeedback> eventFeedbackList;
+    @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<EventFeedbackEntity> eventFeedbackEntityList;
 
 }

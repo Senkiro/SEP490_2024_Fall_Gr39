@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Exam")
+@Table(name = "ExamEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Exam {
+public class ExamEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "exam_id", columnDefinition = "VARCHAR(36)")
@@ -30,13 +30,13 @@ public class Exam {
     @Column(name = "created_at")
     Date createdAt;
 
-    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<Session> sessionList;
+    @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 
-    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<Mark> markList;
+    @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<MarkEntity> markEntityList;
 
     @ManyToOne
     @JoinColumn(name = "exam_type")
-    ExamTypeRate examTypeRate;
+    ExamTypeRateEntity examTypeRateEntity;
 }

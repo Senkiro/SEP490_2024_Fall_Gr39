@@ -47,19 +47,19 @@ public class StudentEntity {
 
     @ManyToOne
             @JoinColumn(name = "class_id", referencedColumnName = "class_id")
-    Class classEntity;
+    ClassEntity classEntity;
 
     @ManyToOne
             @JoinColumn(name = "batch_name", referencedColumnName = "batch_name")
-    Batch batch;
+    BatchEntity batchEntity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
-    List<Attendence> attendenceList;
+    List<AttendenceEntity> attendenceEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
-    List<Mark> markList;
+    List<MarkEntity> markEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
-    List<EventFeedback> eventFeedbackList;
+    List<EventFeedbackEntity> eventFeedbackEntityList;
 
 }

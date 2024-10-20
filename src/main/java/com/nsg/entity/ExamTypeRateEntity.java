@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "ExamTypeRate")
+@Table(name = "ExamTypeRateEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ExamTypeRate {
+public class ExamTypeRateEntity {
     @Id
     @Column(name = "exam_type")
     Integer examType;
@@ -26,7 +26,7 @@ public class ExamTypeRate {
     @Column(name = "exam_name")
     Date examName;
 
-    @OneToMany(mappedBy = "examTypeRate", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<Exam> examList;
+    @OneToMany(mappedBy = "examTypeRateEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    List<ExamEntity> examEntityList;
 
 }

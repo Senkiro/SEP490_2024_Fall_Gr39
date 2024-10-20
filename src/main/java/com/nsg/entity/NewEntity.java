@@ -7,14 +7,14 @@ import lombok.experimental.FieldDefaults;
 import java.util.Date;
 
 @Entity
-@Table(name = "New")
+@Table(name = "NewEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class New {
+public class NewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "new_id", columnDefinition = "VARCHAR(36)")

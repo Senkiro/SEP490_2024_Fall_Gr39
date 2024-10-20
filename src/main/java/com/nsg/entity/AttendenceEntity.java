@@ -5,14 +5,14 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Attendence")
+@Table(name = "AttendenceEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Attendence {
+public class AttendenceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "attendence_id", columnDefinition = "VARCHAR(36)")
@@ -26,7 +26,7 @@ public class Attendence {
 
     @ManyToOne
     @JoinColumn(name = "session_id", referencedColumnName = "session_id")
-    Session session;
+    SessionEntity sessionEntity;
 
     @ManyToOne
             @JoinColumn(name = "student_id")

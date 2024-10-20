@@ -1,5 +1,6 @@
 package com.nsg.entity;
 
+import com.nsg.common.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -49,8 +50,9 @@ public class UserEntity {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    String roles;
+    UserRole roles;
 
 //    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 //    Student student;
@@ -59,15 +61,15 @@ public class UserEntity {
     StudentEntity studentEntity;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    Teacher teacher;
+    TeacherEntity teacherEntity;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    Staff staff;
+    StaffEntity staffEntity;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    Manager manager;
+    ManagerEntity managerEntity;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    Admin admin;
+    AdminEntity adminEntity;
 
 }

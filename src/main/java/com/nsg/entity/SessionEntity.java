@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Session")
+@Table(name = "SessionEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Session {
+public class SessionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "session_id", columnDefinition = "VARCHAR(36)")
@@ -29,34 +29,34 @@ public class Session {
 
     @ManyToOne
     @JoinColumn(name = "class_id", referencedColumnName = "class_id")
-    Class classEntity;
+    ClassEntity classEntity;
 
     @ManyToOne
     @JoinColumn(name = "lesson_id", referencedColumnName = "lesson_id")
-    Lesson lesson;
+    LessonEntity lessonEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session", fetch = FetchType.EAGER)
-    List<Attendence> attendenceList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", fetch = FetchType.EAGER)
+    List<AttendenceEntity> attendenceEntityList;
 
     @ManyToOne
     @JoinColumn(name = "time_slot_id")
-    TimeSlot timeSlot;
+    TimeSlotEntity timeSlotEntity;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
-    Room room;
+    RoomEntity roomEntity;
 
     @ManyToOne
     @JoinColumn(name = "exam_id")
-    Exam exam;
+    ExamEntity examEntity;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    Event event;
+    EventEntity eventEntity;
 
     @OneToOne
             @MapsId
             @JoinColumn(name = "session_id")
-    Teacher teacher;
+    TeacherEntity teacherEntity;
 
 }

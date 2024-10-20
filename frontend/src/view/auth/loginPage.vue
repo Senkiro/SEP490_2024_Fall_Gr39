@@ -47,10 +47,13 @@ export default {
           })
         });
 
+
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem('jwtToken', data.result.token);
-          this.$router.push('/user-management');
+          localStorage.setItem('userRole', data.result.scope);
+          this.redirectUser(data.result.scope);
+          console.log(data.result.scope);
         } else {
           const errorData = await response.json();
           this.errorMessage = errorData.message || 'Login failed';
@@ -60,6 +63,16 @@ export default {
         console.error(error);
       } finally {
         this.isLoading = false;
+      }
+    },
+    redirectUser(role) {
+      role = role.toUpperCase();
+      if (role === 'MANAGER') {
+        this.$router.push({ name: 'ManagerHomePage' });
+      } else if (role === 'STAFF') {
+        this.$router.push({ name: 'StaffHomePage' });
+      } else {
+        this.$router.push({ name: 'LoginPage' }); // Đường dẫn mặc định nếu không khớp role
       }
     },
     goToForgotPassword() {

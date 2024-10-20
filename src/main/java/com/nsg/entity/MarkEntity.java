@@ -5,14 +5,14 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Mark")
+@Table(name = "MarkEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Mark {
+public class MarkEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "mark_id", columnDefinition = "VARCHAR(36)")
@@ -31,6 +31,6 @@ public class Mark {
 
     @ManyToOne
             @JoinColumn(name = "exam_id")
-    Exam exam;
+    ExamEntity examEntity;
 
 }

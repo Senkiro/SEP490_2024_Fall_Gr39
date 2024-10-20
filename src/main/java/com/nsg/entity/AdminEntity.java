@@ -5,27 +5,24 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Manager")
+@Table(name = "AdminEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Manager {
+public class AdminEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "manager_id", columnDefinition = "VARCHAR(36)")
-    String managerId;
-
-    @Column(name = "name")
-    String name;
+    @Column(name = "admin_id", columnDefinition = "VARCHAR(36)")
+    String adminId;
 
     @Column(name = "email")
     String email;
 
     @OneToOne
-            @MapsId
-            @JoinColumn(name = "user_id")
+    @MapsId
+    @JoinColumn(name = "user_id")
     UserEntity user;
 }

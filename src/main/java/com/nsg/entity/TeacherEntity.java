@@ -7,14 +7,14 @@ import lombok.experimental.FieldDefaults;
 import java.util.Date;
 
 @Entity
-@Table(name = "Teacher")
+@Table(name = "TeacherEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Teacher {
+public class TeacherEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "teacher_id", columnDefinition = "VARCHAR(36)")
@@ -43,6 +43,6 @@ public class Teacher {
             @JoinColumn(name = "user_id")
     UserEntity user;
 
-    @OneToOne(mappedBy = "teacher", cascade = CascadeType.ALL)
-    Session session;
+    @OneToOne(mappedBy = "teacherEntity", cascade = CascadeType.ALL)
+    SessionEntity sessionEntity;
 }

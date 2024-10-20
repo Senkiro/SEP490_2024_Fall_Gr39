@@ -10,7 +10,7 @@ import authLayout from "./layouts/auth-layout.vue";
 export default {
   props:['iconName'],
   metaInfo: {
-    title: "Nihon Study Guide",
+    title: "Nihon Study GuideEntity",
     titleTemplate: "%s | Nihon - KKK",
   },
   components: {

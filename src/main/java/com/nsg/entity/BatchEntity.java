@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Batch")
+@Table(name = "BatchEntity")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Batch {
+public class BatchEntity {
     @Id
     @Column(name = "batch_name")
     String batchName;
@@ -29,6 +29,6 @@ public class Batch {
     @Column(name = "year")
     int year;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "batch", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "batchEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
 }

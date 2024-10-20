@@ -1,8 +1,8 @@
 <template>
-  <div class="batch-detail">
-    <header class="batch-detail-header">
-      <h1>{{ batch.name }}</h1>
-      <div class="batch-detail-actions">
+  <div class="batchEntity-detail">
+    <header class="batchEntity-detail-header">
+      <h1>{{ batchEntity.name }}</h1>
+      <div class="batchEntity-detail-actions">
         <button class="btn btn-student-record" @click="switchTab('student')">
           Student Record
         </button>
@@ -11,7 +11,7 @@
         </button>
       </div>
     </header>
-    <div class="batch-detail-content">
+    <div class="batchEntity-detail-content">
       <div v-if="activeTab === 'student'" class="student-record">
         <button class="btn btn-add-student">Add student</button>
         <button class="btn btn-import-student">Import student</button>
@@ -43,7 +43,7 @@
         </table>
       </div>
       <div v-if="activeTab === 'class'" class="class-record">
-        <!-- Class record content goes here -->
+        <!-- ClassEntity record content goes here -->
       </div>
     </div>
   </div>
@@ -59,7 +59,7 @@ export default {
   },
   data() {
     return {
-      batch: {
+      batchEntity: {
         name: 'FALL2024'
       },
       activeTab: 'student',
@@ -86,18 +86,18 @@ export default {
 </script>
 
 <style scoped>
-.batch-detail {
+.batchEntity-detail {
   padding: 20px;
 }
 
-.batch-detail-header {
+.batchEntity-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.batch-detail-actions {
+.batchEntity-detail-actions {
   display: flex;
   gap: 10px;
 }
@@ -115,7 +115,7 @@ export default {
   color: #fff;
 }
 
-.batch-detail-content {
+.batchEntity-detail-content {
   margin-top: 20px;
 }
 

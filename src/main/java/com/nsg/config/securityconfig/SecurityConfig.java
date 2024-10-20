@@ -27,10 +27,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request ->
                         request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                                .requestMatchers("/admin/**").hasAuthority("SCOPE_" + ADMIN_SCOPE)
-                                .requestMatchers("/teacher/**").hasAuthority("SCOPE_" + TEACHER_SCOPE)
-                                .requestMatchers("/student/**").hasAuthority("SCOPE_" + STUDENT_SCOPE)
-                                .requestMatchers("/staff/**").hasAuthority("SCOPE_" + STAFF_SCOPE)
+                                .requestMatchers("/admin/**").hasAuthority(ADMIN_SCOPE)
+                                .requestMatchers("/teacher/**").hasAuthority(TEACHER_SCOPE)
+                                .requestMatchers("/student/**").hasAuthority(STUDENT_SCOPE)
+                                .requestMatchers("/staff/**").hasAuthority(STAFF_SCOPE)
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))

@@ -13,26 +13,32 @@ const routes = [
         component: () => import('../view/auth/forgotPasswordPage.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
-    //staff router
+    //dashboard
     {
         path: '/staff',
         name: 'StaffHomePage',
         component: () => import('../view/dashboard/staffHomepage.vue'),
-        meta: { layout: 'app', requiresAuth: false },
+        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
     },
+    {
+        path: '/manager',
+        name: 'ManagerHomePage',
+        component: () => import('../view/dashboard/managerHomepage.vue'),
+        meta: { layout: 'app', requiresAuth: true, roles: ['MANAGER'] },
+    },
+    //staff router
     {
         path: '/staff/batch-record',
         name: 'BatchRecord',
         component: () => import('../view/staff/batch_record.vue'),
-        meta: { layout: 'app', requiresAuth: false },
+        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
     },
     {
         path: '/staff/batch-detail',
         name: 'BatchDetail',
         component: () => import('../view/staff/batch_detail.vue'),
-        meta: { layout: 'app', requiresAuth: false },
+        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
     },
-
 ];
 
 const router = createRouter({
@@ -42,15 +48,26 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('jwtToken');
+    const userRole = localStorage.getItem('userRole');
+
+    console.log('Navigating to:', to.path);
+    console.log('User Role:', userRole);
+
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!token) {
-            next({ name: 'Login' });
+            next({ name: 'LoginPage' });
         } else {
-            next();
+            if (to.meta.roles && !to.meta.roles.includes(userRole)) {
+                console.warn('Access denied for role:', userRole);
+                next({ name: 'LoginPage' });
+            } else {
+                next();
+            }
         }
     } else {
         next();
     }
 });
+
 
 export default router;

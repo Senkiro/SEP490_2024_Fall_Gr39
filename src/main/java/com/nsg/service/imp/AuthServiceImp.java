@@ -71,6 +71,7 @@ public class AuthServiceImp implements AuthService {
             return AuthResponse.builder()
                     .token(token)
                     .authenticated(true)
+                    .scope(user.getRoles().name())
                     .build();
         }else {
             throw new AppException(ErrorCode.INVALID_ACCBAN);
@@ -85,7 +86,7 @@ public class AuthServiceImp implements AuthService {
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(request, user);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles("CUSTOMER");
+//        user.setRoles();
         user.setActive(true);
         UserEntity savedUser = userRepository.save(user);
         RegisterResponse response = new RegisterResponse();
@@ -100,7 +101,7 @@ public class AuthServiceImp implements AuthService {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .claim("id", user.getUserId())
                 .subject(user.getUsername())
-                .claim("scope", user.getRoles())
+                .claim("scope", user.getRoles().name())
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()

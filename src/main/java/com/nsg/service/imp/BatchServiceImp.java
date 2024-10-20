@@ -2,7 +2,7 @@ package com.nsg.service.imp;
 
 import com.nsg.Mapper.BatchMapper;
 import com.nsg.dto.request.batch.BatchCreationRequest;
-import com.nsg.entity.Batch;
+import com.nsg.entity.BatchEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.service.BatchService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,19 +23,19 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public void saveBatch(BatchCreationRequest batchCreationRequest) {
-        Batch batch = batchMapper.toBatch(batchCreationRequest);
-        batchRepository.save(batch);
+        BatchEntity batchEntity = batchMapper.toBatch(batchCreationRequest);
+        batchRepository.save(batchEntity);
     }
 
     @Override
-    public List<Batch> getAllBatch() {
+    public List<BatchEntity> getAllBatch() {
         return batchRepository.findAll();
     }
 
     @Override
-    public Batch updateBatch(String batchName) {
-        Batch batch = batchRepository.findByBatchName(batchName);
-        return batch;
+    public BatchEntity updateBatch(String batchName) {
+        BatchEntity batchEntity = batchRepository.findByBatchName(batchName);
+        return batchEntity;
     }
 
     @Override
@@ -45,7 +44,7 @@ public class BatchServiceImp implements BatchService {
     }
 
     @Override
-    public Batch getBatch(String batchName) {
+    public BatchEntity getBatch(String batchName) {
         return batchRepository.findByBatchName(batchName);
     }
 }

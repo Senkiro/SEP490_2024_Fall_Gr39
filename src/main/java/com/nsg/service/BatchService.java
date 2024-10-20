@@ -1,26 +1,26 @@
 package com.nsg.service;
 
 import com.nsg.dto.request.batch.BatchCreationRequest;
-import com.nsg.entity.Batch;
+import com.nsg.entity.BatchEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface BatchService {
-    //save batch
+    //save batchEntity
     void saveBatch(BatchCreationRequest batchCreationRequest);
 
 
-    //get all batch
-    List<Batch> getAllBatch();
+    //get all batchEntity
+    List<BatchEntity> getAllBatch();
 
-    //update batch
-    Batch updateBatch(String batchName);
+    //update batchEntity
+    BatchEntity updateBatch(String batchName);
 
-    //delete batch
+    //delete batchEntity
     void deleteBatch(String batchId);
 
     //get by batchName
-    Batch getBatch(String batchName);
+    BatchEntity getBatch(String batchName);
 }
