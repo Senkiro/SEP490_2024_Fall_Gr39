@@ -71,19 +71,4 @@ public class AuthenticationController {
 
     }
 
-    @Autowired
-    BatchService batchService;
-    //test batchEntity
-    @GetMapping("/batch")
-    List<BatchEntity> getAllBatch(){
-        return batchService.getAllBatch();
-    }
-
-    @PostMapping("/get-batch")
-    BatchEntity saveBatch(@RequestBody BatchCreationRequest request){
-        batchService.saveBatch(request);
-        BatchEntity batchEntity = batchService.getBatch(request.getBatchName());
-        return batchEntity;
-    }
-
 }

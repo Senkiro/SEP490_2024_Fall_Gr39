@@ -23,8 +23,12 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public void saveBatch(BatchCreationRequest batchCreationRequest) {
-        BatchEntity batchEntity = batchMapper.toBatch(batchCreationRequest);
-        batchRepository.save(batchEntity);
+        System.out.println("check date: "+batchCreationRequest.getStartTime()+"; "+batchCreationRequest.getEndTime());
+
+        BatchEntity batch =
+                batchMapper.toBatchEntity(batchCreationRequest);
+
+        batchRepository.save(batch);
     }
 
     @Override

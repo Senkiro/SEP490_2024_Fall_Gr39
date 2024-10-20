@@ -86,7 +86,11 @@ public class AuthServiceImp implements AuthService {
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(request, user);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        user.setRoles();
+//<<<<<<< Updated upstream
+////        user.setRoles();
+//=======
+//        user.setRole("CUSTOMER");
+//>>>>>>> Stashed changes
         user.setActive(true);
         UserEntity savedUser = userRepository.save(user);
         RegisterResponse response = new RegisterResponse();
