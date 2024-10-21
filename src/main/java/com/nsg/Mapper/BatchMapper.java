@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface BatchMapper {
-    BatchEntity toBatch(BatchCreationRequest batchCreationRequest);
+    BatchEntity toBatchEntity(BatchCreationRequest batchCreationRequest);
 }

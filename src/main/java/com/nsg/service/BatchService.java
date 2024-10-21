@@ -16,7 +16,7 @@ public interface BatchService {
     List<BatchEntity> getAllBatch();
 
     //update batchEntity
-    BatchEntity updateBatch(String batchName);
+    BatchEntity updateBatch(String batchName, BatchCreationRequest request);
 
     //delete batchEntity
     void deleteBatch(String batchId);

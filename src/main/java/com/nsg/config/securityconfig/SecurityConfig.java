@@ -30,7 +30,7 @@ public class SecurityConfig {
                                 .requestMatchers("/admin/**").hasAuthority(ADMIN_SCOPE)
                                 .requestMatchers("/teacher/**").hasAuthority(TEACHER_SCOPE)
                                 .requestMatchers("/student/**").hasAuthority(STUDENT_SCOPE)
-                                .requestMatchers("/staff/**").hasAuthority(STAFF_SCOPE)
+                                .requestMatchers("/staff").hasAuthority(STAFF_SCOPE)
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
