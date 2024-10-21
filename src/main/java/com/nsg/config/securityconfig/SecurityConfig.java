@@ -35,7 +35,6 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
                 .csrf(AbstractHttpConfigurer::disable);
-
         return http.build();
     }
 

@@ -18,11 +18,11 @@ public class BatchCreationRequest {
     @NotNull
     String batchName;
 
-//    @Column(name = "start_time")
-//    Date startTime;
-//
-//    @Column(name = "end_time")
-//    Date endTime;
+
+    Date startTime;
+
+
+    Date endTime;
 
     int year;
 }

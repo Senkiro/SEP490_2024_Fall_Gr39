@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,8 @@ public class AuthServiceImp implements AuthService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     @NonFinal
-    @org.springframework.beans.factory.annotation.Value("${signer.key}")
+//    @org.springframework.beans.factory.annotation.Value("${signer.key}")
+    @Value("${signer.key}")
     protected String SIGNER_KEY;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
