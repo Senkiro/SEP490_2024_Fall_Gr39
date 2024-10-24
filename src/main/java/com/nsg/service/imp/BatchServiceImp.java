@@ -50,8 +50,8 @@ public class BatchServiceImp implements BatchService {
     }
 
     @Override
-    public void deleteBatch(String batchId) {
-
+    public void deleteBatch(String batchName) {
+        batchRepository.deleteByBatchName(batchName);
     }
 
     @Override

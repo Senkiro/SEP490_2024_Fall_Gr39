@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface BatchRepository extends JpaRepository<BatchEntity, String> {
     Optional<BatchEntity> findByBatchName(String batchName);
+
+    void deleteByBatchName(String batchName);
 }

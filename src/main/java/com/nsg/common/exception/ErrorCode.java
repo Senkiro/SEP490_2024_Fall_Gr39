@@ -6,6 +6,7 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1007,"User not existed!"),
     INVALID_LOGINRQ(1008,"Wrong username or password "),
     INVALID_ACCBAN(1009,"Your account has been locked !"),
+    INVALID_BATCHNAME(1009, "Batch name can not be null")
     ;
 
     ErrorCode(int code, String message) {

@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class StaffController {
 
     //create new batch
     @PostMapping("/create-batch")
-    ApiResponse<BatchEntity> saveBatch(@RequestBody BatchCreationRequest request){
+    ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request){
         ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
 
         batchService.saveBatch(request);
@@ -52,7 +53,7 @@ public class StaffController {
         return apiResponse;
     }
 
-    //delete
+    //update
     @PostMapping("/update-batch")
     ApiResponse<BatchEntity> updateBatch(@RequestBody BatchCreationRequest request){
         ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
@@ -61,6 +62,18 @@ public class StaffController {
         BatchEntity batch = batchService.updateBatch(request.getBatchName(), request);
         apiResponse.setResult(batch);
 
+        return apiResponse;
+    }
+
+    //delete batch
+    @DeleteMapping("/delete-batch/{batchName}")
+    ApiResponse<?> deleteBatch(@PathVariable("batchName") String batchName){
+        ApiResponse<?> apiResponse = new ApiResponse<>();
+
+        //delete by id
+        batchService.deleteBatch(batchName);
+
+        apiResponse.setMessage("Delete successfully!");
         return apiResponse;
     }
 

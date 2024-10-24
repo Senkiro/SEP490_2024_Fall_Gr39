@@ -25,7 +25,7 @@ public class ClassEntity {
     String className;
 
     @Column(name = "class_colour")
-    Date classColour;
+    String classColour;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
