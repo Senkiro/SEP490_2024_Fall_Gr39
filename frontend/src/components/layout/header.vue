@@ -1,16 +1,17 @@
 <template>
   <header class="header">
     <div class="header-left">
-      <slot name="breadcrumb">
-        <span class="breadcrumb">Trang chủ</span>
-        <span class="separator">|</span>
-        <span class="breadcrumb">Bản ghi lô hàng</span>
-      </slot>
+      <ul class="breadcrumb">
+        <li><router-link to="/homepage">Homepage</router-link></li>
+        <li><router-link to="/homepage">Homepage</router-link></li>
+        <li><router-link to="/homepage">Homepage</router-link></li>
+        <li>Homepage</li>
+      </ul>
     </div>
     <div class="header-right">
       <slot name="user-actions">
-        <VsxIcon iconName="User" :size="32" color="#5584FF" type="linear" />
-        <VsxIcon iconName="Logout" :size="32" color="#5584FF" type="linear" />
+        <VsxIcon iconName="UserSquare" :size="30" color="#01447e" type="linear" class="icon"/>
+        <VsxIcon iconName="Logout" :size="30" color="#01447e" type="linear" class="icon"/>
       </slot>
     </div>
 
@@ -18,54 +19,63 @@
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 
 export default {
   name: "AppHeader",
   components: {
     VsxIcon
   },
-  props:['iconName']
+  props: ['iconName']
 };
 </script>
 
 <style scoped>
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #f7f7f7;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px dashed #01447e;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #333;
+ul.breadcrumb {
+  padding: 10px 16px;
+  list-style: none;
 }
 
-.breadcrumb {
-  margin-right: 10px;
+/* Display list items side by side */
+ul.breadcrumb li {
+  display: inline;
+  font-size: 16px;
 }
 
-.separator {
-  margin-right: 10px;
+/* Add a slash symbol (/) before/behind each list item */
+ul.breadcrumb li+li:before {
+  padding: 8px;
+  color: black;
+  content: "|\00a0";
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
+/* Add a color to all links inside the list */
+ul.breadcrumb li a {
+  color: #01447e;
+  text-decoration: none;
 }
 
-.icon {
-  width: 32px; /* tăng kích thước để dễ kiểm tra */
-  height: 32px;
-  color: #000; /* thử thêm màu đen để dễ nhận thấy */
+ul.breadcrumb li {
+  color: #979B9F;
+  text-decoration: none;
 }
 
-.icon:hover {
-  opacity: 0.7;
+/* Add a color on mouse-over */
+ul.breadcrumb li a:hover {
+  color: #01447e;
+  text-decoration: underline;
+}
+
+.icon{
+  padding: 10px;
 }
 </style>

@@ -1,12 +1,16 @@
 <template>
-  <div class="layout">
-    <Sidebar />
-    <div class="content">
-      <Header />
-      <router-view></router-view>
-      <Footer />
+    <VaCard class="p">
+    <div class="row">
+      <div class="flex flex-col md2 sidebar">
+        <Sidebar />
+      </div>
+      <div class="flex flex-col md10 content">
+        <Header />
+        <router-view></router-view>
+        <Footer />
+      </div>
     </div>
-  </div>
+  </VaCard>
 </template>
 
 <script>
@@ -14,32 +18,21 @@
 import Sidebar from '@/components/layout/sidebar.vue';
 import Header from '@/components/layout/header.vue';
 import Footer from '@/components/layout/footer.vue';
+import { VaCard } from "vuestic-ui";
 
 export default {
   components: {
     Sidebar,
     Header,
     Footer
-  }
+  },
 };
+export{ VaCard};
 </script>
 
 <style scoped>
+.content{
+  padding-right: 24px;
+}
 /* Đảm bảo bố cục hiển thị đúng */
-.sidebar {
-  width: 150px; /* Đặt kích thước cụ thể cho Sidebar */
-}
-.layout {
-  display: flex;
-}
-
-.content {
-  flex: 1;
-  margin-left: 180px; /* Đảm bảo phù hợp với chiều rộng của Sidebar */
-  padding: 20px;
-}
-
-.content > Header {
-  padding-bottom: 20px;
-}
 </style>

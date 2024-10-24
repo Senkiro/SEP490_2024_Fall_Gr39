@@ -22,23 +22,14 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f7f7f7;
   padding: 20px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #01447e;
 }
-
 .footer-content {
   text-align: center;
   font-size: 12px;
-  color: #666;
+  color: #01447e;
 }
-
-.footer-links a {
-  color: #666;
-  text-decoration: none;
-  margin: 0 10px;
-}
-
 .footer-links a:hover {
   text-decoration: underline;
 }
