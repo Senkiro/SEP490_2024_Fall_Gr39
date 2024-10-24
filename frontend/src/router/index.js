@@ -18,26 +18,30 @@ const routes = [
         path: '/staff',
         name: 'StaffHomePage',
         component: () => import('../view/dashboard/staffHomepage.vue'),
-        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
     },
     {
         path: '/manager',
         name: 'ManagerHomePage',
         component: () => import('../view/dashboard/managerHomepage.vue'),
-        meta: { layout: 'app', requiresAuth: true, roles: ['MANAGER'] },
+        // meta: { layout: 'app', requiresAuth: true, roles: ['MANAGER'] },
+        meta: { layout: 'app', requiresAuth: false},
     },
     //staff router
     {
         path: '/staff/batch-record',
         name: 'BatchRecord',
         component: () => import('../view/staff/batch_record.vue'),
-        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
     },
     {
         path: '/staff/batch-detail',
         name: 'BatchDetail',
         component: () => import('../view/staff/batch_detail.vue'),
-        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
     },
 ];
 
