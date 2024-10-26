@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "GuideEntity")
+@Table(name = "Guide")
 @Getter
 @Setter
 @NoArgsConstructor

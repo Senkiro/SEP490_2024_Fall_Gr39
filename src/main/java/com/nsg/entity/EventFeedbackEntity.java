@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "EventFeedbackEntity")
+@Table(name = "EventFeedback")
 @Getter
 @Setter
 @NoArgsConstructor
