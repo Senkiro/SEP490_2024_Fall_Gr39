@@ -27,8 +27,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request ->
                         request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                                .requestMatchers("/admin/**").hasAuthority("SCOPE_" + ADMIN_SCOPE)
-                                .requestMatchers("/fja-fap/user/**").authenticated()
+                                .requestMatchers("/admin/**").hasAuthority(ADMIN_SCOPE)
+                                .requestMatchers("/teacher/**").hasAuthority(TEACHER_SCOPE)
+                                .requestMatchers("/student/**").hasAuthority(STUDENT_SCOPE)
+                                .requestMatchers("/staff/**").hasAuthority(STAFF_SCOPE)
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
@@ -36,6 +38,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
 
     @Bean
@@ -47,6 +50,10 @@ public class SecurityConfig {
     };
 
     private static final String ADMIN_SCOPE = "ADMIN";
+    private static final String TEACHER_SCOPE = "TEACHER";
+    private static final String STUDENT_SCOPE = "STUDENT";
+    private static final String STAFF_SCOPE = "STAFF";
+
     private final String[] PUBLIC_ENDPOINTS = {
             "/auth/**",
             "/fja-fap/auth/**",

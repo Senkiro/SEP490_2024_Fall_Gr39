@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 )
 @OpenAPIDefinition(
 		info = @Info(
-				title = "Nihon Study Guide",
+				title = "Nihon Study GuideEntity",
 				version = "V.1.0",
 				description = "Documentation for Nihon Management apis"
 		)
