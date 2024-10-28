@@ -1,16 +1,20 @@
 <template>
-  <div class="batchEntity-record">
-    <header class="batchEntity-record-header">
-      <h1>Batch Record</h1>
-      <div class="batchEntity-record-actions">
-        <button class="btn btn-chart">
-          <VsxIcon iconName="Chart" size="20" /> View statistical chart
+  <div class="container">
+    <div class="headContent">
+      <div class="pageTitle">
+        <h1>Batch Record</h1>
+      </div>
+      <div class="actions">
+        <button @click="showAddBatchPopup = true">
+          <VsxIcon iconName="AddCircle" size="20" type="bold"/> 
+          Add batch
         </button>
-        <button class="btn btn-add" @click="showAddBatchPopup = true">
-          <VsxIcon iconName="Add" size="20" /> Add batchEntity
+        <button>
+          <VsxIcon iconName="Chart" size="20" type="bold" /> 
+          View statistical chart
         </button>
       </div>
-    </header>
+    </div>
     <table class="batchEntity-table">
       <thead>
       <tr>
@@ -19,24 +23,24 @@
         <th>Year</th>
         <th>Start time</th>
         <th>End time</th>
-        <th>Number of students</th>
+        <th style="text-align: center;">Number of students</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-        <td>{{ index + 1 }}</td>
-        <td>{{ batchEntity.name }}</td>
-        <td>{{ batchEntity.year }}</td>
-        <td>{{ batchEntity.startTime }}</td>
-        <td>{{ batchEntity.endTime }}</td>
-        <td>{{ batchEntity.numberOfStudents }}</td>
-        <td :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
+        <td id="id" style="font-weight: bold;">{{ index + 1 }}</td>
+        <td id="name" style="font-weight: bold;" @click="viewBatchDetail(batchEntity)">{{ batchEntity.name }}</td>
+        <td id="year">{{ batchEntity.year }}</td>
+        <td id="startTime">{{ batchEntity.startTime }}</td>
+        <td id="endTime">{{ batchEntity.endTime }}</td>
+        <td id="numberOfStudents" style="text-align: center;">{{ batchEntity.numberOfStudents }}</td>
+        <td id="status" :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
           {{ batchEntity.status }}
         </td>
-        <td>
-          <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewBatchDetail(batchEntity)" />
+        <td id="action">
+          <VsxIcon iconName="Eye" :size="24" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;"/>
         </td>
       </tr>
       </tbody>
@@ -116,59 +120,16 @@ export default {
 </script>
 
 <style scoped>
-.batchEntity-record {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-}
-
-.batchEntity-record-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.batchEntity-record-header h1 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.batchEntity-record-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.batchEntity-record-actions .btn {
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  font-size: 14px;
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-chart {
-  background-color: #4a90e2;
-  color: #fff;
-}
-
-.btn-add {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.batchEntity-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
 .batchEntity-table th, .batchEntity-table td {
-  padding: 12px;
+  padding: 12px 24px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  align-items: center;
+  align-content: center;
+}
+
+.batchEntity-table td:hover{
+  cursor: pointer;
 }
 
 .batchEntity-table th {
@@ -177,11 +138,11 @@ export default {
 }
 
 .status-progress {
-  color: #007bff;
+  color: #304CB2;
 }
 
 .status-graduated {
-  color: #28a745;
+  color: #6ECBB8;
 }
 
 .action-icon {
@@ -254,5 +215,55 @@ export default {
   cursor: pointer;
   font-weight: bold;
   margin-left: 10px;
+}
+</style>
+
+<style>
+.headContent{
+  margin: 20px 0px;
+}
+
+.pageTitle {
+  display: block;
+}
+
+h1 {
+  width: fit-content;
+  font-size: 36px;
+  background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin: 20px 0px;;
+}
+
+.container {
+  padding: 20px;
+}
+
+button{
+  background-image: linear-gradient(90deg, #3E5DD4, #223374);
+  padding: 10px, 20px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: normal;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.actions{
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 20px;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
 }
 </style>

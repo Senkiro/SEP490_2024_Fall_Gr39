@@ -8,21 +8,7 @@ import "vuestic-ui/css";
 
 const app = createApp(App);
 app.use(router);
-
-app.use(createVuestic({
-    config: {
-        colors: {
-          variables: {
-            // Default colors
-            primary: "#21A2C6F",
-            normalText: "#171717",
-            background: "#DFE7FB",
-            blurText: "#979B9F",
-            success: "#6ECBB8",
-          },
-        },
-      },
-})).mount("#app");
+app.use(createVuestic()).mount("#app");
 app.component("VsxIcon", VsxIcon);
 
 
