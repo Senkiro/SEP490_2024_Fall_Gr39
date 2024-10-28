@@ -43,6 +43,20 @@ const routes = [
         // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
         meta: { layout: 'app', requiresAuth: false},
     },
+    {
+        path: '/staff/class-record',
+        name: 'ClassRecord',
+        component: () => import('../view/staff/class-record.vue'),
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
+    },
+    {
+        path: '/staff/teacher-record',
+        name: 'TeacherRecord',
+        component: () => import('../view/staff/teacher-reacord.vue'),
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
+    },
 ];
 
 const router = createRouter({
