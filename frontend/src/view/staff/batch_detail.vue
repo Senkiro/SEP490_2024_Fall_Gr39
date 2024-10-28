@@ -1,44 +1,53 @@
 <template>
-  <div class="batchEntity-detail">
-    <header class="batchEntity-detail-header">
-      <h1>{{ batchEntity.name }}</h1>
-      <div class="batchEntity-detail-actions">
-        <button class="btn btn-student-record" @click="switchTab('student')">
-          Student Record
-        </button>
-        <button class="btn btn-class-record" @click="switchTab('class')">
-          Class Record
-        </button>
+  <div class="container">
+    <div class="headContent">
+      <div class="pageTitle">
+        <h1>{{ batchEntity.name }}</h1>
       </div>
-    </header>
+      <div class="tab">
+        <VaButtonGroup>
+          <VaButton to="/student-record" class="buttonGroup" style="  --va-background-color: none; padding: 0px 30px;">Student record</VaButton>
+          <VaButton to="/class-record" class="buttonGroup" style="  --va-background-color: none; padding: 0px 30px;">Class record</VaButton>
+        </VaButtonGroup>
+      </div>
+        <div class="actions">
+          <button class="btn btn-add-student">
+            <VsxIcon iconName="Import" size="20" type="bold" />
+            Import student
+          </button>
+          <button class="btn btn-import-student">
+            <VsxIcon iconName="AddCircle" size="20" type="bold" />
+            Add student
+          </button>
+        </div>
+    </div>
+
     <div class="batchEntity-detail-content">
       <div v-if="activeTab === 'student'" class="student-record">
-        <button class="btn btn-add-student">Add student</button>
-        <button class="btn btn-import-student">Import student</button>
         <table class="student-table">
           <thead>
-          <tr>
-            <th>No</th>
-            <th>Fullname</th>
-            <th>Roll number</th>
-            <th>Japanese name</th>
-            <th>Class</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
+            <tr>
+              <th>No</th>
+              <th>Fullname</th>
+              <th>Roll number</th>
+              <th>Japanese name</th>
+              <th>Class</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(student, index) in students" :key="student.id">
-            <td>{{ index + 1 }}</td>
-            <td>{{ student.fullname }}</td>
-            <td>{{ student.rollNumber }}</td>
-            <td>{{ student.japaneseName }}</td>
-            <td :style="{ color: student.classColor }">{{ student.class }}</td>
-            <td>{{ student.email }}</td>
-            <td>
-              <VsxIcon iconName="Eye" :size="24" color="#5584FF" type="linear" @click="viewStudentDetail(student)" />
-            </td>
-          </tr>
+            <tr v-for="(student, index) in students" :key="student.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ student.fullname }}</td>
+              <td>{{ student.rollNumber }}</td>
+              <td>{{ student.japaneseName }}</td>
+              <td :style="{ color: student.classColor }">{{ student.class }}</td>
+              <td>{{ student.email }}</td>
+              <td>
+                <VsxIcon iconName="Eye" :size="24" color="#5584FF" type="linear" @click="viewStudentDetail(student)" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -86,9 +95,19 @@ export default {
 </script>
 
 <style scoped>
-.batchEntity-detail {
-  padding: 20px;
+.tab{
+  background-image: linear-gradient(-90deg, #304CB2, #1A2C6F);
+  padding: 5px;
+  width:fit-content;
+  border-radius: 8px;
 }
+.va-button {
+  font-size: 16px;
+  font-weight: normal;
+  border-radius: 8px;
+  padding: auto;
+}
+
 
 .batchEntity-detail-header {
   display: flex;
@@ -102,15 +121,8 @@ export default {
   gap: 10px;
 }
 
-.btn {
-  padding: 10px 20px;
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-student-record, .btn-class-record {
+.btn-student-record,
+.btn-class-record {
   background-color: #4a90e2;
   color: #fff;
 }
@@ -124,7 +136,8 @@ export default {
   border-collapse: collapse;
 }
 
-.student-table th, .student-table td {
+.student-table th,
+.student-table td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
   text-align: left;
