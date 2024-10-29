@@ -2,7 +2,7 @@
   <div class="sidebar">
     <div class="top">
       <div class="logo">
-        <img src="https://png.pngtree.com/illustrations/20190322/ourmid/pngtree-japan-city-building-landmarks-png-image_37377.jpg" width="100px" height="100px">
+        <img src="https://png.pngtree.com/illustrations/20190322/ourmid/pngtree-japan-city-building-landmarks-png-image_37377.jpg" width="100px" height="100px" alt="">
         <span>Nihon Study Guide</span>
       </div>
       <i class="bx bx-menu" id="menu-btn"></i>
@@ -30,19 +30,19 @@
             </router-link>
           </li>
           <li class="dropdown-item">
-            <router-link to="/class-record">
+            <router-link to="staff/class-record">
               <VsxIcon iconName="Profile2User" :size="30" color="#1A2C6F" type="linear" class="icon" />
               <p>Class Record</p>
             </router-link>
           </li>
           <li class="dropdown-item">
-            <router-link to="/student-record">
+            <router-link to="/staff/student-record">
               <VsxIcon iconName="People" :size="30" color="#1A2C6F" type="linear" class="icon" />
               <p>Student Record</p>
             </router-link>
           </li>
           <li class="dropdown-item">
-            <router-link to="/teacher-record">
+            <router-link to="/staff/teacher-record">
               <VsxIcon iconName="Teacher" :size="30" color="#1A2C6F" type="linear" class="icon" />
               <p>Teacher Record</p>
             </router-link>
