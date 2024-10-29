@@ -6,11 +6,11 @@
       </div>
       <div class="actions">
         <button @click="showAddBatchPopup = true">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/> 
+          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
           Add batch
         </button>
         <button>
-          <VsxIcon iconName="Chart" size="20" type="bold" /> 
+          <VsxIcon iconName="Chart" size="20" type="bold" />
           View statistical chart
         </button>
       </div>
@@ -31,7 +31,7 @@
       <tbody>
       <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
         <td id="id" style="font-weight: bold;">{{ index + 1 }}</td>
-        <td id="name" style="font-weight: bold;" @click="viewBatchDetail(batchEntity)">{{ batchEntity.name }}</td>
+        <td id="name" style="font-weight: bold;" @click="viewBatchDetail(batchEntity)">{{ batchEntity.batchName }}</td>
         <td id="year">{{ batchEntity.year }}</td>
         <td id="startTime">{{ batchEntity.startTime }}</td>
         <td id="endTime">{{ batchEntity.endTime }}</td>
@@ -48,7 +48,7 @@
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
-        <h2>Add batchEntity</h2>
+        <h2>Add Batch Entity</h2>
         <form @submit.prevent="addBatch">
           <div class="form-group">
             <label for="batchName">Batch name <span class="required">*</span></label>
@@ -65,6 +65,7 @@
           <button type="submit" class="btn btn-create">Create</button>
           <button type="button" class="btn btn-cancel" @click="showAddBatchPopup = false">Cancel</button>
         </form>
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
     </div>
   </div>
@@ -72,6 +73,7 @@
 
 <script>
 import { VsxIcon } from "vue-iconsax";
+import axios from 'axios';
 
 export default {
   name: "BatchRecord",
@@ -80,40 +82,54 @@ export default {
   },
   data() {
     return {
-      batches: [
-        { id: 1, name: "FALL2024", year: 2024, startTime: "2/9/2024", endTime: "31/11/2024", numberOfStudents: 300, status: "On progress" },
-        { id: 2, name: "SUMMER2024", year: 2024, startTime: "x/5/2024", endTime: "x/7/2024", numberOfStudents: 216, status: "Graduated" },
-        { id: 3, name: "SPRING2024", year: 2024, startTime: "x/1/2024", endTime: "x/3/2024", numberOfStudents: 234, status: "Graduated" },
-        { id: 4, name: "FALL2023", year: 2023, startTime: "2/9/2023", endTime: "31/11/2023", numberOfStudents: 188, status: "Graduated" },
-        { id: 5, name: "SUMMER2023", year: 2023, startTime: "x/5/2023", endTime: "x/7/2023", numberOfStudents: 125, status: "Graduated" },
-        { id: 6, name: "SPRING2023", year: 2023, startTime: "x/1/2023", endTime: "x/3/2023", numberOfStudents: 147, status: "Graduated" }
-      ],
+      batches: [],
       showAddBatchPopup: false,
       newBatch: {
         name: "",
         startTime: "",
         endTime: ""
-      }
+      },
+      errorMessage: ""
     };
   },
+  mounted() {
+    this.fetchBatches();
+  },
   methods: {
+    async fetchBatches() {
+      try {
+        const response = await axios.get('http://localhost:8088/fja-fap/staff/batch');
+        this.batches = response.data.result;
+      } catch (error) {
+        console.error('Error fetching batches:', error);
+        this.errorMessage = "Error fetching batches. Please try again.";
+      }
+    },
     viewBatchDetail(batchEntity) {
       // Logic for navigating to batchEntity detail page
       this.$router.push({ name: 'BatchDetail', params: { batchId: batchEntity.id } });
     },
-    addBatch() {
-      const newBatch = {
-        id: this.batches.length + 1,
-        name: this.newBatch.name,
-        year: new Date(this.newBatch.startTime).getFullYear(),
-        startTime: this.newBatch.startTime,
-        endTime: this.newBatch.endTime,
-        numberOfStudents: 0,
-        status: "On progress"
-      };
-      this.batches.push(newBatch);
-      this.showAddBatchPopup = false;
-      this.newBatch = { name: "", startTime: "", endTime: "" };
+    async addBatch() {
+      // Validate start and end time
+      if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
+        this.errorMessage = "Start time must be before end time.";
+        return;
+      }
+
+      try {
+        const response = await axios.post('http://localhost:8088/fja-fap/staff/save-batch', {
+          batchName: this.newBatch.name,
+          startTime: this.newBatch.startTime,
+          endTime: this.newBatch.endTime,
+        });
+        this.batches.push(response.data.result); // Thêm batch mới vào danh sách
+        this.showAddBatchPopup = false;
+        this.newBatch = { name: "", startTime: "", endTime: "" };
+        this.errorMessage = ""; // Clear error message
+      } catch (error) {
+        console.error('Error creating batch:', error);
+        this.errorMessage = "Error creating batch. Please try again.";
+      }
     }
   }
 };
@@ -216,10 +232,14 @@ export default {
   font-weight: bold;
   margin-left: 10px;
 }
-</style>
 
-<style>
-.headContent{
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.headContent {
   margin: 20px 0px;
 }
 
@@ -234,20 +254,19 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  margin: 20px 0px;;
+  margin: 20px 0px;
 }
 
 .container {
   padding: 20px;
 }
 
-button{
+button {
   background-image: linear-gradient(90deg, #3E5DD4, #223374);
-  padding: 10px, 20px;
+  padding: 10px 20px;
   color: #fff;
   display: flex;
   align-items: center;
-  padding: 10px 20px;
   font-size: 14px;
   font-weight: normal;
   border: none;
@@ -256,14 +275,15 @@ button{
   gap: 10px;
 }
 
-.actions{
+.actions {
   display: flex;
   flex-direction: row-reverse;
   gap: 20px;
 }
 
-table{
+table {
   width: 100%;
   border-collapse: collapse;
 }
 </style>
+
