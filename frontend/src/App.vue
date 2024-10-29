@@ -1,6 +1,5 @@
 <template>
   <component :is="layout"></component>
-  <VsxIcon :iconName="iconName" color="blue" size="50" type="linear" />
 </template>
 
 <style>
