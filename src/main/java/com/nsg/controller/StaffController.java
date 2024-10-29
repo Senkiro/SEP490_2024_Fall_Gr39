@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/staff")
+@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StaffController {
