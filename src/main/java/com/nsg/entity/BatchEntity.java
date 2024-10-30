@@ -20,10 +20,10 @@ public class BatchEntity {
     @Column(name = "batch_name")
     String batchName;
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", columnDefinition = "DATE")
     LocalDate startTime;
 
-    @Column(name = "end_time")
+    @Column(name = "end_time", columnDefinition = "DATE")
     LocalDate endTime;
 
     @Column(name = "year")
