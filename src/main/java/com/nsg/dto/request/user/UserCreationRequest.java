@@ -13,17 +13,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class UserCreationRequest {
-    private String firstName;
-    private String lastName;
+//    private String firstName;
+//    private String lastName;
     @Size(min = 3, message = "Username must be at least 3 characters!")
     @NotNull
     private String username;
-    private String img;
-
-    @DateTimeFormat
-    private LocalDate dob;
-    private boolean gender;
-    private String address;
+//    private String img;
+//
+//    @DateTimeFormat
+//    private LocalDate dob;
+//    private boolean gender;
+//    private String address;
 
     @Size(min = 8, message = "Password must be at least 8 characters!")
     @NotNull
@@ -31,4 +31,6 @@ public class UserCreationRequest {
 
     @Email
     private String email;
+
+    private String role;
 }

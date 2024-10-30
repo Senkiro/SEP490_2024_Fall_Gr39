@@ -2,8 +2,13 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { VsxIcon } from "vue-iconsax";
+import { createVuestic } from "vuestic-ui";
+import "vuestic-ui/css";
+
 
 const app = createApp(App);
-app.component("VsxIcon", VsxIcon);
 app.use(router);
-app.mount('#app');
+app.use(createVuestic()).mount("#app");
+app.component("VsxIcon", VsxIcon);
+
+

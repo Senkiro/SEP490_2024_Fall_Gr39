@@ -19,25 +19,43 @@ const routes = [
         name: 'StaffHomePage',
         component: () => import('../view/dashboard/staffHomepage.vue'),
         meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        //meta: { layout: 'app', requiresAuth: false},
     },
     {
         path: '/manager',
         name: 'ManagerHomePage',
         component: () => import('../view/dashboard/managerHomepage.vue'),
         meta: { layout: 'app', requiresAuth: true, roles: ['MANAGER'] },
+        //meta: { layout: 'app', requiresAuth: false},
     },
     //staff router
     {
         path: '/staff/batch-record',
         name: 'BatchRecord',
         component: () => import('../view/staff/batch_record.vue'),
-        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+         meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        //meta: { layout: 'app', requiresAuth: false},
     },
     {
         path: '/staff/batch-detail',
         name: 'BatchDetail',
         component: () => import('../view/staff/batch_detail.vue'),
-        meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+         meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        //meta: { layout: 'app', requiresAuth: false},
+    },
+    {
+        path: '/staff/class-record',
+        name: 'ClassRecord',
+        component: () => import('../view/staff/class-record.vue'),
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
+    },
+    {
+        path: '/staff/teacher-record',
+        name: 'TeacherRecord',
+        component: () => import('../view/staff/teacher-reacord.vue'),
+        // meta: { layout: 'app', requiresAuth: true, roles: ['STAFF'] },
+        meta: { layout: 'app', requiresAuth: false},
     },
 ];
 
@@ -47,8 +65,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('jwtToken');
-    const userRole = localStorage.getItem('userRole');
+    const token = sessionStorage.getItem('jwtToken');
+    const userRole = sessionStorage.getItem('userRole');
 
     console.log('Navigating to:', to.path);
     console.log('User Role:', userRole);
@@ -68,6 +86,5 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
-
 
 export default router;

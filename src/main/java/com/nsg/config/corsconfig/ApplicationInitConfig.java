@@ -26,7 +26,7 @@ public class ApplicationInitConfig {
                 UserEntity user = UserEntity.builder()
                         .username("adminEntity")
                         .password(passwordEncoder.encode("admin1"))
-//                        .roles("ADMIN")
+//                        .role("ADMIN")
                         .isActive(true)
                         .build();
                 userRepository.save(user);
