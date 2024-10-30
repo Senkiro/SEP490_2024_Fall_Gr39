@@ -49,6 +49,9 @@ public class UserEntity {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "phone")
+    String phone;
+
     @Column(name = "is_active")
     private boolean isActive;
 
@@ -76,6 +79,9 @@ public class UserEntity {
     @ManyToOne
     @JoinColumn(name = "class_id", referencedColumnName = "class_id")
     ClassEntity classEntity;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.EAGER)
+    List<Essay> essayList;
 
 
 }
