@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -23,10 +23,10 @@ public class BatchCreationRequest {
     String batchName;
 
     @FutureOrPresent(message = "Start time must be in the present or future")
-    Date startTime;
+    LocalDate startTime;
 
     @FutureOrPresent(message = "End time must be in the present or future")
-    Date endTime;
+    LocalDate endTime;
 
     @NotNull(message = "Year can not be null!")
     @Min(value = 2000, message = "Year must be after 2000")

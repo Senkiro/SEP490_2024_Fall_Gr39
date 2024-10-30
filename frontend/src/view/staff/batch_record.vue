@@ -23,7 +23,7 @@
         <th>Year</th>
         <th>Start time</th>
         <th>End time</th>
-        <th style="text-align: center;">Number of students</th>
+        <th style=" text-align: center;">Number of students</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
@@ -48,22 +48,26 @@
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
-        <h2>Add Batch Entity</h2>
+        <h2>Thêm Thực Thể Batch</h2>
         <form @submit.prevent="addBatch">
           <div class="form-group">
-            <label for="batchName">Batch name <span class="required">*</span></label>
+            <label for="batchName">Tên batch <span class="required">*</span></label>
             <input type="text" id="batchName" v-model="newBatch.name" required />
           </div>
           <div class="form-group">
-            <label for="startTime">Start time <span class="required">*</span></label>
+            <label for="startTime">Thời gian bắt đầu <span class="required">*</span></label>
             <input type="date" id="startTime" v-model="newBatch.startTime" required />
           </div>
           <div class="form-group">
-            <label for="endTime">End time</label>
+            <label for="endTime">Thời gian kết thúc</label>
             <input type="date" id="endTime" v-model="newBatch.endTime" />
           </div>
-          <button type="submit" class="btn btn-create">Create</button>
-          <button type="button" class="btn btn-cancel" @click="showAddBatchPopup = false">Cancel</button>
+          <div class="form-group">
+            <label for="year">Năm</label>
+            <input type="number" id="year" v-model="newBatch.year" min="1900" max="2100" />
+          </div>
+          <button type="submit" class="btn btn-create">Tạo</button>
+          <button type="button" class="btn btn-cancel" @click="confirmCancel">Hủy</button>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
@@ -98,7 +102,12 @@ export default {
   methods: {
     async fetchBatches() {
       try {
-        const response = await axios.get('http://localhost:8088/fja-fap/staff/batch');
+        const token = localStorage.getItem('jwtToken');
+        const response = await axios.get('http://localhost:8088/fja-fap/staff/batch',{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         this.batches = response.data.result;
       } catch (error) {
         console.error('Error fetching batches:', error);
@@ -106,11 +115,9 @@ export default {
       }
     },
     viewBatchDetail(batchEntity) {
-      // Logic for navigating to batchEntity detail page
       this.$router.push({ name: 'BatchDetail', params: { batchId: batchEntity.id } });
     },
     async addBatch() {
-      // Validate start and end time
       if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
         this.errorMessage = "Start time must be before end time.";
         return;
@@ -119,18 +126,20 @@ export default {
       try {
         const response = await axios.post('http://localhost:8088/fja-fap/staff/save-batch', {
           batchName: this.newBatch.name,
-          startTime: this.newBatch.startTime,
-          endTime: this.newBatch.endTime,
+          startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0], // Định dạng thành yyyy-MM-dd
+          endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],     // Định dạng thành yyyy-MM-dd
+          year: this.newBatch.year,
         });
-        this.batches.push(response.data.result); // Thêm batch mới vào danh sách
+        this.batches.push(response.data.result);
         this.showAddBatchPopup = false;
-        this.newBatch = { name: "", startTime: "", endTime: "" };
-        this.errorMessage = ""; // Clear error message
+        this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
+        this.errorMessage = "";
       } catch (error) {
         console.error('Error creating batch:', error);
-        this.errorMessage = "Error creating batch. Please try again.";
+        this.errorMessage = error.response?.data?.message || "Error creating batch. Please try again.";
       }
     }
+
   }
 };
 </script>
