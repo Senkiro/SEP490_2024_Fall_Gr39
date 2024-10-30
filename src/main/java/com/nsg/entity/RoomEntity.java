@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Entity
-@Table(name = "RoomEntity")
+@Table(name = "Room")
 @Getter
 @Setter
 @NoArgsConstructor

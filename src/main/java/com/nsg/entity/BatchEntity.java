@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "BatchEntity")
+@Table(name = "Batch")
 @Getter
 @Setter
 @NoArgsConstructor

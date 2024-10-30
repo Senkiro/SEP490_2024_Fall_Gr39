@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Entity
-@Table(name = "EventEntity")
+@Table(name = "Event")
 @Getter
 @Setter
 @NoArgsConstructor

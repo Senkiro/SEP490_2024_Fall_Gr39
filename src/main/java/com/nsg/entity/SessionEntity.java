@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "SessionEntity")
+@Table(name = "Session")
 @Getter
 @Setter
 @NoArgsConstructor

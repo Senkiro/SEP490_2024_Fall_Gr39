@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "ClassEntity")
+@Table(name = "Class")
 @Getter
 @Setter
 @NoArgsConstructor
