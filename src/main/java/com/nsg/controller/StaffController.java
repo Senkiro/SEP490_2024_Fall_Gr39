@@ -1,6 +1,5 @@
 package com.nsg.controller;
 
-import com.nsg.Mapper.BatchMapper;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.response.ApiResponse;
@@ -8,11 +7,6 @@ import com.nsg.entity.BatchEntity;
 import com.nsg.entity.LessonEntity;
 import com.nsg.service.BatchService;
 import com.nsg.service.LessonService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import com.nsg.dto.request.batch.BatchCreationRequest;
-import com.nsg.dto.response.ApiResponse;
-import com.nsg.entity.BatchEntity;
-import com.nsg.service.BatchService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -124,16 +118,19 @@ public class StaffController {
 
         apiResponse.setResult(lesson);
 
-    @PostMapping("/save-batch")
-    ApiResponse<BatchEntity> saveBatch(@RequestBody @Valid BatchCreationRequest request){
-        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-
-        batchService.saveBatch(request);
-        BatchEntity batch = batchService.getBatch(request.getBatchName());
-
-        apiResponse.setCode(1000);
-        apiResponse.setResult(batch);
-        return apiResponse;
+        return  apiResponse;
     }
+
+//    @PostMapping("/save-batch")
+//    ApiResponse<BatchEntity> saveBatch(@RequestBody @Valid BatchCreationRequest request){
+//        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
+//
+//        batchService.saveBatch(request);
+//        BatchEntity batch = batchService.getBatch(request.getBatchName());
+//
+//        apiResponse.setCode(1000);
+//        apiResponse.setResult(batch);
+//        return apiResponse;
+//    }
 
 }
