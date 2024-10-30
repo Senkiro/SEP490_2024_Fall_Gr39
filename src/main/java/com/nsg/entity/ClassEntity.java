@@ -28,7 +28,7 @@ public class ClassEntity {
     String classColour;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
-    List<StudentEntity> studentEntityList;
+    List<UserEntity> userEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

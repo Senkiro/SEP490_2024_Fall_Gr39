@@ -57,6 +57,6 @@ public class SessionEntity {
     @OneToOne
             @MapsId
             @JoinColumn(name = "session_id")
-    TeacherEntity teacherEntity;
+    UserEntity userEntity;
 
 }

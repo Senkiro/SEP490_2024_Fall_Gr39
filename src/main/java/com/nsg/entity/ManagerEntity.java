@@ -24,8 +24,4 @@ public class ManagerEntity {
     @Column(name = "email")
     String email;
 
-    @OneToOne
-            @MapsId
-            @JoinColumn(name = "user_id")
-    UserEntity user;
 }

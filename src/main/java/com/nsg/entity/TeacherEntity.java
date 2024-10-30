@@ -38,11 +38,5 @@ public class TeacherEntity {
     @Column(name = "phone")
     String phone;
 
-    @OneToOne
-            @MapsId
-            @JoinColumn(name = "user_id")
-    UserEntity user;
 
-    @OneToOne(mappedBy = "teacherEntity", cascade = CascadeType.ALL)
-    SessionEntity sessionEntity;
 }

@@ -26,8 +26,8 @@ public class MarkEntity {
     String comment;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
-    StudentEntity studentEntity;
+    @JoinColumn(name = "user_id")
+    UserEntity userEntity;
 
     @ManyToOne
             @JoinColumn(name = "exam_id")

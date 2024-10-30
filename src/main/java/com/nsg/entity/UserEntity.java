@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -55,22 +56,26 @@ public class UserEntity {
     @Column(name = "role")
     UserRole roles;
 
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    Student student;
+    //relationship
+    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    SessionEntity sessionEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    StudentEntity studentEntity;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.EAGER)
+    List<EventFeedbackEntity> eventFeedbackEntityList;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    TeacherEntity teacherEntity;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.EAGER)
+    List<MarkEntity> markEntityList;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    StaffEntity staffEntity;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntity", fetch = FetchType.EAGER)
+    List<AttendenceEntity> attendenceEntityList;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    ManagerEntity managerEntity;
+    @ManyToOne
+    @JoinColumn(name = "batch_name", referencedColumnName = "batch_name")
+    BatchEntity batchEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    AdminEntity adminEntity;
+    @ManyToOne
+    @JoinColumn(name = "class_id", referencedColumnName = "class_id")
+    ClassEntity classEntity;
+
 
 }

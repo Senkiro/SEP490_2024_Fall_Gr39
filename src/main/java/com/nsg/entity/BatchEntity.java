@@ -30,5 +30,5 @@ public class BatchEntity {
     int year;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "batchEntity", fetch = FetchType.EAGER)
-    List<StudentEntity> studentEntityList;
+    List<UserEntity> userEntityList;
 }

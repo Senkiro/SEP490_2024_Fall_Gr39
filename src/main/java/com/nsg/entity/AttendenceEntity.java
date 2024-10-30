@@ -29,6 +29,6 @@ public class AttendenceEntity {
     SessionEntity sessionEntity;
 
     @ManyToOne
-            @JoinColumn(name = "student_id")
-    StudentEntity studentEntity;
+            @JoinColumn(name = "user_id")
+    UserEntity userEntity;
 }
