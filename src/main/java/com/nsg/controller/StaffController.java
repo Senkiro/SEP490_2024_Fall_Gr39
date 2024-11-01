@@ -4,6 +4,7 @@ import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.service.BatchService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/staff")
-//@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@SecurityRequirement(name = "Authorization")
 public class StaffController {
     @Autowired
     BatchService batchService;

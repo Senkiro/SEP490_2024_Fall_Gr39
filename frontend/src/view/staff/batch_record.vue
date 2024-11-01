@@ -102,7 +102,7 @@ export default {
   methods: {
     async fetchBatches() {
       try {
-        const token = localStorage.getItem('jwtToken');
+        const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get('http://localhost:8088/fja-fap/staff/batch',{
           headers: {
             Authorization: `Bearer ${token}`
@@ -124,11 +124,16 @@ export default {
       }
 
       try {
+        const token = sessionStorage.getItem('jwtToken');
         const response = await axios.post('http://localhost:8088/fja-fap/staff/save-batch', {
           batchName: this.newBatch.name,
           startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0], // Định dạng thành yyyy-MM-dd
           endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],     // Định dạng thành yyyy-MM-dd
           year: this.newBatch.year,
+        },{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         this.batches.push(response.data.result);
         this.showAddBatchPopup = false;
