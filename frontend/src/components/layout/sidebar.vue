@@ -30,7 +30,7 @@
             </router-link>
           </li>
           <li class="dropdown-item">
-            <router-link to="staff/class-record">
+            <router-link to="/staff/class-record">
               <VsxIcon iconName="Profile2User" :size="30" color="#1A2C6F" type="linear" class="icon" />
               <p>Class Record</p>
             </router-link>

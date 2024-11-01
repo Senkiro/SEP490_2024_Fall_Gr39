@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -20,11 +20,11 @@ public class BatchEntity {
     @Column(name = "batch_name")
     String batchName;
 
-    @Column(name = "start_time")
-    Date startTime;
+    @Column(name = "start_time", columnDefinition = "DATE")
+    LocalDate startTime;
 
-    @Column(name = "end_time")
-    Date endTime;
+    @Column(name = "end_time", columnDefinition = "DATE")
+    LocalDate endTime;
 
     @Column(name = "year")
     int year;
