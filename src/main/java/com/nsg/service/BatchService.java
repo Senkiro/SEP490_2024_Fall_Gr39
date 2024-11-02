@@ -2,6 +2,7 @@ package com.nsg.service;
 
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.entity.BatchEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.List;
 public interface BatchService {
     //save batchEntity
     void saveBatch(BatchCreationRequest batchCreationRequest);
-
 
     //get all batchEntity
     List<BatchEntity> getAllBatch();
@@ -23,4 +23,6 @@ public interface BatchService {
 
     //get by batchName
     BatchEntity getBatch(String batchName);
+
+    Page<BatchEntity> getBatches(int page, int size);
 }
