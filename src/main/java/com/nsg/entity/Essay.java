@@ -5,32 +5,31 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Mark")
+@Table(name = "Essay")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MarkEntity extends BaseEntity {
+public class Essay {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "mark_id", columnDefinition = "VARCHAR(36)")
-    String markId;
+    @Column(name = "essay_id", columnDefinition = "VARCHAR(36)")
+    String essayId;
+
+    @Column(name = "status")
+    String status;
+
+    @Column(name = "essay_title")
+    String essayTitle;
+
+    @Column(name = "essay_content")
+    String essayContent;
 
 
-    @Column(name = "mark")
-    float mark;
-
-    @Column(name = "comment")
-    String comment;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     UserEntity userEntity;
-
-    @ManyToOne
-            @JoinColumn(name = "exam_id")
-    ExamEntity examEntity;
-
 }

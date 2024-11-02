@@ -25,10 +25,10 @@ public class ClassEntity extends BaseEntity {
     String className;
 
     @Column(name = "class_colour")
-    Date classColour;
+    String classColour;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
-    List<StudentEntity> studentEntityList;
+    List<UserEntity> userEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

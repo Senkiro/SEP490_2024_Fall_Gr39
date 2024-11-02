@@ -149,7 +149,6 @@ public class UserServiceImp implements UserService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String encodedPassword = passwordEncoder.encode(newpass);
 
-
         //set new pass
         userUpdateRequest.setPassword(encodedPassword);
 

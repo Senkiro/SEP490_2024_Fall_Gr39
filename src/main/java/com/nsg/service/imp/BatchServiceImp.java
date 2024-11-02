@@ -23,10 +23,8 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public void saveBatch(BatchCreationRequest batchCreationRequest) {
-        BatchEntity batch =
-                batchMapper.toBatchEntity(batchCreationRequest);
-
-        batchRepository.save(batch);
+        BatchEntity batchEntity = batchMapper.toBatchEntity(batchCreationRequest);
+        batchRepository.save(batchEntity);
     }
 
     @Override
@@ -35,18 +33,30 @@ public class BatchServiceImp implements BatchService {
     }
 
     @Override
-    public BatchEntity updateBatch(String batchName) {
-        BatchEntity batchEntity = batchRepository.findByBatchName(batchName);
+    public BatchEntity updateBatch(String batchName, BatchCreationRequest request) {
+        BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElse(null);
+
+        if (batchEntity == null){
+            System.out.println("Batch not found!");
+        }else {
+            //mapper
+            batchEntity = batchMapper.toBatchEntity(request);
+
+            //save
+            batchRepository.save(batchEntity);
+        }
+
         return batchEntity;
     }
 
     @Override
-    public void deleteBatch(String batchId) {
-
+    public void deleteBatch(String batchName) {
+        batchRepository.deleteByBatchName(batchName);
     }
 
     @Override
     public BatchEntity getBatch(String batchName) {
-        return batchRepository.findByBatchName(batchName);
+        BatchEntity batch = batchRepository.findByBatchName(batchName).orElse(null);
+        return batch;
     }
 }
