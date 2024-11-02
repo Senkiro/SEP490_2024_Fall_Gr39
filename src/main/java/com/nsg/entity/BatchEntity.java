@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BatchEntity {
+public class BatchEntity extends BaseEntity {
     @Id
     @Column(name = "batch_name")
     String batchName;

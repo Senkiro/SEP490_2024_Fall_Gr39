@@ -55,7 +55,7 @@ public class SessionEntity {
     EventEntity eventEntity;
 
     @ManyToOne
-    @JoinColumn(name = "teacher_id")
-    TeacherEntity teacherEntity;
+    @JoinColumn(name = "user_id")
+    UserEntity user;
 
 }

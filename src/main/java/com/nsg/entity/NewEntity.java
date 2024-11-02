@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.Date;
 
 @Entity
-@Table(name = "New")
+@Table(name = "News")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,13 +17,13 @@ import java.util.Date;
 public class NewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "new_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "news_id", columnDefinition = "VARCHAR(36)")
     String newId;
 
-    @Column(name = "new_title")
+    @Column(name = "news_title")
     String newTitle;
 
-    @Column(name = "new_content")
+    @Column(name = "news_content")
     String newContent;
 
     @Column(name = "created_at")

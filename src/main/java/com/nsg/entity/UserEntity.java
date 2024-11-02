@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -59,16 +60,10 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     StudentEntity studentEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    TeacherEntity teacherEntity;
 
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    StaffEntity staffEntity;
-//
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    ManagerEntity managerEntity;
-//
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    AdminEntity adminEntity;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
+
+
 
 }

@@ -24,11 +24,29 @@ public class EssayEntity {
     @Column(name = "essay_content")
     String essayContent;
 
+    @Column(name = "comment")
+    String comment;
+
+    @Column(name = "grammar")
+    int grammar;
+
+    @Column(name = "vocabulary")
+    int vocabulary;
+
+    @Column(name = "fluency")
+    int fluency;
+
+    @Column(name = "understandability")
+    int understandability;
+
+    @Column(name = "average")
+    float average;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     StudentEntity studentEntity;
 
-    @OneToOne(mappedBy = "essayEntity", cascade = CascadeType.ALL)
-    EssayGradeEntity essayGradeEntity;
+//    @OneToOne(mappedBy = "essayEntity", cascade = CascadeType.ALL)
+//    EssayGradeEntity essayGradeEntity;
 
 }
