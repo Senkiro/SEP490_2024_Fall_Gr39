@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ExamTypeRateEntity {
+public class ExamTypeRateEntity extends BaseEntity {
     @Id
     @Column(name = "exam_type")
     Integer examType;
