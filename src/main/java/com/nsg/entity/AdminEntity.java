@@ -21,8 +21,8 @@ public class AdminEntity {
     @Column(name = "email")
     String email;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
-    UserEntity user;
+//    @OneToOne
+//    @MapsId
+//    @JoinColumn(name = "user_id")
+//    UserEntity user;
 }

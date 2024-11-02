@@ -5,30 +5,30 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Attendence")
+@Table(name = "Essay")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AttendenceEntity {
+public class EssayEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "attendence_id", columnDefinition = "VARCHAR(36)")
-    String attendenceId;
+    @Column(name = "essay_id", columnDefinition = "VARCHAR(36)")
+    String essayId;
 
-    @Column(name = "status")
-    String status;
+    @Column(name = "essay_title")
+    String essayTitle;
 
-    @Column(name = "note")
-    String note;
-
-    @ManyToOne
-    @JoinColumn(name = "session_id", referencedColumnName = "session_id")
-    SessionEntity sessionEntity;
+    @Column(name = "essay_content")
+    String essayContent;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
     StudentEntity studentEntity;
+
+    @OneToOne(mappedBy = "essayEntity", cascade = CascadeType.ALL)
+    EssayGradeEntity essayGradeEntity;
+
 }

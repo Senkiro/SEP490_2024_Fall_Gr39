@@ -54,9 +54,8 @@ public class SessionEntity {
     @JoinColumn(name = "event_id")
     EventEntity eventEntity;
 
-    @OneToOne
-            @MapsId
-            @JoinColumn(name = "session_id")
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
     TeacherEntity teacherEntity;
 
 }
