@@ -1,16 +1,19 @@
 package com.nsg.controller;
 
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.LessonEntity;
 import com.nsg.service.BatchService;
+import com.nsg.service.LessonService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +42,7 @@ public class StaffController {
     }
 
     //create new batch
-    @PostMapping("/create-batch")
+    @PostMapping("/save-batch")
     ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request){
         ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
 

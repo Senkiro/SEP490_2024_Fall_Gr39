@@ -30,6 +30,6 @@ public class EventFeedbackEntity extends BaseEntity {
     EventEntity eventEntity;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    UserEntity userEntity;
+    @JoinColumn(name = "student_id")
+    StudentEntity studentEntity;
 }

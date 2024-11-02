@@ -26,8 +26,8 @@ public class MarkEntity extends BaseEntity {
     String comment;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    UserEntity userEntity;
+    @JoinColumn(name = "student_id")
+    StudentEntity studentEntity;
 
     @ManyToOne
             @JoinColumn(name = "exam_id")

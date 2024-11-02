@@ -28,7 +28,7 @@ public class ClassEntity extends BaseEntity {
     String classColour;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
-    List<UserEntity> userEntityList;
+    List<StudentEntity> studentEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

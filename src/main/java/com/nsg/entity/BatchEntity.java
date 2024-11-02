@@ -30,5 +30,5 @@ public class BatchEntity extends BaseEntity {
     int year;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "batchEntity", fetch = FetchType.EAGER)
-    List<UserEntity> userEntityList;
+    List<StudentEntity> studentEntityList;
 }
