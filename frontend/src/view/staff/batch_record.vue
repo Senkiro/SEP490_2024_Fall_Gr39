@@ -30,44 +30,53 @@
       </thead>
       <tbody>
       <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-        <td id="id" style="font-weight: bold;">{{ index + 1 }}</td>
-        <td id="name" style="font-weight: bold;" @click="viewBatchDetail(batchEntity)">{{ batchEntity.batchName }}</td>
-        <td id="year">{{ batchEntity.year }}</td>
-        <td id="startTime">{{ batchEntity.startTime }}</td>
-        <td id="endTime">{{ batchEntity.endTime }}</td>
-        <td id="numberOfStudents" style="text-align: center;">{{ batchEntity.numberOfStudents }}</td>
-        <td id="status" :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
+        <td>{{ index + 1 }}</td>
+        <td @click="viewBatchDetail(batchEntity)">{{ batchEntity.batchName }}</td>
+        <td>{{ batchEntity.year }}</td>
+        <td>{{ batchEntity.startTime }}</td>
+        <td>{{ batchEntity.endTime }}</td>
+        <td style="text-align: center;">{{ batchEntity.studentEntityList.length }}</td>
+        <td :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
           {{ batchEntity.status }}
         </td>
-        <td id="action">
-          <VsxIcon iconName="Eye" :size="24" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;"/>
+        <td>
+          <VsxIcon iconName="Eye" :size="24" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;" />
         </td>
       </tr>
       </tbody>
+
     </table>
+
+    <VaPagination
+        v-model="currentPage"
+        :pages="Math.ceil(totalElements / itemsPerPage)"
+        @change="fetchBatches"
+    />
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
-        <h2>Thêm Thực Thể Batch</h2>
+        <h2>Add Batch</h2>
         <form @submit.prevent="addBatch">
           <div class="form-group">
-            <label for="batchName">Tên batch <span class="required">*</span></label>
+            <label for="batchName">Name <span class="required">*</span></label>
             <input type="text" id="batchName" v-model="newBatch.name" required />
           </div>
           <div class="form-group">
-            <label for="startTime">Thời gian bắt đầu <span class="required">*</span></label>
+            <label for="startTime">Start time <span class="required">*</span></label>
             <input type="date" id="startTime" v-model="newBatch.startTime" required />
           </div>
           <div class="form-group">
-            <label for="endTime">Thời gian kết thúc</label>
+            <label for="endTime">End time <span class="required">*</span></label>
             <input type="date" id="endTime" v-model="newBatch.endTime" />
           </div>
           <div class="form-group">
-            <label for="year">Năm</label>
+            <label for="year">Year <span class="required">*</span></label>
             <input type="number" id="year" v-model="newBatch.year" min="1900" max="2100" />
           </div>
-          <button type="submit" class="btn btn-create">Tạo</button>
-          <button type="button" class="btn btn-cancel" @click="confirmCancel">Hủy</button>
+          <div class="button-group">
+            <button type="submit" class="btn btn-create">Create</button>
+            <button type="button" class="btn btn-cancel" @click="confirmCancel">Cancel</button>
+          </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
@@ -93,7 +102,10 @@ export default {
         startTime: "",
         endTime: ""
       },
-      errorMessage: ""
+      errorMessage: "",
+      currentPage: 1,
+      itemsPerPage: 5,
+      isLoading: false
     };
   },
   mounted() {
@@ -101,17 +113,20 @@ export default {
   },
   methods: {
     async fetchBatches() {
+      this.isLoading = true;
       try {
         const token = sessionStorage.getItem('jwtToken');
-        const response = await axios.get('http://localhost:8088/fja-fap/staff/batch',{
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        this.batches = response.data.result;
+        this.batches = response.data.result.content;
+        this.totalElements = response.data.result.totalElements;
+        this.totalPages = response.data.result.totalPages;
       } catch (error) {
-        console.error('Error fetching batches:', error);
-        this.errorMessage = "Error fetching batches. Please try again.";
+        console.error('Lỗi khi lấy các batch:', error);
+        this.errorMessage = "Lỗi khi lấy các batch. Vui lòng thử lại.";
+      } finally {
+        this.isLoading = false;
       }
     },
     viewBatchDetail(batchEntity) {
@@ -143,13 +158,39 @@ export default {
         console.error('Error creating batch:', error);
         this.errorMessage = error.response?.data?.message || "Error creating batch. Please try again.";
       }
-    }
-
+    },
+    confirmCancel() {
+      this.showAddBatchPopup = false;
+      this.errorMessage = "";
+      this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
+    },
   }
 };
 </script>
 
 <style scoped>
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.pagination button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #4a90e2;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 0 5px;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .batchEntity-table th, .batchEntity-table td {
   padding: 12px 24px;
   text-align: left;
@@ -299,5 +340,18 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
+
+.required {
+  color: red;
+  font-weight: bold;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 </style>
 

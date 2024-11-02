@@ -1,53 +1,53 @@
 <template>
   <div class="container">
+    <div class="batch-title-container">
+      <h1 class="batch-title">{{ batchEntity.name }}</h1>
+    </div>
     <div class="headContent">
-      <div class="pageTitle">
-        <h1>{{ batchEntity.name }}</h1>
-      </div>
       <div class="tab">
         <VaButtonGroup>
-          <VaButton to="/student-record" class="buttonGroup" style="  --va-background-color: none; padding: 0px 30px;">Student record</VaButton>
-          <VaButton to="/class-record" class="buttonGroup" style="  --va-background-color: none; padding: 0px 30px;">Class record</VaButton>
+          <VaButton @click="switchTab('student')" :class="{'active-tab': activeTab === 'student'}" class="buttonGroup" style="--va-background-color: none; padding: 0px 30px;">Student record</VaButton>
+          <VaButton @click="switchTab('class')" :class="{'active-tab': activeTab === 'class'}" class="buttonGroup" style="--va-background-color: none; padding: 0px 30px;">Class record</VaButton>
         </VaButtonGroup>
       </div>
-        <div class="actions">
-          <button class="btn btn-add-student">
-            <VsxIcon iconName="Import" size="20" type="bold" />
-            Import student
-          </button>
-          <button class="btn btn-import-student">
-            <VsxIcon iconName="AddCircle" size="20" type="bold" />
-            Add student
-          </button>
-        </div>
+      <div class="actions">
+        <button class="btn btn-add-student">
+          <VsxIcon iconName="Import" size="20" type="bold" />
+          Import student
+        </button>
+        <button class="btn btn-import-student">
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
+          Add student
+        </button>
+      </div>
     </div>
 
     <div class="batchEntity-detail-content">
       <div v-if="activeTab === 'student'" class="student-record">
         <table class="student-table">
           <thead>
-            <tr>
-              <th>No</th>
-              <th>Fullname</th>
-              <th>Roll number</th>
-              <th>Japanese name</th>
-              <th>Class</th>
-              <th>Email</th>
-              <th>Action</th>
-            </tr>
+          <tr>
+            <th>No</th>
+            <th>Fullname</th>
+            <th>Roll number</th>
+            <th>Japanese name</th>
+            <th>Class</th>
+            <th>Email</th>
+            <th>Action</th>
+          </tr>
           </thead>
           <tbody>
-            <tr v-for="(student, index) in students" :key="student.id">
-              <td>{{ index + 1 }}</td>
-              <td>{{ student.fullname }}</td>
-              <td>{{ student.rollNumber }}</td>
-              <td>{{ student.japaneseName }}</td>
-              <td :style="{ color: student.classColor }">{{ student.class }}</td>
-              <td>{{ student.email }}</td>
-              <td>
-                <VsxIcon iconName="Eye" :size="24" color="#5584FF" type="linear" @click="viewStudentDetail(student)" />
-              </td>
-            </tr>
+          <tr v-for="(student, index) in students" :key="student.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ student.fullname }}</td>
+            <td>{{ student.rollNumber }}</td>
+            <td>{{ student.japaneseName }}</td>
+            <td :style="{ color: student.classColor }">{{ student.class }}</td>
+            <td>{{ student.email }}</td>
+            <td>
+              <VsxIcon iconName="Eye" :size="24" color="#5584FF" type="linear" @click="viewStudentDetail(student)" />
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -95,40 +95,46 @@ export default {
 </script>
 
 <style scoped>
-.tab{
-  background-image: linear-gradient(-90deg, #304CB2, #1A2C6F);
-  padding: 5px;
-  width:fit-content;
-  border-radius: 8px;
-}
-.va-button {
-  font-size: 16px;
-  font-weight: normal;
-  border-radius: 8px;
-  padding: auto;
+.batch-title-container {
+  text-align: center; /* Căn giữa tiêu đề */
+  margin-bottom: 20px; /* Khoảng cách giữa tiêu đề và phần nội dung dưới */
 }
 
+.batch-title {
+  font-size: 24px; /* Kích thước chữ tiêu đề */
+  font-weight: bold; /* Làm đậm chữ */
+  color: #304CB2; /* Màu sắc tùy chỉnh cho tiêu đề */
+}
 
-.batchEntity-detail-header {
+.headContent {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: space-between; /* Căn giữa nội dung bên trong */
+  align-items: center; /* Căn chỉnh theo chiều dọc */
   margin-bottom: 20px;
 }
 
-.batchEntity-detail-actions {
-  display: flex;
-  gap: 10px;
+.tab {
+  background-image: linear-gradient(-90deg, #304CB2, #1A2C6F);
+  padding: 5px;
+  width: fit-content;
+  border-radius: 8px;
+  position: relative; /* Thêm vị trí tương đối cho tab */
 }
 
-.btn-student-record,
-.btn-class-record {
+.actions {
+  display: flex; /* Sử dụng flexbox cho các nút */
+  gap: 10px; /* Khoảng cách giữa các nút */
+  margin-left: auto; /* Đẩy các nút sang bên phải */
+}
+
+.btn-add-student,
+.btn-import-student {
   background-color: #4a90e2;
   color: #fff;
-}
-
-.batchEntity-detail-content {
-  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .student-table {

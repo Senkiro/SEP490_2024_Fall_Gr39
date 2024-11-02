@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,11 +34,10 @@ public class StaffController {
 
     //get all batch
     @GetMapping("/batch")
-    ApiResponse<List<BatchEntity>> getAllBatch(){
-        ApiResponse<List<BatchEntity>> apiResponse = new ApiResponse<>();
-        List<BatchEntity> entityList = batchService.getAllBatch();
-        apiResponse.setResult(entityList);
-
+    ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {
+        ApiResponse<Page<BatchEntity>> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(1000);
+        apiResponse.setResult(batchService.getBatches(page, size));
         return apiResponse;
     }
 

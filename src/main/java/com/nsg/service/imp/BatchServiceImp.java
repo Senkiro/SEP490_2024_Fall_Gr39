@@ -7,6 +7,8 @@ import com.nsg.repository.BatchRepository;
 import com.nsg.service.BatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,5 +60,10 @@ public class BatchServiceImp implements BatchService {
     public BatchEntity getBatch(String batchName) {
         BatchEntity batch = batchRepository.findByBatchName(batchName).orElse(null);
         return batch;
+    }
+
+    @Override
+    public Page<BatchEntity> getBatches(int page, int size) {
+        return batchRepository.findAll(PageRequest.of(page, size));
     }
 }
