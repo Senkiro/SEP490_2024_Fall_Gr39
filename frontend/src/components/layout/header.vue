@@ -3,8 +3,6 @@
     <div class="header-left">
       <ul class="breadcrumb">
         <li><router-link to="/homepage">Homepage</router-link></li>
-        <li><router-link to="/section1">Section 1</router-link></li>
-        <li><router-link to="/section2">Section 2</router-link></li>
         <li>Current Page</li>
       </ul>
     </div>
@@ -65,6 +63,19 @@ ul.breadcrumb {
 ul.breadcrumb li {
   display: inline;
   font-size: 16px;
+}
+
+/* Add a slash symbol (/) before/behind each list item */
+ul.breadcrumb li+li:before {
+  padding: 8px;
+  color: black;
+  content: "|\00a0";
+}
+
+/* Add a color to all links inside the list */
+ul.breadcrumb li a {
+  color: #01447e;
+  text-decoration: none;
 }
 
 /* Thêm kiểu cho logout icon */
