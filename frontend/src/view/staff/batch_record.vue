@@ -1,20 +1,19 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <div class="pageTitle">
-        <h1>Batch Record</h1>
-      </div>
-      <div class="actions">
-        <button @click="showAddBatchPopup = true">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
-          Add batch
-        </button>
-        <button>
-          <VsxIcon iconName="Chart" size="20" type="bold" />
-          View statistical chart
-        </button>
-      </div>
+      <h1>Batch Record</h1>
     </div>
+    <div class="actions">
+      <button @click="showAddBatchPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        Add batch
+      </button>
+      <button>
+        <VsxIcon iconName="Chart" size="20" type="bold" />
+        View statistical chart
+      </button>
+    </div>
+
     <table class="batchEntity-table">
       <thead>
       <tr>
@@ -23,19 +22,19 @@
         <th>Year</th>
         <th>Start time</th>
         <th>End time</th>
-        <th style=" text-align: center;">Number of students</th>
+        <th style="text-align: center;">Number of students</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-        <td>{{ index + 1 }}</td>
+        <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
         <td @click="viewBatchDetail(batchEntity)">{{ batchEntity.batchName }}</td>
         <td>{{ batchEntity.year }}</td>
         <td>{{ batchEntity.startTime }}</td>
         <td>{{ batchEntity.endTime }}</td>
-        <td style="text-align: center;">{{ batchEntity.studentEntityList.length }}</td>
+        <td style="text-align: center;">0</td>
         <td :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
           {{ batchEntity.status }}
         </td>
@@ -44,14 +43,13 @@
         </td>
       </tr>
       </tbody>
-
     </table>
 
-    <VaPagination
-        v-model="currentPage"
-        :pages="Math.ceil(totalElements / itemsPerPage)"
-        @change="fetchBatches"
-    />
+    <div class="pagination">
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Next</button>
+    </div>
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
@@ -91,7 +89,7 @@ import axios from 'axios';
 export default {
   name: "BatchRecord",
   components: {
-    VsxIcon
+    VsxIcon,
   },
   data() {
     return {
@@ -100,12 +98,15 @@ export default {
       newBatch: {
         name: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
+        year: ""
       },
       errorMessage: "",
       currentPage: 1,
       itemsPerPage: 5,
-      isLoading: false
+      totalElements: 0,
+      totalPages: 0,
+      isLoading: false,
     };
   },
   mounted() {
@@ -116,17 +117,24 @@ export default {
       this.isLoading = true;
       try {
         const token = sessionStorage.getItem('jwtToken');
-        const response = await axios.get(`http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
         this.batches = response.data.result.content;
         this.totalElements = response.data.result.totalElements;
-        this.totalPages = response.data.result.totalPages;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
       } catch (error) {
-        console.error('Lỗi khi lấy các batch:', error);
-        this.errorMessage = "Lỗi khi lấy các batch. Vui lòng thử lại.";
+        console.error('Error fetching batches:', error);
+        this.errorMessage = "Error fetching batches. Please try again.";
       } finally {
         this.isLoading = false;
+      }
+    },
+    changePage(newPage) {
+      if (newPage > 0 && newPage <= this.totalPages) {
+        this.currentPage = newPage;
+        this.fetchBatches();
       }
     },
     viewBatchDetail(batchEntity) {
@@ -140,17 +148,17 @@ export default {
 
       try {
         const token = sessionStorage.getItem('jwtToken');
-        const response = await axios.post('http://localhost:8088/fja-fap/staff/save-batch', {
-          batchName: this.newBatch.name,
-          startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0], // Định dạng thành yyyy-MM-dd
-          endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],     // Định dạng thành yyyy-MM-dd
-          year: this.newBatch.year,
-        },{
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        this.batches.push(response.data.result);
+        await axios.post('http://localhost:8088/fja-fap/staff/save-batch',
+            {
+              batchName: this.newBatch.name,
+              startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0],
+              endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],
+              year: this.newBatch.year,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        await this.fetchBatches();
+        //this.batches.push(response.data.result);
         this.showAddBatchPopup = false;
         this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
         this.errorMessage = "";
@@ -163,7 +171,13 @@ export default {
       this.showAddBatchPopup = false;
       this.errorMessage = "";
       this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
-    },
+    }
+  },
+  watch: {
+    // Watcher để cập nhật URL khi `currentPage` thay đổi
+    currentPage(newPage) {
+      this.$router.push({ path: '/staff/batch-record', query: { page: newPage } }).catch(() => {});
+    }
   }
 };
 </script>
@@ -351,6 +365,13 @@ table {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 </style>

@@ -64,6 +64,8 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public Page<BatchEntity> getBatches(int page, int size) {
-        return batchRepository.findAll(PageRequest.of(page, size));
+        Page<BatchEntity> result = batchRepository.findAll(PageRequest.of(page, size));
+        return result;
     }
+
 }
