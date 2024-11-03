@@ -34,6 +34,9 @@ public class UserServiceImp implements UserService {
     @Autowired
     UserMapper userMapper;
 
+//    @Autowired
+//    ErrorCode errorCode;
+
     //generate random string (8 characters)
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int PASSWORD_LENGTH = 8;
@@ -84,7 +87,7 @@ public class UserServiceImp implements UserService {
     public UserEntity getUserById(String userId) {
         //return result: user, if not then throw an exception: User not found (call to class exception in package Exception)
         return userRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
@@ -92,7 +95,7 @@ public class UserServiceImp implements UserService {
     public UserEntity getUserByEmail(String email) {
         //return result: user, if not then throw an exception: User not found (call to class exception in package Exception)
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
@@ -172,31 +175,31 @@ public class UserServiceImp implements UserService {
 
         //set content for email
         String fromEmail = "hoangson00as@gmail.com";
-        String subject = "NewEntity password for your account";
+        String subject = "New password for your account";
         String body = "Your new password is: ";
 
-        //validate email
 
         //generate a new random password (8 character)
         String newpass = generateRandomPassword();
         body = body + newpass;
 
-        System.out.println("NewEntity pass: "+newpass);
+        System.out.println("New pass: "+newpass);
 
         //try:
         try{
             //update new password for user in database
             resetPassword(user, newpass);
 
-            //send email with new password to email
-            emailService.sendEmail(fromEmail, toEmail, subject, body);
+            //add new email with new password to queue
+//            emailService.sendEmail(fromEmail, toEmail, subject, body);
+            emailService.queueEmail(fromEmail, toEmail, subject, body);
             return "Email sent to " + toEmail;
         }
         //catch:
         //set error
         catch (Exception e) {
-
-            return "Error: "+e.getMessage();
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+//            return "Error: "+e.getMessage();
         }
     }
 
