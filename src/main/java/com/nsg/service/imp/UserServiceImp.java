@@ -190,8 +190,9 @@ public class UserServiceImp implements UserService {
             //update new password for user in database
             resetPassword(user, newpass);
 
-            //send email with new password to email
-            emailService.sendEmail(fromEmail, toEmail, subject, body);
+            //add new email with new password to queue
+//            emailService.sendEmail(fromEmail, toEmail, subject, body);
+            emailService.queueEmail(fromEmail, toEmail, subject, body);
             return "Email sent to " + toEmail;
         }
         //catch:
