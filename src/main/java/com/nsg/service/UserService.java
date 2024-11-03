@@ -1,5 +1,6 @@
 package com.nsg.service;
 
+import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.entity.UserEntity;
@@ -11,7 +12,7 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     void saveUser(UserEntity user);
 
-    UserEntity userCreate(UserCreationRequest userCreationRequest);
+    UserEntity userCreate(UserCreationRequest userCreationRequest, UserRole role);
 
     UserEntity getUserById(String userId);
 
@@ -24,4 +25,6 @@ public interface UserService extends BaseService<UserEntity, String>  {
     String forgetPassword(UserEntity user, String toEmail);
 
     void deleteUser(String userId);
+
+    List<UserEntity> getUserByRoles(UserRole role);
 }

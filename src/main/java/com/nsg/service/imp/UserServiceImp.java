@@ -2,6 +2,7 @@ package com.nsg.service.imp;
 
 
 import com.nsg.Mapper.UserMapper;
+import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.user.UserCreationRequest;
@@ -64,20 +65,20 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserEntity userCreate(UserCreationRequest request) {
-        UserEntity user = new UserEntity();
+    public UserEntity userCreate(UserCreationRequest request, UserRole role) {
+//        UserEntity user = new UserEntity();
+        UserEntity user = userMapper.toUserEntity(request);
 
         //checking username is existed or not
-        if (userRepository.existsByUsername(request.getUsername())){
+        if (userRepository.existsByEmail(request.getEmail())){
             //if existed -> throw runtime exception
              throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         //else: create new user
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail());
-//        user.setRole(request.getRole());
+        String defaultPassword = "12341234";
+        user.setPassword(defaultPassword);
+        user.setRoles(role);
         user.setActive(true);
 
         return userRepository.save(user);
@@ -117,6 +118,11 @@ public class UserServiceImp implements UserService {
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public List<UserEntity> getUserByRoles(UserRole role) {
+        return userRepository.getByRoles(role);
     }
 
 

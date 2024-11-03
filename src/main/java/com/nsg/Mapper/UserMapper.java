@@ -11,6 +11,6 @@ public interface UserMapper {
 
     UserUpdateRequest toUserUpdateRequest(UserEntity user);
 
-//    UserEntity toUserEntity(UserCreationRequest userCreationRequest);
+    UserEntity toUserEntity(UserCreationRequest request);
 
 }

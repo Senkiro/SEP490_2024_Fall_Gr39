@@ -2,8 +2,10 @@ package com.nsg.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -12,25 +14,22 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
-//    private String firstName;
-//    private String lastName;
-    @Size(min = 3, message = "Username must be at least 3 characters!")
-    @NotNull
-    private String username;
-//    private String img;
-//
-//    @DateTimeFormat
-//    private LocalDate dob;
-//    private boolean gender;
-//    private String address;
 
-    @Size(min = 8, message = "Password must be at least 8 characters!")
-    @NotNull
-    private String password;
+    @Size(min = 3, message = "INVALID_FULLNAME")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
+    String fullName;
 
-    @Email
-    private String email;
+    @Size(min = 3, message = "INVALID_JAPANESENAME")
+    String japaneseName;
 
-    private String role;
+    @Email(message = "INVALID_EMAIL")
+    @NotNull(message = "NOTNULL_EMAIL")
+    String email;
+
+
+    LocalDate dob;
+
+    boolean gender;
 }
