@@ -13,9 +13,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LessonEntity {
+public class LessonEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "lesson_id", columnDefinition = "VARCHAR(36)")
@@ -26,9 +25,6 @@ public class LessonEntity {
 
     @Column(name = "lesson_content")
     String lessonContent;
-
-    @Column(name = "created_at")
-    Date createdAt;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

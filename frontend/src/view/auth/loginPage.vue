@@ -7,14 +7,17 @@
       <h2>Welcome</h2>
       <p>to Nihon Study Guide</p>
       <form @submit.prevent="login">
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <div>
-          <input v-model="username" type="text" id="email" placeholder="Email" required>
+          <input v-model="username" @input="errorMessage = ''" type="text" id="email" placeholder="Email" required>
         </div>
         <div>
-          <input v-model="password" type="password" id="password" placeholder="Password" required>
+          <input v-model="password" @input="errorMessage = ''" type="password" id="password" placeholder="Password" required>
         </div>
         <a @click.prevent="goToForgotPassword" class="forgot-password">Forgot Password?</a>
-        <button type="submit" :disabled="isLoading" class="login-button">Login</button>
+        <button type="submit" :disabled="isLoading" class="login-button">
+          {{ isLoading ? 'Logging in...' : 'Login' }}
+        </button>
       </form>
     </div>
   </div>
@@ -32,6 +35,11 @@ export default {
   },
   methods: {
     async login() {
+      if (!this.username || !this.password) {
+        this.errorMessage = 'Please fill out all fields';
+        return;
+      }
+
       this.isLoading = true;
       this.errorMessage = '';
 
@@ -47,13 +55,11 @@ export default {
           })
         });
 
-
         if (response.ok) {
           const data = await response.json();
           sessionStorage.setItem('jwtToken', data.result.token);
           sessionStorage.setItem('userRole', data.result.scope);
           this.redirectUser(data.result.scope);
-          console.log(data.result.scope);
         } else {
           const errorData = await response.json();
           this.errorMessage = errorData.message || 'Login failed';
@@ -72,7 +78,7 @@ export default {
       } else if (role === 'STAFF') {
         this.$router.push({ name: 'StaffHomePage' });
       } else {
-        this.$router.push({ name: 'LoginPage' }); // Đường dẫn mặc định nếu không khớp role
+        this.$router.push({ name: 'LoginPage' }); // Default route if role is not recognized
       }
     },
     goToForgotPassword() {
@@ -148,6 +154,10 @@ button.login-button:hover {
   background-color: #0035a0;
 }
 
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
 
 .forgot-password {
   display: block;

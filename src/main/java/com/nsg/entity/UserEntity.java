@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+import java.util.List;
+
 @Entity
 @Table(name = "User")
 
@@ -28,24 +31,30 @@ public class UserEntity {
 //
     @Column(name = "username")
     private String username;
-//
-//    @Column(name = "img")
-//    private String img;
-//
-//    @Column(name = "dob")
-//    private LocalDate dob;
-//
-//    @Column(name = "gender")
-//    private boolean gender;
-//
-//    @Column(name = "address")
-//    private String address;
+
+    @Column(name = "first_name")
+    String firstName;
+
+    @Column(name = "last_name")
+    String lastName;
+
+    @Column(name = "japanese_name")
+    String japaneseName;
+
+    @Column(name = "dob")
+    Date dob;
+
+    @Column(name = "gender")
+    boolean gender;
 
     @Column(name = "password")
     private String password;
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name = "is_active")
     private boolean isActive;
@@ -54,22 +63,13 @@ public class UserEntity {
     @Column(name = "role")
     UserRole roles;
 
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    Student student;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     StudentEntity studentEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    TeacherEntity teacherEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    StaffEntity staffEntity;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    ManagerEntity managerEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    AdminEntity adminEntity;
 
 }

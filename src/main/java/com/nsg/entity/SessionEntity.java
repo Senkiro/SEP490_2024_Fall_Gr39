@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SessionEntity {
+public class SessionEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "session_id", columnDefinition = "VARCHAR(36)")
@@ -54,9 +54,8 @@ public class SessionEntity {
     @JoinColumn(name = "event_id")
     EventEntity eventEntity;
 
-    @OneToOne
-            @MapsId
-            @JoinColumn(name = "session_id")
-    TeacherEntity teacherEntity;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    UserEntity user;
 
 }

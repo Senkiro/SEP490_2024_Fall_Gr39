@@ -1,20 +1,19 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <div class="pageTitle">
-        <h1>Batch Record</h1>
-      </div>
-      <div class="actions">
-        <button @click="showAddBatchPopup = true">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/> 
-          Add batch
-        </button>
-        <button>
-          <VsxIcon iconName="Chart" size="20" type="bold" /> 
-          View statistical chart
-        </button>
-      </div>
+      <h1>Batch Record</h1>
     </div>
+    <div class="actions">
+      <button @click="showAddBatchPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        Add batch
+      </button>
+      <button>
+        <VsxIcon iconName="Chart" size="20" type="bold" />
+        View statistical chart
+      </button>
+    </div>
+
     <table class="batchEntity-table">
       <thead>
       <tr>
@@ -30,28 +29,34 @@
       </thead>
       <tbody>
       <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-        <td id="id" style="font-weight: bold;">{{ index + 1 }}</td>
-        <td id="name" style="font-weight: bold;" @click="viewBatchDetail(batchEntity)">{{ batchEntity.name }}</td>
-        <td id="year">{{ batchEntity.year }}</td>
-        <td id="startTime">{{ batchEntity.startTime }}</td>
-        <td id="endTime">{{ batchEntity.endTime }}</td>
-        <td id="numberOfStudents" style="text-align: center;">{{ batchEntity.numberOfStudents }}</td>
-        <td id="status" :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
+        <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+        <td @click="viewBatchDetail(batchEntity)">{{ batchEntity.batchName }}</td>
+        <td>{{ batchEntity.year }}</td>
+        <td>{{ batchEntity.startTime }}</td>
+        <td>{{ batchEntity.endTime }}</td>
+        <td style="text-align: center;">0</td>
+        <td :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
           {{ batchEntity.status }}
         </td>
-        <td id="action">
-          <VsxIcon iconName="Eye" :size="24" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;"/>
+        <td>
+          <VsxIcon iconName="Eye" :size="24" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;" />
         </td>
       </tr>
       </tbody>
     </table>
 
+    <div class="pagination">
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Next</button>
+    </div>
+
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
-        <h2>Add batchEntity</h2>
+        <h2>Add Batch</h2>
         <form @submit.prevent="addBatch">
           <div class="form-group">
-            <label for="batchName">Batch name <span class="required">*</span></label>
+            <label for="batchName">Name <span class="required">*</span></label>
             <input type="text" id="batchName" v-model="newBatch.name" required />
           </div>
           <div class="form-group">
@@ -59,12 +64,19 @@
             <input type="date" id="startTime" v-model="newBatch.startTime" required />
           </div>
           <div class="form-group">
-            <label for="endTime">End time</label>
+            <label for="endTime">End time <span class="required">*</span></label>
             <input type="date" id="endTime" v-model="newBatch.endTime" />
           </div>
-          <button type="submit" class="btn btn-create">Create</button>
-          <button type="button" class="btn btn-cancel" @click="showAddBatchPopup = false">Cancel</button>
+          <div class="form-group">
+            <label for="year">Year <span class="required">*</span></label>
+            <input type="number" id="year" v-model="newBatch.year" min="1900" max="2100" />
+          </div>
+          <div class="button-group">
+            <button type="submit" class="btn btn-create">Create</button>
+            <button type="button" class="btn btn-cancel" @click="confirmCancel">Cancel</button>
+          </div>
         </form>
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
     </div>
   </div>
@@ -72,54 +84,127 @@
 
 <script>
 import { VsxIcon } from "vue-iconsax";
+import axios from 'axios';
 
 export default {
   name: "BatchRecord",
   components: {
-    VsxIcon
+    VsxIcon,
   },
   data() {
     return {
-      batches: [
-        { id: 1, name: "FALL2024", year: 2024, startTime: "2/9/2024", endTime: "31/11/2024", numberOfStudents: 300, status: "On progress" },
-        { id: 2, name: "SUMMER2024", year: 2024, startTime: "x/5/2024", endTime: "x/7/2024", numberOfStudents: 216, status: "Graduated" },
-        { id: 3, name: "SPRING2024", year: 2024, startTime: "x/1/2024", endTime: "x/3/2024", numberOfStudents: 234, status: "Graduated" },
-        { id: 4, name: "FALL2023", year: 2023, startTime: "2/9/2023", endTime: "31/11/2023", numberOfStudents: 188, status: "Graduated" },
-        { id: 5, name: "SUMMER2023", year: 2023, startTime: "x/5/2023", endTime: "x/7/2023", numberOfStudents: 125, status: "Graduated" },
-        { id: 6, name: "SPRING2023", year: 2023, startTime: "x/1/2023", endTime: "x/3/2023", numberOfStudents: 147, status: "Graduated" }
-      ],
+      batches: [],
       showAddBatchPopup: false,
       newBatch: {
         name: "",
         startTime: "",
-        endTime: ""
-      }
+        endTime: "",
+        year: ""
+      },
+      errorMessage: "",
+      currentPage: 1,
+      itemsPerPage: 5,
+      totalElements: 0,
+      totalPages: 0,
+      isLoading: false,
     };
   },
+  mounted() {
+    this.fetchBatches();
+  },
   methods: {
+    async fetchBatches() {
+      this.isLoading = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        this.batches = response.data.result.content;
+        this.totalElements = response.data.result.totalElements;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+      } catch (error) {
+        console.error('Error fetching batches:', error);
+        this.errorMessage = "Error fetching batches. Please try again.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    changePage(newPage) {
+      if (newPage > 0 && newPage <= this.totalPages) {
+        this.currentPage = newPage;
+        this.fetchBatches();
+      }
+    },
     viewBatchDetail(batchEntity) {
-      // Logic for navigating to batchEntity detail page
       this.$router.push({ name: 'BatchDetail', params: { batchId: batchEntity.id } });
     },
-    addBatch() {
-      const newBatch = {
-        id: this.batches.length + 1,
-        name: this.newBatch.name,
-        year: new Date(this.newBatch.startTime).getFullYear(),
-        startTime: this.newBatch.startTime,
-        endTime: this.newBatch.endTime,
-        numberOfStudents: 0,
-        status: "On progress"
-      };
-      this.batches.push(newBatch);
+    async addBatch() {
+      if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
+        this.errorMessage = "Start time must be before end time.";
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        await axios.post('http://localhost:8088/fja-fap/staff/save-batch',
+            {
+              batchName: this.newBatch.name,
+              startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0],
+              endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],
+              year: this.newBatch.year,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        await this.fetchBatches();
+        //this.batches.push(response.data.result);
+        this.showAddBatchPopup = false;
+        this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
+        this.errorMessage = "";
+      } catch (error) {
+        console.error('Error creating batch:', error);
+        this.errorMessage = error.response?.data?.message || "Error creating batch. Please try again.";
+      }
+    },
+    confirmCancel() {
       this.showAddBatchPopup = false;
-      this.newBatch = { name: "", startTime: "", endTime: "" };
+      this.errorMessage = "";
+      this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
+    }
+  },
+  watch: {
+    // Watcher để cập nhật URL khi `currentPage` thay đổi
+    currentPage(newPage) {
+      this.$router.push({ path: '/staff/batch-record', query: { page: newPage } }).catch(() => {});
     }
   }
 };
 </script>
 
 <style scoped>
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.pagination button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #4a90e2;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 0 5px;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .batchEntity-table th, .batchEntity-table td {
   padding: 12px 24px;
   text-align: left;
@@ -216,10 +301,14 @@ export default {
   font-weight: bold;
   margin-left: 10px;
 }
-</style>
 
-<style>
-.headContent{
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.headContent {
   margin: 20px 0px;
 }
 
@@ -234,20 +323,19 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  margin: 20px 0px;;
+  margin: 20px 0px;
 }
 
 .container {
   padding: 20px;
 }
 
-button{
+button {
   background-image: linear-gradient(90deg, #3E5DD4, #223374);
-  padding: 10px, 20px;
+  padding: 10px 20px;
   color: #fff;
   display: flex;
   align-items: center;
-  padding: 10px 20px;
   font-size: 14px;
   font-weight: normal;
   border: none;
@@ -256,14 +344,35 @@ button{
   gap: 10px;
 }
 
-.actions{
+.actions {
   display: flex;
   flex-direction: row-reverse;
   gap: 20px;
 }
 
-table{
+table {
   width: 100%;
   border-collapse: collapse;
 }
+
+.required {
+  color: red;
+  font-weight: bold;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 </style>
+
