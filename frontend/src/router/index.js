@@ -48,7 +48,7 @@ const routes = [
     {
         path: '/staff/teacher-record',
         name: 'TeacherRecord',
-        component: () => import('../view/staff/teacher-reacord.vue'),
+        component: () => import('../view/staff/teacher-record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
