@@ -138,7 +138,7 @@ public class UserServiceImp implements UserService {
     public UserEntity getUserByEmail(String email) {
         //return result: user, if not then throw an exception: User not found (call to class exception in package Exception)
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+                () -> new AppException(ErrorCode.EMAIL_NOT_EXISTED)
         );
     }
 

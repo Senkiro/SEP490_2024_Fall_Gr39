@@ -35,8 +35,8 @@
         <td>{{ batchEntity.startTime }}</td>
         <td>{{ batchEntity.endTime }}</td>
         <td style="text-align: center;">0</td>
-        <td :class="{'status-progress': batchEntity.status === 'On progress', 'status-graduated': batchEntity.status === 'Graduated'}">
-          {{ batchEntity.status }}
+        <td :class="{'status-progress': getStatus(batchEntity.endTime) === 'On progress', 'status-graduated': getStatus(batchEntity.endTime) === 'Graduated'}">
+          {{ getStatus(batchEntity.endTime) }}
         </td>
         <td>
           <VsxIcon iconName="Eye" :size="24" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;" />
@@ -171,7 +171,12 @@ export default {
       this.showAddBatchPopup = false;
       this.errorMessage = "";
       this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
-    }
+    },
+    getStatus(endTime) {
+      const currentDate = new Date();
+      const batchEndDate = new Date(endTime);
+      return batchEndDate < currentDate ? 'Graduated' : 'On progress';
+    },
   },
   watch: {
     // Watcher để cập nhật URL khi `currentPage` thay đổi
