@@ -28,7 +28,6 @@ public class UserCreationRequest {
     @NotNull(message = "NOTNULL_EMAIL")
     String email;
 
-
     LocalDate dob;
 
     boolean gender;

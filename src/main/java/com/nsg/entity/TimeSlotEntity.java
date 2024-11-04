@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -26,12 +27,10 @@ public class TimeSlotEntity extends BaseEntity {
     String name;
 
     @Column(name = "start_time")
-    Date startTime;
+    LocalDate startTime;
 
     @Column(name = "end_time")
-    Date endTime;
-
-    Date createdAt;
+    LocalDate endTime;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "timeSlotEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

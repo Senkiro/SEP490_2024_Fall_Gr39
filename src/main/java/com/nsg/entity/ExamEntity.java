@@ -27,9 +27,6 @@ public class ExamEntity extends BaseEntity {
     @Column(name = "exam_content")
     String examContent;
 
-    @Column(name = "created_at")
-    Date createdAt;
-
     @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
 
