@@ -21,7 +21,7 @@
       <!-- -----Record----- -->
 
       <div class="sidebar-item">
-        <button class="dropdown-header" @click="toggleDropdown('record')">
+        <button class="dropdown-header" @click="toggleDropdown('record','learningMaterial', 'schedule')">
           <span class="material-icons">
             <VsxIcon iconName="Note" :size="32" color="#1A2C6F" type="linear" />
           </span>
@@ -29,28 +29,28 @@
         </button>
 
         <div v-if="dropdowns.record" class="dropdown-container">
-          <router-link class="sidebar-item dropdown-item" to="/batch-record">
+          <router-link class="sidebar-item dropdown-item" to="/staff/batch-record">
             <span class="material-icons">
               <VsxIcon iconName="LanguageCircle" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Batch record</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/student-record">
+          <router-link class="sidebar-item dropdown-item" to="/staff/student-record">
             <span class="material-icons">
               <VsxIcon iconName="Profile2User" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Student record</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/class-record">
+          <router-link class="sidebar-item dropdown-item" to="/staff/class-record">
             <span class="material-icons">
               <VsxIcon iconName="People" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Class record</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/teacher-record">
+          <router-link class="sidebar-item dropdown-item" to="/staff/teacher-record">
             <span class="material-icons">
               <VsxIcon iconName="Teacher" :size="32" color="#1A2C6F" type="linear" />
             </span>
@@ -62,7 +62,7 @@
       <!-- -----Schedule Management----- -->
 
       <div class="sidebar-item">
-        <button class="dropdown-header" @click="toggleDropdown('schedule')">
+        <button class="dropdown-header" @click="toggleDropdown('schedule','learningMaterial', 'record')">
           <span class="material-icons">
             <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
           </span>
@@ -70,28 +70,28 @@
         </button>
 
         <div v-if="dropdowns.schedule" class="dropdown-container">
-          <router-link class="sidebar-item dropdown-item" to="/schedule">
+          <router-link class="sidebar-item dropdown-item" to="staff/schedule">
             <span class="material-icons">
               <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Schedule</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/time-slot">
+          <router-link class="sidebar-item dropdown-item" to="staff/time-slot">
             <span class="material-icons">
               <VsxIcon iconName="Clock" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Time slot</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/event">
+          <router-link class="sidebar-item dropdown-item" to="staff/event">
             <span class="material-icons">
               <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Event</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/room">
+          <router-link class="sidebar-item dropdown-item" to="staff/room">
             <span class="material-icons">
               <VsxIcon iconName="House2" :size="32" color="#1A2C6F" type="linear" />
             </span>
