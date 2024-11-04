@@ -8,7 +8,7 @@
     </p>
     <div class="file-upload-section">
       <label for="file-input" class="file-button">Choose File</label>
-      <span class="file-name">{{ fileName || 'No file chosen' }}</span>
+      <span class="file-name">{{ fileName}}</span>
       <input type="file" id="file-input" @change="handleFileUpload" />
     </div>
   </div>
@@ -38,19 +38,19 @@ export default {
 .import-student-page {
   margin: 0 auto;
   padding: 20px;
-  text-align: left; /* Align content to the left */
+  text-align: left;
   font-family: Arial, sans-serif;
 }
 
 .page-title {
   font-size: 24px;
   color: #304cb2;
-  margin-bottom: 10px; /* Reduced bottom margin */
+  margin-bottom: 10px;
 }
 
 .description {
   font-size: 16px;
-  margin-bottom: 10px; /* Reduced bottom margin */
+  margin-bottom: 10px;
 }
 
 .download-link {
@@ -62,12 +62,12 @@ export default {
 .file-upload-section {
   display: flex;
   align-items: center;
-  gap: 10px; /* Use gap for better spacing control */
+  gap: 10px;
   margin-top: 10px;
 }
 
 .file-button {
-  padding: 5px 10px; /* Reduced padding */
+  padding: 5px 10px;
   background-color: #304cb2;
   color: white;
   border-radius: 5px;
@@ -78,10 +78,10 @@ export default {
 
 .file-name {
   color: #555;
-  font-size: 14px; /* Adjust font size to make it more compact */
+  font-size: 14px;
 }
 
 #file-input {
-  display: none; /* Hide the default file input */
+  display: none;
 }
 </style>

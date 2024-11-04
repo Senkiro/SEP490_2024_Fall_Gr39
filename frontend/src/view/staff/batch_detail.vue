@@ -244,7 +244,6 @@ export default {
       this.showAddStudentPopup = true;
     },
     addStudent() {
-      // Thêm sinh viên vào danh sách
       this.students.push({
         id: this.students.length + 1,
         fullname: this.newStudent.fullname,
@@ -256,8 +255,8 @@ export default {
         gender: this.newStudent.gender,
         dob: this.newStudent.dob
       });
-      this.showAddStudentPopup = false; // Đóng popup sau khi thêm
-      this.resetNewStudent(); // Đặt lại dữ liệu của form
+      this.showAddStudentPopup = false;
+      this.resetNewStudent();
     },
     getClassColor(className) {
       const colors = {
@@ -283,15 +282,14 @@ export default {
       this.showAddClassPopup = true;
     },
     addClass() {
-      // Thêm lớp mới vào danh sách
       this.classes.push({
         id: this.classes.length + 1,
         name: this.newClass.name,
         classColor: this.newClass.color,
         studentCount: 0
       });
-      this.showAddClassPopup = false; // Đóng popup sau khi thêm lớp
-      this.resetNewClass(); // Đặt lại dữ liệu của form
+      this.showAddClassPopup = false;
+      this.resetNewClass();
     },
     resetNewClass() {
       this.newClass = {
