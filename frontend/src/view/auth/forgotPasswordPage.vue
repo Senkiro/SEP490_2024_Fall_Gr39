@@ -5,8 +5,10 @@
       <p>Enter your email address</p>
       <form @submit.prevent="handleForgotPassword">
         <input v-model="email" type="email" placeholder="Email" required />
-        <button type="submit" class="reset-button">Reset password</button>
+        <button type="submit" class="reset-button" :disabled="loading">Reset password</button>
       </form>
+      <p v-if="message" class="success-message">{{ message }}</p>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <a href="/login" class="back-to-login">Back to login</a>
     </div>
   </div>
@@ -18,13 +20,17 @@ export default {
     return {
       email: '',
       message: '',
-      errorMessage: ''
+      errorMessage: '',
+      loading: false
     };
   },
   methods: {
     async handleForgotPassword() {
+      this.loading = true;
+      this.message = '';
+      this.errorMessage = '';
       try {
-        const response = await fetch('/api/fja-fap/auth/forgot-password', {
+        const response = await fetch('/api/fja-fap/auth/forget-password', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -33,8 +39,8 @@ export default {
         });
 
         if (response.ok) {
-          this.message = 'A reset link has been sent to your email.';
-          this.email = ''; // Clear email field
+          this.message = 'A new password has been sent to your email.';
+          this.email = '';
         } else {
           const errorData = await response.json();
           this.errorMessage = errorData.message || 'Failed to send reset link.';
@@ -42,6 +48,8 @@ export default {
       } catch (error) {
         this.errorMessage = 'Error connecting to server';
         console.error(error);
+      } finally {
+        this.loading = false;
       }
     }
   }
@@ -104,6 +112,11 @@ input {
   font-size: 16px;
 }
 
+.reset-button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
 .reset-button:hover {
   background: linear-gradient(90deg, #1A6FCF 0%, #629DFF 100%);
 }
@@ -118,5 +131,17 @@ input {
 
 .back-to-login:hover {
   text-decoration: underline;
+}
+
+.success-message {
+  color: green;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 15px;
+  font-size: 14px;
 }
 </style>
