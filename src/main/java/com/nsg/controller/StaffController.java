@@ -5,8 +5,10 @@ import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.LessonEntity;
+import com.nsg.entity.UserEntity;
 import com.nsg.service.BatchService;
 import com.nsg.service.LessonService;
+import com.nsg.service.TeacherService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -17,7 +19,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/staff")
@@ -28,9 +33,8 @@ import java.util.List;
 public class StaffController {
     @Autowired
     BatchService batchService;
-
-    @Autowired
     LessonService lessonService;
+    TeacherService teacherService;
 
     //get all batch
     @GetMapping("/batch")
@@ -135,4 +139,23 @@ public class StaffController {
 //        return apiResponse;
 //    }
 
+    @GetMapping("/teacher")
+    ApiResponse<Map<String, Object>> getAllTeacher(@RequestParam int page, @RequestParam int size) {
+        ApiResponse<Map<String, Object>> apiResponse = new ApiResponse<>();
+
+        Page<UserEntity> teacherPage = teacherService.getTeachers(page, size);
+        List<UserEntity> teacherList = teacherPage.getContent();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("teachers", teacherList); // Danh sách giáo viên
+        response.put("totalElements", teacherPage.getTotalElements()); // Tổng số giáo viên
+        response.put("totalPages", teacherPage.getTotalPages()); // Tổng số trang
+        response.put("currentPage", teacherPage.getNumber()); // Trang hiện tại (bắt đầu từ 0)
+        response.put("pageSize", teacherPage.getSize()); // Số lượng phần tử trên mỗi trang
+
+        apiResponse.setCode(1000);
+        apiResponse.setResult(response);
+
+        return apiResponse;
+    }
 }
