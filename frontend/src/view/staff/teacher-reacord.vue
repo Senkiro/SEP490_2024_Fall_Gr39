@@ -1,7 +1,7 @@
 <template>
-  <div class="batchEntity-record">
+  <div class="container">
+    <h1>Teacher Record</h1>
     <header class="batchEntity-record-header">
-      <h1>Teacher Record</h1>
       <div class="batchEntity-record-actions">
         <button class="btn btn-chart">
           <VsxIcon iconName="Chart" size="20" /> View statistical chart

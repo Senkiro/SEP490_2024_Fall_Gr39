@@ -51,6 +51,7 @@ export default {
   align-items: center;
   padding: 10px 20px;
   border-bottom: 2px dashed #01447e;
+  max-height: 50px;
 }
 
 ul.breadcrumb {
