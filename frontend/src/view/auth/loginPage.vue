@@ -1,20 +1,20 @@
 <template>
-  <div class="login-page">
-    <div class="login-left">
-      <!-- Blue area -->
-    </div>
-    <div class="login-right">
-      <h2>Welcome</h2>
-      <p>to Nihon Study Guide</p>
+  <div class="auth-page">
+    <div class="login-side">
+      <div class="title">
+        <h2>Welcome</h2>
+        <p>to Nihon Study Guide</p>
+      </div>
       <form @submit.prevent="login">
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <div>
           <input v-model="username" @input="errorMessage = ''" type="text" id="email" placeholder="Email" required>
         </div>
         <div>
-          <input v-model="password" @input="errorMessage = ''" type="password" id="password" placeholder="Password" required>
+          <input v-model="password" @input="errorMessage = ''" type="password" id="password" placeholder="Password"
+            required>
         </div>
-        <a @click.prevent="goToForgotPassword" class="forgot-password">Forgot Password?</a>
+        <a @click.prevent="goToForgotPassword">Forgot Password?</a>
         <button type="submit" :disabled="isLoading" class="login-button">
           {{ isLoading ? 'Logging in...' : 'Login' }}
         </button>
@@ -88,87 +88,85 @@ export default {
 };
 </script>
 
-<style scoped>
-.login-page {
+<style lang="scss" scoped>
+.auth-page {
   display: flex;
+  flex-direction: row;
   height: 100vh;
   background-color: #f7f7f7;
-}
-
-.login-left {
-  flex: 2;
-  background-color: #87CEFA;
-}
-
-.login-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 0 100px;
-  background-color: white;
-}
-
-h2 {
-  font-size: 36px;
-  background: linear-gradient(90deg, #1A2C6F 0%, #3E5DD4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 5px;
-}
-
-p {
-  margin-top: 2px;
-  font-size: 16px;
-  color: black;
-  margin-bottom: 20px;
-}
-
-form {
   width: 100%;
-}
+  background-image: url("../../assets/login-background.jpg");
+  background-size: cover;
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-}
+  .login-side {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 100px;
+    background-color: white;
+    width: 30rem;
+    margin-left: auto;
 
-button.login-button {
-  width: 100%;
-  padding: 10px;
-  background: linear-gradient(90deg, #1A2C6F 0%, #3E5DD4 100%);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 18px;
-  cursor: pointer;
-}
+    .title {
+      margin-bottom: 2rem;
 
-button.login-button:hover {
-  background-color: #0035a0;
-}
+      h2 {
+        font-size: 3rem;
+        background: linear-gradient(90deg, #1A2C6F 0%, #3E5DD4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 5px;
+      }
 
-.error-message {
-  color: red;
-  margin-bottom: 10px;
-}
+      p {
+        font-size: 16px;
+        color: black;
+        margin-bottom: 20px;
+      }
+    }
 
-.forgot-password {
-  display: block;
-  text-align: right;
-  font-size: 14px;
-  margin-bottom: 20px;
-  color: #888;
-  text-decoration: none;
-}
+    form {
+      width: 100%;
 
-.forgot-password:hover {
-  text-decoration: underline;
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 0.5rem;
+        border: 1px solid #ddd;
+        font-size: 16px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      a {
+        display: flex;
+        width: fit-content;
+        margin-left: auto;
+        font-size: 14px;
+        margin-bottom: 20px;
+        color: #888;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .login-button {
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(90deg, #1A2C6F 0%, #3E5DD4 100%);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .error-message {
+        color: rgb(95, 06, 06);
+        margin-bottom: 10px;
+      }
+    }
+  }
 }
 </style>
