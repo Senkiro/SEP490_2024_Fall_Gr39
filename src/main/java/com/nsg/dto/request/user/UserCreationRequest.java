@@ -1,9 +1,7 @@
 package com.nsg.dto.request.user;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,11 +13,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@MappedSuperclass
 public class UserCreationRequest {
-
     @Size(min = 3, message = "INVALID_FULLNAME")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
     String fullName;
+
+//    @NotNull
+//    @Pattern(regexp="(^$|[A-Z0-9]{8})", message = "Invalid roll number!")
+//    String rollNumber;
 
     @Size(min = 3, message = "INVALID_JAPANESENAME")
     String japaneseName;
@@ -28,7 +30,13 @@ public class UserCreationRequest {
     @NotNull(message = "NOTNULL_EMAIL")
     String email;
 
+    @PastOrPresent
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
 
+    @Pattern(regexp="(^$|[0-9]{10})", message = "INVALID_PHONE_NUMBER")
+    String phone;
+
+    @NotNull
     boolean gender;
 }
