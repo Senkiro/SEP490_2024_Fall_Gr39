@@ -70,28 +70,28 @@
         </button>
 
         <div v-if="dropdowns.schedule" class="dropdown-container">
-          <router-link class="sidebar-item dropdown-item" to="staff/schedule">
+          <router-link class="sidebar-item dropdown-item" to="/staff/schedule">
             <span class="material-icons">
               <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Schedule</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="staff/time-slot">
+          <router-link class="sidebar-item dropdown-item" to="/schedule/time-slot">
             <span class="material-icons">
               <VsxIcon iconName="Clock" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Time slot</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="staff/event">
+          <router-link class="sidebar-item dropdown-item" to="/schedule/event">
             <span class="material-icons">
               <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Event</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="staff/room">
+          <router-link class="sidebar-item dropdown-item" to="/schedule/room">
             <span class="material-icons">
               <VsxIcon iconName="House2" :size="32" color="#1A2C6F" type="linear" />
             </span>
