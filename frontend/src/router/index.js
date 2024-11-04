@@ -63,6 +63,18 @@ const routes = [
         name: 'ImportStudentPage',
         component: () => import('../view/staff/import_student.vue'),
         meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/schedule/time-slot',
+        name: 'TimeSlot',
+        component: () => import('../view/staff/time_slot_list.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/schedule/event',
+        name: 'Event',
+        component: () => import('../view/staff/event_list.vue'),
+        meta: { layout: 'app', requiresAuth: true },
     }
 ];
 
