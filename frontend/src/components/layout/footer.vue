@@ -24,6 +24,8 @@ export default {
   align-items: center;
   padding: 20px;
   border-top: 1px solid #01447e;
+  max-height: 30px;
+  margin-top: auto;
 }
 .footer-content {
   text-align: center;

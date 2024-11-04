@@ -1,43 +1,10 @@
 <template>
-  <component :is="layout"></component>
+  <div class="app">
+    <component :is="layout"></component>
+  </div>
 </template>
 
-<style>
-.headContent{
-  margin:20px;
-}
 
-.pageTitle {
-  display: block;
-}
-
-h1 {
-  width: fit-content;
-  font-size: 36px;
-  background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-}
-
-.container {
-  padding: 20px;
-}
-
-button{
-  background-image: linear-gradient(90deg, #3E5DD4, #223374);
-  padding: 10px, 20px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: semibold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-</style>
 
 <script>
 // layouts
@@ -67,5 +34,60 @@ export default {
   methods: {},
 };
 </script>
+
+<style lang="scss">
+:root {
+  --primary: #1A2C6F;
+  --primary-alt: #253f9f;
+  --light: #f1f5f9;
+  --side-background: #DFE7FB;
+  --sidebar-width: 250px;
+  --border: #495057;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body{
+  background: var(--light);
+}
+
+button{
+  cursor: pointer;
+}
+
+.app{
+  display: flex;
+
+  main{
+    flex: 1 1 0;
+    padding: 2rem;
+
+    @media(max-width: 768px){
+      padding-left: 6rem;
+    }
+  }
+}
+
+h1{
+  width: fit-content;
+  font-size: 36px;
+  background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin: 20px 0px;
+}
+
+h3{
+  font-size: 16px;
+  font-weight: normal;
+}
+</style>
+
 
 
