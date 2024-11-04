@@ -24,7 +24,7 @@ public class ExamTypeRateEntity extends BaseEntity {
     String examRate;
 
     @Column(name = "exam_name")
-    Date examName;
+    String examName;
 
     @OneToMany(mappedBy = "examTypeRateEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<ExamEntity> examEntityList;

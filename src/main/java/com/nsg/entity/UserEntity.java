@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "User")
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,26 +23,20 @@ public class UserEntity {
     @Column(name = "user_id", columnDefinition = "VARCHAR(36)")
     private String userId;
 
-//    @Column(name = "first_name")
-//    private String firstName;
-//
-//    @Column(name = "last_name")
-//    private String lastName;
-//
     @Column(name = "username")
     private String username;
 
-    @Column(name = "first_name")
-    String firstName;
-
-    @Column(name = "last_name")
-    String lastName;
+    @Column(name = "full_name")
+    String fullName;
 
     @Column(name = "japanese_name")
     String japaneseName;
 
     @Column(name = "dob")
-    Date dob;
+    LocalDate dob;
+
+    @Column(name = "img")
+    String img;
 
     @Column(name = "gender")
     boolean gender;
@@ -69,7 +63,5 @@ public class UserEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
-
-
 
 }

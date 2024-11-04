@@ -2,11 +2,17 @@ package com.nsg.service.imp;
 
 
 import com.nsg.Mapper.UserMapper;
+import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
+import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
+import com.nsg.dto.response.staff.StudentResponse;
+import com.nsg.dto.response.user.UserInforResponse;
+import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
+import com.nsg.repository.StudentRepository;
 import com.nsg.repository.UserRepository;
 import com.nsg.service.EmailService;
 import com.nsg.service.UserService;
@@ -18,7 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Service
@@ -33,6 +42,12 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    StudentRepository studentRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 //    @Autowired
 //    ErrorCode errorCode;
@@ -64,24 +79,52 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserEntity userCreate(UserCreationRequest request) {
-        UserEntity user = new UserEntity();
+    public UserEntity userCreate(UserCreationRequest request, UserRole role) {
+//        UserEntity user = new UserEntity();
+        UserEntity user = userMapper.toUserEntity(request);
 
         //checking username is existed or not
-        if (userRepository.existsByUsername(request.getUsername())){
+        if (userRepository.existsByEmail(request.getEmail())){
             //if existed -> throw runtime exception
              throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         //else: create new user
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail());
-//        user.setRole(request.getRole());
+        String defaultPassword = "12341234";
+        user.setPassword(passwordEncoder.encode(defaultPassword));
+        user.setRoles(role);
         user.setActive(true);
 
         return userRepository.save(user);
     }
+
+    //create student
+    @Override
+    public StudentEntity studentCreate(StudentCreattionRequest request){
+        StudentEntity student = new StudentEntity();
+        student.setRollNumber(generateRollNumber());
+
+        //map
+        UserCreationRequest userCreationRequest = request;
+        //create user
+        UserEntity user = userCreate(userCreationRequest, UserRole.STUDENT);
+
+        //set user
+        student.setUser(user);
+
+        return studentRepository.save(student);
+    };
+
+    //generate random roll number
+    public String generateRollNumber(){
+      String prefix = "FA";
+      int year = LocalDate.now().getYear() % 100;
+
+      Random random = new Random();
+      int randomNumber = 1000 + random.nextInt(9000);
+
+      return prefix+year+String.format("%04d", randomNumber);
+    };
 
     @Override
     public UserEntity getUserById(String userId) {
@@ -119,6 +162,39 @@ public class UserServiceImp implements UserService {
         userRepository.deleteById(userId);
     }
 
+    @Override
+    public List<UserEntity> getUserByRoles(UserRole role) {
+        return userRepository.getByRoles(role);
+    }
+
+    @Override
+    public List<StudentResponse> getAllStudent(){
+        //get all user with role student
+//        List<UserEntity> userStudent = getUserByRoles(UserRole.STUDENT);
+
+        //find all student
+        List<StudentEntity> studentEntityList = studentRepository.findAll();
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = new ArrayList<>();
+
+        //for
+        for (StudentEntity student : studentEntityList) {
+            StudentResponse studentResponse = new StudentResponse();
+            //get,set rollNumber
+            studentResponse.setRollNumber(student.getRollNumber());
+
+            //map user to UserInforResponse
+            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
+            //set user
+            studentResponse.setUser(userInforResponse);
+
+            //add to response list
+            studentListResponse.add(studentResponse);
+        }
+
+        return studentListResponse;
+    };
 
     @Override
     public Object create(Object request) {

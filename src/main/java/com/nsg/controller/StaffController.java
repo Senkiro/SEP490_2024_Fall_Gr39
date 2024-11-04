@@ -1,12 +1,17 @@
 package com.nsg.controller;
 
+import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.request.student.StudentCreattionRequest;
+import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.LessonEntity;
 import com.nsg.service.BatchService;
 import com.nsg.service.LessonService;
+import com.nsg.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -31,6 +36,38 @@ public class StaffController {
 
     @Autowired
     LessonService lessonService;
+
+    @Autowired
+    UserService userService;
+
+    //create new student
+    @PostMapping("/create-student")
+    public ApiResponse<?> createStudent(@RequestBody @Valid @Validated StudentCreattionRequest request){
+        UserRole role = UserRole.STUDENT;
+//        return ApiResponse.ok(userService.studentCreate(request));
+        return ApiResponse.builder()
+                .result(userService.studentCreate(request))
+                .build();
+    }
+
+    @GetMapping("/student-list")
+    public ApiResponse<List<StudentResponse>> viewStudents(){
+        List<StudentResponse> studentList = userService.getAllStudent();
+        return ApiResponse.<List<StudentResponse>>builder()
+                .result(studentList)
+                .build();
+    }
+
+    @DeleteMapping("/delete-student/{student_id}")
+    public ApiResponse<?> deleteStudent(@PathVariable("student_id") String student_id){
+        ApiResponse<?> apiResponse = new ApiResponse<>();
+
+        userService.deleteUser(student_id);
+
+        apiResponse.setMessage("Delete successful");
+
+        return apiResponse;
+    }
 
     //get all batch
     @GetMapping("/batch")

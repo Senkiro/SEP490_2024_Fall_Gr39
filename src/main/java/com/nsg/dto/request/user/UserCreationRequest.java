@@ -1,9 +1,9 @@
 package com.nsg.dto.request.user;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -12,25 +12,31 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@MappedSuperclass
 public class UserCreationRequest {
-//    private String firstName;
-//    private String lastName;
-    @Size(min = 3, message = "Username must be at least 3 characters!")
+    @Size(min = 3, message = "INVALID_FULLNAME")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
+    String fullName;
+
+//    @NotNull
+//    @Pattern(regexp="(^$|[A-Z0-9]{8})", message = "Invalid roll number!")
+//    String rollNumber;
+
+    @Size(min = 3, message = "INVALID_JAPANESENAME")
+    String japaneseName;
+
+    @Email(message = "INVALID_EMAIL")
+    @NotNull(message = "NOTNULL_EMAIL")
+    String email;
+
+    @PastOrPresent
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    LocalDate dob;
+
+    @Pattern(regexp="(^$|[0-9]{10})", message = "INVALID_PHONE_NUMBER")
+    String phone;
+
     @NotNull
-    private String username;
-//    private String img;
-//
-//    @DateTimeFormat
-//    private LocalDate dob;
-//    private boolean gender;
-//    private String address;
-
-    @Size(min = 8, message = "Password must be at least 8 characters!")
-    @NotNull
-    private String password;
-
-    @Email
-    private String email;
-
-    private String role;
+    boolean gender;
 }

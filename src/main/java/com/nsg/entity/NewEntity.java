@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -25,8 +26,5 @@ public class NewEntity extends BaseEntity {
 
     @Column(name = "news_content")
     String newContent;
-
-    @Column(name = "created_at")
-    Date createdAt;
 
 }

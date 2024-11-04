@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class SessionEntity extends BaseEntity {
     String sessionId;
 
     @Column(name = "date")
-    Date date;
+    LocalDate date;
 
     @Column(name = "status")
     boolean status;

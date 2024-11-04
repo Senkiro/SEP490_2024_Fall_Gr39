@@ -27,8 +27,6 @@ public class Essay {
     @Column(name = "essay_content")
     String essayContent;
 
-
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     UserEntity userEntity;

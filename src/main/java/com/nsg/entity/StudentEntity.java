@@ -24,8 +24,11 @@ public class StudentEntity extends BaseEntity {
     @Column(name = "avg_mark")
     float avgMark;
 
+    @Column(name = "roll_number")
+    String rollNumber;
+
     //Relationship
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "user_id")
     UserEntity user;

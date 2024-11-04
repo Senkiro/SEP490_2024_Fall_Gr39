@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping("/create-user")
     public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request){
-        return ApiResponse.ok(userService.userCreate(request));
+        return ApiResponse.ok(userService.userCreate(request, null));
     }
 
     //get all users in database

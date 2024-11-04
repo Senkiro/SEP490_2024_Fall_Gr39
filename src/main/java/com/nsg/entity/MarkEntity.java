@@ -18,7 +18,6 @@ public class MarkEntity extends BaseEntity {
     @Column(name = "mark_id", columnDefinition = "VARCHAR(36)")
     String markId;
 
-
     @Column(name = "mark")
     float mark;
 
@@ -30,7 +29,7 @@ public class MarkEntity extends BaseEntity {
     StudentEntity studentEntity;
 
     @ManyToOne
-            @JoinColumn(name = "exam_id")
+    @JoinColumn(name = "exam_id")
     ExamEntity examEntity;
 
 }
