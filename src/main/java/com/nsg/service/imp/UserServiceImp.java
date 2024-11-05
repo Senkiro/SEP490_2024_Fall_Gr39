@@ -11,8 +11,10 @@ import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
+import com.nsg.entity.BatchEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
+import com.nsg.repository.BatchRepository;
 import com.nsg.repository.StudentRepository;
 import com.nsg.repository.UserRepository;
 import com.nsg.service.EmailService;
@@ -46,6 +48,9 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     StudentRepository studentRepository;
+
+    @Autowired
+    BatchRepository batchRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -112,6 +117,14 @@ public class UserServiceImp implements UserService {
 
         //set user
         student.setUser(user);
+
+        //get batch by batchName
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+
+        //set batch
+        student.setBatchEntity(batch);
 
         return studentRepository.save(student);
     };
