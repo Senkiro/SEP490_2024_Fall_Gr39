@@ -24,7 +24,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -148,7 +151,7 @@ public class UserServiceImp implements UserService {
       int randomNumber = 1000 + random.nextInt(9000);
 
       return prefix+year+String.format("%04d", randomNumber);
-    };
+    }
 
     @Override
     public UserEntity getUserById(String userId) {
@@ -212,15 +215,13 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public List<StudentResponse> getAllStudent(){
-        //get all user with role student
-//        List<UserEntity> userStudent = getUserByRoles(UserRole.STUDENT);
+    public Page<StudentResponse> getAllStudent(int page, int size){
 
         //find all student
-        List<StudentEntity> studentEntityList = studentRepository.findAll();
+        Page<StudentEntity> studentEntityList = studentRepository.findAll(PageRequest.of(page, size));
 
         //generate list for response
-        List<StudentResponse> studentListResponse = new ArrayList<>();
+        List<StudentResponse> studentListResponse = new ArrayList<>() ;
 
         //for
         for (StudentEntity student : studentEntityList) {
@@ -237,7 +238,7 @@ public class UserServiceImp implements UserService {
             studentListResponse.add(studentResponse);
         }
 
-        return studentListResponse;
+        return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
     };
 
     @Override
@@ -262,7 +263,6 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String resetPassword(UserEntity user, String newpass) {
-        //receive a UserEnity, a string of new password
 
         //mapper UserEntity to userUpdateRequest
         UserUpdateRequest userUpdateRequest = userMapper.toUserUpdateRequest(user);

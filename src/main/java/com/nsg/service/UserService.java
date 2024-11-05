@@ -9,6 +9,8 @@ import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 
@@ -37,7 +39,7 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     List<UserEntity> getUserByRoles(UserRole role);
 
-    List<StudentResponse> getAllStudent();
+    Page<StudentResponse> getAllStudent(int page, int size);
 
     StudentEntity studentCreate(StudentCreattionRequest request);
 }

@@ -40,6 +40,8 @@ import java.util.List;
 public class StaffController {
     @Autowired
     BatchService batchService;
+
+    @Autowired
     TeacherService teacherService;
 
     @Autowired
@@ -51,30 +53,25 @@ public class StaffController {
     //create new student
     @PostMapping("/create-student")
     public ApiResponse<?> createStudent(@RequestBody @Valid @Validated StudentCreattionRequest request){
-        UserRole role = UserRole.STUDENT;
-//        return ApiResponse.ok(userService.studentCreate(request));
         return ApiResponse.builder()
                 .result(userService.studentCreate(request))
                 .build();
     }
 
     @GetMapping("/student-list")
-    public ApiResponse<List<StudentResponse>> viewStudents(){
-        List<StudentResponse> studentList = userService.getAllStudent();
-        return ApiResponse.<List<StudentResponse>>builder()
+    public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page, @RequestParam int size){
+        Page<StudentResponse> studentList = userService.getAllStudent(page, size);
+        return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();
     }
 
     @DeleteMapping("/delete-student/{student_id}")
     public ApiResponse<?> deleteStudent(@PathVariable("student_id") String student_id){
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-
         userService.deleteUser(student_id);
-
-        apiResponse.setMessage("Delete successful");
-
-        return apiResponse;
+        return ApiResponse.builder()
+                .message("Delete successful")
+                .build();
     }
 
     //teacher
@@ -98,13 +95,12 @@ public class StaffController {
     //create new batch
     @PostMapping("/save-batch")
     ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request){
-        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-
         batchService.saveBatch(request);
         BatchEntity batchEntity = batchService.getBatch(request.getBatchName());
-        apiResponse.setResult(batchEntity);
-
-        return apiResponse;
+        return ApiResponse.<BatchEntity>builder()
+                .message("A new batch have been created!")
+                .result(batchEntity)
+                .build();
     }
 
     //update
@@ -176,18 +172,6 @@ public class StaffController {
 
         return  apiResponse;
     }
-
-//    @PostMapping("/save-batch")
-//    ApiResponse<BatchEntity> saveBatch(@RequestBody @Valid BatchCreationRequest request){
-//        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-//
-//        batchService.saveBatch(request);
-//        BatchEntity batch = batchService.getBatch(request.getBatchName());
-//
-//        apiResponse.setCode(1000);
-//        apiResponse.setResult(batch);
-//        return apiResponse;
-//    }
 
     @GetMapping("/teacher")
     ApiResponse<Map<String, Object>> getAllTeacher(@RequestParam int page, @RequestParam int size) {
