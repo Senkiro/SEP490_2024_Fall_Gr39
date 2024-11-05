@@ -19,10 +19,6 @@ public class UserCreationRequest {
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
     String fullName;
 
-//    @NotNull
-//    @Pattern(regexp="(^$|[A-Z0-9]{8})", message = "Invalid roll number!")
-//    String rollNumber;
-
     @Size(min = 3, message = "INVALID_JAPANESENAME")
     String japaneseName;
 
