@@ -7,16 +7,22 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
+import com.nsg.entity.BatchEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
+import com.nsg.repository.BatchRepository;
 import com.nsg.repository.StudentRepository;
 import com.nsg.repository.UserRepository;
 import com.nsg.service.EmailService;
 import com.nsg.service.UserService;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,10 +53,13 @@ public class UserServiceImp implements UserService {
     StudentRepository studentRepository;
 
     @Autowired
+    BatchRepository batchRepository;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
-//    @Autowired
-//    ErrorCode errorCode;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     //generate random string (8 characters)
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -100,6 +109,7 @@ public class UserServiceImp implements UserService {
 
     //create student
     @Override
+//    @Transactional
     public StudentEntity studentCreate(StudentCreattionRequest request){
         StudentEntity student = new StudentEntity();
         student.setRollNumber(generateRollNumber());
@@ -111,6 +121,20 @@ public class UserServiceImp implements UserService {
 
         //set user
         student.setUser(user);
+
+        //get batch by batchName
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+
+        //set batch
+        student.setBatchEntity(batch);
+
+        batch.getStudentEntityList().add(student);
+
+//        entityManager.merge(batch);
+        BatchEntity batchS = batchRepository.save(batch);
+        System.out.println(batchS);
 
         return studentRepository.save(student);
     };
@@ -143,19 +167,39 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserEntity updateUser(String userId, UserUpdateRequest request) {
+    public UserEntity updateUserPass(String userId, UserUpdateRequest request) {
         UserEntity user = getUserById(userId);
-
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName());
-//        user.setGender(request.isGender());
         user.setPassword(request.getPassword());
-//        user.setDob(request.getDob());
-//        user.setAddress(request.getAddress());
-//        user.setImg(request.getImg());
 
         return userRepository.save(user);
     }
+
+    //get one user information by id
+    @Override
+    public UserInforResponse getUserInforById(String userId){
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+        UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
+
+        return userInforResponse;
+    };
+
+
+    //update user information
+    @Override
+    public UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request){
+        //get user by id
+        UserEntity user = getUserById(userId);
+
+        //map
+        user = UserMapper.INSTANCE.toUserEntity(request);
+
+        //save new user, map result
+        UserInforResponse response = UserMapper.INSTANCE.toUserInforResponse(userRepository.save(user));
+
+        return response;
+    };
 
     @Override
     public void deleteUser(String userId) {
@@ -232,7 +276,7 @@ public class UserServiceImp implements UserService {
         userUpdateRequest.setPassword(encodedPassword);
 
         //update user with new password
-        UserEntity userUpdate = updateUser(user.getUserId(), userUpdateRequest);
+        UserEntity userUpdate = updateUserPass(user.getUserId(), userUpdateRequest);
 
         String result = "";
 

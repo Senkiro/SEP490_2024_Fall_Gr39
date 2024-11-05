@@ -1,5 +1,6 @@
 package com.nsg.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +30,7 @@ public class BatchEntity extends BaseEntity {
     @Column(name = "year")
     int year;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "batchEntity", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @OneToMany( mappedBy = "batchEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
 }

@@ -105,7 +105,7 @@ public class AuthServiceImp implements AuthService {
                 .claim("scope", user.getRoles().name())
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(24, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .build();
 

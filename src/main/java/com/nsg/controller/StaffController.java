@@ -77,6 +77,15 @@ public class StaffController {
         return apiResponse;
     }
 
+    //teacher
+    @PostMapping("/create-teacher")
+    public ApiResponse<?> createSTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
+        UserRole role = UserRole.TEACHER;
+        return ApiResponse.builder()
+                .result(userService.userCreate(request, role))
+                .build();
+    }
+
     //get all batch
     @GetMapping("/batch")
     ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {

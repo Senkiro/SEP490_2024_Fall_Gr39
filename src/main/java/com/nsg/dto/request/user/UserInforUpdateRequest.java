@@ -1,20 +1,19 @@
 package com.nsg.dto.request.user;
 
-import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@MappedSuperclass
-public class UserCreationRequest {
+public class UserInforUpdateRequest {
     @Size(min = 3, message = "INVALID_FULLNAME")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
     String fullName;
@@ -35,4 +34,7 @@ public class UserCreationRequest {
 
     @NotNull
     boolean gender;
+
+    String img;
+
 }

@@ -57,7 +57,7 @@ public class UserEntity {
     @Column(name = "role")
     UserRole roles;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     StudentEntity studentEntity;
 
 

@@ -1,6 +1,7 @@
 package com.nsg.controller;
 
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.entity.UserEntity;
@@ -39,8 +40,8 @@ public class UserController {
 
     //update user
     @PutMapping("/{userId}")
-    UserEntity updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
-        return userService.updateUser(userId, request);
+    UserEntity updateUserPassword(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+        return userService.updateUserPass(userId, request);
     }
 
     //Delete user
