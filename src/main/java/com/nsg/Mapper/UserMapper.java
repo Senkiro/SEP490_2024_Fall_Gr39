@@ -2,6 +2,7 @@ package com.nsg.Mapper;
 
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
@@ -22,5 +23,7 @@ public interface UserMapper {
     UserInforResponse toUserInforResponse(UserEntity userEntity);
 
     List<StudentResponse> toStudentListResponse(List<UserEntity> userEntities);
+
+    UserEntity toUserEntity(UserInforUpdateRequest request);
 
 }

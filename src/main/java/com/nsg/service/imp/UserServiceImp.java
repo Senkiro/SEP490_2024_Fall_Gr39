@@ -7,6 +7,7 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
@@ -143,19 +144,39 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserEntity updateUser(String userId, UserUpdateRequest request) {
+    public UserEntity updateUserPass(String userId, UserUpdateRequest request) {
         UserEntity user = getUserById(userId);
-
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName());
-//        user.setGender(request.isGender());
         user.setPassword(request.getPassword());
-//        user.setDob(request.getDob());
-//        user.setAddress(request.getAddress());
-//        user.setImg(request.getImg());
 
         return userRepository.save(user);
     }
+
+    //get one user information by id
+    @Override
+    public UserInforResponse getUserInforById(String userId){
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+        UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
+
+        return userInforResponse;
+    };
+
+
+    //update user information
+    @Override
+    public UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request){
+        //get user by id
+        UserEntity user = getUserById(userId);
+
+        //map
+        user = UserMapper.INSTANCE.toUserEntity(request);
+
+        //save new user, map result
+        UserInforResponse response = UserMapper.INSTANCE.toUserInforResponse(userRepository.save(user));
+
+        return response;
+    };
 
     @Override
     public void deleteUser(String userId) {
@@ -232,7 +253,7 @@ public class UserServiceImp implements UserService {
         userUpdateRequest.setPassword(encodedPassword);
 
         //update user with new password
-        UserEntity userUpdate = updateUser(user.getUserId(), userUpdateRequest);
+        UserEntity userUpdate = updateUserPass(user.getUserId(), userUpdateRequest);
 
         String result = "";
 
