@@ -27,7 +27,7 @@
       <tbody>
       <tr v-for="(teacher, index) in teachers" :key="teacher.userId">
         <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-        <td>{{ teacher.firstName }}</td>
+        <td>{{ teacher.fullName }}</td>
         <td>{{ teacher.japaneseName }}</td>
         <td>{{ teacher.dob }}</td>
         <td>{{ teacher.email }}</td>
@@ -57,8 +57,8 @@
             <input type="text" id="username" v-model="newTeacher.username" required />
           </div>
           <div class="form-group">
-            <label for="firstName">First Name <span class="required">*</span></label>
-            <input type="text" id="firstName" v-model="newTeacher.firstName" required />
+            <label for="fullName">Full Name <span class="required">*</span></label>
+            <input type="text" id="fullName" v-model="newTeacher.fullName" required />
           </div>
           <div class="form-group">
             <label for="japaneseName">Japanese Name</label>
@@ -86,6 +86,11 @@
         </form>
       </div>
     </div>
+
+    <!-- Thông báo lỗi hoặc thành công -->
+    <div v-if="notification.message" :class="['notification', notification.type]">
+      {{ notification.message }}
+    </div>
   </div>
 </template>
 
@@ -108,12 +113,16 @@ export default {
       showAddTeacherPopup: false,
       newTeacher: {
         username: "",
-        firstName: "",
+        fullName: "",
         japaneseName: "",
         email: "",
         dob: "",
         gender: true,
         active: true
+      },
+      notification: {
+        message: "",
+        type: "", // "success" hoặc "error"
       }
     };
   },
@@ -132,33 +141,67 @@ export default {
           this.teachers = response.data.result.teachers;
           this.totalElements = response.data.result.totalElements;
           this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        } else {
+          this.showNotification('Không thể tải danh sách giáo viên: ' + response.data.message, 'error');
         }
       } catch (error) {
-        console.error('Error fetching teachers:', error);
+        console.error('Lỗi khi lấy dữ liệu giáo viên:', error);
+        this.showNotification('Đã xảy ra lỗi khi tải danh sách giáo viên.', 'error');
       }
     },
     viewTeacherDetail(teacher) {
       this.$router.push({ name: 'TeacherDetail', params: { teacherId: teacher.userId } });
     },
-    addTeacher() {
-      const newTeacher = {
-        id: this.teachers.length + 1,
-        name: this.newTeacher.name,
-        year: new Date(this.newTeacher.startTime).getFullYear(),
-        startTime: this.newTeacher.startTime,
-        endTime: this.newTeacher.endTime,
-        numberOfStudents: 0,
-        status: "On progress"
-      };
-      this.teachers.push(newTeacher);
-      this.showAddTeacherPopup = false;
-      this.newTeacher = { name: "", startTime: "", endTime: "" };
+    async addTeacher() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        await axios.post('http://localhost:8088/fja-fap/staff/create-teacher', {
+          fullName: this.newTeacher.fullName,
+          japaneseName: this.newTeacher.japaneseName,
+          email: this.newTeacher.email,
+          dob: this.newTeacher.dob,
+          gender: this.newTeacher.gender,
+          active: true
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        this.teachers.push({ ...this.newTeacher });
+        this.showAddTeacherPopup = false;
+
+        // Đặt lại giá trị các trường sau khi thêm
+        this.newTeacher = {
+          username: "",
+          fullName: "",
+          japaneseName: "",
+          email: "",
+          dob: "",
+          gender: true,
+          active: true
+        };
+
+        this.showNotification("Thêm giáo viên thành công!", "success");
+
+      } catch (error) {
+        console.error('Lỗi khi thêm giáo viên:', error);
+        const errorMessage = error.response && error.response.data && error.response.data.message
+            ? error.response.data.message
+            : 'Đã xảy ra lỗi khi thêm giáo viên. Vui lòng thử lại.';
+
+        this.showNotification(errorMessage, 'error');
+      }
     },
     changePage(newPage) {
       if (newPage > 0 && newPage <= this.totalPages) {
         this.currentPage = newPage;
         this.fetchTeachers();
       }
+    },
+    showNotification(message, type) {
+      this.notification = { message, type };
+      setTimeout(() => {
+        this.notification.message = "";
+      }, 3000);
     }
   },
   watch: {
@@ -239,6 +282,8 @@ export default {
 .teacher-table {
   width: 100%;
   border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
 }
 
 .teacher-table th, .teacher-table td {
@@ -291,7 +336,7 @@ export default {
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
@@ -334,5 +379,25 @@ export default {
   cursor: pointer;
   font-weight: bold;
   margin-left: 10px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #fff;
+  z-index: 1000;
+  transition: all 0.5s ease;
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.error {
+  background-color: #f44336;
 }
 </style>

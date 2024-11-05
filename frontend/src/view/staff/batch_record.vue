@@ -79,6 +79,11 @@
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
     </div>
+
+    <!-- Thông báo lỗi hoặc thành công -->
+    <div v-if="notification.message" :class="['notification', notification.type]">
+      {{ notification.message }}
+    </div>
   </div>
 </template>
 
@@ -107,6 +112,10 @@ export default {
       totalElements: 0,
       totalPages: 0,
       isLoading: false,
+      notification: {
+        message: "",
+        type: "" // "success" hoặc "error"
+      },
     };
   },
   mounted() {
@@ -126,7 +135,7 @@ export default {
         this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
       } catch (error) {
         console.error('Error fetching batches:', error);
-        this.errorMessage = "Error fetching batches. Please try again.";
+        this.showNotification("Error fetching batches. Please try again.", 'error');
       } finally {
         this.isLoading = false;
       }
@@ -142,7 +151,7 @@ export default {
     },
     async addBatch() {
       if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
-        this.errorMessage = "Start time must be before end time.";
+        this.showNotification("Start time must be before end time.", "error");
         return;
       }
 
@@ -158,13 +167,16 @@ export default {
             { headers: { Authorization: `Bearer ${token}` } }
         );
         await this.fetchBatches();
-        //this.batches.push(response.data.result);
         this.showAddBatchPopup = false;
         this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
         this.errorMessage = "";
+
+        // Hiển thị thông báo thành công
+        this.showNotification("Batch created successfully!", "success");
+
       } catch (error) {
         console.error('Error creating batch:', error);
-        this.errorMessage = error.response?.data?.message || "Error creating batch. Please try again.";
+        this.showNotification(error.response?.data?.message || "Error creating batch. Please try again.", 'error');
       }
     },
     confirmCancel() {
@@ -176,6 +188,12 @@ export default {
       const currentDate = new Date();
       const batchEndDate = new Date(endTime);
       return batchEndDate < currentDate ? 'Graduated' : 'On progress';
+    },
+    showNotification(message, type) {
+      this.notification = { message, type };
+      setTimeout(() => {
+        this.notification.message = "";
+      }, 3000);
     },
   },
   watch: {
@@ -218,7 +236,7 @@ export default {
   align-content: center;
 }
 
-.batchEntity-table td:hover{
+.batchEntity-table td:hover {
   cursor: pointer;
 }
 
@@ -379,5 +397,24 @@ table {
   margin-bottom: 20px;
 }
 
-</style>
+/* CSS cho thông báo */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #fff;
+  z-index: 1000;
+  transition: all 0.5s ease;
+}
 
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+</style>
