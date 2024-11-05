@@ -11,7 +11,7 @@
     </div>
 
     <div class="sidebar-menu">
-      <router-link class="sidebar-item" to="/homepage">
+      <router-link class="sidebar-item" to="/staff">
         <span class="material-icons">
           <VsxIcon iconName="Home3" :size="32" color="#1A2C6F" type="linear" />
         </span>
