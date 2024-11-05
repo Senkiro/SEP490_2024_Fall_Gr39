@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/staff")
@@ -48,6 +46,10 @@ public class StaffController {
     @Autowired
     UserService userService;
 
+
+    /**********************************
+     * Manage Student
+     **********************************/
     //create new student
     @PostMapping("/create-student")
     public ApiResponse<?> createStudent(@RequestBody @Valid @Validated StudentCreattionRequest request){
@@ -77,14 +79,11 @@ public class StaffController {
         return apiResponse;
     }
 
-    //teacher
-    @PostMapping("/create-teacher")
-    public ApiResponse<?> createSTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
-        UserRole role = UserRole.TEACHER;
-        return ApiResponse.builder()
-                .result(userService.userCreate(request, role))
-                .build();
-    }
+
+
+    /**********************************
+     * Manage Batch
+     **********************************/
 
     //get all batch
     @GetMapping("/batch")
@@ -131,7 +130,10 @@ public class StaffController {
         return apiResponse;
     }
 
-    //CRUD for lesson
+    /**********************************
+     * Manage Lesson
+     **********************************/
+
     //get all
     @GetMapping("/lesson")
     ApiResponse<List<LessonEntity>> getAllLesson(){
@@ -177,18 +179,11 @@ public class StaffController {
         return  apiResponse;
     }
 
-//    @PostMapping("/save-batch")
-//    ApiResponse<BatchEntity> saveBatch(@RequestBody @Valid BatchCreationRequest request){
-//        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-//
-//        batchService.saveBatch(request);
-//        BatchEntity batch = batchService.getBatch(request.getBatchName());
-//
-//        apiResponse.setCode(1000);
-//        apiResponse.setResult(batch);
-//        return apiResponse;
-//    }
+    /**********************************
+     * Manage Teacher
+     **********************************/
 
+    //get teacher paginate
     @GetMapping("/teacher")
     ApiResponse<Map<String, Object>> getAllTeacher(@RequestParam int page, @RequestParam int size) {
         ApiResponse<Map<String, Object>> apiResponse = new ApiResponse<>();
@@ -203,6 +198,15 @@ public class StaffController {
         apiResponse.setCode(1000);
         apiResponse.setResult(response);
         return apiResponse;
+    }
+
+    //create teacher
+    @PostMapping("/create-teacher")
+    public ApiResponse<?> createSTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
+        UserRole role = UserRole.TEACHER;
+        return ApiResponse.builder()
+                .result(userService.userCreate(request, role))
+                .build();
     }
 
 }

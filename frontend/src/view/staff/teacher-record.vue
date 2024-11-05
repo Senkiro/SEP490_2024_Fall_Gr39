@@ -132,9 +132,6 @@ export default {
           this.teachers = response.data.result.teachers;
           this.totalElements = response.data.result.totalElements;
           this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
-
-          console.log(this.totalElements);
-          console.log(this.totalPages);
         }
       } catch (error) {
         console.error('Error fetching teachers:', error);
