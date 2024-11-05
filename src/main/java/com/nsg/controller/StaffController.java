@@ -76,8 +76,6 @@ public class StaffController {
                 .build();
     }
 
-
-
     /**********************************
      * Manage Batch
      **********************************/
@@ -85,10 +83,10 @@ public class StaffController {
     //get all batch
     @GetMapping("/batch")
     ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {
-        ApiResponse<Page<BatchEntity>> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setResult(batchService.getBatches(page, size));
-        return apiResponse;
+        return ApiResponse.<Page<BatchEntity>>builder()
+                .code(1000)
+                .result(batchService.getBatches(page, size))
+                .build();
     }
 
     //create new batch
@@ -105,25 +103,19 @@ public class StaffController {
     //update
     @PostMapping("/update-batch")
     ApiResponse<BatchEntity> updateBatch(@RequestBody BatchCreationRequest request){
-        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-
-        //get batch by batchName
         BatchEntity batch = batchService.updateBatch(request.getBatchName(), request);
-        apiResponse.setResult(batch);
-
-        return apiResponse;
+        return ApiResponse.<BatchEntity>builder()
+                .result(batch)
+                .build();
     }
 
     //delete batch
     @DeleteMapping("/delete-batch/{batchName}")
     ApiResponse<?> deleteBatch(@PathVariable("batchName") String batchName){
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-
-        //delete by id
         batchService.deleteBatch(batchName);
-
-        apiResponse.setMessage("Delete successfully!");
-        return apiResponse;
+        return ApiResponse.builder()
+                .message("Delete successfully!")
+                .build();
     }
 
     /**********************************
@@ -132,47 +124,38 @@ public class StaffController {
 
     //get all
     @GetMapping("/lesson")
-    ApiResponse<List<LessonEntity>> getAllLesson(){
-        ApiResponse<List<LessonEntity>> apiResponse = new ApiResponse<>();
-
-        List<LessonEntity> lessonEntityList = lessonService.getAllLesson();
-        apiResponse.setResult(lessonEntityList);
-
-        return  apiResponse;
+    ApiResponse<Page<LessonEntity>> getAllLesson(@RequestParam int page, @RequestParam int size){
+        Page<LessonEntity> lessonEntityList = lessonService.getLessons(page,size);
+        return  ApiResponse.<Page<LessonEntity>>builder()
+                .result(lessonEntityList)
+                .build();
     }
 
     //create new lesson
     @PostMapping("/create-lesson")
     ApiResponse<LessonEntity> createLesson(@RequestBody @Valid LessonCreateRequest request) {
-        ApiResponse<LessonEntity> apiResponse = new ApiResponse<>();
-
         lessonService.createLesson(request);
-        apiResponse.setMessage("create successfully!");
-
-        return apiResponse;
+        return ApiResponse.<LessonEntity>builder()
+                .message("A new lesson have been created!")
+                .build();
     }
 
     //delete lesson
     @DeleteMapping("/lesson/{lessonId}")
     ApiResponse<?> deleteLesson(@PathVariable("lessonId") String lessonId){
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-
         lessonService.deleteLesson(lessonId);
-        apiResponse.setMessage("Delete successfully!");
-
-        return  apiResponse;
+        return ApiResponse.builder()
+                .message("Delete lesson successfully!")
+                .build();
     }
 
     //update lesson
     @PostMapping("/update-lesson/{lessonId}")
     ApiResponse<LessonEntity> updateLesson(@PathVariable("lessonId") String lessonId, @RequestBody LessonCreateRequest request) {
-        ApiResponse<LessonEntity> apiResponse = new ApiResponse<>();
-
         LessonEntity lesson = lessonService.updateLesson(lessonId, request);
-
-        apiResponse.setResult(lesson);
-
-        return  apiResponse;
+        return ApiResponse.<LessonEntity>builder()
+                .result(lesson)
+                .build();
     }
 
     /**********************************

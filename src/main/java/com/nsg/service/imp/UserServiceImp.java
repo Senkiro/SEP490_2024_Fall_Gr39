@@ -97,8 +97,8 @@ public class UserServiceImp implements UserService {
 
         //checking username is existed or not
         if (userRepository.existsByEmail(request.getEmail())){
-            //if existed -> throw runtime exception
-             throw new AppException(ErrorCode.USER_EXISTED);
+            //if existed -> throw app exception
+             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
         //else: create new user
@@ -135,9 +135,7 @@ public class UserServiceImp implements UserService {
 
         batch.getStudentEntityList().add(student);
 
-//        entityManager.merge(batch);
-        BatchEntity batchS = batchRepository.save(batch);
-        System.out.println(batchS);
+        batchRepository.save(batch);
 
         return studentRepository.save(student);
     };

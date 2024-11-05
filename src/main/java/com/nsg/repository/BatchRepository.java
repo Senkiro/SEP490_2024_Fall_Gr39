@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface BatchRepository extends JpaRepository<BatchEntity, String> {
     Optional<BatchEntity> findByBatchName(String batchName);
 
+    boolean existsByBatchName(String batchName);
+
     void deleteByBatchName(String batchName);
 }
