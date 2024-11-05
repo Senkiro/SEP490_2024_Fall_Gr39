@@ -20,8 +20,8 @@
 
       <!-- -----Record----- -->
 
-      <div class="sidebar-item">
-        <button class="dropdown-header" @click="toggleDropdown('record','learningMaterial', 'schedule')">
+      <div class="dropdown" :class="{ active: dropdowns.record }">
+        <button class="dropdown-header" @click="toggleDropdown('record', 'learningMaterial', 'schedule')">
           <span class="material-icons">
             <VsxIcon iconName="Note" :size="32" color="#1A2C6F" type="linear" />
           </span>
@@ -61,8 +61,8 @@
 
       <!-- -----Schedule Management----- -->
 
-      <div class="sidebar-item">
-        <button class="dropdown-header" @click="toggleDropdown('schedule','learningMaterial', 'record')">
+      <div class="dropdown" :class="{ active: dropdowns.schedule }">
+        <button class="dropdown-header" @click="toggleDropdown('schedule', 'learningMaterial', 'record')">
           <span class="material-icons">
             <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
           </span>
@@ -77,21 +77,21 @@
             <span class="text">Schedule</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/schedule/time-slot">
+          <router-link class="sidebar-item dropdown-item" to="/staff/time-slot">
             <span class="material-icons">
               <VsxIcon iconName="Clock" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Time slot</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/schedule/event">
+          <router-link class="sidebar-item dropdown-item" to="/staff/event">
             <span class="material-icons">
               <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Event</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/schedule/room">
+          <router-link class="sidebar-item dropdown-item" to="/staff/room">
             <span class="material-icons">
               <VsxIcon iconName="House2" :size="32" color="#1A2C6F" type="linear" />
             </span>
@@ -102,7 +102,7 @@
 
       <!-- -----Learning Material----- -->
 
-      <div class="sidebar-item">
+      <div class="dropdown" :class="{ active: dropdowns.learningMaterial }">
         <button class="dropdown-header" @click="toggleDropdown('learningMaterial', 'record', 'schedule')">
           <span class="material-icons">
             <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
@@ -111,14 +111,14 @@
         </button>
 
         <div v-if="dropdowns.learningMaterial" class="dropdown-container">
-          <router-link class="sidebar-item dropdown-item" to="/lesson">
+          <router-link class="sidebar-item dropdown-item" to="/staff/lesson">
             <span class="material-icons">
               <VsxIcon iconName="Book" :size="32" color="#1A2C6F" type="linear" />
             </span>
             <span class="text">Lesson</span>
           </router-link>
 
-          <router-link class="sidebar-item dropdown-item" to="/exam">
+          <router-link class="sidebar-item dropdown-item" to="/staff/exam">
             <span class="material-icons">
               <VsxIcon iconName="Task" :size="32" color="#1A2C6F" type="linear" />
             </span>
@@ -127,28 +127,28 @@
         </div>
       </div>
 
-      <router-link class="sidebar-item" to="/mark">
+      <router-link class="sidebar-item" to="/staff/mark">
         <span class="material-icons">
           <VsxIcon iconName="Award" :size="32" color="#1A2C6F" type="linear" />
         </span>
         <span class="text">Mark</span>
       </router-link>
 
-      <router-link class="sidebar-item" to="/attendance">
+      <router-link class="sidebar-item" to="/staff/attendance">
         <span class="material-icons">
           <VsxIcon iconName="Document" :size="32" color="#1A2C6F" type="linear" />
         </span>
         <span class="text">Attendance</span>
       </router-link>
 
-      <router-link class="sidebar-item" to="/news">
+      <router-link class="sidebar-item" to="/staff/news">
         <span class="material-icons">
           <VsxIcon iconName="Information" :size="32" color="#1A2C6F" type="linear" />
         </span>
         <span class="text">News</span>
       </router-link>
 
-      <router-link class="sidebar-item" to="/guide">
+      <router-link class="sidebar-item" to="/staff/guide">
         <span class="material-icons">
           <VsxIcon iconName="BookSquare" :size="32" color="#1A2C6F" type="linear" />
         </span>
@@ -249,31 +249,67 @@ aside {
   .text {
     display: none;
     color: var(--primary);
-    transition: 0.2s linear;
-    transition-delay: 2s;
     padding-left: 0.5rem;
     font-size: 1rem;
   }
 
   .sidebar-menu {
     margin: 0 -1rem;
+    display: flex;
+    flex-direction: column;
+
+    .active {
+      background-color: #6281cb;
+      transition: 0.2s ease-out;
+
+      .dropdown-header {
+        .text {
+          color: white;
+          transition: 0.2s ease-out;
+        }
+      }
+
+      .dropdown-container {
+        background-color: #c9d6f3;
+        transition: 0.2s ease-out;
+      }
+    }
+
+    .dropdown {
+      flex-direction: column;
+
+      &:hover {
+        background-color: #c8d6f8;
+      }
+
+      .dropdown-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        transition: 0.2s ease-out;
+        width: 100%;
+      }
+
+      .dropdown-container {
+
+        &:hover {
+          .dropdown-item {
+            background-color: #c8d6f8;
+          }
+        }
+      }
+    }
+
+
 
 
     .sidebar-item {
       display: flex;
       align-items: center;
       text-decoration: none;
-      flex-wrap: wrap;
-
       padding: 0.5rem 1rem;
       transition: 0.2s ease-out;
-
-      .dropdown-header {
-        display: flex;
-        align-items: center;
-
-        .text {}
-      }
 
       .dropdown-item {
         padding: 1rem 0rem 0rem 0rem;
@@ -281,7 +317,12 @@ aside {
       }
 
       &:hover {
-        background-color: #B9CAF6;
+        background-color: #c8d6f8;
+
+        .text {
+          color: white;
+          transition: 0.2s ease-out;
+        }
       }
     }
   }
@@ -297,13 +338,11 @@ aside {
       }
     }
 
-    ;
-
     .sidebar-menu {
-      .sidebar-item {
-        .dropdown-item {
+      .dropdown {
+        .dropdown-container {
           .dropdown-item {
-            padding: 0.5rem 1rem;
+            padding-left: 2rem;
           }
         }
       }
@@ -312,7 +351,6 @@ aside {
     .text {
       display: block;
       transition: 0.2s ease-out;
-      transition-delay: 1s;
     }
   }
 
