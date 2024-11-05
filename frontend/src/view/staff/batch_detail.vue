@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="batch-title-container">
-      <h1 class="batch-title">{{ batchEntity.name }}</h1>
+      <h1 class="batch-title">{{ batchName }}</h1>
     </div>
 
     <!-- Phần chuyển đổi tab -->
@@ -198,9 +198,7 @@ export default {
   },
   data() {
     return {
-      batchEntity: {
-        name: 'FALL2024'
-      },
+      batchName: this.$route.params.batchName,
       activeTab: 'student',
       showAddStudentPopup: false,
       showAddClassPopup: false,
@@ -358,7 +356,7 @@ export default {
 .actions-right {
   display: flex;
   gap: 10px;
-  margin-left: auto; /* Đẩy phần này sang bên phải */
+  margin-left: auto;
 }
 
 .class-filter-label {
@@ -372,7 +370,7 @@ export default {
 }
 
 .table-container {
-  overflow-x: auto; /* Để bảng không bị tràn màn hình */
+  overflow-x: auto;
 }
 
 .btn-add-student,
@@ -509,11 +507,11 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Nền mờ cho overlay */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; /* Đảm bảo popup ở trên cùng */
+  z-index: 1000;
 }
 
 .add-class-popup {

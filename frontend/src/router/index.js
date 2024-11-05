@@ -34,7 +34,7 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/staff/batch-detail',
+        path: '/staff/batch-detail/:batchName',
         name: 'BatchDetail',
         component: () => import('../view/staff/batch_detail.vue'),
         meta: { layout: 'app', requiresAuth: true },

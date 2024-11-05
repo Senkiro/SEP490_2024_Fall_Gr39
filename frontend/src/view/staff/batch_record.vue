@@ -147,7 +147,7 @@ export default {
       }
     },
     viewBatchDetail(batchEntity) {
-      this.$router.push({ name: 'BatchDetail', params: { batchId: batchEntity.id } });
+      this.$router.push({ name: 'BatchDetail', params: { batchName: batchEntity.batchName } });
     },
     async addBatch() {
       if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {

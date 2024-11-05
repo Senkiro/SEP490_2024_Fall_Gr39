@@ -94,6 +94,23 @@ public class StaffController {
         return apiResponse;
     }
 
+    //get batch by batch name
+    @GetMapping("/batch/by-name")
+    ApiResponse<BatchEntity> getBatchByName(@RequestParam String batchName) {
+        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
+        BatchEntity batchEntity = batchService.getBatch(batchName);
+
+        if (batchEntity != null) {
+            apiResponse.setCode(1000);
+            apiResponse.setResult(batchEntity);
+        } else {
+            apiResponse.setCode(1017);
+            apiResponse.setMessage("Batch not found with name: " + batchName);
+        }
+
+        return apiResponse;
+    }
+
     //create new batch
     @PostMapping("/save-batch")
     ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request){
