@@ -20,6 +20,9 @@ import com.nsg.repository.UserRepository;
 import com.nsg.service.EmailService;
 import com.nsg.service.UserService;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,8 +58,8 @@ public class UserServiceImp implements UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-//    @Autowired
-//    ErrorCode errorCode;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     //generate random string (8 characters)
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -106,6 +109,7 @@ public class UserServiceImp implements UserService {
 
     //create student
     @Override
+//    @Transactional
     public StudentEntity studentCreate(StudentCreattionRequest request){
         StudentEntity student = new StudentEntity();
         student.setRollNumber(generateRollNumber());
@@ -125,6 +129,12 @@ public class UserServiceImp implements UserService {
 
         //set batch
         student.setBatchEntity(batch);
+
+        batch.getStudentEntityList().add(student);
+
+//        entityManager.merge(batch);
+        BatchEntity batchS = batchRepository.save(batch);
+        System.out.println(batchS);
 
         return studentRepository.save(student);
     };

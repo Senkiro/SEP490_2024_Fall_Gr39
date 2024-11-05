@@ -1,6 +1,8 @@
 package com.nsg.service.imp;
 
 import com.nsg.Mapper.BatchMapper;
+import com.nsg.common.exception.AppException;
+import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.entity.BatchEntity;
 import com.nsg.repository.BatchRepository;
@@ -36,17 +38,16 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public BatchEntity updateBatch(String batchName, BatchCreationRequest request) {
-        BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElse(null);
+        BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+        System.out.println(batchEntity);
 
-        if (batchEntity == null){
-            System.out.println("Batch not found!");
-        }else {
-            //mapper
-            batchEntity = batchMapper.toBatchEntity(request);
+        //mapper
+        batchEntity = batchMapper.toBatchEntity(request);
 
-            //save
-            batchRepository.save(batchEntity);
-        }
+        //save
+        batchRepository.save(batchEntity);
 
         return batchEntity;
     }
