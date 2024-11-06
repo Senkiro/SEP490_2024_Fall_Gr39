@@ -8,6 +8,7 @@ import com.nsg.entity.BatchEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.service.BatchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,9 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public void saveBatch(BatchCreationRequest batchCreationRequest) {
+        if (batchRepository.existsByBatchName(batchCreationRequest.getBatchName())) {
+            throw new AppException(ErrorCode.BATCH_EXISTED);
+        }
         BatchEntity batchEntity = batchMapper.toBatchEntity(batchCreationRequest);
         batchRepository.save(batchEntity);
     }
@@ -41,10 +45,8 @@ public class BatchServiceImp implements BatchService {
         BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElseThrow(
                 () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
         );
-        System.out.println(batchEntity);
-
         //mapper
-        batchEntity = batchMapper.toBatchEntity(request);
+        BeanUtils.copyProperties(request, batchEntity);
 
         //save
         batchRepository.save(batchEntity);
@@ -59,14 +61,15 @@ public class BatchServiceImp implements BatchService {
 
     @Override
     public BatchEntity getBatch(String batchName) {
-        BatchEntity batch = batchRepository.findByBatchName(batchName).orElse(null);
-        return batch;
+        return batchRepository.findByBatchName(batchName).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
     }
 
     @Override
     public Page<BatchEntity> getBatches(int page, int size) {
-        Page<BatchEntity> result = batchRepository.findAll(PageRequest.of(page, size));
-        return result;
+//        Page<BatchEntity> result = batchRepository.findAll(PageRequest.of(page, size));
+        return batchRepository.findAll(PageRequest.of(page, size));
     }
 
 }

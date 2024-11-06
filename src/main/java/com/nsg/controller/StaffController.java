@@ -38,6 +38,8 @@ import java.util.Map;
 public class StaffController {
     @Autowired
     BatchService batchService;
+
+    @Autowired
     TeacherService teacherService;
 
     @Autowired
@@ -52,34 +54,27 @@ public class StaffController {
      **********************************/
     //create new student
     @PostMapping("/create-student")
-    public ApiResponse<?> createStudent(@RequestBody @Valid @Validated StudentCreattionRequest request){
-        UserRole role = UserRole.STUDENT;
-//        return ApiResponse.ok(userService.studentCreate(request));
+    public ApiResponse<?> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
         return ApiResponse.builder()
-                .result(userService.studentCreate(request))
+                .result(userService.createStudent(request, batch_name))
                 .build();
     }
 
     @GetMapping("/student-list")
-    public ApiResponse<List<StudentResponse>> viewStudents(){
-        List<StudentResponse> studentList = userService.getAllStudent();
-        return ApiResponse.<List<StudentResponse>>builder()
+    public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page, @RequestParam int size){
+        Page<StudentResponse> studentList = userService.getAllStudent(page, size);
+        return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();
     }
 
     @DeleteMapping("/delete-student/{student_id}")
     public ApiResponse<?> deleteStudent(@PathVariable("student_id") String student_id){
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-
         userService.deleteUser(student_id);
-
-        apiResponse.setMessage("Delete successful");
-
-        return apiResponse;
+        return ApiResponse.builder()
+                .message("Delete successful")
+                .build();
     }
-
-
 
     /**********************************
      * Manage Batch
@@ -88,10 +83,10 @@ public class StaffController {
     //get all batch
     @GetMapping("/batch")
     ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {
-        ApiResponse<Page<BatchEntity>> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setResult(batchService.getBatches(page, size));
-        return apiResponse;
+        return ApiResponse.<Page<BatchEntity>>builder()
+                .code(1000)
+                .result(batchService.getBatches(page, size))
+                .build();
     }
 
     //get batch by batch name
@@ -114,37 +109,30 @@ public class StaffController {
     //create new batch
     @PostMapping("/save-batch")
     ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request){
-        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-
         batchService.saveBatch(request);
         BatchEntity batchEntity = batchService.getBatch(request.getBatchName());
-        apiResponse.setResult(batchEntity);
-
-        return apiResponse;
+        return ApiResponse.<BatchEntity>builder()
+                .message("A new batch have been created!")
+                .result(batchEntity)
+                .build();
     }
 
     //update
     @PostMapping("/update-batch")
     ApiResponse<BatchEntity> updateBatch(@RequestBody BatchCreationRequest request){
-        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-
-        //get batch by batchName
         BatchEntity batch = batchService.updateBatch(request.getBatchName(), request);
-        apiResponse.setResult(batch);
-
-        return apiResponse;
+        return ApiResponse.<BatchEntity>builder()
+                .result(batch)
+                .build();
     }
 
     //delete batch
     @DeleteMapping("/delete-batch/{batchName}")
     ApiResponse<?> deleteBatch(@PathVariable("batchName") String batchName){
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-
-        //delete by id
         batchService.deleteBatch(batchName);
-
-        apiResponse.setMessage("Delete successfully!");
-        return apiResponse;
+        return ApiResponse.builder()
+                .message("Delete successfully!")
+                .build();
     }
 
     /**********************************
@@ -153,47 +141,38 @@ public class StaffController {
 
     //get all
     @GetMapping("/lesson")
-    ApiResponse<List<LessonEntity>> getAllLesson(){
-        ApiResponse<List<LessonEntity>> apiResponse = new ApiResponse<>();
-
-        List<LessonEntity> lessonEntityList = lessonService.getAllLesson();
-        apiResponse.setResult(lessonEntityList);
-
-        return  apiResponse;
+    ApiResponse<Page<LessonEntity>> getAllLesson(@RequestParam int page, @RequestParam int size){
+        Page<LessonEntity> lessonEntityList = lessonService.getLessons(page,size);
+        return  ApiResponse.<Page<LessonEntity>>builder()
+                .result(lessonEntityList)
+                .build();
     }
 
     //create new lesson
     @PostMapping("/create-lesson")
     ApiResponse<LessonEntity> createLesson(@RequestBody @Valid LessonCreateRequest request) {
-        ApiResponse<LessonEntity> apiResponse = new ApiResponse<>();
-
         lessonService.createLesson(request);
-        apiResponse.setMessage("create successfully!");
-
-        return apiResponse;
+        return ApiResponse.<LessonEntity>builder()
+                .message("A new lesson have been created!")
+                .build();
     }
 
     //delete lesson
     @DeleteMapping("/lesson/{lessonId}")
     ApiResponse<?> deleteLesson(@PathVariable("lessonId") String lessonId){
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-
         lessonService.deleteLesson(lessonId);
-        apiResponse.setMessage("Delete successfully!");
-
-        return  apiResponse;
+        return ApiResponse.builder()
+                .message("Delete lesson successfully!")
+                .build();
     }
 
     //update lesson
     @PostMapping("/update-lesson/{lessonId}")
     ApiResponse<LessonEntity> updateLesson(@PathVariable("lessonId") String lessonId, @RequestBody LessonCreateRequest request) {
-        ApiResponse<LessonEntity> apiResponse = new ApiResponse<>();
-
         LessonEntity lesson = lessonService.updateLesson(lessonId, request);
-
-        apiResponse.setResult(lesson);
-
-        return  apiResponse;
+        return ApiResponse.<LessonEntity>builder()
+                .result(lesson)
+                .build();
     }
 
     /**********************************
@@ -222,7 +201,7 @@ public class StaffController {
     public ApiResponse<?> createSTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
         UserRole role = UserRole.TEACHER;
         return ApiResponse.builder()
-                .result(userService.userCreate(request, role))
+                .result(userService.createUser(request, role))
                 .build();
     }
 

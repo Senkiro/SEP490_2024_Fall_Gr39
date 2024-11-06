@@ -44,24 +44,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
-    // Handle validation exceptions for invalid method arguments
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleValidationException(MethodArgumentNotValidException e) {
         ApiResponse apiResponse = new ApiResponse();
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
 
-        // Extract validation errors with field names and messages
         String validationErrors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(fieldError ->
-                        "Field '" + fieldError.getField() + "' " + fieldError.getDefaultMessage())
+                .map(fieldError -> {
+                    String errorCodeMessage = fieldError.getDefaultMessage();
+                    String detailedMessage;
+                    try {
+                        ErrorCode codeEnum = ErrorCode.valueOf(errorCodeMessage);
+                        detailedMessage = codeEnum.getMessage();
+                    } catch (IllegalArgumentException ex) {
+                        detailedMessage = errorCodeMessage;
+                    }
+
+                    return detailedMessage;
+                })
                 .collect(Collectors.joining("; "));
 
-        // Set error code and message
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(validationErrors.isEmpty() ? errorCode.getMessage() : validationErrors);
 
         return ResponseEntity.badRequest().body(apiResponse);
     }
+
 }

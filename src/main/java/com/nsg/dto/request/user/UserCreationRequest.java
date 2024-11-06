@@ -33,6 +33,6 @@ public class UserCreationRequest {
     @Pattern(regexp="(^$|[0-9]{10})", message = "INVALID_PHONE_NUMBER")
     String phone;
 
-    @NotNull
+    @NotNull(message = "GENDER_NOTNULL")
     boolean gender;
 }
