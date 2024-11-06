@@ -91,7 +91,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserEntity userCreate(UserCreationRequest request, UserRole role) {
+    public UserEntity createUser(UserCreationRequest request, UserRole role) {
 //        UserEntity user = new UserEntity();
         UserEntity user = userMapper.toUserEntity(request);
 
@@ -113,20 +113,20 @@ public class UserServiceImp implements UserService {
     //create student
     @Override
 //    @Transactional
-    public StudentEntity studentCreate(StudentCreattionRequest request){
+    public StudentEntity createStudent(StudentCreattionRequest request, String batch_name){
         StudentEntity student = new StudentEntity();
         student.setRollNumber(generateRollNumber());
 
         //map
         UserCreationRequest userCreationRequest = request;
         //create user
-        UserEntity user = userCreate(userCreationRequest, UserRole.STUDENT);
+        UserEntity user = createUser(userCreationRequest, UserRole.STUDENT);
 
         //set user
         student.setUser(user);
 
         //get batch by batchName
-        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+        BatchEntity batch = batchRepository.findByBatchName(batch_name).orElseThrow(
                 () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
         );
 

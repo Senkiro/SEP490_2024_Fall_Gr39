@@ -14,25 +14,25 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserInforUpdateRequest {
-    @Size(min = 3, message = "INVALID_FULLNAME")
+    @Size(min = 2, message = "INVALID_FULLNAME")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
     String fullName;
 
-    @Size(min = 3, message = "INVALID_JAPANESENAME")
+    @Size(min = 2, message = "INVALID_JAPANESENAME")
     String japaneseName;
 
     @Email(message = "INVALID_EMAIL")
     @NotNull(message = "NOTNULL_EMAIL")
     String email;
 
-    @PastOrPresent
+    @Past(message = "DOB_NOT_IN_PAST")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
 
     @Pattern(regexp="(^$|[0-9]{10})", message = "INVALID_PHONE_NUMBER")
     String phone;
 
-    @NotNull
+    @NotNull(message = "GENDER_NOTNULL")
     boolean gender;
 
     String img;

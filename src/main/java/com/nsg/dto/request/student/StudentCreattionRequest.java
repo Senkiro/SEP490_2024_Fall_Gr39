@@ -14,7 +14,6 @@ import lombok.experimental.FieldDefaults;
 public class StudentCreattionRequest extends UserCreationRequest {
     @Pattern(regexp="(^$|[A-Z0-9]{8})", message = "Invalid roll number!")
     String rollNumber;
-
-    String batchName;
+//    String batchName;
 
 }

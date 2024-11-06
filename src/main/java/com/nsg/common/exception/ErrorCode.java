@@ -9,8 +9,10 @@ public enum ErrorCode {
     INVALID_ACCBAN(1009,"Your account has been locked !"),
     USER_NOT_FOUND(1010, "User not found"),
     INVALID_PASSWORD(1012, "Password must be at least 8 characters!"),
-    INVALID_FULLNAME(1013, "Full name must be at least 3 characters and only content letters, spaces!"),
-    INVALID_JAPANESENAME(1014, "Japanese name must be at least 3 characters"),
+    INVALID_FULLNAME(1013, "Full name must be at least 2 characters and only content letters, spaces!"),
+    INVALID_JAPANESENAME(1014, "Japanese name must be at least 2 characters"),
+    DOB_NOT_IN_PAST(1015, "Date of birth must be in past!"),
+    GENDER_NOTNULL(1016, "Gender cannot be null!"),
 
     //Email
     NOTNULL_EMAIL(1015, "Email cannot be null!"),
@@ -21,12 +23,18 @@ public enum ErrorCode {
     //Batch
     INVALID_BATCHNAME(1100, "Batch name can not be null"),
     BATCH_EXISTED(1101, "Batch name existed!"),
-    BATCH_NOT_EXISTED(1017, "Batch not existed!"),
+    BATCH_NOT_EXISTED(1102, "Batch not existed!"),
+    BATCHNAME_SIZE_INVALID(1103, "Batch name must be between 4 and 10 character"),
+    START_TIME_NOTIN_FUTURE(1104, "Start time must be in the present or future"),
+    END_TIME_NOTIN_FUTURE(1104, "End time must be in the future"),
+    YEAR_NOT_AFTER2000(1105, "Year must be after 2000"),
+    YEAR_IS_NULL(1106, "Year can not be null!"),
 
     //
 
     //Lesson
-    LESSON_NOT_FOUND(1019, "Lesson not found!")
+    LESSON_NOT_FOUND(1200, "Lesson not found!"),
+    NOTNULL_LESSON_TITLE(1201, "Lesson title can not be null")
     ;
 
     ErrorCode(int code, String message) {

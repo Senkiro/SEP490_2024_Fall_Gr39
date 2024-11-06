@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonCreateRequest {
-    @NotNull(message = "Lesson title can not be null")
+    @NotNull(message = "NOTNULL_LESSON_TITLE")
     String lessonTitle;
 
     String lessonContent;

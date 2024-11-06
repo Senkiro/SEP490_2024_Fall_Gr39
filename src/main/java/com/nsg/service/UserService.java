@@ -19,7 +19,7 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     void saveUser(UserEntity user);
 
-    UserEntity userCreate(UserCreationRequest userCreationRequest, UserRole role);
+    UserEntity createUser(UserCreationRequest userCreationRequest, UserRole role);
 
     UserEntity getUserById(String userId);
 
@@ -41,5 +41,5 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     Page<StudentResponse> getAllStudent(int page, int size);
 
-    StudentEntity studentCreate(StudentCreattionRequest request);
+    StudentEntity createStudent(StudentCreattionRequest request, String batch_name);
 }

@@ -1,5 +1,7 @@
 package com.nsg.dto.request.user;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,6 +16,9 @@ import java.time.LocalDate;
 public class UserUpdateRequest {
 
     private String password;
+
+    @Email(message = "INVALID_EMAIL")
+    @NotNull(message = "NOTNULL_EMAIL")
     private String email;
 
     public String getPassword() {

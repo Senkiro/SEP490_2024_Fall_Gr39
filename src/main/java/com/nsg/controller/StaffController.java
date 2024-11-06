@@ -54,9 +54,9 @@ public class StaffController {
      **********************************/
     //create new student
     @PostMapping("/create-student")
-    public ApiResponse<?> createStudent(@RequestBody @Valid @Validated StudentCreattionRequest request){
+    public ApiResponse<?> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
         return ApiResponse.builder()
-                .result(userService.studentCreate(request))
+                .result(userService.createStudent(request, batch_name))
                 .build();
     }
 
@@ -184,7 +184,7 @@ public class StaffController {
     public ApiResponse<?> createSTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
         UserRole role = UserRole.TEACHER;
         return ApiResponse.builder()
-                .result(userService.userCreate(request, role))
+                .result(userService.createUser(request, role))
                 .build();
     }
 
