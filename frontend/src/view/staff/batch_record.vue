@@ -30,7 +30,7 @@
       <tbody>
       <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
         <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-        <td @click="viewBatchDetail(batchEntity)">{{ batchEntity.batchName }}</td>
+        <td @click="viewBatchDetail(batchEntity)" class="clickable">{{ batchEntity.batchName }}</td>
         <td>{{ batchEntity.year }}</td>
         <td>{{ batchEntity.startTime }}</td>
         <td>{{ batchEntity.endTime }}</td>
@@ -46,9 +46,16 @@
     </table>
 
     <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">Previous</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Next</button>
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
+      <button
+          v-for="page in displayedPages"
+          :key="page"
+          :class="{ active: page === currentPage }"
+          @click="changePage(page)"
+      >
+        {{ page }}
+      </button>
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
     </div>
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
@@ -80,7 +87,7 @@
       </div>
     </div>
 
-    <!-- Thông báo lỗi hoặc thành công -->
+    <!-- Notification for errors or success -->
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
@@ -108,13 +115,13 @@ export default {
       },
       errorMessage: "",
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 1,
       totalElements: 0,
       totalPages: 0,
       isLoading: false,
       notification: {
         message: "",
-        type: "" // "success" hoặc "error"
+        type: "" // "success" or "error"
       },
     };
   },
@@ -133,6 +140,7 @@ export default {
         this.batches = response.data.result.content;
         this.totalElements = response.data.result.totalElements;
         this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        this.updateDisplayedPages();
       } catch (error) {
         console.error('Error fetching batches:', error);
         this.showNotification("Error fetching batches. Please try again.", 'error');
@@ -171,7 +179,7 @@ export default {
         this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
         this.errorMessage = "";
 
-        // Hiển thị thông báo thành công
+        // Show success notification
         this.showNotification("Batch created successfully!", "success");
 
       } catch (error) {
@@ -195,9 +203,26 @@ export default {
         this.notification.message = "";
       }, 3000);
     },
+    updateDisplayedPages() {
+      const pages = [];
+      if (this.totalPages <= 5) {
+        for (let i = 1; i <= this.totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (this.currentPage <= 3) {
+          pages.push(1, 2, 3, '...', this.totalPages);
+        } else if (this.currentPage >= this.totalPages - 2) {
+          pages.push(1, '...', this.totalPages - 2, this.totalPages - 1, this.totalPages);
+        } else {
+          pages.push(1, '...', this.currentPage, '...', this.totalPages);
+        }
+      }
+      this.displayedPages = pages;
+    }
   },
   watch: {
-    // Watcher để cập nhật URL khi `currentPage` thay đổi
+    // Watcher to update URL when `currentPage` changes
     currentPage(newPage) {
       this.$router.push({ path: '/staff/batch-record', query: { page: newPage } }).catch(() => {});
     }
@@ -228,6 +253,10 @@ export default {
   cursor: not-allowed;
 }
 
+.pagination button.active {
+  background-color: #007bff;
+}
+
 .batchEntity-table th, .batchEntity-table td {
   padding: 12px 24px;
   text-align: left;
@@ -236,8 +265,9 @@ export default {
   align-content: center;
 }
 
-.batchEntity-table td:hover {
+.batchEntity-table td.clickable:hover {
   cursor: pointer;
+  text-decoration: underline;
 }
 
 .batchEntity-table th {
@@ -251,11 +281,6 @@ export default {
 
 .status-graduated {
   color: #6ECBB8;
-}
-
-.action-icon {
-  cursor: pointer;
-  color: #333;
 }
 
 .popup-overlay {
@@ -397,7 +422,6 @@ table {
   margin-bottom: 20px;
 }
 
-/* CSS cho thông báo */
 .notification {
   position: fixed;
   top: 20px;
