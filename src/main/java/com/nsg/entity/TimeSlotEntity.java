@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -27,10 +28,10 @@ public class TimeSlotEntity extends BaseEntity {
     String name;
 
     @Column(name = "start_time")
-    LocalDate startTime;
+    LocalTime startTime;
 
     @Column(name = "end_time")
-    LocalDate endTime;
+    LocalTime endTime;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "timeSlotEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

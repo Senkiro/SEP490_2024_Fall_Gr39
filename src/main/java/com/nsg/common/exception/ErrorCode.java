@@ -30,7 +30,12 @@ public enum ErrorCode {
     YEAR_NOT_AFTER2000(1105, "Year must be after 2000"),
     YEAR_IS_NULL(1106, "Year can not be null!"),
 
-    //
+    //Time slot
+    TIME_SLOT_NAME_IS_NULL(1120, "Time slot name can not be null!"),
+    START_TIME_IS_NULL(1121, "Start time can not be null"),
+    END_TIME_IS_NULL(1122, "End time can not be null"),
+    INVALID_TIME_FORMAT(1123, "Time must be in the format HH:mm"),
+    TIME_SLOT_NOT_FOUND(1124, "Time slot not found!s"),
 
     //Lesson
     LESSON_NOT_FOUND(1200, "Lesson not found!"),
