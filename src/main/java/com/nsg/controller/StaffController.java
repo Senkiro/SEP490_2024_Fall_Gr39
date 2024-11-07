@@ -3,11 +3,13 @@ package com.nsg.controller;
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
 import com.nsg.entity.*;
@@ -48,6 +50,9 @@ public class StaffController {
 
     @Autowired
     TimeSlotService timeSlotService;
+
+    @Autowired
+    RoomService roomService;
 
 
     /**********************************
@@ -235,4 +240,51 @@ public class StaffController {
                 .message("Delete time slot successfully!")
                 .build();
     }
+
+    /**********************************
+     * Manage Room
+     **********************************/
+    //create room
+    @PostMapping("/create-room")
+    public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomRequest request){
+        return ApiResponse.<RoomResponse>builder()
+                .result(roomService.createRoom(request))
+                .message("Create room successfully!")
+                .build();
+    }
+
+    //get all room
+    @GetMapping("/get-all-room")
+    public ApiResponse<List<RoomResponse>> getAllRoom(){
+        return ApiResponse.<List<RoomResponse>>builder()
+                .result(roomService.getAllRoom())
+                .build();
+    }
+
+    //get a room by id
+    @GetMapping("/get-room/{roomId}")
+    public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId){
+        return ApiResponse.<RoomResponse>builder()
+                .result(roomService.getRoom(roomId))
+                .build();
+    }
+
+    //update one room
+    @PostMapping("/update-room/{roomId}")
+    public ApiResponse<RoomResponse> updateRoom(@PathVariable("roomId") String roomId, @RequestBody RoomRequest request){
+        return ApiResponse.<RoomResponse>builder()
+                .result(roomService.updateRoom(roomId, request))
+                .build();
+    }
+
+    //delete room
+    @DeleteMapping("/delete-room/{roomId}")
+    public ApiResponse<?> deleteRoom(@PathVariable("roomId") String roomId){
+        roomService.deleteRoom(roomId);
+        return ApiResponse.builder()
+                .message("Delete room successfully!")
+                .build();
+    }
+
+
 }

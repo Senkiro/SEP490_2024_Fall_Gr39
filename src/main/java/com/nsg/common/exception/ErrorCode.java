@@ -37,9 +37,15 @@ public enum ErrorCode {
     INVALID_TIME_FORMAT(1123, "Time must be in the format HH:mm"),
     TIME_SLOT_NOT_FOUND(1124, "Time slot not found!s"),
 
+    //Room
+    ROOMNUMBER_IS_NULL(1140, "Room number can not be null"),
+    ROOM_NOT_FOUND(1141, "Room not found"),
+
     //Lesson
     LESSON_NOT_FOUND(1200, "Lesson not found!"),
     NOTNULL_LESSON_TITLE(1201, "Lesson title can not be null")
+
+
     ;
 
     ErrorCode(int code, String message) {
