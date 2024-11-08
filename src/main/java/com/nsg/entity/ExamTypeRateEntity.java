@@ -18,6 +18,7 @@ import java.util.List;
 public class ExamTypeRateEntity extends BaseEntity {
     @Id
     @Column(name = "exam_type")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer examType;
 
     @Column(name = "exam_rate")

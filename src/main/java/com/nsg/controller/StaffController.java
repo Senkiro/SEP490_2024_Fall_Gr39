@@ -2,18 +2,20 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
+import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
+import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.exam.ExamTypeResponse;
+import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.staff.StudentResponse;
-import com.nsg.entity.BatchEntity;
-import com.nsg.entity.LessonEntity;
-import com.nsg.entity.UserEntity;
-import com.nsg.service.BatchService;
-import com.nsg.service.LessonService;
-import com.nsg.service.TeacherService;
-import com.nsg.service.UserService;
+import com.nsg.dto.response.timeSlot.TimeSlotResponse;
+import com.nsg.entity.*;
+import com.nsg.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -48,21 +50,42 @@ public class StaffController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    StudentService studentService;
+
+    @Autowired
+    TimeSlotService timeSlotService;
+
+    @Autowired
+    RoomService roomService;
+
+    @Autowired
+    ExamTypeService examTypeService;
+
 
     /**********************************
      * Manage Student
      **********************************/
     //create new student
     @PostMapping("/create-student")
-    public ApiResponse<?> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
-        return ApiResponse.builder()
-                .result(userService.createStudent(request, batch_name))
+    public ApiResponse<StudentEntity> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
+        return ApiResponse.<StudentEntity>builder()
+                .result(studentService.createStudent(request, batch_name))
                 .build();
     }
 
     @GetMapping("/student-list")
     public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page, @RequestParam int size){
-        Page<StudentResponse> studentList = userService.getAllStudent(page, size);
+        Page<StudentResponse> studentList = studentService.getAllStudent(page, size);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentList)
+                .build();
+    }
+
+    //get student list by batchName
+    @GetMapping("/get-student-by-batch")
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page, @RequestParam int size, @RequestParam String batch_name){
+        Page<StudentResponse> studentList = studentService.getStudentByBatchName(page, size, batch_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();
@@ -198,11 +221,152 @@ public class StaffController {
 
     //create teacher
     @PostMapping("/create-teacher")
-    public ApiResponse<?> createSTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
+    public ApiResponse<?> createTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
         UserRole role = UserRole.TEACHER;
         return ApiResponse.builder()
                 .result(userService.createUser(request, role))
                 .build();
     }
+
+    /**********************************
+     * Manage Time Slot
+     **********************************/
+
+    //create time slot
+    @PostMapping("/create-time-slot")
+    public ApiResponse<TimeSlotResponse> createTimeSlot(@RequestBody @Valid TimeSlotCreationRequest request){
+        return ApiResponse.<TimeSlotResponse>builder()
+                .result(timeSlotService.createTimeSlot(request))
+                .message("Create time slot successfully!")
+                .build();
+    }
+
+    //view all time slot
+    @GetMapping("/time-slot-list")
+    ApiResponse<List<TimeSlotResponse>> getAllTimeSlot() {
+        return ApiResponse.<List<TimeSlotResponse>>builder()
+                .result(timeSlotService.getAllTimeSlot())
+                .build();
+    }
+
+    //get one time slot information by id
+    @GetMapping("/get-time-slot/{timeSlotId}")
+    ApiResponse<TimeSlotResponse> getTimeSlot(@PathVariable("timeSlotId") String timeSlotId) {
+        return ApiResponse.<TimeSlotResponse>builder()
+                .result(timeSlotService.getTimeSlotById(timeSlotId))
+                .build();
+    }
+
+    //update time slot
+    @PostMapping("/update-time-slot/{timeSlotId}")
+    ApiResponse<TimeSlotResponse> updateTimeSlot(@PathVariable("timeSlotId") String timeSlotId, @RequestBody TimeSlotUpdateRequest request) {
+        return ApiResponse.<TimeSlotResponse>builder()
+                .result(timeSlotService.updateTimeSlotById(timeSlotId, request))
+                .message("Update time slot successfully!")
+                .build();
+    }
+
+    //delete time slot
+    @DeleteMapping("/delete-time-slot/{timeSlotId}")
+    ApiResponse<?> deleteTimeSlot(@PathVariable("timeSlotId") String timeSlotId) {
+        timeSlotService.deleteTimeSlot(timeSlotId);
+        return ApiResponse.builder()
+                .message("Delete time slot successfully!")
+                .build();
+    }
+
+    /**********************************
+     * Manage Room
+     **********************************/
+    //create room
+    @PostMapping("/create-room")
+    public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomRequest request){
+        return ApiResponse.<RoomResponse>builder()
+                .result(roomService.createRoom(request))
+                .message("Create room successfully!")
+                .build();
+    }
+
+    //get all room
+    @GetMapping("/get-all-room")
+    public ApiResponse<List<RoomResponse>> getAllRoom(){
+        return ApiResponse.<List<RoomResponse>>builder()
+                .result(roomService.getAllRoom())
+                .build();
+    }
+
+    //get a room by id
+    @GetMapping("/get-room/{roomId}")
+    public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId){
+        return ApiResponse.<RoomResponse>builder()
+                .result(roomService.getRoom(roomId))
+                .build();
+    }
+
+    //update one room
+    @PostMapping("/update-room/{roomId}")
+    public ApiResponse<RoomResponse> updateRoom(@PathVariable("roomId") String roomId, @RequestBody RoomRequest request){
+        return ApiResponse.<RoomResponse>builder()
+                .result(roomService.updateRoom(roomId, request))
+                .build();
+    }
+
+    //delete room
+    @DeleteMapping("/delete-room/{roomId}")
+    public ApiResponse<?> deleteRoom(@PathVariable("roomId") String roomId){
+        roomService.deleteRoom(roomId);
+        return ApiResponse.builder()
+                .message("Delete room successfully!")
+                .build();
+    }
+
+    /**********************************
+     * Manage Exam Type
+     **********************************/
+    //create exam type
+    @PostMapping("/create-exam-type")
+    public ApiResponse<ExamTypeResponse> createExamType(@RequestBody ExamTypeRequest request) {
+        return ApiResponse.<ExamTypeResponse>builder()
+                .result(examTypeService.createExamType(request))
+                .message("Create a new exam type rate successfully")
+                .build();
+    }
+
+    //get all exam type
+    @GetMapping("/get-all-exam-type")
+    public ApiResponse<List<ExamTypeResponse>> getAllExamType() {
+        return ApiResponse.<List<ExamTypeResponse>>builder()
+                .result(examTypeService.getAllExamType())
+                .build();
+    }
+
+    //get exam type by examType
+    @GetMapping("/get-exam-type")
+    public ApiResponse<ExamTypeResponse> getExamType(@RequestParam int examType) {
+        return ApiResponse.<ExamTypeResponse>builder()
+                .result(examTypeService.getExamType(examType))
+                .build();
+    }
+
+    //update exam type
+    @PostMapping("/update-exam-type")
+    public ApiResponse<ExamTypeResponse> updateExamType(@RequestParam int examType, @RequestBody ExamTypeRequest request) {
+        return ApiResponse.<ExamTypeResponse>builder()
+                .result(examTypeService.updateExamType(examType, request))
+                .message("Update exam type successfully!")
+                .build();
+    }
+
+    //delete exam type
+    @DeleteMapping("/delete-exam-type")
+    public ApiResponse<?> deleteExamType(@RequestParam int examType) {
+        examTypeService.deleteExamType(examType);
+        return ApiResponse.builder()
+                .message("Delete exam type successfully!")
+                .build();
+    }
+
+
+
 
 }

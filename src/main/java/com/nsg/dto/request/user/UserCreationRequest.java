@@ -15,11 +15,11 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @MappedSuperclass
 public class UserCreationRequest {
-    @Size(min = 3, message = "INVALID_FULLNAME")
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "INVALID_FULLNAME")
+    @Size(min = 2, message = "INVALID_FULLNAME")
+    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "INVALID_FULLNAME")
     String fullName;
 
-    @Size(min = 3, message = "INVALID_JAPANESENAME")
+    @Size(min = 2, message = "INVALID_JAPANESENAME")
     String japaneseName;
 
     @Email(message = "INVALID_EMAIL")

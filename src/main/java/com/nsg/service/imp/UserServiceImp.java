@@ -53,16 +53,10 @@ public class UserServiceImp implements UserService {
     UserMapper userMapper;
 
     @Autowired
-    StudentRepository studentRepository;
-
-    @Autowired
     BatchRepository batchRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     //generate random string (8 characters)
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -108,47 +102,6 @@ public class UserServiceImp implements UserService {
         user.setActive(true);
 
         return userRepository.save(user);
-    }
-
-    //create student
-    @Override
-//    @Transactional
-    public StudentEntity createStudent(StudentCreattionRequest request, String batch_name){
-        StudentEntity student = new StudentEntity();
-        student.setRollNumber(generateRollNumber());
-
-        //map
-        UserCreationRequest userCreationRequest = request;
-        //create user
-        UserEntity user = createUser(userCreationRequest, UserRole.STUDENT);
-
-        //set user
-        student.setUser(user);
-
-        //get batch by batchName
-        BatchEntity batch = batchRepository.findByBatchName(batch_name).orElseThrow(
-                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
-        );
-
-        //set batch
-        student.setBatchEntity(batch);
-
-        batch.getStudentEntityList().add(student);
-
-        batchRepository.save(batch);
-
-        return studentRepository.save(student);
-    };
-
-    //generate random roll number
-    public String generateRollNumber(){
-      String prefix = "FA";
-      int year = LocalDate.now().getYear() % 100;
-
-      Random random = new Random();
-      int randomNumber = 1000 + random.nextInt(9000);
-
-      return prefix+year+String.format("%04d", randomNumber);
     }
 
     @Override
@@ -211,33 +164,6 @@ public class UserServiceImp implements UserService {
     public List<UserEntity> getUserByRoles(UserRole role) {
         return userRepository.getByRoles(role);
     }
-
-    @Override
-    public Page<StudentResponse> getAllStudent(int page, int size){
-
-        //find all student
-        Page<StudentEntity> studentEntityList = studentRepository.findAll(PageRequest.of(page, size));
-
-        //generate list for response
-        List<StudentResponse> studentListResponse = new ArrayList<>() ;
-
-        //for
-        for (StudentEntity student : studentEntityList) {
-            StudentResponse studentResponse = new StudentResponse();
-            //get,set rollNumber
-            studentResponse.setRollNumber(student.getRollNumber());
-
-            //map user to UserInforResponse
-            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
-            //set user
-            studentResponse.setUser(userInforResponse);
-
-            //add to response list
-            studentListResponse.add(studentResponse);
-        }
-
-        return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
-    };
 
     @Override
     public Object create(Object request) {
