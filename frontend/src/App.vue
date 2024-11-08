@@ -43,6 +43,7 @@ export default {
   --side-background: #DFE7FB;
   --sidebar-width: 250px;
   --border: #495057;
+  --linear: linear-gradient(90deg, #3E5DD4, #223374);
 }
 
 *{
@@ -53,7 +54,7 @@ export default {
 }
 
 body{
-  background: var(--light);
+  background: #fff;
 }
 
 button{
@@ -86,6 +87,20 @@ h1{
 h3{
   font-size: 16px;
   font-weight: normal;
+}
+
+button {
+  background-image: linear-gradient(90deg, #3E5DD4, #223374);
+  padding: 10px 20px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: normal;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  gap: 10px;
 }
 </style>
 
