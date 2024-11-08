@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
@@ -9,6 +10,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
@@ -53,6 +55,9 @@ public class StaffController {
 
     @Autowired
     RoomService roomService;
+
+    @Autowired
+    ExamTypeService examTypeService;
 
 
     /**********************************
@@ -285,6 +290,54 @@ public class StaffController {
                 .message("Delete room successfully!")
                 .build();
     }
+
+    /**********************************
+     * Manage Exam Type
+     **********************************/
+    //create exam type
+    @PostMapping("/create-exam-type")
+    public ApiResponse<ExamTypeResponse> createExamType(@RequestBody ExamTypeRequest request) {
+        return ApiResponse.<ExamTypeResponse>builder()
+                .result(examTypeService.createExamType(request))
+                .message("Create a new exam type rate successfully")
+                .build();
+    }
+
+    //get all exam type
+    @GetMapping("/get-all-exam-type")
+    public ApiResponse<List<ExamTypeResponse>> getAllExamType() {
+        return ApiResponse.<List<ExamTypeResponse>>builder()
+                .result(examTypeService.getAllExamType())
+                .build();
+    }
+
+    //get exam type by examType
+    @GetMapping("/get-exam-type")
+    public ApiResponse<ExamTypeResponse> getExamType(@RequestParam int examType) {
+        return ApiResponse.<ExamTypeResponse>builder()
+                .result(examTypeService.getExamType(examType))
+                .build();
+    }
+
+    //update exam type
+    @PostMapping("/update-exam-type")
+    public ApiResponse<ExamTypeResponse> updateExamType(@RequestParam int examType, @RequestBody ExamTypeRequest request) {
+        return ApiResponse.<ExamTypeResponse>builder()
+                .result(examTypeService.updateExamType(examType, request))
+                .message("Update exam type successfully!")
+                .build();
+    }
+
+    //delete exam type
+    @DeleteMapping("/delete-exam-type")
+    public ApiResponse<?> deleteExamType(@RequestParam int examType) {
+        examTypeService.deleteExamType(examType);
+        return ApiResponse.builder()
+                .message("Delete exam type successfully!")
+                .build();
+    }
+
+
 
 
 }

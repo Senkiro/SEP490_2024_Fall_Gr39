@@ -41,6 +41,12 @@ public enum ErrorCode {
     ROOMNUMBER_IS_NULL(1140, "Room number can not be null"),
     ROOM_NOT_FOUND(1141, "Room not found"),
 
+    //Exam
+    EXAM_TYPE_IS_NULL(1160, "Exam type can not be null"),
+    EXAM_TYPE_NOT_FOUND(1161, "Exam type not found"),
+    EXAM_TYPE_EXISTED(1161, "Exam type already existed!"),
+
+
     //Lesson
     LESSON_NOT_FOUND(1200, "Lesson not found!"),
     NOTNULL_LESSON_TITLE(1201, "Lesson title can not be null")
