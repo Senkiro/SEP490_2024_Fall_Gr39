@@ -51,6 +51,9 @@ public class StaffController {
     UserService userService;
 
     @Autowired
+    StudentService studentService;
+
+    @Autowired
     TimeSlotService timeSlotService;
 
     @Autowired
@@ -67,13 +70,22 @@ public class StaffController {
     @PostMapping("/create-student")
     public ApiResponse<StudentEntity> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
         return ApiResponse.<StudentEntity>builder()
-                .result(userService.createStudent(request, batch_name))
+                .result(studentService.createStudent(request, batch_name))
                 .build();
     }
 
     @GetMapping("/student-list")
     public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page, @RequestParam int size){
-        Page<StudentResponse> studentList = userService.getAllStudent(page, size);
+        Page<StudentResponse> studentList = studentService.getAllStudent(page, size);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentList)
+                .build();
+    }
+
+    //get student list by batchName
+    @GetMapping("/get-student-by-batch")
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page, @RequestParam int size, @RequestParam String batch_name){
+        Page<StudentResponse> studentList = studentService.getStudentByBatchName(page, size, batch_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();

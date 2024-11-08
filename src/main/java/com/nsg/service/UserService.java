@@ -39,7 +39,4 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     List<UserEntity> getUserByRoles(UserRole role);
 
-    Page<StudentResponse> getAllStudent(int page, int size);
-
-    StudentEntity createStudent(StudentCreattionRequest request, String batch_name);
 }
