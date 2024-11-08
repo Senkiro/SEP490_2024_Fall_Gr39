@@ -1,116 +1,111 @@
 <template>
   <div class="container">
-    <div class="batch-title-container">
-      <h1 class="batch-title">{{ batchName }}</h1>
+    <div class="headContent">
+      <h1>{{ batchName }}</h1>
     </div>
 
     <!-- Phần chuyển đổi tab -->
-    <VaButtonGroup>
-      <VaButton
-          @click="switchTab('student')"
-          :class="{'active-tab': activeTab === 'student'}"
-          class="buttonGroup">
+    <div class="btn-group">
+      <button @click="switchTab('student')" :class="{ 'active-tab': activeTab === 'student' }">
         Student Record
-      </VaButton>
-      <VaButton
-          @click="switchTab('class')"
-          :class="{'active-tab': activeTab === 'class'}"
-          class="buttonGroup">
+      </button>
+      <button @click="switchTab('class')" :class="{ 'active-tab': activeTab === 'class' }">
         Class Record
-      </VaButton>
-    </VaButtonGroup>
+      </button>
+    </div>
 
     <!-- Nội dung Student Record -->
-    <div v-if="activeTab === 'student'" class="batchEntity-detail-content student-record">
-      <div class="headContent">
-        <div class="student-actions-left">
-          <label for="class-filter" class="class-filter-label">Class:</label>
-          <select id="class-filter" class="filter-select">
-            <option value="">All Classes</option>
-            <option value="Blue">Blue</option>
-            <option value="Red">Red</option>
-            <option value="Green">Green</option>
-            <option value="Yellow">Yellow</option>
-            <option value="Purple">Purple</option>
-          </select>
-        </div>
-        <!-- Các nút hành động cho Student Record -->
-        <div class="actions-right">
-          <button class="btn btn-import-student" @click="navigateToImportStudent">
-            <VsxIcon iconName="Import" size="20" type="bold" />
-            Import student
-          </button>
-          <button class="btn btn-add-student" @click="openAddStudentPopup">
-            <VsxIcon iconName="AddCircle" size="20" type="bold" />
-            Add student
-          </button>
-        </div>
+    <div v-if="activeTab === 'student'" class="student-record">
+      <div class="filters">
+        <select id="class-filter" class="filter-select">
+          <option value="">Class</option>
+          <option value="Blue">Blue</option>
+          <option value="Red">Red</option>
+          <option value="Green">Green</option>
+          <option value="Yellow">Yellow</option>
+          <option value="Purple">Purple</option>
+        </select>
       </div>
-      <!-- Bảng chi tiết sinh viên -->
+      <!-- Các nút hành động cho Student Record -->
+      <div class="actions">
+        <button class="btn btn-add-student" @click="openAddStudentPopup">
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
+          Add student
+        </button>
+        <button class="btn btn-import-student" @click="navigateToImportStudent">
+          <VsxIcon iconName="Import" size="20" type="bold" />
+          Import student
+        </button>
+
+      </div>
+
       <div class="table-container">
-        <table class="student-table">
+        <table>
           <thead>
-          <tr>
-            <th style="width: 5%;">No</th>
-            <th style="width: 20%;">Fullname</th>
-            <th style="width: 15%;">Roll number</th>
-            <th style="width: 20%;">Japanese name</th>
-            <th style="width: 10%;">Class</th>
-            <th style="width: 20%;">Email</th>
-            <th style="width: 10%;">Action</th>
-          </tr>
+            <tr>
+              <th class="center">No</th>
+              <th>Fullname</th>
+              <th>Roll number</th>
+              <th>Japanese name</th>
+              <th>Class</th>
+              <th>Email</th>
+              <th class="center">Action</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(student, index) in students" :key="student.id">
-            <td>{{ index + 1 }}</td>
-            <td>{{ student.fullname }}</td>
-            <td>{{ student.rollNumber }}</td>
-            <td>{{ student.japaneseName }}</td>
-            <td :style="{ color: student.classColor }">{{ student.class }}</td>
-            <td>{{ student.email }}</td>
-            <td class="action-column">
-              <VsxIcon
-                  iconName="Eye"
-                  :size="32"
-                  color="#5584FF"
-                  type="linear"
-                  @click="navigateToProfile(student.id)"
-                  class="icon-button"
-              />
-            </td>
-          </tr>
+            <tr v-for="(student, index) in students" :key="student.id">
+              <td class="center">{{ index + 1 }}</td>
+              <td>{{ student.fullname }}</td>
+              <td>{{ student.rollNumber }}</td>
+              <td>{{ student.japaneseName }}</td>
+              <td :style="{ color: student.classColor }">{{ student.class }}</td>
+              <td>{{ student.email }}</td>
+              <td class="center">
+                <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
+                  @click="navigateToProfile(student.id)" />
+              </td>
+            </tr>
           </tbody>
         </table>
+        <div class="pagination">
+          <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1"><VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" /></button>
+          <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">1</button>
+          <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
+            @click="changePage(page)">
+            {{ page }}
+          </button>
+          <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages"><VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" /></button>
+        </div>
       </div>
     </div>
 
     <!-- Nội dung Class Record -->
-    <div v-if="activeTab === 'class'" class="class-record-container">
-      <div class="class-record-header">
-        <h1 class="batch-title"></h1>
-        <div class="class-record-actions">
-          <button class="btn btn-add-class" @click="openAddClassPopup">Add class</button>
-        </div>
+    <div v-if="activeTab === 'class'">
+      <div class="actions">
+        <button @click="openAddClassPopup">
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
+          Add class
+        </button>
       </div>
-      <div class="class-record-content">
-        <table class="class-table">
+      <div class="table-container">
+        <table>
           <thead>
-          <tr>
-            <th>No</th>
-            <th>Class</th>
-            <th>Number of students</th>
-            <th>Action</th>
-          </tr>
+            <tr>
+              <th class="center">No</th>
+              <th>Class</th>
+              <th>Number of students</th>
+              <th class="center">Action</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(classItem, index) in classes" :key="classItem.id">
-            <td>{{ index + 1 }}</td>
-            <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
-            <td>{{ classItem.studentCount }}</td>
-            <td class="action-column">
-              <VsxIcon iconName="Eye" :size="24" color="#5584FF" type="linear" @click="viewClassDetail(classItem)" />
-            </td>
-          </tr>
+            <tr v-for="(classItem, index) in classes" :key="classItem.id">
+              <td class="center">{{ index + 1 }}</td>
+              <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
+              <td>{{ classItem.studentCount }}</td>
+              <td class="center">
+                <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -302,7 +297,32 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.container {
+  .btn-group {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 5px;
+    margin: 20px 0px;
+    width: fit-content;
+    border-radius: 10px;
+    background: linear-gradient(to right, #1A2C6F, #304CB2);
+
+    button {
+      background: none;
+      padding: 10px 40px;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: semibold;
+    }
+
+    .active-tab {
+      background: #fff;
+      color: #1A2C6F;
+    }
+  }
+}
+
 .add-student-popup-overlay {
   position: fixed;
   top: 0;
@@ -322,103 +342,6 @@ export default {
   border-radius: 10px;
   width: 400px;
   max-width: 90%;
-}
-
-.batch-title-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.batch-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #304CB2;
-}
-
-.active-tab {
-  background-color: #ffffff;
-  color: #304CB2;
-}
-
-.headContent {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.student-actions-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.actions-right {
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-}
-
-.class-filter-label {
-  font-weight: bold;
-}
-
-.filter-select {
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
-.btn-add-student,
-.btn-import-student,
-.btn-add-class {
-  background-color: #304CB2;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.student-table,
-.class-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;
-}
-
-.student-table th,
-.student-table td,
-.class-table th,
-.class-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-  word-wrap: break-word;
-}
-
-.student-table th,
-.class-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
-}
-
-.action-column {
-  text-align: center;
-}
-
-.class-record-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
 }
 
 .add-student-popup-overlay {
@@ -522,5 +445,4 @@ export default {
   max-width: 90%;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
-
 </style>

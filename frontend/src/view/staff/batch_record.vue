@@ -3,59 +3,58 @@
     <div class="headContent">
       <h1>Batch Record</h1>
     </div>
+
     <div class="actions">
-      <button @click="showAddBatchPopup = true">
-        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
-        Add batch
-      </button>
       <button>
         <VsxIcon iconName="Chart" size="20" type="bold" />
         View statistical chart
       </button>
+      <button @click="showAddBatchPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold" />
+        Add batch
+      </button>
     </div>
 
-    <table class="batchEntity-table">
-      <thead>
-      <tr>
-        <th>No</th>
-        <th>Batch</th>
-        <th>Year</th>
-        <th>Start time</th>
-        <th>End time</th>
-        <th style="text-align: center;">Number of students</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-        <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-        <td @click="viewBatchDetail(batchEntity)" class="clickable">{{ batchEntity.batchName }}</td>
-        <td>{{ batchEntity.year }}</td>
-        <td>{{ batchEntity.startTime }}</td>
-        <td>{{ batchEntity.endTime }}</td>
-        <td style="text-align: center;">0</td>
-        <td :class="{'status-progress': getStatus(batchEntity.endTime) === 'On progress', 'status-graduated': getStatus(batchEntity.endTime) === 'Graduated'}">
-          {{ getStatus(batchEntity.endTime) }}
-        </td>
-        <td>
-          <VsxIcon iconName="Eye" :size="24" @click="viewBatchDetail(batchEntity)" style="padding-left: 5px;" />
-        </td>
-      </tr>
-      </tbody>
-    </table>
-
-    <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
-      <button
-          v-for="page in displayedPages"
-          :key="page"
-          :class="{ active: page === currentPage }"
-          @click="changePage(page)"
-      >
-        {{ page }}
-      </button>
-      <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Batch</th>
+            <th>Year</th>
+            <th>Start time</th>
+            <th>End time</th>
+            <th class="center">Number of students</th>
+            <th>Status</th>
+            <th class="center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
+            <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+            <td @click="viewBatchDetail(batchEntity)" class="clickable">{{ batchEntity.batchName }}</td>
+            <td>{{ batchEntity.year }}</td>
+            <td>{{ batchEntity.startTime }}</td>
+            <td>{{ batchEntity.endTime }}</td>
+            <td class="center">0</td>
+            <td
+              :class="{ 'status-progress': getStatus(batchEntity.endTime) === 'On progress', 'status-graduated': getStatus(batchEntity.endTime) === 'Graduated' }">
+              {{ getStatus(batchEntity.endTime) }}
+            </td>
+            <td class="center">
+              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
+        <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
+          @click="changePage(page)">
+          {{ page }}
+        </button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
+      </div>
     </div>
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
@@ -134,8 +133,8 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         this.batches = response.data.result.content;
         this.totalElements = response.data.result.totalElements;
@@ -166,13 +165,13 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         await axios.post('http://localhost:8088/fja-fap/staff/save-batch',
-            {
-              batchName: this.newBatch.name,
-              startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0],
-              endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],
-              year: this.newBatch.year,
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
+          {
+            batchName: this.newBatch.name,
+            startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0],
+            endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],
+            year: this.newBatch.year,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         await this.fetchBatches();
         this.showAddBatchPopup = false;
@@ -224,65 +223,13 @@ export default {
   watch: {
     // Watcher to update URL when `currentPage` changes
     currentPage(newPage) {
-      this.$router.push({ path: '/staff/batch-record', query: { page: newPage } }).catch(() => {});
+      this.$router.push({ path: '/staff/batch-record', query: { page: newPage } }).catch(() => { });
     }
   }
 };
 </script>
 
-<style scoped>
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.pagination button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #4a90e2;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  margin: 0 5px;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.pagination button.active {
-  background-color: #007bff;
-}
-
-.batchEntity-table th, .batchEntity-table td {
-  padding: 12px 24px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  align-items: center;
-  align-content: center;
-}
-
-.batchEntity-table td.clickable:hover {
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.batchEntity-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
-}
-
-.status-progress {
-  color: #304CB2;
-}
-
-.status-graduated {
-  color: #6ECBB8;
-}
-
+<style lang="scss" scoped>
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -356,53 +303,6 @@ export default {
   margin-top: 10px;
 }
 
-.headContent {
-  margin: 20px 0px;
-}
-
-.pageTitle {
-  display: block;
-}
-
-h1 {
-  width: fit-content;
-  font-size: 36px;
-  background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-  margin: 20px 0px;
-}
-
-.container {
-  padding: 20px;
-}
-
-button {
-  background-image: linear-gradient(90deg, #3E5DD4, #223374);
-  padding: 10px 20px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  font-weight: normal;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  gap: 10px;
-}
-
-.actions {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 20px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
 .required {
   color: red;
   font-weight: bold;
@@ -413,13 +313,6 @@ table {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
-}
-
-.actions {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 20px;
-  margin-bottom: 20px;
 }
 
 .notification {
