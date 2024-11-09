@@ -32,6 +32,9 @@ public class EventEntity extends BaseEntity {
     @Column(name = "description")
     String description;
 
+    @Column(name = "avg_rate")
+    float avgRate;
+
     @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
 

@@ -72,6 +72,7 @@ public class StaffController {
     public ApiResponse<StudentEntity> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
         return ApiResponse.<StudentEntity>builder()
                 .result(studentService.createStudent(request, batch_name))
+                .message("Create student successfully!")
                 .build();
     }
 
