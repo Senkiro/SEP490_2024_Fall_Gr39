@@ -84,6 +84,16 @@ h1{
   margin: 20px 0px;
 }
 
+h2{
+  width: fit-content;
+  font-size: 26px;
+  background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin: 20px 0px;
+}
+
 h3{
   font-size: 16px;
   font-weight: normal;
@@ -102,7 +112,10 @@ button {
   cursor: pointer;
   gap: 10px;
 }
+
+
+.btn-cancel {
+  background: #ccc;
+  color: #fff;
+}
 </style>
-
-
-
