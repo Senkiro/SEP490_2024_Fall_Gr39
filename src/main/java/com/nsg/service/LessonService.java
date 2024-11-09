@@ -1,6 +1,7 @@
 package com.nsg.service;
 
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.entity.LessonEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,9 @@ import java.util.Optional;
 public interface LessonService {
     //get all lesson
     List<LessonEntity> getAllLesson();
+
+    //get a lesson by id
+    LessonResponse getLesson(String lessonId);
 
     Page<LessonEntity> getLessons(int page, int size);
 

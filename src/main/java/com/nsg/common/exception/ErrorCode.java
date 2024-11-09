@@ -50,10 +50,8 @@ public enum ErrorCode {
     //Lesson
     LESSON_NOT_FOUND(1200, "Lesson not found!"),
     NOTNULL_LESSON_TITLE(1201, "Lesson title can not be null"),
-
-    //Event
-    EVENT_NOT_EXIST(1220, "Event not existed!"),
-    EVENT_EXISTED(1221, "Event existed!"),
+    VOCABULARY_IS_NULL(1202, "Vocabulary can not be null!"),
+    KANJI_IS_NULL(1203, "Kanji can not be null!")
 
 
     ;

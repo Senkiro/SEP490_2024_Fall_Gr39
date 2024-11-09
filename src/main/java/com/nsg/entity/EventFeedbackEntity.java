@@ -18,8 +18,8 @@ public class EventFeedbackEntity extends BaseEntity {
     @Column(name = "event_feedback_id", columnDefinition = "VARCHAR(36)")
     String eventFeedbackId;
 
-    @Column(name = "feedback_grade")
-    String feedbackGrade;
+    @Column(name = "feedback_rate")
+    int feedbackRate;
 
     @Column(name = "feedback_content")
     String feedbackContent;

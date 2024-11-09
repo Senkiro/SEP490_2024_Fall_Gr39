@@ -36,4 +36,8 @@ public class ExamEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "exam_type")
     ExamTypeRateEntity examTypeRateEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "chapter_id")
+    ChapterEntity chapterEntity;
 }

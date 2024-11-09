@@ -27,4 +27,7 @@ public class NewEntity extends BaseEntity {
     @Column(name = "news_content")
     String newContent;
 
+    @Column(name = "status")
+    boolean status;
+
 }
