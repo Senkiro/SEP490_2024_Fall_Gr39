@@ -26,6 +26,9 @@ public class EventEntity extends BaseEntity {
     @Column(name = "address")
     String address;
 
+    @Column(name = "img")
+    private String imagePath;
+
     @Column(name = "status")
     boolean status;
 

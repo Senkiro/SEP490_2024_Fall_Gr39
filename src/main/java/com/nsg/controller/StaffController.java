@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.room.RoomRequest;
@@ -23,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +64,9 @@ public class StaffController {
 
     @Autowired
     ExamTypeService examTypeService;
+
+    @Autowired
+    EventService eventService;
 
 
     /**********************************
@@ -375,4 +380,27 @@ public class StaffController {
                 .message("Delete exam type successfully!")
                 .build();
     }
+
+    /**********************************
+     * Manage Evnet
+     **********************************/
+
+    //get all
+    @GetMapping("/event")
+    public ApiResponse<Page<EventEntity>> getAllEvent(@RequestParam int page, @RequestParam int size){
+        Page<EventEntity> eventEntityList = eventService.getEvents(page,size);
+        return  ApiResponse.<Page<EventEntity>>builder()
+                .result(eventEntityList)
+                .build();
+    }
+
+    //create new batch
+    @PostMapping("/create-event")
+    public ApiResponse<EventEntity> createEvnet(@RequestBody @Validated EventCreateRequest request){
+        eventService.createEvent(request);
+        return ApiResponse.<EventEntity>builder()
+                .message("A new event have been created!")
+                .build();
+    }
+
 }

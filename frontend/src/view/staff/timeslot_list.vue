@@ -39,28 +39,26 @@
     </div>
     <div class="table-container">
       <table>
-        <thead>
+        <thead class="center">
           <tr>
-            <th>No</th>
+            <th class="center">No</th>
             <th>Slot</th>
             <th>Start Time</th>
             <th>End Time</th>
-            <th>Actions</th>
+            <th class="center">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="center">
           <tr v-for="(slot, index) in slots" :key="slot.id">
-            <td>{{ index + 1 }}</td>
+            <td class="center">{{ index + 1 }}</td>
             <td>{{ slot.name }}</td>
             <td>{{ formatTime(slot.startTime) }}</td>
             <td>{{ formatTime(slot.endTime) }}</td>
-            <td class="action-buttons">
-              <button class="icon-button" aria-label="Edit time slot">
-                <VsxIcon iconName="Edit" :size="20" color="#5584FF" type="linear" />
-              </button>
-              <button class="icon-button" aria-label="Delete time slot">
-                <VsxIcon iconName="Slash" :size="20" color="#5584FF" type="linear" />
-              </button>
+            <td class="center">
+              <div class="icon-group">
+                <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" />
+                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
+              </div>
             </td>
           </tr>
         </tbody>
