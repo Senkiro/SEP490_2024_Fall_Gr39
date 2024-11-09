@@ -36,7 +36,6 @@
           <VsxIcon iconName="Import" size="20" type="bold"/>
           Import student
         </button>
-
       </div>
 
       <div class="table-container">
@@ -168,7 +167,7 @@
     </div>
   </div>
 
-    <!-- Popup Add Class -->
+  <!-- Popup Add Class -->
   <div v-if="showAddClassPopup" class="add-class-popup-overlay">
     <div class="add-class-popup">
       <h2 class="popup-title">Add class</h2>
@@ -281,7 +280,7 @@ export default {
 
         this.showAddStudentPopup = false;
         this.resetNewStudent();
-
+        this.fetchStudent()
         this.showNotification("Student created successfully!", "success");
       } catch (error) {
         console.error('Error creating student:', error);
