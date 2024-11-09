@@ -49,7 +49,11 @@ public enum ErrorCode {
 
     //Lesson
     LESSON_NOT_FOUND(1200, "Lesson not found!"),
-    NOTNULL_LESSON_TITLE(1201, "Lesson title can not be null")
+    NOTNULL_LESSON_TITLE(1201, "Lesson title can not be null"),
+
+    //Event
+    EVENT_NOT_EXIST(1220, "Event not existed!"),
+    EVENT_EXISTED(1221, "Event existed!"),
 
 
     ;
