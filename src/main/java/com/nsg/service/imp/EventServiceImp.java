@@ -45,14 +45,14 @@ public class EventServiceImp implements EventService {
     @Override
     public EventEntity getEventById(String eventId) {
         return eventRepository.findByEventId(eventId).orElseThrow(
-                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+                () -> new AppException(ErrorCode.EVENT_NOT_EXIST)
         );
     }
 
     @Override
     public EventEntity getEventByName(String eventName) {
         return eventRepository.findByEventName(eventName).orElseThrow(
-                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+                () -> new AppException(ErrorCode.EVENT_NOT_EXIST)
         );
     }
 }
