@@ -1,15 +1,19 @@
 <template>
-  <div class="import-student-page">
-    <h1 class="page-title">Import student from Excel file</h1>
-    <p class="description">
-      This is the template file to import student to the system.
-      <a :href="templateUrl" class="download-link" download>Download here</a> and modify with your student list.
-      After finished, upload file:
-    </p>
-    <div class="file-upload-section">
-      <label for="file-input" class="file-button">Choose File</label>
-      <span class="file-name">{{ fileName}}</span>
-      <input type="file" id="file-input" @change="handleFileUpload" />
+  <div class="container">
+    <div class="import-student-page">
+      <div class="headContent">
+        <h1>Import student from Excel file</h1>
+      </div>
+      <div class="description">
+        <p>This is the template file to import student to the system.</p>
+        <p><a :href="templateUrl" class="download-link" download>Download here</a> and modify with your student list.</p>
+        <p>After finished, upload file:</p>
+      </div>
+      <div class="file-upload-section">
+        <label for="file-input" class="file-button">Choose File</label>
+        <span class="file-name">{{ fileName }}</span>
+        <input type="file" id="file-input" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @change="handleFileUpload" />
+      </div>
     </div>
   </div>
 </template>
@@ -20,7 +24,7 @@ export default {
   data() {
     return {
       fileName: '',
-      templateUrl:'/templates/students_list.xlsx',
+      templateUrl: '/templates/students_list.xlsx',
     };
   },
   methods: {
@@ -35,22 +39,12 @@ export default {
 </script>
 
 <style scoped>
-.import-student-page {
-  margin: 0 auto;
-  padding: 20px;
-  text-align: left;
-  font-family: Arial, sans-serif;
-}
-
-.page-title {
-  font-size: 24px;
-  color: #304cb2;
-  margin-bottom: 10px;
-}
-
 .description {
+  display: flex;
+  flex-direction: column;
   font-size: 16px;
   margin-bottom: 10px;
+  gap: 5px;
 }
 
 .download-link {

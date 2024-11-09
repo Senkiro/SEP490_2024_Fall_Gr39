@@ -28,12 +28,12 @@
       </div>
       <!-- Các nút hành động cho Student Record -->
       <div class="actions">
-        <button class="btn btn-add-student" @click="openAddStudentPopup">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        <button @click="openAddStudentPopup">
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
           Add student
         </button>
-        <button class="btn btn-import-student" @click="navigateToImportStudent">
-          <VsxIcon iconName="Import" size="20" type="bold"/>
+        <button @click="navigateToImportStudent">
+          <VsxIcon iconName="Import" size="20" type="bold" />
           Import student
         </button>
       </div>
@@ -41,41 +41,42 @@
       <div class="table-container">
         <table>
           <thead>
-          <tr>
-            <th class="center">No</th>
-            <th>Fullname</th>
-            <th>Roll number</th>
-            <th>Japanese name</th>
-            <th>Class</th>
-            <th>Email</th>
-            <th class="center">Action</th>
-          </tr>
+            <tr>
+              <th class="center">No</th>
+              <th>Fullname</th>
+              <th>Roll number</th>
+              <th>Japanese name</th>
+              <th>Class</th>
+              <th>Email</th>
+              <th class="center">Action</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(student, index) in students" :key="student.id">
-            <td class="center">{{ index + 1 }}</td>
-            <td>{{ student.fullname }}</td>
-            <td>{{ student.rollNumber }}</td>
-            <td>{{ student.japaneseName }}</td>
-            <td :style="{ color: student.classColor }">{{ student.class }}</td>
-            <td>{{ student.email }}</td>
-            <td class="center">
-              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
-                       @click="navigateToProfile(student.id)"/>
-            </td>
-          </tr>
+            <tr v-for="(student, index) in students" :key="student.id">
+              <td class="center">{{ index + 1 }}</td>
+              <td>{{ student.fullname }}</td>
+              <td>{{ student.rollNumber }}</td>
+              <td>{{ student.japaneseName }}</td>
+              <td :style="{ color: student.classColor }">{{ student.class }}</td>
+              <td>{{ student.email }}</td>
+              <td class="center">
+                <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
+                  @click="navigateToProfile(student.id)" />
+              </td>
+            </tr>
           </tbody>
         </table>
+
         <div class="pagination">
           <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
-            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
+            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
           </button>
           <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-                  @click="changePage(page)">
+            @click="changePage(page)">
             {{ page }}
           </button>
           <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
+            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
           </button>
         </div>
       </div>
@@ -85,112 +86,120 @@
     <div v-if="activeTab === 'class'">
       <div class="actions">
         <button @click="openAddClassPopup">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
           Add class
         </button>
       </div>
       <div class="table-container">
         <table>
           <thead>
-          <tr>
-            <th class="center">No</th>
-            <th>Class</th>
-            <th>Number of students</th>
-            <th class="center">Action</th>
-          </tr>
+            <tr>
+              <th class="center">No</th>
+              <th>Class</th>
+              <th>Number of students</th>
+              <th class="center">Action</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(classItem, index) in classes" :key="classItem.id">
-            <td class="center">{{ index + 1 }}</td>
-            <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
-            <td>{{ classItem.studentCount }}</td>
-            <td class="center">
-              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)"/>
-            </td>
-          </tr>
+            <tr v-for="(classItem, index) in classes" :key="classItem.id">
+              <td class="center">{{ index + 1 }}</td>
+              <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
+              <td>{{ classItem.studentCount }}</td>
+              <td class="center">
+                <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
-  </div>
-
-  <!-- Popup Add Student -->
-  <div v-if="showAddStudentPopup" class="add-student-popup-overlay">
-    <div class="add-student-popup">
-      <h2 class="popup-title">Add student</h2>
-      <form @submit.prevent="addStudent">
-        <div class="form-group">
-          <label for="fullname">Full name *</label>
-          <input type="text" id="fullname" v-model="newStudent.fullname" required />
+    <!-- Popup Add Student -->
+    <div v-if="showAddStudentPopup" class="popup-overlay">
+      <div class="popup">
+        <div class="popup-title">
+          <h2>Add student</h2>
         </div>
-        <div class="form-group">
-          <label for="japaneseName">Japanese name *</label>
-          <input type="text" id="japaneseName" v-model="newStudent.japaneseName" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email *</label>
-          <input type="email" id="email" v-model="newStudent.email" required />
-        </div>
-        <div class="form-group">
-          <label for="class">Class</label>
-          <select id="class" v-model="newStudent.class">
-            <option value="">Choose class now or later</option>
-            <option value="Blue">Blue</option>
-            <option value="Red">Red</option>
-            <option value="Green">Green</option>
-            <option value="Yellow">Yellow</option>
-            <option value="Purple">Purple</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="dob">DOB *</label>
-          <input type="text" id="dob" v-model="newStudent.dob" placeholder="dd/mm/yyyy" required />
-        </div>
-        <div class="form-group gender-group">
-          <label>Gender *</label>
-          <div>
-            <input type="radio" id="male" value="Male" v-model="newStudent.gender" required />
-            <label for="male">Male</label>
-            <input type="radio" id="female" value="Female" v-model="newStudent.gender" required />
-            <label for="female">Female</label>
+        <form @submit.prevent="addStudent">
+          <div class="form-group">
+            <label for="fullname">Full name <span class="required">*</span></label>
+            <input type="text" id="fullname" v-model="newStudent.fullname" required />
           </div>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone *</label>
-          <input type="text" id="phone" v-model="newStudent.phone" required />
-        </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-create">Create</button>
-          <button type="button" class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button>
-        </div>
-      </form>
+          <div class="form-group">
+            <label for="japaneseName">Japanese name <span class="required">*</span></label>
+            <input type="text" id="japaneseName" v-model="newStudent.japaneseName" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email <span class="required">*</span></label>
+            <input type="email" id="email" v-model="newStudent.email" required />
+          </div>
+          <div class="form-group">
+            <label for="class">Class <span class="required">*</span></label>
+            <select id="class" v-model="newStudent.class" required>
+              <option value="">Choose class now or later</option>
+              <option value="Blue">Blue</option>
+              <option value="Red">Red</option>
+              <option value="Green">Green</option>
+              <option value="Yellow">Yellow</option>
+              <option value="Purple">Purple</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="dob">DOB <span class="required">*</span></label>
+            <input type="date" id="dob" v-model="newStudent.dob" placeholder="dd/mm/yyyy" required />
+          </div>
+          <div class="form-group">
+            <label>Gender <span class="required">*</span></label>
+            <div class="gender-group">
+              <div class="radio">
+                <input type="radio" id="male" value="Male" v-model="newStudent.gender" required />
+                <label for="male">Male</label>
+              </div>
+              <div class="radio">
+                <input type="radio" id="female" value="Female" v-model="newStudent.gender" required />
+              <label for="female">Female</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone <span class="required">*</span></label>
+            <input type="text" id="phone" v-model="newStudent.phone" required />
+          </div>
+          <div class="actions">
+            <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button>
+            <button type="submit">Create</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- Popup Add Class -->
-  <div v-if="showAddClassPopup" class="add-class-popup-overlay">
-    <div class="add-class-popup">
-      <h2 class="popup-title">Add class</h2>
-      <form @submit.prevent="addClass">
-        <div class="form-group">
-          <label for="className">Class name *</label>
-          <input type="text" id="className" v-model="newClass.name" required/>
+    <!-- Popup Add Class -->
+    <div v-if="showAddClassPopup" class="popup-overlay">
+      <div class="popup">
+        <div class="popup-title">
+          <h2>Add class</h2>
         </div>
-        <div class="form-group">
-          <label for="classColor">Color *</label>
-          <input type="color" id="classColor" v-model="newClass.color" required/>
-        </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-create">Create</button>
-          <button type="button" class="btn btn-cancel" @click="showAddClassPopup = false">Cancel</button>
-        </div>
-      </form>
+
+        <form @submit.prevent="addClass">
+          <div class="form-group">
+            <label for="className">Class name <span class="required">*</span></label>
+            <input type="text" id="className" v-model="newClass.name" required />
+          </div>
+          <div class="form-group">
+            <label for="classColor">Color <span class="required">*</span></label>
+            <input type="color" id="classColor" v-model="newClass.color" required />
+          </div>
+          <div class="actions">
+            <button type="submit">Create</button>
+            <button class="btn btn-cancel" @click="showAddClassPopup = false">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 import axios from "axios";
 
 export default {
@@ -220,11 +229,11 @@ export default {
       },
       students: [],
       classes: [
-        {id: 1, name: 'Blue', classColor: 'blue', studentCount: 30},
-        {id: 2, name: 'Red', classColor: 'red', studentCount: 30},
-        {id: 3, name: 'Green', classColor: 'green', studentCount: 30},
-        {id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30},
-        {id: 5, name: 'Purple', classColor: 'purple', studentCount: 30}
+        { id: 1, name: 'Blue', classColor: 'blue', studentCount: 30 },
+        { id: 2, name: 'Red', classColor: 'red', studentCount: 30 },
+        { id: 3, name: 'Green', classColor: 'green', studentCount: 30 },
+        { id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30 },
+        { id: 5, name: 'Purple', classColor: 'purple', studentCount: 30 }
       ],
       notification: {
         message: '',
@@ -237,7 +246,7 @@ export default {
       this.activeTab = tab;
     },
     navigateToProfile(studentId) {
-      this.$router.push({name: "StudentProfile", params: {id: studentId}});
+      this.$router.push({ name: "StudentProfile", params: { id: studentId } });
     },
     openAddStudentPopup() {
       this.showAddStudentPopup = true;
@@ -248,20 +257,20 @@ export default {
         const genderBoolean = this.newStudent.gender === 'Male';
 
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/create-student?batch_name=${this.batchName}`,
-            {
-              fullName: this.newStudent.fullname,
-              japaneseName: this.newStudent.japaneseName,
-              email: this.newStudent.email,
-              dob: this.formatDate(this.newStudent.dob),
-              phone: this.newStudent.phone,
-              gender: genderBoolean,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
+          `http://localhost:8088/fja-fap/staff/create-student?batch_name=${this.batchName}`,
+          {
+            fullName: this.newStudent.fullname,
+            japaneseName: this.newStudent.japaneseName,
+            email: this.newStudent.email,
+            dob: this.formatDate(this.newStudent.dob),
+            phone: this.newStudent.phone,
+            gender: genderBoolean,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
             }
+          }
         );
 
         const addedStudent = response.data;
@@ -280,7 +289,7 @@ export default {
 
         this.showAddStudentPopup = false;
         this.resetNewStudent();
-        this.fetchStudent()
+
         this.showNotification("Student created successfully!", "success");
       } catch (error) {
         console.error('Error creating student:', error);
@@ -291,12 +300,12 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}&batch_name=${this.batchName}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
+          `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}&batch_name=${this.batchName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
             }
+          }
         );
 
         // Kiểm tra nếu response.data.result và response.data.result.content tồn tại
@@ -367,10 +376,10 @@ export default {
       };
     },
     navigateToImportStudent() {
-      this.$router.push({name: 'ImportStudentPage'});
+      this.$router.push({ name: 'ImportStudentPage' });
     },
     showNotification(message, type) {
-      this.notification = {message, type};
+      this.notification = { message, type };
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
@@ -433,128 +442,5 @@ export default {
       color: #1A2C6F;
     }
   }
-}
-
-.add-student-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.add-student-popup {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
-  max-width: 90%;
-}
-
-.add-student-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.add-student-popup {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.popup-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
-  color: #304CB2;
-}
-
-.form-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  font-weight: bold;
-  margin-right: 10px;
-  width: 30%;
-  text-align: right;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group select {
-  width: 70%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-.form-group.gender-group {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 15px;
-}
-
-.form-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.btn-create,
-.btn-cancel {
-  background-color: #304CB2;
-  color: #fff;
-  padding: 10px 30px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.add-class-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.add-class-popup {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

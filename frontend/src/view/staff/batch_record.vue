@@ -48,22 +48,20 @@
         </tbody>
       </table>
       <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
-          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
-        </button>
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-                @click="changePage(page)">
+          @click="changePage(page)">
           {{ page }}
         </button>
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
-        </button>
-        </div>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
       </div>
+    </div>
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
-        <h2>Add Batch</h2>
+        <div class="popup-title">
+          <h2>Add Batch</h2>
+        </div>
         <form @submit.prevent="addBatch">
           <div class="form-group">
             <label for="batchName">Name <span class="required">*</span></label>
@@ -79,18 +77,17 @@
           </div>
           <div class="form-group">
             <label for="year">Year <span class="required">*</span></label>
-            <input type="number" id="year" v-model="newBatch.year" min="1900" max="2100" />
+            <input type="number" id="year" v-model="newBatch.year" min="2000" max="2100" />
           </div>
-          <div class="button-group">
-            <button type="submit" class="btn btn-create">Create</button>
-            <button type="button" class="btn btn-cancel" @click="confirmCancel">Cancel</button>
+          <div class="actions">
+            <button class="btn-cancel" @click="confirmCancel">Cancel</button>
+            <button type="submit">Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
     </div>
 
-    <!-- Notification for errors or success -->
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
@@ -98,7 +95,7 @@
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 import axios from 'axios';
 
 export default {
@@ -118,7 +115,7 @@ export default {
       },
       errorMessage: "",
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 1,
       totalElements: 0,
       totalPages: 0,
       isLoading: false,
@@ -233,109 +230,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.popup {
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  width: 400px;
-  max-width: 90%;
-}
-
-.popup h2 {
-  margin-top: 0;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.btn-create {
-  background-color: #4a90e2;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-cancel {
-  background-color: #ccc;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-left: 10px;
-}
-
-.error {
-  color: red;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.required {
-  color: red;
-  font-weight: bold;
-}
-
-.button-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 15px 20px;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #fff;
-  z-index: 1000;
-  transition: all 0.5s ease;
-}
-
-.notification.success {
-  background-color: #4caf50;
-}
-
-.notification.error {
-  background-color: #f44336;
-}
-</style>
+<style lang="scss" scoped></style>
