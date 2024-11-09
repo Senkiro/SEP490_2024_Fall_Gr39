@@ -42,19 +42,19 @@ const routes = [
     {
         path: '/staff/class-record',
         name: 'ClassRecord',
-        component: () => import('../view/staff/class-record.vue'),
+        component: () => import('../view/staff/class_record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
         path: '/staff/teacher-record',
         name: 'TeacherRecord',
-        component: () => import('../view/staff/teacher-record.vue'),
+        component: () => import('../view/staff/teacher_record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
         path: '/staff/student-profile/:id',
         name: 'StudentProfile',
-        component: () => import('../view/staff/student-profile.vue'),
+        component: () => import('../view/staff/student_profile.vue'),
         meta: { layout: 'app', requiresAuth: true },
         props: true
     },
@@ -65,13 +65,13 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/schedule/time-slot',
+        path: '/staff/time-slot',
         name: 'TimeSlot',
-        component: () => import('../view/staff/time_slot_list.vue'),
+        component: () => import('../view/staff/timeslot_list.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/schedule/event',
+        path: '/staff/event',
         name: 'Event',
         component: () => import('../view/staff/event_list.vue'),
         meta: { layout: 'app', requiresAuth: true },

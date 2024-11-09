@@ -365,8 +365,4 @@ public class StaffController {
                 .message("Delete exam type successfully!")
                 .build();
     }
-
-
-
-
 }
