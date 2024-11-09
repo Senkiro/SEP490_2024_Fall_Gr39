@@ -151,11 +151,11 @@
             <label>Gender <span class="required">*</span></label>
             <div class="gender-group">
               <div class="radio">
-                <input type="radio" id="male" value="Male" v-model="newStudent.gender" required />
+                <input type="radio" id="male" value="Male" name="gender" v-model="newStudent.gender" checked/>
                 <label for="male">Male</label>
               </div>
               <div class="radio">
-                <input type="radio" id="female" value="Female" v-model="newStudent.gender" required />
+                <input type="radio" id="female" value="Female" name="gender" v-model="newStudent.gender"/>
               <label for="female">Female</label>
               </div>
             </div>

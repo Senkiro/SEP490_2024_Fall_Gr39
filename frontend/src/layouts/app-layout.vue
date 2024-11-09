@@ -51,7 +51,7 @@ export default {
   .filters {
     display: flex;
     flex-direction: row;
-    gap: 40px;
+    gap: 20px;
     margin: 20px 0px;
     width: fit-content;
 
