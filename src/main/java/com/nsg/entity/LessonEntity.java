@@ -23,8 +23,20 @@ public class LessonEntity extends BaseEntity {
     @Column(name = "lesson_title")
     String lessonTitle;
 
-    @Column(name = "lesson_content")
-    String lessonContent;
+//    @Column(name = "lesson_content")
+//    String lessonContent;
+
+    @Lob
+    @Column(name = "vocabulary")
+    String vocabulary;
+
+    @Lob
+    @Column(name = "kanji")
+    String kanji;
+
+    @Lob
+    @Column(name = "grammar")
+    String grammar;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

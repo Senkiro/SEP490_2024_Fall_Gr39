@@ -4,6 +4,7 @@ import com.nsg.Mapper.LessonMapper;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.entity.LessonEntity;
 import com.nsg.repository.LessonRepository;
 import com.nsg.service.LessonService;
@@ -31,13 +32,24 @@ public class LessonServiceImp implements LessonService {
     }
 
     @Override
+    public LessonResponse getLesson(String lessonId) {
+        LessonEntity lesson = lessonRepository.findById(lessonId).orElseThrow(
+                () -> new AppException(ErrorCode.LESSON_NOT_FOUND)
+        );
+
+        LessonResponse response = LessonMapper.INSTANCE.toLessonResponse(lesson);
+
+        return response;
+    }
+
+    @Override
     public Page<LessonEntity> getLessons(int page, int size){
         return lessonRepository.findAll(PageRequest.of(page, size));
     }
 
     @Override
     public void createLesson(LessonCreateRequest request) {
-        LessonEntity lesson = lessonMapper.toLessonEntity(request);
+        LessonEntity lesson = LessonMapper.INSTANCE.toLessonEntity(request);
         lessonRepository.save(lesson);
     }
 

@@ -1,6 +1,7 @@
 package com.nsg.config.corsconfig;
 
 
+import com.nsg.common.enums.UserRole;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.UserRepository;
 import lombok.AccessLevel;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -26,7 +28,7 @@ public class ApplicationInitConfig {
                 UserEntity user = UserEntity.builder()
                         .username("adminEntity")
                         .password(passwordEncoder.encode("admin1"))
-//                        .role("ADMIN")
+                        .roles(UserRole.STAFF)
                         .isActive(true)
                         .build();
                 userRepository.save(user);
