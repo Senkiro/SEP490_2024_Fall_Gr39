@@ -27,8 +27,8 @@
         <tr v-for="(event, index) in events" :key="event.eventId">
           <td class="center">{{ index + 1 }}</td>
           <td>{{ event.eventName }}</td>
-          <td>{{ event.address }}</td>
-          <td style="width: 600px">
+          <td style="width: 250px">{{ event.address }}</td>
+          <td style="width: 550px">
             <span v-if="!isExpanded[index]">
               {{ shortenText(event.description) }}
                 <span v-if="event.description.length > maxDescriptionLength" class="expand-text"
