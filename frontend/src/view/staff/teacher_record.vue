@@ -147,6 +147,7 @@ export default {
           this.teachers = response.data.result.teachers;
           this.totalElements = response.data.result.totalElements;
           this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+          this.updateDisplayedPages();
         } else {
           this.showNotification('Không thể tải danh sách giáo viên: ' + response.data.message, 'error');
         }
@@ -208,6 +209,23 @@ export default {
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
+    },
+    updateDisplayedPages() {
+      const pages = [];
+      if (this.totalPages <= 5) {
+        for (let i = 1; i <= this.totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (this.currentPage <= 3) {
+          pages.push(1, 2, 3, '...', this.totalPages);
+        } else if (this.currentPage >= this.totalPages - 2) {
+          pages.push(1, '...', this.totalPages - 2, this.totalPages - 1, this.totalPages);
+        } else {
+          pages.push(1, '...', this.currentPage, '...', this.totalPages);
+        }
+      }
+      this.displayedPages = pages;
     }
   },
   watch: {
