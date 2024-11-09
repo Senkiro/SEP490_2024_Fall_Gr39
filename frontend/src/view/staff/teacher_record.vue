@@ -1,51 +1,57 @@
 <template>
-  <div class="teacher-record">
-    <header class="teacher-record-header elevated-header">
+  <div class="container">
+    <div class="headContent">
       <h1>Teacher Record</h1>
-    </header>
-    <div class="teacher-record-actions">
-      <button class="btn btn-add" @click="showAddTeacherPopup = true">
-        <VsxIcon iconName="AddCircle" size="20" /> Add teacher
+    </div>
+
+    <div class="actions">
+      <button>
+        <VsxIcon iconName="Chart" size="20" type="bold" /> View statistical chart
       </button>
-      <button class="btn btn-chart">
-        <VsxIcon iconName="Chart" size="20" /> View statistical chart
+      <button @click="showAddTeacherPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold" /> Add teacher
       </button>
     </div>
-    <table class="teacher-table">
-      <thead>
-      <tr>
-        <th>No</th>
-        <th>Name</th>
-        <th>Japanese Name</th>
-        <th>Dob</th>
-        <th>Email</th>
-        <th>Gender</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(teacher, index) in teachers" :key="teacher.userId">
-        <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-        <td>{{ teacher.fullName }}</td>
-        <td>{{ teacher.japaneseName }}</td>
-        <td>{{ teacher.dob }}</td>
-        <td>{{ teacher.email }}</td>
-        <td>{{ teacher.gender ? 'Male' : 'Female' }}</td>
-        <td :class="{'status-progress': teacher.active, 'status-inactive': !teacher.active}">
-          {{ teacher.active ? 'Active' : 'Inactive' }}
-        </td>
-        <td>
-          <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewTeacherDetail(teacher)" />
-        </td>
-      </tr>
-      </tbody>
-    </table>
 
-    <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">Previous</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Next</button>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Name</th>
+            <th>Japanese Name</th>
+            <th>Dob</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Status</th>
+            <th class="center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(teacher, index) in teachers" :key="teacher.userId">
+            <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+            <td>{{ teacher.fullName }}</td>
+            <td>{{ teacher.japaneseName }}</td>
+            <td>{{ teacher.dob }}</td>
+            <td>{{ teacher.email }}</td>
+            <td>{{ teacher.gender ? 'Male' : 'Female' }}</td>
+            <td :class="{ 'status-progress': teacher.active, 'status-inactive': !teacher.active }">
+              {{ teacher.active ? 'Active' : 'Inactive' }}
+            </td>
+            <td class="center">
+              <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewTeacherDetail(teacher)" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
+        <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
+          @click="changePage(page)">
+          {{ page }}
+        </button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
+      </div>
     </div>
 
     <div v-if="showAddTeacherPopup" class="popup-overlay">
@@ -134,8 +140,8 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/teacher?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost:8088/fja-fap/staff/teacher?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         if (response.data.code === 1000) {
           this.teachers = response.data.result.teachers;
@@ -185,8 +191,8 @@ export default {
       } catch (error) {
         console.error('Lỗi khi thêm giáo viên:', error);
         const errorMessage = error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
-            : 'Đã xảy ra lỗi khi thêm giáo viên. Vui lòng thử lại.';
+          ? error.response.data.message
+          : 'Đã xảy ra lỗi khi thêm giáo viên. Vui lòng thử lại.';
 
         this.showNotification(errorMessage, 'error');
       }
@@ -207,105 +213,13 @@ export default {
   watch: {
     // Watcher để cập nhật URL khi `currentPage` thay đổi
     currentPage(newPage) {
-      this.$router.push({ path: '/staff/teacher-record', query: { page: newPage } }).catch(() => {});
+      this.$router.push({ path: '/staff/teacher-record', query: { page: newPage } }).catch(() => { });
     }
   }
 };
 </script>
 
 <style scoped>
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.pagination button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #4a90e2;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  margin: 0 5px;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.teacher-record {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-}
-
-.teacher-record-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 20px;
-}
-
-.teacher-record-header h1 {
-  font-size: 36px;
-  font-weight: bold;
-  background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.teacher-record-actions {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.teacher-record-actions .btn {
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: normal;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background-image: linear-gradient(90deg, #3E5DD4, #223374);
-  color: #fff;
-  gap: 10px;
-}
-
-.teacher-table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow-x: auto;
-  display: block;
-}
-
-.teacher-table th, .teacher-table td {
-  padding: 12px 24px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  align-items: center;
-  align-content: center;
-}
-
-.teacher-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
-}
-
-.status-progress {
-  color: #304CB2;
-}
-
-.status-inactive {
-  color: #d5182d;
-}
 
 .popup-overlay {
   position: fixed;
@@ -345,7 +259,8 @@ export default {
   font-weight: bold;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 10px;
   font-size: 14px;
