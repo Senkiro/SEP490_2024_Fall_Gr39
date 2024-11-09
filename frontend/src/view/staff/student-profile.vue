@@ -3,6 +3,7 @@
     <div class="headContent">
       <h1>Student Profile</h1>
     </div>
+
     <section class="student-info-card">
 
       <div class="student-info-wrapper">
@@ -91,57 +92,59 @@
     </div>
 
     <!-- Attendance Report Table -->
-    <table v-if="showAttendance" class="attendance-table">
-      <thead>
-        <tr>
-          <th>Session No</th>
-          <th>Date</th>
-          <th>Slot</th>
-          <th>Attendance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>2/9/2024</td>
-          <td>Morning (8:30 - 12:30)</td>
-          <td class="attended">Attend</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>x/5/2024</td>
-          <td>Morning (8:30 - 12:30)</td>
-          <td class="attended">Attend</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>y/1/2024</td>
-          <td>Morning (8:30 - 12:30)</td>
-          <td class="absent">Absent</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table v-if="showAttendance">
+        <thead>
+          <tr>
+            <th>Session No</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Attendance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>2/9/2024</td>
+            <td>Morning (8:30 - 12:30)</td>
+            <td class="attended">Attend</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>x/5/2024</td>
+            <td>Morning (8:30 - 12:30)</td>
+            <td class="attended">Attend</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>y/1/2024</td>
+            <td>Morning (8:30 - 12:30)</td>
+            <td class="absent">Absent</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <table v-else class="mark-report-table">
-      <thead>
-        <tr>
-          <th>Grade Category</th>
-          <th>Grade Item</th>
-          <th>Weight</th>
-          <th>Value</th>
-          <th>Comment</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="grade in markReport" :key="grade.category">
-          <td>{{ grade.category }}</td>
-          <td>{{ grade.item }}</td>
-          <td>{{ grade.weight }}</td>
-          <td>{{ grade.value }}</td>
-          <td>{{ grade.comment }}</td>
-        </tr>
-      </tbody>
-    </table>
+      <table v-else>
+        <thead>
+          <tr>
+            <th>Grade Category</th>
+            <th>Grade Item</th>
+            <th>Weight</th>
+            <th>Value</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="grade in markReport" :key="grade.category">
+            <td>{{ grade.category }}</td>
+            <td>{{ grade.item }}</td>
+            <td>{{ grade.weight }}</td>
+            <td>{{ grade.value }}</td>
+            <td>{{ grade.comment }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -307,11 +310,12 @@ const markReport = ref([
 
       .tab-button {
         padding: 10px;
-        background-color: transparent;
+        background: none;
         border: none;
         cursor: pointer;
         font-size: 14px;
         color: #726C6C;
+        border-radius: 0;
       }
 
       .active {
@@ -323,23 +327,6 @@ const markReport = ref([
         }
       }
     }
-  }
-
-  .attendance-table,
-  .mark-report-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .attendance-table th,
-  .attendance-table td,
-  .mark-report-table th,
-  .mark-report-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: center;
-    font-size: 14px;
   }
 
   .attended {

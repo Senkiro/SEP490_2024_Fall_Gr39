@@ -102,6 +102,12 @@ button {
   cursor: pointer;
   gap: 10px;
 }
+
+
+.btn-cancel {
+  background: #ccc;
+  color: #fff;
+}
 </style>
 
 

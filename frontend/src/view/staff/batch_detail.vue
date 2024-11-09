@@ -68,13 +68,17 @@
           </tbody>
         </table>
         <div class="pagination">
-          <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1"><VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" /></button>
+          <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          </button>
           <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">1</button>
           <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
             @click="changePage(page)">
             {{ page }}
           </button>
-          <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages"><VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" /></button>
+          <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          </button>
         </div>
       </div>
     </div>
@@ -162,9 +166,9 @@
   </div>
 
   <!-- Popup Add Class -->
-  <div v-if="showAddClassPopup" class="add-class-popup-overlay">
-    <div class="add-class-popup">
-      <h2 class="popup-title">Add class</h2>
+  <div v-if="showAddClassPopup" class="popup-overlay">
+    <div class="popup">
+      <h2>Add class</h2>
       <form @submit.prevent="addClass">
         <div class="form-group">
           <label for="className">Class name *</label>
@@ -174,13 +178,17 @@
           <label for="classColor">Color *</label>
           <input type="color" id="classColor" v-model="newClass.color" required />
         </div>
-        <div class="form-actions">
+        <div class="actions">
           <button type="submit" class="btn btn-create">Create</button>
           <button type="button" class="btn btn-cancel" @click="showAddClassPopup = false">Cancel</button>
         </div>
       </form>
     </div>
   </div>
+
+  <!-- <div v-if="notification.message" :class="['notification', notification.type]">
+    {{ notification.message }}
+  </div> -->
 </template>
 
 <script>

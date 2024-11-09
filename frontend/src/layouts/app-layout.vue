@@ -134,5 +134,84 @@ export default {
       }
     }
   }
+
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .popup {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      width: 400px;
+      max-width: 90%;
+
+      h2 {
+        margin-top: 0;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-weight: bold;
+        }
+
+        input {
+          width: 100%;
+          padding: 10px;
+          font-size: 14px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+      }
+
+      .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+
+      .required {
+        color: red;
+        font-weight: bold;
+      }
+
+
+    }
+  }
+
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #fff;
+    z-index: 1000;
+    transition: all 0.5s ease;
+  }
+
+  .success {
+    background-color: #4caf50;
+  }
+
+  .error {
+    background-color: #f44336;
+  }
 }
 </style>
