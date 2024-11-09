@@ -1,8 +1,7 @@
-package com.nsg.dto.request.lesson;
+package com.nsg.dto.response.lesson;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,16 +10,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LessonCreateRequest {
-    @NotNull(message = "NOTNULL_LESSON_TITLE")
+public class LessonResponse {
+    String lessonId;
+
     String lessonTitle;
 
-    @NotNull(message = "VOCABULARY_IS_NULL")
     String vocabulary;
-
-    @NotNull(message = "KANJI_IS_NULL")
     String kanji;
-
     String grammar;
-
 }

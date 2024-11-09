@@ -11,6 +11,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
+import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
@@ -71,6 +72,7 @@ public class StaffController {
     public ApiResponse<StudentEntity> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
         return ApiResponse.<StudentEntity>builder()
                 .result(studentService.createStudent(request, batch_name))
+                .message("Create student successfully!")
                 .build();
     }
 
@@ -177,6 +179,14 @@ public class StaffController {
         lessonService.createLesson(request);
         return ApiResponse.<LessonEntity>builder()
                 .message("A new lesson have been created!")
+                .build();
+    }
+
+    //get a lesson by id
+    @GetMapping("/get-lesson/{lesson_id}")
+    ApiResponse<LessonResponse> getLesson(@PathVariable("lesson_id") String lesson_id){
+        return ApiResponse.<LessonResponse>builder()
+                .result(lessonService.getLesson(lesson_id))
                 .build();
     }
 

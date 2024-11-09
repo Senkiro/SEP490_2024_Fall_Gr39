@@ -137,7 +137,7 @@ public class UserServiceImp implements UserService {
         UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
 
         return userInforResponse;
-    };
+    }
 
 
     //update user information

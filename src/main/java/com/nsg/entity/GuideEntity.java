@@ -24,6 +24,7 @@ public class GuideEntity extends BaseEntity {
     @Column(name = "guide_content")
     String guideContent;
 
-
+    @Column(name = "status")
+    boolean status;
 
 }
