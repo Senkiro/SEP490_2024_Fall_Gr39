@@ -30,7 +30,7 @@
             <input type="time" v-model="newSlot.endTime" id="endTime" required />
           </div>
 
-          <div class="button-group">
+          <div class="actions">
             <button type="submit" class="btn btn-create">Save</button>
             <button type="button" class="btn btn-cancel" @click="confirmCancel">Cancel</button>
           </div>

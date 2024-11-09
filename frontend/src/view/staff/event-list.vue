@@ -18,7 +18,6 @@
             <th>Title</th>
             <th>Destination</th>
             <th>Information</th>
-            <th>Date</th>
             <th>Status</th>
             <th class="center">Action</th>
           </tr>
@@ -29,7 +28,6 @@
             <td>{{ event.title }}</td>
             <td>{{ event.destination }}</td>
             <td>{{ event.information }}</td>
-            <td>{{ event.date }}</td>
             <td :class="event.status === 'Not happen' ? 'status-pending' : 'status-finished'">
               {{ event.status }}
             </td>
