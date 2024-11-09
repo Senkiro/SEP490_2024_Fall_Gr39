@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { VsxIcon } from "vue-iconsax";
+import {VsxIcon} from "vue-iconsax";
 import axios from 'axios';
 
 export default {
@@ -115,7 +115,7 @@ export default {
       },
       errorMessage: "",
       currentPage: 1,
-      itemsPerPage: 1,
+      itemsPerPage: 5,
       totalElements: 0,
       totalPages: 0,
       isLoading: false,
