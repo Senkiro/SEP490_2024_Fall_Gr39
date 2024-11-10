@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
@@ -13,6 +14,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
@@ -73,6 +75,9 @@ public class StaffController {
 
     @Autowired
     EventService eventService;
+
+    @Autowired
+    ClassService classService;
 
 
     /**********************************
@@ -434,7 +439,7 @@ public class StaffController {
                 .build();
     }
     /**********************************
-     * Manage Evnet
+     * Manage Event
      **********************************/
 
     //get all
@@ -454,5 +459,52 @@ public class StaffController {
                 .message("A new event have been created!")
                 .build();
     }
+
+    /**********************************
+     * Manage Class
+     **********************************/
+    //create a class
+    @PostMapping("/create-class")
+    public ApiResponse<?> createClass(@RequestBody ClassRequest request) {
+        classService.createClass(request);
+        return ApiResponse.builder()
+                .message("Create new class successfully!")
+                .build();
+    }
+
+    //get all class
+    @GetMapping("/get-all-class")
+    public ApiResponse<List<ClassResponse>> getAllClass(){
+        return ApiResponse.<List<ClassResponse>>builder()
+                .result(classService.getAllClass())
+                .build();
+    }
+
+    //get a class
+    @GetMapping("/get-class/{class_id}")
+    public ApiResponse<ClassResponse> getClass(@PathVariable("class_id") String class_id) {
+        return ApiResponse.<ClassResponse>builder()
+                .result(classService.getClass(class_id))
+                .build();
+    }
+
+    //update a class
+    @PostMapping("/update-class/{class_id}")
+    public ApiResponse<ClassResponse> updateClass(@PathVariable("class_id") String class_id, @RequestBody ClassRequest request) {
+        return ApiResponse.<ClassResponse>builder()
+                .result(classService.updateClass(class_id, request))
+                .message("Update class successfully!")
+                .build();
+    }
+
+    //delete a class
+    @DeleteMapping("/delete-clas/{class_id}")
+    public ApiResponse<?> deleteClass(@PathVariable("class_id") String class_id) {
+        classService.deleteClass(class_id);
+        return ApiResponse.builder()
+                .message("Delete class successfully!")
+                .build();
+    }
+
 
 }

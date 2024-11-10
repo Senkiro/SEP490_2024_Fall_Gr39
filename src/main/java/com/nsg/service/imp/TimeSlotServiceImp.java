@@ -32,6 +32,7 @@ public class TimeSlotServiceImp implements TimeSlotService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         timeSlot.setName(request.getName());
+
         // Chuyển đổi String thành LocalTime
         timeSlot.setStartTime(LocalTime.parse(request.getStartTime(), formatter));
         timeSlot.setEndTime(LocalTime.parse(request.getEndTime(), formatter));
