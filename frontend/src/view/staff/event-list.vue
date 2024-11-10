@@ -69,16 +69,24 @@
         </div>
         <form @submit.prevent="addEvent">
           <div class="form-group">
-            <label for="eventName">Title <span class="required">*</span></label>
+            <label for="eventName">Event title <span class="required">*</span></label>
             <input type="text" id="eventName" v-model="newBatch.eventName" required/>
+          </div>
+          <div class="form-group">
+            <label for="description">Information <span class="required"> </span></label>
+            <textarea id="description" v-model="newBatch.description" rows="6"></textarea>
           </div>
           <div class="form-group">
             <label for="address">Destination <span class="required">*</span></label>
             <input type="text" id="address" v-model="newBatch.address" required/>
           </div>
-          <div class="form-group">
-            <label for="description">Information <span class="required"></span></label>
-            <textarea id="description" v-model="newBatch.description" rows="6" style="width: 100%"></textarea>
+          <div>
+            <label for="image">Image <span class="required">*</span></label>
+            <div class="custom-file-input">
+              <label class="file-label" for="image">Select image</label>
+              <input type="file" id="image" name="image" @change="handleFileChange">
+              <span v-if="fileName">{{ fileName }}</span>
+            </div>
           </div>
           <div class="actions">
             <button class="btn-cancel" @click="closePopup">Cancel</button>
@@ -197,6 +205,10 @@ export default {
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      this.fileName = file ? file.name : 'No file selected';
     }
   },
   mounted() {
@@ -212,4 +224,33 @@ export default {
   cursor: pointer;
   text-decoration: underline;
 }
+
+#description {
+  width: 250px;
+}
+
+
+.custom-file-input {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-file-input input[type="file"] {
+  display: none;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 8px 15px;
+  margin-left: 55px;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.file-label:hover {
+  background-color: #d4d4d4;
+}
+
 </style>
