@@ -2,7 +2,9 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
+import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
@@ -10,6 +12,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.room.RoomResponse;
@@ -62,6 +65,9 @@ public class StaffController {
 
     @Autowired
     ExamTypeService examTypeService;
+
+    @Autowired
+    ExamService examService;
 
 
     /**********************************
@@ -376,7 +382,51 @@ public class StaffController {
                 .build();
     }
 
+    /**********************************
+     * Manage Exam
+     **********************************/
 
+    //create new exam
+    @PostMapping("/create-exam")
+    public ApiResponse<?> createExam(@RequestParam int exam_type, @RequestBody ExamRequest request) {
+        examService.createExam(request, exam_type);
+        return ApiResponse.builder()
+                .message("Create new exam successfully!")
+                .build();
+    }
 
+    //get all exam
+    @GetMapping("/get-all-exam")
+    public ApiResponse<List<ExamResponse>> getAllExam(){
+        return ApiResponse.<List<ExamResponse>>builder()
+                .result(examService.getAllExam())
+                .build();
+    }
+
+    //get exam by id
+    @GetMapping("/get-exam/{exam_id}")
+    public ApiResponse<ExamResponse> getExam(@PathVariable("exam_id") String exam_id) {
+        return ApiResponse.<ExamResponse>builder()
+                .result(examService.getExam(exam_id))
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-exam/{exam_id}")
+    public ApiResponse<ExamResponse> updateExam(@PathVariable("exam_id") String exam_id, @RequestBody ExamUpdateRequest request) {
+        return ApiResponse.<ExamResponse>builder()
+                .result(examService.updateExam(exam_id, request))
+                .message("Update exam successfully!")
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-exam/{exam_id}")
+    public ApiResponse<?> deleteExam(@PathVariable("exam_id") String exam_id) {
+        examService.deleteExam(exam_id);
+        return ApiResponse.builder()
+                .message("Delete exam successfully!")
+                .build();
+    }
 
 }
