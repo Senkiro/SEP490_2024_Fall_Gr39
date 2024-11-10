@@ -81,7 +81,13 @@ const routes = [
         name: 'Event',
         component: () => import('../view/staff/event-list.vue'),
         meta: { layout: 'app', requiresAuth: true },
-    }
+    },
+    {
+        path: '/staff/schedule',
+        name: 'Schedule',
+        component: () => import('../view/staff/schedule-management.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
 ];
 
 const router = createRouter({
