@@ -46,6 +46,12 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
+        path: '/staff/student-record',
+        name: 'StudentRecord',
+        component: () => import('../view/staff/student-record.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
         path: '/staff/teacher-record',
         name: 'TeacherRecord',
         component: () => import('../view/staff/teacher-record.vue'),
