@@ -157,6 +157,13 @@ export default {
       border-radius: 20px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 
+      .exit-icon{
+        margin: -10px -30px 0 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
       .popup-title{
         display: flex;
         justify-content: center;

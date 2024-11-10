@@ -167,14 +167,30 @@
         </div>
         <div v-if="showEventListPopup" class="popup-overlay">
             <div class="popup">
+                <div class="exit-icon">
+                    <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold"
+                        @click="showEventListPopup = false" />
+                </div>
                 <div class="popup-title">
                     <h2>Pick an event</h2>
                 </div>
 
-                <form @submit.prevent="addClass">
+                <form @submit.prevent="addEvent">
                     <div class="radio">
                         <input type="radio" value="1" name="event-list" />
                         <label for="1">Trip to Tokyo Tower</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" value="2" name="event-list" />
+                        <label for="2">Kabukicho</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" value="3" name="event-list" />
+                        <label for="3">Event with long title so that I can test the width</label>
+                    </div>
+                    <div class="actions">
+                        <!-- <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button> -->
+                        <button type="submit">Add</button>
                     </div>
                 </form>
             </div>
@@ -242,5 +258,13 @@ export default {
             }
         }
     }
+}
+
+.radio {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+
+    margin: 20px 0;
 }
 </style>
