@@ -36,7 +36,7 @@
             <td>{{ batchEntity.year }}</td>
             <td>{{ batchEntity.startTime }}</td>
             <td>{{ batchEntity.endTime }}</td>
-            <td class="center">0</td>
+            <td class="center">{{ batchEntity.studentCount || 0 }}</td>
             <td
               :class="{ 'status-progress': getStatus(batchEntity.endTime) === 'On progress', 'status-graduated': getStatus(batchEntity.endTime) === 'Graduated' }">
               {{ getStatus(batchEntity.endTime) }}
@@ -140,6 +140,14 @@ export default {
         this.batches = response.data.result.content;
         this.totalElements = response.data.result.totalElements;
         this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+
+        await Promise.all(
+            this.batches.map(async (batch) => {
+              const studentCount = await this.countStudents(batch.batchName);
+              batch.studentCount = studentCount;
+            })
+        );
+
         this.updateDisplayedPages();
       } catch (error) {
         console.error('Error fetching batches:', error);
@@ -219,6 +227,18 @@ export default {
         }
       }
       this.displayedPages = pages;
+    },
+    async countStudents(batchName) {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-student-by-batch?page=0&size=1000&batch_name=${batchName}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data.result.totalElements;
+      } catch (error) {
+        console.error('Error fetching student count:', error);
+        return 0;
+      }
     }
   },
   watch: {
