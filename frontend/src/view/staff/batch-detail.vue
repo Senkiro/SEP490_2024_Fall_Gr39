@@ -116,6 +116,9 @@
     <!-- Popup Add Student -->
     <div v-if="showAddStudentPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddStudentPopup = false" />
+        </div>
         <div class="popup-title">
           <h2>Add student</h2>
         </div>
@@ -151,12 +154,12 @@
             <label>Gender <span class="required">*</span></label>
             <div class="gender-group">
               <div class="radio">
-                <input type="radio" id="male" value="Male" v-model="newStudent.gender" required />
+                <input type="radio" id="male" value="Male" name="gender" v-model="newStudent.gender" checked />
                 <label for="male">Male</label>
               </div>
               <div class="radio">
-                <input type="radio" id="female" value="Female" v-model="newStudent.gender" required />
-              <label for="female">Female</label>
+                <input type="radio" id="female" value="Female" name="gender" v-model="newStudent.gender" />
+                <label for="female">Female</label>
               </div>
             </div>
           </div>
@@ -165,7 +168,7 @@
             <input type="text" id="phone" v-model="newStudent.phone" required />
           </div>
           <div class="actions">
-            <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button>
+            <!-- <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button> -->
             <button type="submit">Create</button>
           </div>
         </form>
@@ -186,7 +189,10 @@
           </div>
           <div class="form-group">
             <label for="classColor">Color <span class="required">*</span></label>
-            <input type="color" id="classColor" v-model="newClass.color" required />
+            <div id="color-picker">
+              <input type="color" id="classColor" v-model="newClass.color" required />
+            </div>
+
           </div>
           <div class="actions">
             <button type="submit">Create</button>
@@ -440,6 +446,18 @@ export default {
     .active-tab {
       background: #fff;
       color: #1A2C6F;
+    }
+  }
+
+  #color-picker {
+    width: 250px;
+    display: flex;
+    align-items: flex-start;
+
+    input {
+      width: 80px;
+      height: 30px;
+      padding: 0px 5px;
     }
   }
 }

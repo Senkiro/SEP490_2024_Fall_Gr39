@@ -51,7 +51,7 @@ export default {
   .filters {
     display: flex;
     flex-direction: row;
-    gap: 40px;
+    gap: 20px;
     margin: 20px 0px;
     width: fit-content;
 
@@ -156,6 +156,13 @@ export default {
       padding: 20px 40px;
       border-radius: 20px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+
+      .exit-icon{
+        margin: -10px -30px 0 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
 
       .popup-title{
         display: flex;
