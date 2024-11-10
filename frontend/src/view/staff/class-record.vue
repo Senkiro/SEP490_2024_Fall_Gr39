@@ -1,60 +1,82 @@
 <template>
-  <div class="class-record-container">
-    <header class="class-record-header">
-      <h1>{{ batchEntity.name }}</h1>
-      <div class="class-record-actions">
-        <button class="btn btn-student-record" @click="switchTab('student')">Student Record</button>
-        <button class="btn btn-class-record" @click="switchTab('class')">Class Record</button>
-      </div>
-    </header>
-    <div class="class-record-content">
-      <button class="btn btn-add-class">Add class</button>
-      <table class="class-table">
+  <div class="container">
+    <div class="headContent">
+      <h1>Class Record</h1>
+    </div>
+    <div class="actions">
+      <button @click="openAddClassPopup">
+        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        Add class
+      </button>
+    </div>
+    <div class="table-container">
+      <table>
         <thead>
         <tr>
-          <th>No</th>
+          <th class="center">No</th>
           <th>Class</th>
           <th>Number of students</th>
-          <th>Action</th>
+          <th class="center">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(classItem, index) in classes" :key="classItem.id">
-          <td>{{ index + 1 }}</td>
+          <td class="center">{{ index + 1 }}</td>
           <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
           <td>{{ classItem.studentCount }}</td>
-          <td>
-            <VsxIcon iconName="Eye" :size="24" color="#5584FF" type="linear" @click="viewClassDetail(classItem)" />
+          <td class="center">
+            <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)"/>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <!-- Popup Add Class -->
+  <div v-if="showAddClassPopup" class="popup-overlay">
+    <div class="popup">
+      <div class="popup-title">
+        <h2>Add class</h2>
+      </div>
+
+      <form @submit.prevent="addClass">
+        <div class="form-group">
+          <label for="className">Class name <span class="required">*</span></label>
+          <input type="text" id="className" v-model="newClass.name" required />
+        </div>
+        <div class="form-group">
+          <label for="classColor">Color <span class="required">*</span></label>
+          <input type="color" id="classColor" v-model="newClass.color" required />
+        </div>
+        <div class="actions">
+          <button type="submit">Create</button>
+          <button class="btn btn-cancel" @click="showAddClassPopup = false">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script>
-import { VsxIcon } from "vue-iconsax";
+import {VsxIcon} from "vue-iconsax";
 
 export default {
   name: "ClassRecord",
-  components: { VsxIcon },
+  components: {VsxIcon},
   data() {
     return {
-      batchEntity: { name: 'FALL2024' },
+      batchEntity: {name: 'FALL2024'},
       classes: [
-        { id: 1, name: 'Blue', classColor: 'blue', studentCount: 30 },
-        { id: 2, name: 'Red', classColor: 'red', studentCount: 30 },
-        { id: 3, name: 'Green', classColor: 'green', studentCount: 30 },
-        { id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30 },
-        { id: 5, name: 'Purple', classColor: 'purple', studentCount: 30 }
+        {id: 1, name: 'Blue', classColor: 'blue', studentCount: 30},
+        {id: 2, name: 'Red', classColor: 'red', studentCount: 30},
+        {id: 3, name: 'Green', classColor: 'green', studentCount: 30},
+        {id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30},
+        {id: 5, name: 'Purple', classColor: 'purple', studentCount: 30}
       ]
     };
   },
   methods: {
-    switchTab(tab) {
-      this.$emit("switchTab", tab);
-    },
     viewClassDetail(classItem) {
       console.log("Viewing class: ", classItem);
     }
@@ -63,63 +85,4 @@ export default {
 </script>
 
 <style scoped>
-.class-record-container {
-  padding: 20px;
-}
-
-.class-record-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.class-record-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  padding: 10px 20px;
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-student-record,
-.btn-class-record {
-  background-color: #4a90e2;
-  color: #fff;
-}
-
-.class-record-content {
-  margin-top: 20px;
-}
-
-.class-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.class-table th,
-.class-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-}
-
-.class-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
-}
-
-.btn-add-class {
-  background-color: #6ECBB8;
-  color: #fff;
-  padding: 8px 16px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
 </style>

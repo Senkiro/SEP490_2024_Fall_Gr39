@@ -4,45 +4,51 @@ const routes = [
     {
         path: '/login',
         name: 'LoginPage',
-        component: () => import('../view/auth/loginPage.vue'),
+        component: () => import('../view/auth/login-page.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
     {
         path: '/forgot-password',
         name: 'ForgotPasswordPage',
-        component: () => import('../view/auth/forgotPasswordPage.vue'),
+        component: () => import('../view/auth/forgot-password.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
     //dashboard
     {
         path: '/staff',
         name: 'StaffHomePage',
-        component: () => import('../view/dashboard/staffHomepage.vue'),
+        component: () => import('../view/dashboard/staff-homepage.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
         path: '/manager',
         name: 'ManagerHomePage',
-        component: () => import('../view/dashboard/managerHomepage.vue'),
+        component: () => import('../view/dashboard/manager-homepage.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     //staff router
     {
         path: '/staff/batch-record',
         name: 'BatchRecord',
-        component: () => import('../view/staff/batch_record.vue'),
+        component: () => import('../view/staff/batch-record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
         path: '/staff/batch-detail/:batchName',
         name: 'BatchDetail',
-        component: () => import('../view/staff/batch_detail.vue'),
+        component: () => import('../view/staff/batch-detail.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
         path: '/staff/class-record',
         name: 'ClassRecord',
         component: () => import('../view/staff/class-record.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/student-record',
+        name: 'StudentRecord',
+        component: () => import('../view/staff/student-record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
@@ -61,21 +67,27 @@ const routes = [
     {
         path: '/staff/import-student',
         name: 'ImportStudentPage',
-        component: () => import('../view/staff/import_student.vue'),
+        component: () => import('../view/staff/import-student.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/schedule/time-slot',
+        path: '/staff/time-slot',
         name: 'TimeSlot',
-        component: () => import('../view/staff/time_slot_list.vue'),
+        component: () => import('../view/staff/timeslot-list.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/schedule/event',
+        path: '/staff/event',
         name: 'Event',
-        component: () => import('../view/staff/event_list.vue'),
+        component: () => import('../view/staff/event-list.vue'),
         meta: { layout: 'app', requiresAuth: true },
-    }
+    },
+    {
+        path: '/staff/schedule',
+        name: 'Schedule',
+        component: () => import('../view/staff/schedule-management.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
 ];
 
 const router = createRouter({

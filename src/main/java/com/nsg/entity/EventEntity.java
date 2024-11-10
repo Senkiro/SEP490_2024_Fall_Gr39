@@ -26,14 +26,18 @@ public class EventEntity extends BaseEntity {
     @Column(name = "address")
     String address;
 
+    @Column(name = "img")
+    private String imagePath;
+
     @Column(name = "status")
     boolean status;
 
+    @Lob
     @Column(name = "description")
     String description;
 
     @Column(name = "avg_rate")
-    float avgRate;
+    Float avgRate;
 
     @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

@@ -3,14 +3,13 @@
     <div class="headContent">
       <h1>Student Profile</h1>
     </div>
-    <section class="student-info-card">
 
+    <section class="student-info-card">
       <div class="student-info-wrapper">
-        <!-- Khung ảnh sinh viên nằm bên trái -->
         <div class="student-avatar-container">
           <img src="/path/to/student-image.png" alt="Student Avatar" class="student-avatar">
         </div>
-        <!-- Thông tin sinh viên nằm bên phải -->
+
         <div class="student-details-container">
           <div class="name-id-container">
             <div class="name-id">
@@ -21,18 +20,17 @@
               <VsxIcon iconName="Edit2" :size="18" color="#495057" type="linear" />Edit
             </button>
           </div>
+
           <div class="student-details">
             <div class="column column1">
               <div class="student-attribute">
                 <p>Batch</p>
                 <strong>FALL2024</strong>
               </div>
-
               <div class="student-attribute">
                 <p>Gender</p>
                 <strong>Male</strong>
               </div>
-
               <div class="student-attribute">
                 <p>DOB</p>
                 <strong>22/02/2001</strong>
@@ -44,12 +42,10 @@
                 <p>Class</p>
                 <strong style="color: green">Green</strong>
               </div>
-
               <div class="student-attribute">
                 <p>Phone</p>
                 <strong>0123456789</strong>
               </div>
-
               <div class="student-attribute">
                 <p>Email</p>
                 <strong>nammthe160123@fpt.edu.vn</strong>
@@ -66,11 +62,8 @@
                   <strong class="score-status">Very Good</strong>
                   <p class="score">8.6</p>
                 </div>
-
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
@@ -91,57 +84,63 @@
     </div>
 
     <!-- Attendance Report Table -->
-    <table v-if="showAttendance" class="attendance-table">
-      <thead>
-        <tr>
-          <th>Session No</th>
-          <th>Date</th>
-          <th>Slot</th>
-          <th>Attendance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>2/9/2024</td>
-          <td>Morning (8:30 - 12:30)</td>
-          <td class="attended">Attend</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>x/5/2024</td>
-          <td>Morning (8:30 - 12:30)</td>
-          <td class="attended">Attend</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>y/1/2024</td>
-          <td>Morning (8:30 - 12:30)</td>
-          <td class="absent">Absent</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table v-if="showAttendance">
+        <thead>
+          <tr>
+            <th class="center">Session No</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Teacher</th>
+            <th class="center">Attendance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="center">1</td>
+            <td>2/9/2024</td>
+            <td>Morning (8:30 - 12:30)</td>
+            <td>Yuri Ikeda</td>
+            <td class="center attended">Attend</td>
+          </tr>
+          <tr>
+            <td class="center">2</td>
+            <td>x/5/2024</td>
+            <td>Morning (8:30 - 12:30)</td>
+            <td>Yuri Ikeda</td>
+            <td class="center attended">Attend</td>
+          </tr>
+          <tr>
+            <td class="center">3</td>
+            <td>y/1/2024</td>
+            <td>Morning (8:30 - 12:30)</td>
+            <td>Yuri Ikeda</td>
+            <td class="center absent">Absent</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <table v-else class="mark-report-table">
-      <thead>
-        <tr>
-          <th>Grade Category</th>
-          <th>Grade Item</th>
-          <th>Weight</th>
-          <th>Value</th>
-          <th>Comment</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="grade in markReport" :key="grade.category">
-          <td>{{ grade.category }}</td>
-          <td>{{ grade.item }}</td>
-          <td>{{ grade.weight }}</td>
-          <td>{{ grade.value }}</td>
-          <td>{{ grade.comment }}</td>
-        </tr>
-      </tbody>
-    </table>
+      <table v-else>
+        <thead>
+          <tr>
+            <th>Grade Category</th>
+            <th>Grade Item</th>
+            <th>Weight</th>
+            <th>Value</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="grade in markReport" :key="grade.category">
+            <td>{{ grade.category }}</td>
+            <td>{{ grade.item }}</td>
+            <td>{{ grade.weight }}</td>
+            <td>{{ grade.value }}</td>
+            <td>{{ grade.comment }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -274,11 +273,12 @@ const markReport = ref([
             justify-content: space-between;
 
             .score-status {
-              border: 1px solid green;
+              border: 2px solid green;
               background: white;
               border-radius: 10px;
               align-content: center;
               padding: 10px;
+              color: green;
             }
 
             .score {
@@ -307,7 +307,8 @@ const markReport = ref([
 
       .tab-button {
         padding: 10px;
-        background-color: transparent;
+        background: none;
+        border-radius: 0;
         border: none;
         cursor: pointer;
         font-size: 14px;
@@ -323,23 +324,6 @@ const markReport = ref([
         }
       }
     }
-  }
-
-  .attendance-table,
-  .mark-report-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .attendance-table th,
-  .attendance-table td,
-  .mark-report-table th,
-  .mark-report-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: center;
-    font-size: 14px;
   }
 
   .attended {
