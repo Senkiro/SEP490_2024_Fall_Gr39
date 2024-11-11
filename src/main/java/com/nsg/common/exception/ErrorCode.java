@@ -51,6 +51,7 @@ public enum ErrorCode {
     CLASS_NAME_IS_NULL(1180, "Class name can not be null!"),
     CLASS_COLOUR_IS_NULL(1181, "Class colour can not be null!"),
     CLASS_NOT_FOUND(1182, "Class not found!"),
+    CLASS_NAME_EXISTED(1183, "Class name already existed!"),
 
 
     //Lesson

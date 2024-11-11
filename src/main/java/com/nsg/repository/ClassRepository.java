@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClassRepository extends BaseRepository<ClassEntity, String> {
+    ClassEntity findByClassName(String className);
 
 }
