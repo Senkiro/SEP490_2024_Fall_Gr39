@@ -28,10 +28,6 @@
     padding: 0px 24px;
     flex-direction: column;
   }
-
-  /* Đảm bảo bố cục hiển thị đúng */
-  </style>
-
   <style lang="scss">
   .container {
     padding: 20px;
@@ -114,12 +110,7 @@
         .status-progress ,.status-pending{
           color: #304CB2;
         }
-
-        .status-graduated, .status-finished {
-          color: #6ECBB8;
-        }
-      }
-
+        
       .pagination {
         display: flex;
         flex-direction: row;

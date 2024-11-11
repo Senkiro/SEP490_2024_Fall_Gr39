@@ -57,7 +57,7 @@ public enum ErrorCode {
     EVENT_NOT_EXIST(1220, "Event not existed!"),
     EVENT_EXISTED(1221, "Event existed!"),
 
-    ;
+    PARSE_ERROR(1230,"Failed to parse Excel file" );
 
     ErrorCode(int code, String message) {
         this.code = code;

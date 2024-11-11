@@ -46,6 +46,12 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
+        path: '/staff/student-record',
+        name: 'StudentRecord',
+        component: () => import('../view/staff/student-record.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
         path: '/staff/teacher-record',
         name: 'TeacherRecord',
         component: () => import('../view/staff/teacher-record.vue'),
@@ -76,37 +82,7 @@ const routes = [
         component: () => import('../view/staff/event-list.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
-    {
-        path: '/staff/room',
-        name: 'Room',
-        component: () => import('../view/staff/room_list.vue'),
-        meta: { layout: 'app', requiresAuth: true },
-    },
-    {
-        path: '/staff/news',
-        name: 'News',
-        component: () => import('../view/staff/new_list.vue'),
-        meta: { layout: 'app', requiresAuth: true },
-    },
-    {
-        path: '/staff/mark',
-        name: 'Mark',
-        component: () => import('../view/staff/mark_report.vue'),
-        meta: { layout: 'app', requiresAuth: true },
-    },
-    {
-        path: '/staff/create-news',
-        name: 'CreateNews',
-        component: () => import('../view/staff/create_news.vue'),
-        meta: { layout: 'app', requiresAuth: true },
-    },
-    {
-        path: '/staff/student-mark-report',
-        name: 'StudentMarkReport',
-        component: () => import('../view/staff/student_mark_report.vue'),
-        meta: { layout: 'app', requiresAuth: true },
-    }
-];
+    
 
 const router = createRouter({
     history: createWebHistory(),

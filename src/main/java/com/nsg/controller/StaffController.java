@@ -1,6 +1,7 @@
 package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
+import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
@@ -17,6 +18,7 @@ import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
 import com.nsg.entity.*;
+import com.nsg.repository.BatchRepository;
 import com.nsg.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -24,10 +26,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +71,9 @@ public class StaffController {
     @Autowired
     EventService eventService;
 
+    @Autowired
+    private BatchRepository batchRepository;
+
 
     /**********************************
      * Manage Student
@@ -104,6 +110,21 @@ public class StaffController {
         return ApiResponse.builder()
                 .message("Delete successful")
                 .build();
+    }
+
+    @PostMapping("/upload-students")
+    public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (ExcelHelper.hasExcelFormat(file)) {
+            try {
+                ExcelHelper excelHelper = new ExcelHelper(batchRepository); // Inject batchRepository
+                List<StudentEntity> students = ExcelHelper.excelToStudents(file.getInputStream());
+                studentService.saveAll(students);
+                return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder().message("Failed to parse file.").build());
+            }
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder().message("Please upload an Excel file.").build());
     }
 
     /**********************************
