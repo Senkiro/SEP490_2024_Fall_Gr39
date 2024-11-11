@@ -139,4 +139,8 @@ public class StudentServiceImp implements StudentService {
 
         return prefix+year+String.format("%04d", randomNumber);
     }
+
+    public void saveAll(List<StudentEntity> students) {
+        studentRepository.saveAll(students);
+    }
 }

@@ -64,4 +64,7 @@ public class UserEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
 
+    public void setRole(String role) {
+        this.roles = UserRole.valueOf(role);
+    }
 }

@@ -6,6 +6,8 @@ import com.nsg.entity.StudentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface StudentService {
 
@@ -17,4 +19,7 @@ public interface StudentService {
 
     //get student by batchName
     Page<StudentResponse> getStudentByBatchName(int page, int size, String batchName);
+
+    void saveAll(List<StudentEntity> students);
 }
+
