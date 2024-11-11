@@ -430,7 +430,6 @@ export default {
     display: flex;
     flex-direction: row;
     padding: 5px 5px;
-    margin: 20px 0px;
     width: fit-content;
     border-radius: 10px;
     background: linear-gradient(to right, #1A2C6F, #304CB2);
@@ -447,6 +446,12 @@ export default {
       background: #fff;
       color: #1A2C6F;
     }
+  }
+
+  .student-record, .class-record{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 
   #color-picker {

@@ -161,10 +161,6 @@ const markReport = ref([
 .container {
   padding: 20px;
 
-  .student-info-card {
-    padding: 20px;
-  }
-
   .student-info-wrapper {
     display: flex;
     align-items: flex-start;
@@ -294,8 +290,6 @@ const markReport = ref([
 
   .tab-buttons-container {
     width: 100%;
-    margin-top: 20px;
-    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 1rem;
     padding: 15px;
