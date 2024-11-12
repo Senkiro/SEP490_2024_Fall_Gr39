@@ -36,6 +36,7 @@ public enum ErrorCode {
     END_TIME_IS_NULL(1122, "End time can not be null"),
     INVALID_TIME_FORMAT(1123, "Time must be in the format HH:mm"),
     TIME_SLOT_NOT_FOUND(1124, "Time slot not found!s"),
+    TIME_SLOT_NAME_EXISTED(1125, "Time slot name already existed!"),
 
     //Room
     ROOMNUMBER_IS_NULL(1140, "Room number can not be null"),
