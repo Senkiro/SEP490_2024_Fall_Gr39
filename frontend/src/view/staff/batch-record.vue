@@ -48,12 +48,16 @@
         </tbody>
       </table>
       <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+        </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-          @click="changePage(page)">
+                @click="changePage(page)">
           {{ page }}
         </button>
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+        </button>
       </div>
     </div>
 
@@ -141,14 +145,13 @@ export default {
         this.totalElements = response.data.result.totalElements;
         this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
 
+        this.updateDisplayedPages();
         await Promise.all(
             this.batches.map(async (batch) => {
               const studentCount = await this.countStudents(batch.batchName);
               batch.studentCount = studentCount;
             })
         );
-
-        this.updateDisplayedPages();
       } catch (error) {
         console.error('Error fetching batches:', error);
         this.showNotification("Error fetching batches. Please try again.", 'error');
