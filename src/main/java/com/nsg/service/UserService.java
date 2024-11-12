@@ -5,7 +5,6 @@ import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
-import com.nsg.dto.response.staff.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;

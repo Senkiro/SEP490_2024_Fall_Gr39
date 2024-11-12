@@ -64,6 +64,9 @@ public enum ErrorCode {
     EVENT_NOT_EXIST(1220, "Event not existed!"),
     EVENT_EXISTED(1221, "Event existed!"),
 
+    //Student
+    STUDENT_NOT_FOUND(1240, "Student not found!"),
+
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 
     ErrorCode(int code, String message) {

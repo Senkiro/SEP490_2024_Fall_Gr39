@@ -24,7 +24,8 @@ public class ExamEntity extends BaseEntity {
     @Column(name = "exam_title")
     String examTitle;
 
-    @Column(name = "exam_content")
+    @Lob
+    @Column(name = "exam_content", columnDefinition = "LONGTEXT")
     String examContent;
 
     @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

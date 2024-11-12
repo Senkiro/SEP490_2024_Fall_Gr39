@@ -20,7 +20,7 @@ import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.room.RoomResponse;
-import com.nsg.dto.response.staff.StudentResponse;
+import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.BatchRepository;
@@ -91,9 +91,9 @@ public class StaffController {
      **********************************/
     //create new student
     @PostMapping("/create-student")
-    public ApiResponse<StudentEntity> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
-        return ApiResponse.<StudentEntity>builder()
-                .result(studentService.createStudent(request, batch_name))
+    public ApiResponse<StudentResponse> createStudent(@RequestBody @Valid StudentCreattionRequest request){
+        studentService.createStudent(request);
+        return ApiResponse.<StudentResponse>builder()
                 .message("Create student successfully!")
                 .build();
     }
@@ -112,6 +112,14 @@ public class StaffController {
         Page<StudentResponse> studentList = studentService.getStudentByBatchName(page, size, batch_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
+                .build();
+    }
+
+    //get a student by studentId
+    @GetMapping("/get-student/{student_id}")
+    public ApiResponse<StudentResponse> getStudent(@PathVariable("student_id") String student_id){
+        return ApiResponse.<StudentResponse>builder()
+                .result(studentService.getStudent(student_id))
                 .build();
     }
 

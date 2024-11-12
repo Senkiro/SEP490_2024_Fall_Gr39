@@ -30,6 +30,9 @@ public class BatchEntity extends BaseEntity {
     @Column(name = "year")
     int year;
 
+    @Column(name = "batch_status", columnDefinition = "TINYINT")
+    Integer batchStatus;
+
     @JsonIgnore
     @OneToMany( mappedBy = "batchEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
