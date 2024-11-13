@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <h1>Room List</h1>
+      <h1>Room Record</h1>
     </div>
     <div class="actions">
       <button @click="showAddRoomPopup = true">
@@ -25,8 +25,8 @@
           <td>{{ room.roomNumber }}</td>
           <td class="center">
             <div class="icon-group">
-              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"/>
-              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
+              <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" @click="editRoomPopup(room)"/>
+              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" @click="deleteRoom(room.roomId)"/>
             </div>
           </td>
         </tr>
@@ -53,6 +53,25 @@
       </div>
     </div>
 
+    <!-- Edit Room Popup -->
+    <div v-if="showEditRoomPopup" class="popup-overlay">
+      <div class="popup">
+        <div class="popup-title">
+          <h2>Edit Room - {{ editRoom.roomNumber }}</h2>
+        </div>
+        <form @submit.prevent="updateRoom">
+          <div class="form-group">
+            <label for="editRoomNumber">Room Number <span class="required">*</span></label>
+            <input type="number" id="editRoomNumber" v-model="editRoom.roomNumber" required/>
+          </div>
+          <div class="actions">
+            <button class="btn-cancel" @click="closePopup">Cancel</button>
+            <button type="submit">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
@@ -62,7 +81,7 @@
 
 <script>
 import axios from "axios";
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 
 export default {
   name: "RoomRecord",
@@ -74,8 +93,12 @@ export default {
       rooms: [],
       isLoading: false,
       showAddRoomPopup: false,
+      showEditRoomPopup: false,
       newRoom: {
         roomNumber: ''
+      },
+      editRoom: {
+        roomNumber: '' // Room name to edit
       },
       notification: {
         message: "",
@@ -107,13 +130,16 @@ export default {
       }
     },
 
-    // Đóng cửa sổ popup
+    // Close popup
     closePopup() {
       this.showAddRoomPopup = false;
+      this.showEditRoomPopup = false;
       this.newRoom = { roomNumber: '' };
+      this.editRoom = { roomNumber: '' };
+      this.editRoomId = null;
     },
 
-    // Thêm phòng mới
+    // Add new room
     async addRoom() {
       if (!this.newRoom.roomNumber) {
         return;
@@ -135,6 +161,59 @@ export default {
         this.showNotification("Error adding room. Please try again.", "error");
       }
     },
+
+    // Show Edit Room Popup
+    editRoomPopup(room) {
+      this.editRoomId = room.roomId; // Get room ID for editing
+      this.editRoom.roomNumber = room.roomNumber;
+      this.showEditRoomPopup = true;
+    },
+
+    // Update room
+    async updateRoom() {
+      if (!this.editRoom.roomNumber || this.editRoom.roomNumber <= 0) {
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        await axios.post(
+            `http://localhost:8088/fja-fap/staff/update-room/${this.editRoomId}`,
+            { roomNumber: this.editRoom.roomNumber },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        this.closePopup();
+        await this.fetchRooms();
+        this.showNotification("Room updated successfully!", "success");
+      } catch (error) {
+        console.error('Error updating room:', error);
+        this.showNotification("Error updating room. Please try again.", "error");
+      }
+    },
+
+    // Delete room
+    async deleteRoom(roomId) {
+      if (!confirm("Are you sure you want to delete this room?")) {
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        await axios.delete(
+            `http://localhost:8088/fja-fap/staff/delete-room/${roomId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        this.showNotification("Room deleted successfully!", "success");
+        await this.fetchRooms(); // Refresh room list after deletion
+      } catch (error) {
+        console.error('Error deleting room:', error);
+        this.showNotification("Error deleting room. Please try again.", "error");
+      }
+    },
+
+    // Show notification
     showNotification(message, type) {
       this.notification = { message, type };
       setTimeout(() => {
