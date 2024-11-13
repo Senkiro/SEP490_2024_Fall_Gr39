@@ -135,17 +135,17 @@
             <label for="email">Email <span class="required">*</span></label>
             <input type="email" id="email" v-model="newStudent.email" required />
           </div>
-          <div class="form-group">
-            <label for="class">Class <span class="required">*</span></label>
-            <select id="class" v-model="newStudent.class" required>
-              <option value="">Choose class now or later</option>
-              <option value="Blue">Blue</option>
-              <option value="Red">Red</option>
-              <option value="Green">Green</option>
-              <option value="Yellow">Yellow</option>
-              <option value="Purple">Purple</option>
-            </select>
-          </div>
+<!--          <div class="form-group">-->
+<!--            <label for="class">Class <span class="required">*</span></label>-->
+<!--            <select id="class" v-model="newStudent.class" required>-->
+<!--              <option value="">Choose class now or later</option>-->
+<!--              <option value="Blue">Blue</option>-->
+<!--              <option value="Red">Red</option>-->
+<!--              <option value="Green">Green</option>-->
+<!--              <option value="Yellow">Yellow</option>-->
+<!--              <option value="Purple">Purple</option>-->
+<!--            </select>-->
+<!--          </div>-->
           <div class="form-group">
             <label for="dob">DOB <span class="required">*</span></label>
             <input type="date" id="dob" v-model="newStudent.dob" placeholder="dd/mm/yyyy" required />
@@ -201,6 +201,11 @@
         </form>
       </div>
     </div>
+
+    <div v-if="notification.message" :class="['notification', notification.type]">
+      {{ notification.message }}
+    </div>
+
   </div>
 </template>
 
@@ -293,6 +298,7 @@ export default {
           phone: addedStudent.phone
         });
 
+        await this.fetchStudent();
         this.showAddStudentPopup = false;
         this.resetNewStudent();
 
@@ -414,9 +420,11 @@ export default {
       }
     },
     formatDate(dob) {
-      const [day, month, year] = dob.split('/');
+      if (!dob) return '';
+
+      const [year, month, day] = dob.split('-');
       return `${year}-${month}-${day}`;
-    },
+    }
   },
   mounted() {
     this.fetchStudent();
