@@ -32,15 +32,6 @@
         </tr>
         </tbody>
       </table>
-
-      <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
-        <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-                @click="changePage(page)">
-          {{ page }}
-        </button>
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
-      </div>
     </div>
 
     <!-- Add Room Popup -->
@@ -61,63 +52,58 @@
         </form>
       </div>
     </div>
+
+    <div v-if="notification.message" :class="['notification', notification.type]">
+      {{ notification.message }}
+    </div>
+
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import {VsxIcon} from "vue-iconsax";
 
 export default {
+  name: "RoomRecord",
+  components: {
+    VsxIcon,
+  },
   data() {
     return {
       rooms: [],
-      currentPage: 1,
-      itemsPerPage: 5,
-      totalElements: 0,
-      totalPages: 0,
-      displayedPages: [],
       isLoading: false,
       showAddRoomPopup: false,
       newRoom: {
         roomNumber: ''
-      }
+      },
+      notification: {
+        message: "",
+        type: "" // "success" or "error"
+      },
     };
   },
   methods: {
-
     async fetchRooms() {
       this.isLoading = true;
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/room?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            `http://localhost:8088/fja-fap/staff/get-all-room`,
             { headers: { Authorization: `Bearer ${token}` } }
         );
-        this.rooms = response.data.result.content;
-        this.totalElements = response.data.result.totalElements;
-        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
-        this.updateDisplayedPages();
+
+        if (response.data.code === 0) {
+          this.rooms = response.data.result; // Access result directly
+          this.totalElements = this.rooms.length;
+          this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        } else {
+          console.error("Error: Unexpected response code", response.data.code);
+        }
       } catch (error) {
         console.error("Error fetching rooms:", error);
       } finally {
         this.isLoading = false;
-      }
-    },
-
-
-    updateDisplayedPages() {
-      const pages = [];
-      for (let i = 1; i <= this.totalPages; i++) {
-        pages.push(i);
-      }
-      this.displayedPages = pages;
-    },
-
-
-    async changePage(page) {
-      if (page > 0 && page <= this.totalPages) {
-        this.currentPage = page;
-        await this.fetchRooms();
       }
     },
 
@@ -142,10 +128,18 @@ export default {
         );
 
         this.closePopup();
-        this.fetchRooms().then(r);
+        await this.fetchRooms(); // No need for `.then(r)`
+        this.showNotification("Room added successfully!", "success");
       } catch (error) {
         console.error('Error adding room:', error);
+        this.showNotification("Error adding room. Please try again.", "error");
       }
+    },
+    showNotification(message, type) {
+      this.notification = { message, type };
+      setTimeout(() => {
+        this.notification.message = "";
+      }, 3000); // Clears the message after 3 seconds
     }
   },
 
@@ -156,9 +150,4 @@ export default {
 </script>
 
 <style scoped>
-.expand-text {
-  color: blue;
-  cursor: pointer;
-  text-decoration: underline;
-}
 </style>
