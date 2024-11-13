@@ -5,61 +5,61 @@
         <button @click="editor.chain().focus().toggleBold().run()"
           :disabled="!editor.can().chain().focus().toggleBold().run()"
           :class="{ 'is-active': editor.isActive('bold') }">
-          Bold
+          <BoldIcon />
         </button>
         <button @click="editor.chain().focus().toggleItalic().run()"
           :disabled="!editor.can().chain().focus().toggleItalic().run()"
           :class="{ 'is-active': editor.isActive('italic') }">
-          Italic
+          <ItalicIcon />
         </button>
         <button @click="editor.chain().focus().toggleUnderline().run()"
           :disabled="!editor.can().chain().focus().toggleUnderline().run()"
           :class="{ 'is-active': editor.isActive('underline') }">
-          Underline
+          <UnderlineIcon />
         </button>
         <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
           :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-          H1
+          <Heading1Icon />
         </button>
         <button @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
           :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-          H2
+          <Heading2Icon />
         </button>
         <button @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
           :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-          H3
+          <Heading3Icon />
         </button>
         <button @click="editor.chain().focus().toggleBulletList().run()"
           :class="{ 'is-active': editor.isActive('bulletList') }">
-          Toggle bullet list
+          <BulletListIcon />
         </button>
         <button @click="editor.chain().focus().toggleOrderedList().run()"
           :class="{ 'is-active': editor.isActive('orderedList') }">
-          Toggle ordered list
+          <OrderedListIcon />
         </button>
         <button @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
-          Insert table
+          <TableIcon />
         </button>
         <button @click="editor.chain().focus().addColumnAfter().run()">
-          Add column after
+          <AddColumnIcon />
         </button>
         <button @click="editor.chain().focus().deleteColumn().run()">
-          Delete column
+          <RemoveColumnIcon />
         </button>
         <button @click="editor.chain().focus().addRowAfter().run()">
-          Add row after
+          <AddRowIcon />
         </button>
         <button @click="editor.chain().focus().deleteRow().run()">
-          Delete row
+          <RemoveRowIcon />
         </button>
         <button @click="editor.chain().focus().deleteTable().run()">
-          Delete table
+          <RemoveTableIcon />
         </button>
         <button @click="editor.chain().focus().mergeCells().run()">
-          Merge cells
+          <MergeCellIcon />
         </button>
         <button @click="editor.chain().focus().splitCell().run()">
-          Split cell
+          <SplitCellIcon />
         </button>
       </div>
       <editor-content :editor="editor" />
@@ -83,11 +83,48 @@ import Bold from '@tiptap/extension-bold'
 import Italic from '@tiptap/extension-italic'
 import Underline from '@tiptap/extension-underline'
 
+import BoldIcon from 'vue-material-design-icons/FormatBold.vue';
+import ItalicIcon from 'vue-material-design-icons/FormatItalic.vue';
+import UnderlineIcon from 'vue-material-design-icons/FormatUnderline.vue';
+import Heading1Icon from 'vue-material-design-icons/FormatHeader1.vue';
+import Heading2Icon from 'vue-material-design-icons/FormatHeader2.vue';
+import Heading3Icon from 'vue-material-design-icons/FormatHeader3.vue';
+import BulletListIcon from 'vue-material-design-icons/FormatListBulleted.vue';
+import OrderedListIcon from 'vue-material-design-icons/FormatListNumbered.vue';
+import TableIcon from 'vue-material-design-icons/Table.vue';
+import AddColumnIcon from 'vue-material-design-icons/TableColumnPlusAfter.vue';
+import AddRowIcon from 'vue-material-design-icons/TableRowPlusAfter.vue';
+import RemoveColumnIcon from 'vue-material-design-icons/TableColumnRemove.vue';
+import RemoveRowIcon from 'vue-material-design-icons/TableRowRemove.vue';
+import RemoveTableIcon from 'vue-material-design-icons/TableRemove.vue';
+import MergeCellIcon from 'vue-material-design-icons/TableMergeCells.vue';
+import SplitCellIcon from 'vue-material-design-icons/TableSplitCell.vue';
+
+
+
+
+
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 
 export default {
   components: {
     EditorContent,
+    BoldIcon,
+    ItalicIcon,
+    UnderlineIcon,
+    Heading1Icon,
+    Heading2Icon,
+    Heading3Icon,
+    BulletListIcon,
+    OrderedListIcon,
+    TableIcon,
+    AddColumnIcon,
+    RemoveColumnIcon,
+    AddRowIcon,
+    RemoveRowIcon,
+    RemoveTableIcon,
+    MergeCellIcon,
+    SplitCellIcon
   },
 
   setup() {
@@ -126,24 +163,30 @@ export default {
   width: 100%;
   justify-content: center;
   flex-direction: column;
-  border: 2px solid var(--primary-alt);
+  border: 2px solid var(--primary);
   border-radius: 10px;
 
   .tiptap-buttons {
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    gap: 10px;
     padding: 10px;
-    border-bottom: 1px solid var(--primary-alt);
+    border-bottom: 1px solid var(--primary);
 
-    button{
+    button {
       padding: 0;
       background: none;
-      color: #000;
+      color: var(--primary);
+      padding: 3px;
+
+      .material-design-icon {
+        display: flex;
+      }
     }
 
-    is-active{
-      background: #cccbcb;
+    .is-active {
+      background: #c4cceb;
+
     }
   }
 
@@ -174,26 +217,13 @@ export default {
       }
     }
 
-    /* Heading styles */
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      line-height: 1.1;
-      margin-top: 2.5rem;
-      text-wrap: pretty;
-    }
-
-    h1,
-    h2 {
-      margin-top: 3.5rem;
-      margin-bottom: 1.5rem;
-    }
-
     h1 {
-      font-size: 1.4rem;
+      font-size: 36px;
+      background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      margin: 20px 0px;
     }
 
     h2 {
@@ -202,6 +232,7 @@ export default {
 
     h3 {
       font-size: 1.1rem;
+      font-weight: bold;
     }
 
     h4,
@@ -210,13 +241,54 @@ export default {
       font-size: 1rem;
     }
 
-    table{
+    table,
+    th,
+    td,{
+      border: 1px solid #1A2C6F;
+    }
+    th,td,tr{
+      display: flex;
       width: 100%;
     }
 
-    table, th, td{
-      border: 1px solid #000;
+    table {
       border-collapse: collapse;
+      border-radius: 20px;
+      width: 100%;
+
+      p{
+        width:fit-content;
+        display: flex;
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      th {
+        text-align: left;
+        padding: 10px 20px;
+        background: #dae4f3;
+        width: auto;
+        display: flex;
+        width: 100%;
+      }
+
+      tr {
+        text-align: left;
+        display: flex;
+        width: 100%;
+
+        td {
+          padding: 5px 20px;
+
+          .icon-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+          }
+        }
+      }
     }
 
     /* Code and preformatted text styles */
