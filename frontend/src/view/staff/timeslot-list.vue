@@ -61,6 +61,9 @@
               </div>
             </td>
           </tr>
+          <tr v-if="slots.length === 0">
+            <td colspan="8" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
     </div>

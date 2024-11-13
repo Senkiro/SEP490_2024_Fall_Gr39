@@ -49,10 +49,13 @@
             </div>
           </td>
         </tr>
+        <tr v-if="events.length === 0">
+          <td colspan="8" class="center">No record.</td>
+        </tr>
         </tbody>
       </table>
 
-      <div class="pagination">
+      <div class="pagination" v-if="totalPages > 0">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
                 @click="changePage(page)">

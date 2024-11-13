@@ -123,45 +123,4 @@ export default {
 
 <style scoped>
 
-.container {
-  width: 100%;
-  padding: 20px;
-}
-.filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  text-align: left;
-  border: none;
-}
-
-.center {
-  text-align: center;
-}
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-.pagination button {
-  border: none;
-  background: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-.pagination .active {
-  font-weight: bold;
-}
 </style>
