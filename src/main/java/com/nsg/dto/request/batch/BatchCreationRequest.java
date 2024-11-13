@@ -20,7 +20,7 @@ public class BatchCreationRequest {
     @Size(min = 4, max = 10, message = "BATCHNAME_SIZE_INVALID")
     String batchName;
 
-    @FutureOrPresent(message = "START_TIME_NOTIN_FUTURE")
+    @Future(message = "START_TIME_NOTIN_FUTURE")
     LocalDate startTime;
 
     @Future(message = "END_TIME_NOTIN_FUTURE")
