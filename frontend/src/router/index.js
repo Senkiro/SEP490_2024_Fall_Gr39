@@ -113,11 +113,17 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-    path: '/staff/schedule',
-    name: 'Schedule',
-    component: () => import('../view/staff/schedule-management.vue'),
-    meta: { layout: 'app', requiresAuth: true },
-    }
+        path: '/staff/schedule',
+        name: 'Schedule',
+        component: () => import('../view/staff/schedule-management.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/text-editor',
+        name: 'Schedule',
+        component: () => import('../view/staff/test-page.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
 ];
 
 
