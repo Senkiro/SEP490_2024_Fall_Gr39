@@ -35,9 +35,11 @@ export default {
 <style lang="scss">
 .container {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
   .headContent {
-    margin: 20px 0px 50px 0px;
   }
 
   .actions {
@@ -45,14 +47,12 @@ export default {
     flex-direction: row;
     gap: 20px;
     justify-content: flex-end;
-    margin: 20px 0px;
   }
 
   .filters {
     display: flex;
     flex-direction: row;
     gap: 20px;
-    margin: 20px 0px;
     width: fit-content;
 
     select {
