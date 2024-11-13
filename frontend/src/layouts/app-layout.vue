@@ -39,9 +39,6 @@ export default {
   flex-direction: column;
   gap: 20px;
 
-  .headContent {
-  }
-
   .actions {
     display: flex;
     flex-direction: row;
@@ -247,6 +244,38 @@ export default {
     color: #fff;
     z-index: 1000;
     transition: all 0.5s ease;
+  }
+
+  .tab-buttons-container {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 1rem;
+    padding: 15px;
+
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid #E0E0E0;
+
+      .tab-button {
+        padding: 10px;
+        background: none;
+        border-radius: 0;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        color: #726C6C;
+      }
+
+      .active {
+        border-bottom: 3px solid #3E5DD4;
+
+        h3 {
+          font-weight: bold;
+          color: #212529;
+        }
+      }
+    }
   }
 
   .success {
