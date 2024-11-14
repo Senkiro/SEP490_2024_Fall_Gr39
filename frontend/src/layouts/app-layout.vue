@@ -110,6 +110,10 @@ export default {
         td {
           padding: 5px 20px;
           border-radius: 20px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 350px;
 
           .icon-group {
             display: flex;

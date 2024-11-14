@@ -52,7 +52,7 @@
           <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
           <td class="center">
             <div class="icon-group">
-              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"/>
+              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail"/>
               <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
             </div>
           </td>
@@ -198,6 +198,9 @@ export default {
         console.error('Error creating batch:', error);
         this.showNotification(error.response?.data?.message || "Error creating Event. Please try again.", 'error');
       }
+    },
+    viewEventDetail() {
+      this.$router.push({ name: 'EventDetail'});
     },
     showNotification(message, type) {
       this.notification = {message, type};

@@ -34,7 +34,9 @@ export default {
         TextEditor
     },
     data() {
-        isActive = false;
+        return {
+          isActive: false
+        }
     },
     methods:{
         openTextEditor() {
