@@ -1,15 +1,10 @@
 package com.nsg.service.imp;
 
-import com.nsg.Mapper.StudentMapper;
-import com.nsg.Mapper.UserMapper;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
-import com.nsg.dto.response.classResponse.ClassWithStudentResponse;
-import com.nsg.dto.response.student.StudentInClassResponse;
 import com.nsg.entity.ClassEntity;
-import com.nsg.entity.StudentEntity;
 import com.nsg.repository.ClassRepository;
 import com.nsg.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;

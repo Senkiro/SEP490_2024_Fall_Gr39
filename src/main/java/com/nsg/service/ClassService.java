@@ -2,7 +2,6 @@ package com.nsg.service;
 
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
-import com.nsg.dto.response.classResponse.ClassWithStudentResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 

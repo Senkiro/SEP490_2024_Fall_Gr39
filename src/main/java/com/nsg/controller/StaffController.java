@@ -16,7 +16,6 @@ import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
-import com.nsg.dto.response.classResponse.ClassWithStudentResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
@@ -100,7 +99,8 @@ public class StaffController {
     }
 
     @GetMapping("/student-list")
-    public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page, @RequestParam int size){
+    public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page,
+                                                           @RequestParam int size){
         Page<StudentResponse> studentList = studentService.getAllStudent(page, size);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
@@ -109,8 +109,22 @@ public class StaffController {
 
     //get student list by batchName
     @GetMapping("/get-student-by-batch")
-    public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page, @RequestParam int size, @RequestParam String batch_name){
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page,
+                                                                     @RequestParam int size,
+                                                                     @RequestParam String batch_name){
         Page<StudentResponse> studentList = studentService.getStudentByBatchName(page, size, batch_name);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentList)
+                .build();
+    }
+
+    //get student by batchName and className
+    @GetMapping("/get-student-by-batch-class")
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchNameAndClassName(@RequestParam int page,
+                                                                                 @RequestParam int size,
+                                                                                 @RequestParam String batch_name,
+                                                                                 @RequestParam String class_name){
+        Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();

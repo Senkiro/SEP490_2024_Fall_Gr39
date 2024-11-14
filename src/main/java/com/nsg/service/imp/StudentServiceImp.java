@@ -166,11 +166,69 @@ public class StudentServiceImp implements StudentService {
             //set user
             studentResponse.setUserInforResponse(userInforResponse);
 
+            //set batch
+            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
+
             //add to response list
             studentListResponse.add(studentResponse);
         }
 
         return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
+    }
+
+    @Override
+    public Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size,
+                                                                   String batchName,
+                                                                   String className) {
+        //check batch existed
+        if (batchRepository.findByBatchName(batchName).isEmpty()) {
+            throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
+        }
+
+        //check class existed
+        if (classRepository.findByClassName(className) == null) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+
+        //find all student
+        Page<StudentEntity> studentEntityList =
+                studentRepository.findByBatchEntityBatchNameAndClassEntityClassName(
+                        batchName,
+                        className,
+                        PageRequest.of(page, size));
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = new ArrayList<>();
+
+        //for
+        for (StudentEntity student : studentEntityList) {
+            StudentResponse studentResponse = new StudentResponse();
+            //get,set rollNumber
+            studentResponse.setRollNumber(student.getRollNumber());
+            studentResponse.setStudentId(student.getStudentId());
+
+            //map user to UserInforResponse
+            UserInforResponse userInforResponse =
+                    UserMapper.INSTANCE.toUserInforResponse(student.getUser());
+            //set user
+            studentResponse.setUserInforResponse(userInforResponse);
+
+            //set batch
+            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
+
+            //add to response list
+            studentListResponse.add(studentResponse);
+        }
+
+        return new PageImpl<>(studentListResponse,
+                studentEntityList.getPageable(),
+                studentEntityList.getTotalElements());
     }
 
     //generate random roll number
