@@ -39,9 +39,6 @@ export default {
   flex-direction: column;
   gap: 20px;
 
-  .headContent {
-  }
-
   .actions {
     display: flex;
     flex-direction: row;
@@ -65,7 +62,22 @@ export default {
     }
   }
 
-  .search {}
+  .search-container {
+    padding: 10px 20px;
+    display: flex;
+    border: 1px solid #ADB5BD;
+    border-radius: 10px;
+    justify-content: space-between;
+
+    .search-field {
+      font-size: 14px;
+      font-weight: normal;
+      color: #171717;
+      outline: none;
+      border: none;
+      width: 250px;
+    }
+  }
 
   .table-container {
     display: flex;
@@ -88,12 +100,22 @@ export default {
 
       tr {
         text-align: left;
+        transition: 3s;
+
+        .tab-index {
+          padding-left: 80px;
+          width: fit-content;
+        }
 
         td {
           padding: 5px 20px;
           border-radius: 20px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 350px;
 
-          .icon-group{
+          .icon-group {
             display: flex;
             gap: 10px;
             justify-content: center;
@@ -111,11 +133,13 @@ export default {
         border-radius: 0 20px 0 0;
       }
 
-      .status-progress ,.status-pending{
+      .status-progress,
+      .status-pending {
         color: #304CB2;
       }
 
-      .status-graduated, .status-finished {
+      .status-graduated,
+      .status-finished {
         color: #6ECBB8;
       }
     }
@@ -157,14 +181,14 @@ export default {
       border-radius: 20px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 
-      .exit-icon{
+      .exit-icon {
         margin: -10px -30px 0 0;
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
       }
 
-      .popup-title{
+      .popup-title {
         display: flex;
         justify-content: center;
       }
@@ -202,13 +226,13 @@ export default {
           border: 1px solid #ccc;
         }
 
-        .gender-group{
+        .gender-group {
           width: 250px;
           display: flex;
           flex-direction: row;
           gap: 50px;
 
-          .radio{
+          .radio {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
@@ -216,8 +240,8 @@ export default {
             align-items: center;
           }
 
-          input{
-            width:auto;
+          input {
+            width: auto;
           }
         }
       }
@@ -249,12 +273,56 @@ export default {
     transition: all 0.5s ease;
   }
 
+  .tab-buttons-container {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 1rem;
+    padding: 15px;
+
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid #E0E0E0;
+
+      .tab-button {
+        padding: 10px;
+        background: none;
+        border-radius: 0;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        color: #726C6C;
+      }
+
+      .active {
+        border-bottom: 3px solid #3E5DD4;
+
+        h3 {
+          font-weight: bold;
+          color: #212529;
+        }
+      }
+    }
+  }
+
+  .tab-container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .success {
     background-color: #4caf50;
   }
 
   .error {
     background-color: #f44336;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 }
 </style>

@@ -15,6 +15,13 @@
       </button>
     </div>
 
+    <div class="actions">
+      <div class="search-container">
+        <input type="text" placeholder="Search..." class="search-field">
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+      </div>
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
@@ -45,9 +52,12 @@
               <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)" />
             </td>
           </tr>
+          <tr v-if="batches.length === 0">
+            <td colspan="8" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
-      <div class="pagination">
+      <div class="pagination" v-if="totalPages > 0">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
         </button>
@@ -147,10 +157,10 @@ export default {
 
         this.updateDisplayedPages();
         await Promise.all(
-            this.batches.map(async (batch) => {
-              const studentCount = await this.countStudents(batch.batchName);
-              batch.studentCount = studentCount;
-            })
+          this.batches.map(async (batch) => {
+            const studentCount = await this.countStudents(batch.batchName);
+            batch.studentCount = studentCount;
+          })
         );
       } catch (error) {
         console.error('Error fetching batches:', error);

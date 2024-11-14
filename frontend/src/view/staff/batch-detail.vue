@@ -38,6 +38,13 @@
         </button>
       </div>
 
+      <div class="actions">
+        <div class="search-container">
+          <input type="text" placeholder="Search..." class="search-field">
+          <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+        </div>
+      </div>
+
       <div class="table-container">
         <table>
           <thead>
@@ -64,10 +71,13 @@
                   @click="navigateToProfile(student.id)" />
               </td>
             </tr>
+            <tr v-if="students.length === 0">
+              <td colspan="8" class="center">No record.</td>
+            </tr>
           </tbody>
         </table>
 
-        <div class="pagination">
+        <div class="pagination" v-if="totalPages > 0">
           <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
             <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
           </button>
@@ -456,7 +466,8 @@ export default {
     }
   }
 
-  .student-record, .class-record{
+  .student-record,
+  .class-record {
     display: flex;
     flex-direction: column;
     gap: 20px;

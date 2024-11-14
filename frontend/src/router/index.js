@@ -71,6 +71,12 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
+        path: '/staff/schedule',
+        name: 'Schedule',
+        component: () => import('../view/staff/schedule-management.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
         path: '/staff/time-slot',
         name: 'TimeSlot',
         component: () => import('../view/staff/timeslot-list.vue'),
@@ -83,9 +89,39 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
+        path: '/staff/event-detail',
+        name: 'EventDetail',
+        component: () => import('../view/staff/event-detail.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
         path: '/staff/room',
         name: 'Room',
         component: () => import('../view/staff/room_list.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/lesson',
+        name: 'LessonList',
+        component: () => import('../view/staff/lesson-list.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/lesson-detail',
+        name: 'LessonDetail',
+        component: () => import('../view/staff/lesson-detail.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/exam',
+        name: 'ExamList',
+        component: () => import('../view/staff/exam-list.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/exam-detail',
+        name: 'ExamDetail',
+        component: () => import('../view/staff/exam-detail.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
@@ -112,12 +148,7 @@ const routes = [
         component: () => import('../view/staff/student_mark_report.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
-    {
-    path: '/staff/schedule',
-    name: 'Schedule',
-    component: () => import('../view/staff/schedule-management.vue'),
-    meta: { layout: 'app', requiresAuth: true },
-    }
+
 ];
 
 

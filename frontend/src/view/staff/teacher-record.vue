@@ -13,6 +13,13 @@
       </button>
     </div>
 
+    <div class="actions">
+      <div class="search-container">
+        <input type="text" placeholder="Search..." class="search-field">
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+      </div>
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
@@ -42,9 +49,12 @@
               <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewTeacherDetail(teacher)" />
             </td>
           </tr>
+          <tr v-if="teachers.length === 0">
+            <td colspan="8" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
-      <div class="pagination">
+      <div class="pagination" v-if="totalPages > 0">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
           @click="changePage(page)">
