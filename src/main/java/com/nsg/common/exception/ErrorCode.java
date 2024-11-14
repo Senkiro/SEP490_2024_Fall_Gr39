@@ -47,6 +47,7 @@ public enum ErrorCode {
     EXAM_TYPE_NOT_FOUND(1161, "Exam type not found"),
     EXAM_TYPE_EXISTED(1161, "Exam type already existed!"),
     EXAM_NOT_FOUND(1162, "Exam not found!"),
+    EXAM_TITLE_EXISTED(1163, "Exam title already existed!"),
 
     //Class
     CLASS_NAME_IS_NULL(1180, "Class name can not be null!"),

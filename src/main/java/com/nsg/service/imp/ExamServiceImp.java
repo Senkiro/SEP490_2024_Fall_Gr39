@@ -30,14 +30,20 @@ public class ExamServiceImp implements ExamService {
 
     @Override
     public void createExam(ExamRequest request, int exam_type) {
+        //check exam title existed
+        if (examRepository.findByExamTitle(request.getExamTitle()).isPresent()) {
+            throw new AppException(ErrorCode.EXAM_TITLE_EXISTED);
+        } else {
 
-        //get exam type
-        ExamTypeRateEntity examTypeRate = ExamTypeMapper.INSTANCE.toExamTypeRateEntity(examTypeService.getExamType(exam_type));
+            //get exam type
+            ExamTypeRateEntity examTypeRate = ExamTypeMapper.INSTANCE.toExamTypeRateEntity(examTypeService.getExamType(exam_type));
 
-        ExamEntity exam = ExamMapper.INSTANCE.toExamEntity(request);
-        exam.setExamTypeRateEntity(examTypeRate);
+            ExamEntity exam = ExamMapper.INSTANCE.toExamEntity(request);
+            exam.setExamTypeRateEntity(examTypeRate);
 
-        examRepository.save(exam);
+            examRepository.save(exam);
+        }
+
     }
 
     @Override
