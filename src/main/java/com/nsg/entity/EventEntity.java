@@ -33,7 +33,7 @@ public class EventEntity extends BaseEntity {
     boolean status;
 
     @Lob
-    @Column(name = "description")
+    @Column(columnDefinition = "LONGTEXT",name = "description")
     String description;
 
     @Column(name = "avg_rate")

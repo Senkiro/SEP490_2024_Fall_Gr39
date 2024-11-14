@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ExamTypeRateEntity extends BaseEntity {
+public class ExamTypeRateEntity {
     @Id
     @Column(name = "exam_type")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class ExamTypeRateEntity extends BaseEntity {
     @Column(name = "exam_rate")
     String examRate;
 
-    @Column(name = "exam_name")
+    @Column(name = "exam_category")
     String examName;
 
     @OneToMany(mappedBy = "examTypeRateEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
