@@ -1,69 +1,66 @@
 <template>
-  <div class="container">
-    <div class="tiptap-container">
-      <div v-if="editor" class="tiptap-buttons">
-        <button @click="editor.chain().focus().toggleBold().run()"
-          :disabled="!editor.can().chain().focus().toggleBold().run()"
-          :class="{ 'is-active': editor.isActive('bold') }">
-          <BoldIcon />
-        </button>
-        <button @click="editor.chain().focus().toggleItalic().run()"
-          :disabled="!editor.can().chain().focus().toggleItalic().run()"
-          :class="{ 'is-active': editor.isActive('italic') }">
-          <ItalicIcon />
-        </button>
-        <button @click="editor.chain().focus().toggleUnderline().run()"
-          :disabled="!editor.can().chain().focus().toggleUnderline().run()"
-          :class="{ 'is-active': editor.isActive('underline') }">
-          <UnderlineIcon />
-        </button>
-        <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-          <Heading1Icon />
-        </button>
-        <button @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-          <Heading2Icon />
-        </button>
-        <button @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-          <Heading3Icon />
-        </button>
-        <button @click="editor.chain().focus().toggleBulletList().run()"
-          :class="{ 'is-active': editor.isActive('bulletList') }">
-          <BulletListIcon />
-        </button>
-        <button @click="editor.chain().focus().toggleOrderedList().run()"
-          :class="{ 'is-active': editor.isActive('orderedList') }">
-          <OrderedListIcon />
-        </button>
-        <button @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
-          <TableIcon />
-        </button>
-        <button @click="editor.chain().focus().addColumnAfter().run()">
-          <AddColumnIcon />
-        </button>
-        <button @click="editor.chain().focus().deleteColumn().run()">
-          <RemoveColumnIcon />
-        </button>
-        <button @click="editor.chain().focus().addRowAfter().run()">
-          <AddRowIcon />
-        </button>
-        <button @click="editor.chain().focus().deleteRow().run()">
-          <RemoveRowIcon />
-        </button>
-        <button @click="editor.chain().focus().deleteTable().run()">
-          <RemoveTableIcon />
-        </button>
-        <button @click="editor.chain().focus().mergeCells().run()">
-          <MergeCellIcon />
-        </button>
-        <button @click="editor.chain().focus().splitCell().run()">
-          <SplitCellIcon />
-        </button>
-      </div>
-      <editor-content :editor="editor" />
+  <div class="tiptap-container">
+    <div v-if="editor" class="tiptap-buttons">
+      <button @click="editor.chain().focus().toggleBold().run()"
+        :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
+        <BoldIcon />
+      </button>
+      <button @click="editor.chain().focus().toggleItalic().run()"
+        :disabled="!editor.can().chain().focus().toggleItalic().run()"
+        :class="{ 'is-active': editor.isActive('italic') }">
+        <ItalicIcon />
+      </button>
+      <button @click="editor.chain().focus().toggleUnderline().run()"
+        :disabled="!editor.can().chain().focus().toggleUnderline().run()"
+        :class="{ 'is-active': editor.isActive('underline') }">
+        <UnderlineIcon />
+      </button>
+      <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+        <Heading1Icon />
+      </button>
+      <button @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+        <Heading2Icon />
+      </button>
+      <button @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+        :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
+        <Heading3Icon />
+      </button>
+      <button @click="editor.chain().focus().toggleBulletList().run()"
+        :class="{ 'is-active': editor.isActive('bulletList') }">
+        <BulletListIcon />
+      </button>
+      <button @click="editor.chain().focus().toggleOrderedList().run()"
+        :class="{ 'is-active': editor.isActive('orderedList') }">
+        <OrderedListIcon />
+      </button>
+      <button @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
+        <TableIcon />
+      </button>
+      <button @click="editor.chain().focus().addColumnAfter().run()">
+        <AddColumnIcon />
+      </button>
+      <button @click="editor.chain().focus().deleteColumn().run()">
+        <RemoveColumnIcon />
+      </button>
+      <button @click="editor.chain().focus().addRowAfter().run()">
+        <AddRowIcon />
+      </button>
+      <button @click="editor.chain().focus().deleteRow().run()">
+        <RemoveRowIcon />
+      </button>
+      <button @click="editor.chain().focus().deleteTable().run()">
+        <RemoveTableIcon />
+      </button>
+      <button @click="editor.chain().focus().mergeCells().run()">
+        <MergeCellIcon />
+      </button>
+      <button @click="editor.chain().focus().splitCell().run()">
+        <SplitCellIcon />
+      </button>
     </div>
+    <editor-content :editor="editor" />
   </div>
 </template>
 
@@ -243,10 +240,13 @@ export default {
 
     table,
     th,
-    td,{
+    td {
       border: 1px solid #1A2C6F;
     }
-    th,td,tr{
+
+    th,
+    td,
+    tr {
       display: flex;
       width: 100%;
     }
@@ -256,8 +256,8 @@ export default {
       border-radius: 20px;
       width: 100%;
 
-      p{
-        width:fit-content;
+      p {
+        width: fit-content;
         display: flex;
       }
 

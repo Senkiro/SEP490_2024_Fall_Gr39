@@ -38,6 +38,13 @@
         </button>
       </div>
 
+      <div class="actions">
+        <div class="search-container">
+          <input type="text" placeholder="Search..." class="search-field">
+          <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+        </div>
+      </div>
+
       <div class="table-container">
         <table>
           <thead>
@@ -459,7 +466,8 @@ export default {
     }
   }
 
-  .student-record, .class-record{
+  .student-record,
+  .class-record {
     display: flex;
     flex-direction: column;
     gap: 20px;
