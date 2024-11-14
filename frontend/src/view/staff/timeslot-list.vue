@@ -56,7 +56,7 @@
             <td>{{ formatTime(slot.endTime) }}</td>
             <td class="center">
               <div class="icon-group">
-                <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" />
+                <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" />
                 <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
               </div>
             </td>

@@ -21,31 +21,59 @@
             </div>
         </div>
 
-        <div v-if="tabs.vocabulary">
+        <div class="tab-container" v-if="tabs.vocabulary">
             <p>Vocabulary</p>
-            <div class="actions">
-                <button @click="showAddBatchPopup = true">
-                    <VsxIcon iconName="Edit" size="20" type="linear" />
+            <TextEditor v-if="isActive" />
+
+            <div v-if="!isActive" class="actions">
+                <button @click="openTextEditor()">
+                    <VsxIcon iconName="Edit2" color="#fff" type="bold" />
                     Edit
                 </button>
             </div>
-
-            <div class="editor-container">
-                <TextEditor :v-model="content" />
-            </div>
-            <div class="output-group">
-                <label>Content</label>
-                <code>{{ content }}</code>
+            <div v-if="isActive" class="actions">
+                <button @click="closeTextEditor()">
+                    <VsxIcon iconName="Save2" color="#fff" type="bold" />
+                    Save
+                </button>
             </div>
         </div>
 
 
-        <div v-if="tabs.kanji">
+        <div class="tab-container" v-if="tabs.kanji">
             <p>Kanji</p>
+            <TextEditor v-if="isActive" />
+
+            <div v-if="!isActive" class="actions">
+                <button @click="openTextEditor()">
+                    <VsxIcon iconName="Edit2" color="#fff" type="bold" />
+                    Edit
+                </button>
+            </div>
+            <div v-if="isActive" class="actions">
+                <button @click="closeTextEditor()">
+                    <VsxIcon iconName="Save2" color="#fff" type="bold" />
+                    Save
+                </button>
+            </div>
         </div>
 
-        <div v-if="tabs.grammar">
+        <div class="tab-container" v-if="tabs.grammar">
             <p>Grammar</p>
+            <TextEditor v-if="isActive" />
+
+            <div v-if="!isActive" class="actions">
+                <button @click="openTextEditor()">
+                    <VsxIcon iconName="Edit2" color="#fff" type="bold" />
+                    Edit
+                </button>
+            </div>
+            <div v-if="isActive" class="actions">
+                <button @click="closeTextEditor()">
+                    <VsxIcon iconName="Save2" color="#fff" type="bold" />
+                    Save
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -62,15 +90,21 @@ export default {
     },
     data() {
         return {
+            isActive: false,
             tabs: {
                 vocabulary: true,
                 kanji: false,
                 grammar: false,
             },
-            content: '<p>A Vue.js wrapper component for Tiptap to use <code>v-model</code>.</p>,'
         }
     },
     methods: {
+        openTextEditor() {
+            this.isActive = true;
+        },
+        closeTextEditor() {
+            this.isActive = false;
+        },
         showTab(open, close1, close2) {
             this.tabs[open] = true;
             this.tabs[close1] = false;

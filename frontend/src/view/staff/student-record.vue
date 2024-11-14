@@ -3,6 +3,7 @@
     <div class="headContent">
       <h1>Student Record</h1>
     </div>
+
     <div class="actions">
       <button @click="openAddStudentPopup">
         <VsxIcon iconName="AddCircle" size="20" type="bold" />
@@ -14,32 +15,38 @@
       </button>
     </div>
 
+    <div class="actions">
+      <div class="search-container">
+        <input type="text" placeholder="Search..." class="search-field">
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+      </div>
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
-        <tr>
-          <th class="center">No</th>
-          <th>Fullname</th>
-          <th>Roll number</th>
-          <th>Japanese name</th>
-          <th>Class</th>
-          <th>Email</th>
-          <th class="center">Action</th>
-        </tr>
+          <tr>
+            <th class="center">No</th>
+            <th>Fullname</th>
+            <th>Roll number</th>
+            <th>Japanese name</th>
+            <th>Class</th>
+            <th>Email</th>
+            <th class="center">Action</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="(student, index) in students" :key="student.id">
-          <td class="center">{{ index + 1 }}</td>
-          <td>{{ student.fullname }}</td>
-          <td>{{ student.rollNumber }}</td>
-          <td>{{ student.japaneseName }}</td>
-          <td :style="{ color: student.classColor }">{{ student.class }}</td>
-          <td>{{ student.email }}</td>
-          <td class="center">
-            <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
-                     @click="navigateToProfile(student.id)" />
-          </td>
-        </tr>
+          <tr v-for="(student, index) in students" :key="student.id">
+            <td class="center">{{ index + 1 }}</td>
+            <td>{{ student.fullname }}</td>
+            <td>{{ student.rollNumber }}</td>
+            <td>{{ student.japaneseName }}</td>
+            <td :style="{ color: student.classColor }">{{ student.class }}</td>
+            <td>{{ student.email }}</td>
+            <td class="center">
+              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="navigateToProfile(student.id)" />
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -48,7 +55,7 @@
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
         </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-                @click="changePage(page)">
+          @click="changePage(page)">
           {{ page }}
         </button>
         <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
@@ -118,11 +125,11 @@
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 
 export default {
   name: "StudentRecord",
-  components: {VsxIcon},
+  components: { VsxIcon },
   data() {
   },
   methods: {
@@ -131,5 +138,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
