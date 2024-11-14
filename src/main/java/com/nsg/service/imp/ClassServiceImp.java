@@ -1,13 +1,21 @@
 package com.nsg.service.imp;
 
+import com.nsg.Mapper.StudentMapper;
+import com.nsg.Mapper.UserMapper;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.classResponse.ClassWithStudentResponse;
+import com.nsg.dto.response.student.StudentInClassResponse;
 import com.nsg.entity.ClassEntity;
+import com.nsg.entity.StudentEntity;
 import com.nsg.repository.ClassRepository;
 import com.nsg.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,8 +59,8 @@ public class ClassServiceImp implements ClassService {
     }
 
     @Override
-    public List<ClassResponse> getAllClass() {
-        List<ClassEntity> classEntityList = classRepository.findAll();
+    public Page<ClassResponse> getAllClass(int page, int size) {
+        Page<ClassEntity> classEntityList = classRepository.findAll(PageRequest.of(page, size));
 
         List<ClassResponse> responseList = new ArrayList<>();
 
@@ -65,7 +73,7 @@ public class ClassServiceImp implements ClassService {
             responseList.add(tempResponse);
         }
 
-        return responseList;
+        return new PageImpl<>(responseList, classEntityList.getPageable(), classEntityList.getTotalElements());
     }
 
     @Override

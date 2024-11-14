@@ -2,6 +2,8 @@ package com.nsg.service;
 
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.classResponse.ClassWithStudentResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public interface ClassService {
     ClassResponse getClass(String classId);
 
     //get all class
-    List<ClassResponse> getAllClass();
+    Page<ClassResponse> getAllClass(int page, int size);
 
     //update a class
     ClassResponse updateClass(String classId, ClassRequest request);

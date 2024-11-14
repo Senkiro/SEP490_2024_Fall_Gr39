@@ -16,6 +16,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.classResponse.ClassWithStudentResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
@@ -503,9 +504,9 @@ public class StaffController {
 
     //get all class
     @GetMapping("/get-all-class")
-    public ApiResponse<List<ClassResponse>> getAllClass(){
-        return ApiResponse.<List<ClassResponse>>builder()
-                .result(classService.getAllClass())
+    public ApiResponse<Page<ClassResponse>> getAllClass(@RequestParam int page, @RequestParam int size){
+        return ApiResponse.<Page<ClassResponse>>builder()
+                .result(classService.getAllClass(page, size))
                 .build();
     }
 
