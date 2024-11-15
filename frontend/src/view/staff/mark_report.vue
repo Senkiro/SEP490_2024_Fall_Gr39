@@ -26,7 +26,7 @@
             <th>Fullname</th>
             <th>Roll number</th>
             <th>Japanese name</th>
-            <th>Average mark</th>
+            <th class="center">Average mark</th>
             <th class="center">Action</th>
           </tr>
           </thead>
@@ -36,7 +36,7 @@
             <td>{{ student.fullname }}</td>
             <td>{{ student.rollNumber }}</td>
             <td>{{ student.japaneseName || '-' }}</td>
-            <td>{{ student.averageMark }}</td>
+            <td class="center">{{ student.averageMark }}</td>
             <td class="center">
               <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
                        @click="viewStudentDetails(student.id)" />
