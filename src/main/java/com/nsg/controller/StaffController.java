@@ -10,6 +10,7 @@ import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.room.RoomRequest;
+import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
@@ -20,6 +21,7 @@ import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.room.RoomResponse;
+import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
 import com.nsg.entity.*;
@@ -83,7 +85,10 @@ public class StaffController {
     ClassService classService;
 
     @Autowired
-    private BatchRepository batchRepository;
+    BatchRepository batchRepository;
+
+    @Autowired
+    SessionService sessionService;
 
 
     /**********************************
@@ -550,5 +555,24 @@ public class StaffController {
                 .build();
     }
 
+    /**********************************
+     * Manage Session
+     **********************************/
+    //create a class
+    @PostMapping("/create-session")
+    public ApiResponse<?> createSession(@RequestBody SessionCreattionRequest request) {
+        sessionService.createSession(request);
+        return ApiResponse.builder()
+                .message("Create new session successfully!")
+                .build();
+    }
+
+    //get all class
+    @GetMapping("/get-all-session")
+    public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size){
+        return ApiResponse.<Page<SessionResponse>>builder()
+                .result(sessionService.getAllSession(page, size))
+                .build();
+    }
 
 }
