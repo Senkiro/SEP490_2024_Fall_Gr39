@@ -19,6 +19,6 @@ public interface EventService {
 
     EventEntity getEventById(String eventId);
 
-    EventEntity getEventByName(String eventName);
+    List<EventEntity> findEventsByName(String eventName);
 }
 

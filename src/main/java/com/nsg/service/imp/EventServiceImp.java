@@ -50,9 +50,11 @@ public class EventServiceImp implements EventService {
     }
 
     @Override
-    public EventEntity getEventByName(String eventName) {
-        return eventRepository.findByEventName(eventName).orElseThrow(
-                () -> new AppException(ErrorCode.EVENT_NOT_EXIST)
-        );
+    public List<EventEntity> findEventsByName(String eventName) {
+        List<EventEntity> events = eventRepository.findByEventName(eventName);
+        if (events.isEmpty()) {
+            throw new AppException(ErrorCode.EVENT_NOT_EXIST);
+        }
+        return events;
     }
 }

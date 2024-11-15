@@ -504,6 +504,24 @@ public class StaffController {
                 .build();
     }
 
+    // getEventById
+    @GetMapping("/get-event/{eventId}")
+    public ApiResponse<EventEntity> getEventById(@PathVariable("eventId") String eventId) {
+        EventEntity eventEntity = eventService.getEventById(eventId);
+        return ApiResponse.<EventEntity>builder()
+                .result(eventEntity)
+                .build();
+    }
+
+    // search
+    @GetMapping("/search-event/{name}")
+    public ApiResponse<List<EventEntity>> getEventByName(@PathVariable("name") String name) {
+        List<EventEntity> eventEntityList = eventService.findEventsByName(name);
+        return ApiResponse.<List<EventEntity>>builder()
+                .result(eventEntityList)
+                .build();
+    }
+
     /**********************************
      * Manage Class
      **********************************/
