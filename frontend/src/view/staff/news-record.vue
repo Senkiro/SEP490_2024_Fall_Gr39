@@ -5,7 +5,7 @@
 
 
       <div class="actions">
-        <button @click="openAddNewsPopup">
+        <button @click="goToCreateNews">
           <VsxIcon iconName="AddCircle" size="20" type="bold" />
           Add News
         </button>
@@ -51,39 +51,11 @@
         </div>
       </div>
     </div>
-
-
-    <div v-if="showAddNewsPopup" class="popup-overlay">
-      <div class="popup">
-        <div class="popup-title">
-          <h2>Add News</h2>
-        </div>
-        <form @submit.prevent="addNews">
-          <div class="form-group">
-            <label for="newsTitle">Title <span class="required">*</span></label>
-            <input type="text" id="newsTitle" v-model="newNews.title" required />
-          </div>
-          <div class="form-group">
-            <label for="date">Date created <span class="required">*</span></label>
-            <input type="date" id="date" v-model="newNews.dateCreated" required />
-          </div>
-          <div class="form-group">
-            <label for="createdBy">Created by <span class="required">*</span></label>
-            <input type="text" id="createdBy" v-model="newNews.createdBy" required />
-          </div>
-          <div class="actions">
-            <button class="btn btn-cancel" @click="showAddNewsPopup = false">Cancel</button>
-            <button type="submit">Create</button>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import { VsxIcon } from "vue-iconsax";
-import axios from "axios";
 
 export default {
   name: "NewsList",
@@ -95,16 +67,10 @@ export default {
       activeTab: 'news',
       currentPage: 1,
       itemsPerPage: 5,
-      newNews: {
-        title: '',
-        dateCreated: '',
-        createdBy: ''
-      },
       news: [
         { id: 1, title: "Tech Updates", dateCreated: "2024-11-01", createdBy: "Admin" },
         { id: 2, title: "Event at FPT", dateCreated: "2024-11-02", createdBy: "Editor" }
-      ],
-      showAddNewsPopup: false
+      ]
     };
   },
   computed: {
@@ -127,18 +93,8 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },
-    openAddNewsPopup() {
-      this.showAddNewsPopup = true;
-    },
-    async addNews() {
-      try {
-        const response = await axios.post("/api/news", this.newNews);
-        this.news.push(response.data);
-        this.showAddNewsPopup = false;
-        this.newNews = {title: '', dateCreated: '', createdBy: ''};
-      } catch (error) {
-        console.error("Error adding news:", error);
-      }
+    goToCreateNews() {
+      this.$router.push({ name: 'CreateNews' });
     },
     changePage(page) {
       this.currentPage = page;
