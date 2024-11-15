@@ -3,8 +3,11 @@ package com.nsg.controller;
 import com.nsg.common.enums.UserRole;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.request.classRequest.ClassRequest;
+import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
+import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
@@ -12,10 +15,12 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.room.RoomResponse;
-import com.nsg.dto.response.staff.StudentResponse;
+import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.BatchRepository;
@@ -69,7 +74,13 @@ public class StaffController {
     ExamTypeService examTypeService;
 
     @Autowired
+    ExamService examService;
+
+    @Autowired
     EventService eventService;
+
+    @Autowired
+    ClassService classService;
 
     @Autowired
     private BatchRepository batchRepository;
@@ -80,15 +91,16 @@ public class StaffController {
      **********************************/
     //create new student
     @PostMapping("/create-student")
-    public ApiResponse<StudentEntity> createStudent(@RequestParam String batch_name, @RequestBody @Valid StudentCreattionRequest request){
-        return ApiResponse.<StudentEntity>builder()
-                .result(studentService.createStudent(request, batch_name))
+    public ApiResponse<StudentResponse> createStudent(@RequestBody @Valid StudentCreattionRequest request){
+        studentService.createStudent(request);
+        return ApiResponse.<StudentResponse>builder()
                 .message("Create student successfully!")
                 .build();
     }
 
     @GetMapping("/student-list")
-    public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page, @RequestParam int size){
+    public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page,
+                                                           @RequestParam int size){
         Page<StudentResponse> studentList = studentService.getAllStudent(page, size);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
@@ -97,10 +109,32 @@ public class StaffController {
 
     //get student list by batchName
     @GetMapping("/get-student-by-batch")
-    public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page, @RequestParam int size, @RequestParam String batch_name){
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page,
+                                                                     @RequestParam int size,
+                                                                     @RequestParam String batch_name){
         Page<StudentResponse> studentList = studentService.getStudentByBatchName(page, size, batch_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
+                .build();
+    }
+
+    //get student by batchName and className
+    @GetMapping("/get-student-by-batch-class")
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchNameAndClassName(@RequestParam int page,
+                                                                                 @RequestParam int size,
+                                                                                 @RequestParam String batch_name,
+                                                                                 @RequestParam String class_name){
+        Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_name);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentList)
+                .build();
+    }
+
+    //get a student by studentId
+    @GetMapping("/get-student/{student_id}")
+    public ApiResponse<StudentResponse> getStudent(@PathVariable("student_id") String student_id){
+        return ApiResponse.<StudentResponse>builder()
+                .result(studentService.getStudent(student_id))
                 .build();
     }
 
@@ -403,7 +437,53 @@ public class StaffController {
     }
 
     /**********************************
-     * Manage Evnet
+     * Manage Exam
+     **********************************/
+
+    //create new exam
+    @PostMapping("/create-exam")
+    public ApiResponse<?> createExam(@RequestParam int exam_type, @RequestBody ExamRequest request) {
+        examService.createExam(request, exam_type);
+        return ApiResponse.builder()
+                .message("Create new exam successfully!")
+                .build();
+    }
+
+    //get all exam
+    @GetMapping("/get-all-exam")
+    public ApiResponse<List<ExamResponse>> getAllExam(){
+        return ApiResponse.<List<ExamResponse>>builder()
+                .result(examService.getAllExam())
+                .build();
+    }
+
+    //get exam by id
+    @GetMapping("/get-exam/{exam_id}")
+    public ApiResponse<ExamResponse> getExam(@PathVariable("exam_id") String exam_id) {
+        return ApiResponse.<ExamResponse>builder()
+                .result(examService.getExam(exam_id))
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-exam/{exam_id}")
+    public ApiResponse<ExamResponse> updateExam(@PathVariable("exam_id") String exam_id, @RequestBody ExamUpdateRequest request) {
+        return ApiResponse.<ExamResponse>builder()
+                .result(examService.updateExam(exam_id, request))
+                .message("Update exam successfully!")
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-exam/{exam_id}")
+    public ApiResponse<?> deleteExam(@PathVariable("exam_id") String exam_id) {
+        examService.deleteExam(exam_id);
+        return ApiResponse.builder()
+                .message("Delete exam successfully!")
+                .build();
+    }
+    /**********************************
+     * Manage Event
      **********************************/
 
     //get all
@@ -423,5 +503,52 @@ public class StaffController {
                 .message("A new event have been created!")
                 .build();
     }
+
+    /**********************************
+     * Manage Class
+     **********************************/
+    //create a class
+    @PostMapping("/create-class")
+    public ApiResponse<?> createClass(@RequestBody ClassRequest request) {
+        classService.createClass(request);
+        return ApiResponse.builder()
+                .message("Create new class successfully!")
+                .build();
+    }
+
+    //get all class
+    @GetMapping("/get-all-class")
+    public ApiResponse<Page<ClassResponse>> getAllClass(@RequestParam int page, @RequestParam int size){
+        return ApiResponse.<Page<ClassResponse>>builder()
+                .result(classService.getAllClass(page, size))
+                .build();
+    }
+
+    //get a class
+    @GetMapping("/get-class/{class_id}")
+    public ApiResponse<ClassResponse> getClass(@PathVariable("class_id") String class_id) {
+        return ApiResponse.<ClassResponse>builder()
+                .result(classService.getClass(class_id))
+                .build();
+    }
+
+    //update a class
+    @PostMapping("/update-class/{class_id}")
+    public ApiResponse<ClassResponse> updateClass(@PathVariable("class_id") String class_id, @RequestBody ClassRequest request) {
+        return ApiResponse.<ClassResponse>builder()
+                .result(classService.updateClass(class_id, request))
+                .message("Update class successfully!")
+                .build();
+    }
+
+    //delete a class
+    @DeleteMapping("/delete-clas/{class_id}")
+    public ApiResponse<?> deleteClass(@PathVariable("class_id") String class_id) {
+        classService.deleteClass(class_id);
+        return ApiResponse.builder()
+                .message("Delete class successfully!")
+                .build();
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.nsg.dto.response.room;
+package com.nsg.dto.request.exam;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoomResponse {
-    String roomId;
-    String roomNumber;
+public class ExamUpdateRequest {
+    String examTitle;
+    String examContent;
+    int examType;
 }

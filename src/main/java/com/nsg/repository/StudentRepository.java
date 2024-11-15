@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentRepository extends BaseRepository<StudentEntity, String>{
     Page<StudentEntity> findByBatchEntityBatchName(String batchName, PageRequest pageable);
+    Page<StudentEntity> findByBatchEntityBatchNameAndClassEntityClassName(String batchName, String className, PageRequest pageable);
+
 }

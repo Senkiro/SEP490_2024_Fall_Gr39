@@ -27,16 +27,23 @@ public class TimeSlotServiceImp implements TimeSlotService {
 
     @Override
     public TimeSlotResponse createTimeSlot(TimeSlotCreationRequest request) {
-        TimeSlotEntity timeSlot = new TimeSlotEntity();
+        TimeSlotEntity timeSlot = timeSlotRepository.findByName(request.getName());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        if (timeSlot != null) {
+            throw new AppException(ErrorCode.TIME_SLOT_NAME_EXISTED);
+        } else {
+            timeSlot = new TimeSlotEntity();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        timeSlot.setName(request.getName());
-        // Chuyển đổi String thành LocalTime
-        timeSlot.setStartTime(LocalTime.parse(request.getStartTime(), formatter));
-        timeSlot.setEndTime(LocalTime.parse(request.getEndTime(), formatter));
+            timeSlot.setName(request.getName());
 
-        return TimeSlotMapper.INSTANCE.toTimeSlotResponse(timeSlotRepository.save(timeSlot));
+            // Chuyển đổi String thành LocalTime
+            timeSlot.setStartTime(LocalTime.parse(request.getStartTime(), formatter));
+            timeSlot.setEndTime(LocalTime.parse(request.getEndTime(), formatter));
+
+            return TimeSlotMapper.INSTANCE.toTimeSlotResponse(timeSlotRepository.save(timeSlot));
+        }
+
     }
 
     @Override

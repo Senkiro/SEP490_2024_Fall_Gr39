@@ -36,6 +36,7 @@ public enum ErrorCode {
     END_TIME_IS_NULL(1122, "End time can not be null"),
     INVALID_TIME_FORMAT(1123, "Time must be in the format HH:mm"),
     TIME_SLOT_NOT_FOUND(1124, "Time slot not found!s"),
+    TIME_SLOT_NAME_EXISTED(1125, "Time slot name already existed!"),
 
     //Room
     ROOMNUMBER_IS_NULL(1140, "Room number can not be null"),
@@ -45,6 +46,14 @@ public enum ErrorCode {
     EXAM_TYPE_IS_NULL(1160, "Exam type can not be null"),
     EXAM_TYPE_NOT_FOUND(1161, "Exam type not found"),
     EXAM_TYPE_EXISTED(1161, "Exam type already existed!"),
+    EXAM_NOT_FOUND(1162, "Exam not found!"),
+    EXAM_TITLE_EXISTED(1163, "Exam title already existed!"),
+
+    //Class
+    CLASS_NAME_IS_NULL(1180, "Class name can not be null!"),
+    CLASS_COLOUR_IS_NULL(1181, "Class colour can not be null!"),
+    CLASS_NOT_FOUND(1182, "Class not found!"),
+    CLASS_NAME_EXISTED(1183, "Class name already existed!"),
 
 
     //Lesson
@@ -56,6 +65,9 @@ public enum ErrorCode {
     //Event
     EVENT_NOT_EXIST(1220, "Event not existed!"),
     EVENT_EXISTED(1221, "Event existed!"),
+
+    //Student
+    STUDENT_NOT_FOUND(1240, "Student not found!"),
 
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 

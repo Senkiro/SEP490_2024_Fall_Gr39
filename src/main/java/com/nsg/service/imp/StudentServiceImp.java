@@ -1,17 +1,21 @@
 package com.nsg.service.imp;
 
+import com.nsg.Mapper.ClassMapper;
 import com.nsg.Mapper.UserMapper;
 import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
-import com.nsg.dto.response.staff.StudentResponse;
+import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.BatchEntity;
+import com.nsg.entity.ClassEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.BatchRepository;
+import com.nsg.repository.ClassRepository;
 import com.nsg.repository.StudentRepository;
 import com.nsg.service.StudentService;
 import com.nsg.service.UserService;
@@ -39,8 +43,11 @@ public class StudentServiceImp implements StudentService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ClassRepository classRepository;
+
     @Override
-    public StudentEntity createStudent(StudentCreattionRequest request, String batch_name){
+    public StudentResponse createStudent(StudentCreattionRequest request){
         StudentEntity student = new StudentEntity();
         student.setRollNumber(generateRollNumber());
 
@@ -53,19 +60,27 @@ public class StudentServiceImp implements StudentService {
         student.setUser(user);
 
         //get batch by batchName
-        BatchEntity batch = batchRepository.findByBatchName(batch_name).orElseThrow(
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
                 () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
         );
-
         //set batch
         student.setBatchEntity(batch);
-
         batch.getStudentEntityList().add(student);
-
         batchRepository.save(batch);
 
-        return studentRepository.save(student);
+        //class
+        ClassEntity classEntity = classRepository.findByClassName(request.getClassName());
+        //set class
+        student.setClassEntity(classEntity);
+        classEntity.getStudentEntityList().add(student);
+        classRepository.save(classEntity);
+
+        //save student
+        studentRepository.save(student);
+
+        return null;
     };
+
 
     @Override
     public Page<StudentResponse> getAllStudent(int page, int size){
@@ -81,11 +96,18 @@ public class StudentServiceImp implements StudentService {
             StudentResponse studentResponse = new StudentResponse();
             //get,set rollNumber
             studentResponse.setRollNumber(student.getRollNumber());
+            studentResponse.setStudentId(student.getStudentId());
 
             //map user to UserInforResponse
             UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
             //set user
-            studentResponse.setUser(userInforResponse);
+            studentResponse.setUserInforResponse(userInforResponse);
+
+            //set batch
+            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
 
             //add to response list
             studentListResponse.add(studentResponse);
@@ -94,6 +116,30 @@ public class StudentServiceImp implements StudentService {
         return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
     }
 
+    @Override
+    public StudentResponse getStudent(String studentId) {
+        StudentResponse response = new StudentResponse();
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        response.setRollNumber(studentEntity.getRollNumber());
+        response.setStudentId(studentEntity.getStudentId());
+
+        //set user
+        response.setUserInforResponse(UserMapper.INSTANCE.toUserInforResponse(studentEntity.getUser()));
+
+        //set batch
+        response.setBatchName(studentEntity.getBatchEntity().getBatchName());
+
+        //set class
+        response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()));
+
+        return response;
+    }
+
+    //get student by batchName
     @Override
     public Page<StudentResponse> getStudentByBatchName(int page, int size, String batchName) {
 
@@ -113,11 +159,18 @@ public class StudentServiceImp implements StudentService {
             StudentResponse studentResponse = new StudentResponse();
             //get,set rollNumber
             studentResponse.setRollNumber(student.getRollNumber());
+            studentResponse.setStudentId(student.getStudentId());
 
             //map user to UserInforResponse
             UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
             //set user
-            studentResponse.setUser(userInforResponse);
+            studentResponse.setUserInforResponse(userInforResponse);
+
+            //set batch
+            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
 
             //add to response list
             studentListResponse.add(studentResponse);
@@ -126,8 +179,57 @@ public class StudentServiceImp implements StudentService {
         return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
     }
 
-    //get student by batchName
+    @Override
+    public Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size,
+                                                                   String batchName,
+                                                                   String className) {
+        //check batch existed
+        if (batchRepository.findByBatchName(batchName).isEmpty()) {
+            throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
+        }
 
+        //check class existed
+        if (classRepository.findByClassName(className) == null) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+
+        //find all student
+        Page<StudentEntity> studentEntityList =
+                studentRepository.findByBatchEntityBatchNameAndClassEntityClassName(
+                        batchName,
+                        className,
+                        PageRequest.of(page, size));
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = new ArrayList<>();
+
+        //for
+        for (StudentEntity student : studentEntityList) {
+            StudentResponse studentResponse = new StudentResponse();
+            //get,set rollNumber
+            studentResponse.setRollNumber(student.getRollNumber());
+            studentResponse.setStudentId(student.getStudentId());
+
+            //map user to UserInforResponse
+            UserInforResponse userInforResponse =
+                    UserMapper.INSTANCE.toUserInforResponse(student.getUser());
+            //set user
+            studentResponse.setUserInforResponse(userInforResponse);
+
+            //set batch
+            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
+
+            //add to response list
+            studentListResponse.add(studentResponse);
+        }
+
+        return new PageImpl<>(studentListResponse,
+                studentEntityList.getPageable(),
+                studentEntityList.getTotalElements());
+    }
 
     //generate random roll number
     public String generateRollNumber(){
