@@ -76,13 +76,17 @@
         </tr>
         </tbody>
       </table>
-      <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
+      <div class="pagination" v-if="totalPages > 0">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
+        </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
                 @click="changePage(page)">
           {{ page }}
         </button>
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
+        </button>
       </div>
     </div>
   </div>
