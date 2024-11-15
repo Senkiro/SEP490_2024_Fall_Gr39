@@ -1,6 +1,7 @@
 package com.nsg.service;
 
 import com.nsg.dto.request.event.EventCreateRequest;
+import com.nsg.dto.response.event.EventResponse;
 import com.nsg.entity.EventEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public interface EventService {
 
     EventEntity getEventById(String eventId);
 
-    List<EventEntity> findEventsByName(String eventName);
+    Page<EventEntity> findEventsByName(String eventName,int page, int size);
+
+    void deleteEvent(String examId);
 }
 

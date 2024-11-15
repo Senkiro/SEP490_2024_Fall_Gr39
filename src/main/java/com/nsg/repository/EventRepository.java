@@ -1,8 +1,8 @@
 package com.nsg.repository;
 
-import com.nsg.entity.BatchEntity;
 import com.nsg.entity.EventEntity;
-import com.nsg.entity.LessonEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +14,6 @@ public interface EventRepository extends BaseRepository<EventEntity, String> {
 
     List<EventEntity> findByEventName(String eventName);
 
-    List<EventEntity> findByEventNameContainingIgnoreCase(String eventName);
-
+    Page<EventEntity> findByEventNameContaining(String name, PageRequest of);
 }
+
