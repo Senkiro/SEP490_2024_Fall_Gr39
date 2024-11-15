@@ -112,7 +112,7 @@ export default {
         }
 
         :first-child{
-          max-width: 50px;
+          max-width: 70px;
         }
 
         :nth-child(1),
