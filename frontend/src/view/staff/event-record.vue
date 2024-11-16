@@ -58,7 +58,7 @@
           <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
           <td class="center">
             <div class="icon-group">
-              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail"/>
+              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail(event)"/>
               <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"  @click="deleteEvent(event.eventId)"/>
             </div>
           </td>
@@ -254,8 +254,9 @@ export default {
         this.showNotification(error.response?.data?.message || "Error creating Event. Please try again.", 'error');
       }
     },
-    viewEventDetail() {
-      this.$router.push({ name: 'EventDetail'});
+    viewEventDetail(event) {
+      console.log("Event ID:", event.eventId);
+      this.$router.push({ name: 'EventDetail', params: { eventId: event.eventId } });
     },
     showNotification(message, type) {
       this.notification = {message, type};

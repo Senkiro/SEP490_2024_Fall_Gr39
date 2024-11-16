@@ -4,6 +4,7 @@ import com.nsg.common.enums.UserRole;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
+import com.nsg.dto.request.event.EventUpdateRequest;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
@@ -34,6 +35,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page;
@@ -535,6 +537,21 @@ public class StaffController {
         eventService.deleteEvent(event_id);
         return ApiResponse.builder()
                 .message("Delete event successfully!")
+                .build();
+    }
+
+    @PostMapping(value = "/update-event/{event_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<EventResponse> updateEvent(
+            @PathVariable("event_id") String eventId,
+            @RequestPart("eventDetail") EventUpdateRequest eventRequest, // Nhận JSON payload
+            @RequestPart(value = "image", required = false) MultipartFile image) { // Nhận file ảnh
+
+        // Xử lý update
+        EventResponse eventResponse = eventService.updateEventById(eventId, eventRequest, image);
+
+        return ApiResponse.<EventResponse>builder()
+                .result(eventResponse)
+                .message("Update event successfully!")
                 .build();
     }
 
