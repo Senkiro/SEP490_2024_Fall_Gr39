@@ -77,15 +77,15 @@
           </tbody>
         </table>
 
-        <div class="pagination" v-if="totalPages > 0">
-          <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+        <div class="pagination" v-if="studentPagination.totalElements > 0">
+          <button @click="changeStudentPage(studentPagination.currentPage - 1)" :disabled="studentPagination.currentPage <= 1">
             <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
           </button>
-          <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-            @click="changePage(page)">
+          <button v-for="page in studentPagination.displayedPages" :key="page" :class="{ active: page === studentPagination.currentPage }"
+                  @click="changeStudentPage(page)">
             {{ page }}
           </button>
-          <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <button @click="changeStudentPage(studentPagination.currentPage + 1)" :disabled="studentPagination.currentPage >= studentPagination.totalPages">
             <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
           </button>
         </div>
@@ -103,24 +103,40 @@
       <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th class="center">No</th>
-              <th>Class</th>
-              <th>Number of students</th>
-              <th class="center">Action</th>
-            </tr>
+          <tr>
+            <th class="center">No</th>
+            <th>Class Name</th>
+            <th>Color</th>
+            <th class="center">Action</th>
+          </tr>
           </thead>
           <tbody>
-            <tr v-for="(classItem, index) in classes" :key="classItem.id">
-              <td class="center">{{ index + 1 }}</td>
-              <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
-              <td>{{ classItem.studentCount }}</td>
-              <td class="center">
-                <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
-              </td>
-            </tr>
+          <tr v-for="(classItem, index) in classes" :key="classItem.id">
+            <td class="center">{{ index + 1 }}</td>
+            <td>{{ classItem.name }}</td>
+            <td>{{ classItem.color }}</td>
+            <td class="center">
+              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
+            </td>
+          </tr>
+          <tr v-if="classes.length === 0">
+            <td colspan="3" class="center">No classes available.</td>
+          </tr>
           </tbody>
         </table>
+
+        <div class="pagination" v-if="classPagination.totalElements > 0">
+          <button @click="changeClassPage(classPagination.currentPage - 1)" :disabled="classPagination.currentPage <= 1">
+            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          </button>
+          <button v-for="page in classPagination.displayedPages" :key="page" :class="{ active: page === classPagination.currentPage }"
+                  @click="changeClassPage(page)">
+            {{ page }}
+          </button>
+          <button @click="changeClassPage(classPagination.currentPage + 1)" :disabled="classPagination.currentPage >= studentPagination.totalPages">
+            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          </button>
+        </div>
       </div>
     </div>
     <!-- Popup Add Student -->
@@ -145,17 +161,17 @@
             <label for="email">Email <span class="required">*</span></label>
             <input type="email" id="email" v-model="newStudent.email" required />
           </div>
-<!--          <div class="form-group">-->
-<!--            <label for="class">Class <span class="required">*</span></label>-->
-<!--            <select id="class" v-model="newStudent.class" required>-->
-<!--              <option value="">Choose class now or later</option>-->
-<!--              <option value="Blue">Blue</option>-->
-<!--              <option value="Red">Red</option>-->
-<!--              <option value="Green">Green</option>-->
-<!--              <option value="Yellow">Yellow</option>-->
-<!--              <option value="Purple">Purple</option>-->
-<!--            </select>-->
-<!--          </div>-->
+          <div class="form-group">
+            <label for="class">Class <span class="required">*</span></label>
+            <select id="class" v-model="newStudent.class" required>
+              <option value="">Choose class now or later</option>
+              <option value="Blue">Blue</option>
+              <option value="Red">Red</option>
+              <option value="Green">Green</option>
+              <option value="Yellow">Yellow</option>
+              <option value="Purple">Purple</option>
+            </select>
+          </div>
           <div class="form-group">
             <label for="dob">DOB <span class="required">*</span></label>
             <input type="date" id="dob" v-model="newStudent.dob" placeholder="dd/mm/yyyy" required />
@@ -234,8 +250,20 @@ export default {
       activeTab: 'student',
       showAddStudentPopup: false,
       showAddClassPopup: false,
-      currentPage: 1,
-      itemsPerPage: 5,
+      studentPagination: {
+        currentPage: 1,
+        itemsPerPage: 5,
+        totalElements: 0,
+        totalPages: 0,
+        displayedPages: [],
+      },
+      classPagination: {
+        currentPage: 1,
+        itemsPerPage: 5,
+        totalElements: 0,
+        totalPages: 0,
+        displayedPages: [],
+      },
       newStudent: {
         fullname: '',
         japaneseName: '',
@@ -249,13 +277,7 @@ export default {
         color: '#000000'
       },
       students: [],
-      classes: [
-        { id: 1, name: 'Blue', classColor: 'blue', studentCount: 30 },
-        { id: 2, name: 'Red', classColor: 'red', studentCount: 30 },
-        { id: 3, name: 'Green', classColor: 'green', studentCount: 30 },
-        { id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30 },
-        { id: 5, name: 'Purple', classColor: 'purple', studentCount: 30 }
-      ],
+      classes: [],
       notification: {
         message: '',
         type: ''
@@ -322,7 +344,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}&batch_name=${this.batchName}`,
+          `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&batch_name=${this.batchName}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -345,9 +367,13 @@ export default {
             gender: item.userInforResponse?.gender === false ? "Female" : "Male",
           }));
 
-          this.totalElements = response.data.result.totalElements;
-          this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
-          this.updateDisplayedPages();
+          this.studentPagination.totalElements = response.data.result.totalElements;
+          this.studentPagination.totalPages = Math.ceil(this.studentPagination.totalElements / this.studentPagination.itemsPerPage);
+          console.log('Items Per Page:', this.studentPagination.itemsPerPage);
+          console.log('Total Elements:', this.studentPagination.totalElements);
+          console.log('Total Pages:', this.studentPagination.totalPages);
+
+          this.updateStudentDisplayedPages();
         } else {
           console.error('No student data available:', response);
           this.students = []; // Gán mảng trống nếu không có dữ liệu
@@ -406,27 +432,80 @@ export default {
         this.notification.message = "";
       }, 3000);
     },
-    updateDisplayedPages() {
+    updateStudentDisplayedPages() {
       const pages = [];
-      if (this.totalPages <= 5) {
-        for (let i = 1; i <= this.totalPages; i++) {
+      const { currentPage, totalPages } = this.studentPagination;
+
+      if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
-        if (this.currentPage <= 3) {
-          pages.push(1, 2, 3, '...', this.totalPages);
-        } else if (this.currentPage >= this.totalPages - 2) {
-          pages.push(1, '...', this.totalPages - 2, this.totalPages - 1, this.totalPages);
+        if (currentPage <= 3) {
+          pages.push(1, 2, 3, '...', totalPages);
+        } else if (currentPage >= totalPages - 2) {
+          pages.push(1, '...', totalPages - 2, totalPages - 1, totalPages);
         } else {
-          pages.push(1, '...', this.currentPage - 1, this.currentPage, this.currentPage + 1, '...', this.totalPages);
+          pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
         }
       }
-      this.displayedPages = pages;
+
+      this.studentPagination.displayedPages = pages;
     },
-    changePage(newPage) {
-      if (newPage > 0 && newPage <= this.totalPages) {
-        this.currentPage = newPage;
+    changeStudentPage(newPage) {
+      if (newPage > 0 && newPage <= this.studentPagination.totalPages) {
+        this.studentPagination.currentPage = newPage;
         this.fetchStudent();
+      }
+    },
+    async fetchClass() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-all-class?page=${this.classPagination.currentPage - 1}&size=${this.classPagination.itemsPerPage}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200 && response.data.result) {
+          this.classes = response.data.result.content.map((item) => ({
+            id: item.classId || "Unknown ID",
+            name: item.className || "Unknown Name",
+            color: item.classColour || "Unknown Color",
+          }));
+
+          this.classPagination.totalElements = response.data.result.totalElements;
+          this.classPagination.totalPages = response.data.result.totalPages;
+          this.updateClassDisplayedPages();
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+        alert('Đã có lỗi xảy ra khi lấy danh sách lớp.');
+      }
+    },
+    updateClassDisplayedPages() {
+      const pages = [];
+      const { currentPage, totalPages } = this.classPagination;
+      if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (currentPage <= 3) {
+          pages.push(1, 2, 3, '...', totalPages);
+        } else if (currentPage >= totalPages - 2) {
+          pages.push(1, '...', totalPages - 2, totalPages - 1, totalPages);
+        } else {
+          pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+        }
+      }
+      this.classPagination.displayedPages = pages;
+    },
+    changeClassPage(newPage) {
+      if (newPage > 0 && newPage <= this.classPagination.totalPages) {
+        this.classPagination.currentPage = newPage;
+        this.fetchClass();
       }
     },
     formatDate(dob) {
@@ -438,6 +517,7 @@ export default {
   },
   mounted() {
     this.fetchStudent();
+    this.fetchClass();
   },
 };
 </script>
