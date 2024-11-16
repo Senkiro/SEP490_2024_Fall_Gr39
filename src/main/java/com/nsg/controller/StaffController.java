@@ -182,6 +182,14 @@ public class StaffController {
                 .build();
     }
 
+    @GetMapping("/search-batch")
+    public ApiResponse<Page<BatchEntity>> searchBatchByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<BatchEntity> batchEntityList = batchService.findBatchsByName(name, page, size);
+        return ApiResponse.<Page<BatchEntity>>builder()
+                .result(batchEntityList)
+                .build();
+    }
+
     //get batch by batch name
     @GetMapping("/batch/by-name")
     ApiResponse<BatchEntity> getBatchByName(@RequestParam String batchName) {

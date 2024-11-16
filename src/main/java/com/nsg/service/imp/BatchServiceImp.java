@@ -5,6 +5,7 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.entity.BatchEntity;
+import com.nsg.entity.EventEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.service.BatchService;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +71,11 @@ public class BatchServiceImp implements BatchService {
     public Page<BatchEntity> getBatches(int page, int size) {
 //        Page<BatchEntity> result = batchRepository.findAll(PageRequest.of(page, size));
         return batchRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
+    public Page<BatchEntity> findBatchsByName(String batchName, int page, int size) {
+        return batchRepository.findByBatchNameContaining(batchName, PageRequest.of(page, size));
     }
 
 }

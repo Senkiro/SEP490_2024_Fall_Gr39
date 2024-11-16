@@ -17,7 +17,13 @@
 
     <div class="actions">
       <div class="search-container">
-        <input type="text" placeholder="Search..." class="search-field">
+        <input
+          type="text"
+          placeholder="Search..."
+          class="search-field"
+          v-model="searchQuery"
+          @input="searchBatchs"
+        />
         <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
       </div>
     </div>
@@ -137,6 +143,7 @@ export default {
         message: "",
         type: "" // "success" or "error"
       },
+      searchQuery: '',
     };
   },
   mounted() {
@@ -206,6 +213,36 @@ export default {
       } catch (error) {
         console.error('Error creating batch:', error);
         this.showNotification(error.response?.data?.message || "Error creating batch. Please try again.", 'error');
+      }
+    },
+    async searchBatchs() {
+      if (this.searchQuery.trim() === "") {
+        this.fetchBatches();
+        return;
+      }
+      this.isLoading = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/search-batch?name=${this.searchQuery}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        this.batches = response.data.result.content;
+        this.totalElements = response.data.result.totalElements;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        this.updateDisplayedPages();
+
+        await Promise.all(
+            this.batches.map(async (batch) => {
+              const studentCount = await this.countStudents(batch.batchName);
+              batch.studentCount = studentCount;
+            })
+        );
+      } catch (error) {
+        console.error("Error searching events:", error);
+        this.showNotification("Error searching batch. Please try again.", 'error');
+      } finally {
+        this.isLoading = false;
       }
     },
     confirmCancel() {
