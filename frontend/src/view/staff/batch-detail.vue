@@ -300,7 +300,7 @@ export default {
         const genderBoolean = this.newStudent.gender === 'Male';
 
         const response = await axios.post(
-          `http://localhost:8088/fja-fap/staff/create-student?batch_name=${this.batchName}`,
+          `http://localhost:8088/fja-fap/staff/create-student`,
           {
             fullName: this.newStudent.fullname,
             japaneseName: this.newStudent.japaneseName,
@@ -308,6 +308,7 @@ export default {
             dob: this.formatDate(this.newStudent.dob),
             phone: this.newStudent.phone,
             gender: genderBoolean,
+            batchName: this.batchName
           },
           {
             headers: {

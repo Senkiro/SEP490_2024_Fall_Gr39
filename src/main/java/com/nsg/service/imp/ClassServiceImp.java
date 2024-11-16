@@ -4,7 +4,9 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.entity.BatchEntity;
 import com.nsg.entity.ClassEntity;
+import com.nsg.repository.BatchRepository;
 import com.nsg.repository.ClassRepository;
 import com.nsg.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +24,28 @@ public class ClassServiceImp implements ClassService {
     @Autowired
     ClassRepository classRepository;
 
+    @Autowired
+    BatchRepository batchRepository;
+
     @Override
     public void createClass(ClassRequest request) {
 
         //check class name existed?
-        if (classRepository.findByClassName(request.getClassName()) != null){
+        if (classRepository.findByClassName(request.getClassName()) != null) {
             throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
-        }else {
-
+        } else {
             //create new class
             ClassEntity classEntity = new ClassEntity();
             classEntity.setClassName(request.getClassName());
             classEntity.setClassColour(request.getClassColour());
 
+            BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+                    () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+            );
+
+            classEntity.setBatchEntity(batch);
+            batch.getClassEntityList().add(classEntity);
+            batchRepository.save(batch);
             classRepository.save(classEntity);
         }
     }

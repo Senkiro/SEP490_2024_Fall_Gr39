@@ -1,6 +1,7 @@
 package com.nsg.service;
 
 import com.nsg.dto.request.batch.BatchCreationRequest;
+import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.EventEntity;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ public interface BatchService {
     //get by batchName
     BatchEntity getBatch(String batchName);
 
-    Page<BatchEntity> getBatches(int page, int size);
+    Page<BatchResponse> getBatches(int page, int size);
 
     Page<BatchEntity> findBatchsByName(String batchName, int page, int size);
 }

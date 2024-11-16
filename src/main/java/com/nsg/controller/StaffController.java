@@ -17,6 +17,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
@@ -175,8 +176,8 @@ public class StaffController {
 
     //get all batch
     @GetMapping("/batch")
-    ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<BatchEntity>>builder()
+    ApiResponse<Page<BatchResponse>> getAllBatch(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<BatchResponse>>builder()
                 .code(1000)
                 .result(batchService.getBatches(page, size))
                 .build();
@@ -568,7 +569,7 @@ public class StaffController {
      **********************************/
     //create a class
     @PostMapping("/create-class")
-    public ApiResponse<?> createClass(@RequestBody ClassRequest request) {
+    public ApiResponse<?> createClass(@RequestBody ClassRequest request ) {
         classService.createClass(request);
         return ApiResponse.builder()
                 .message("Create new class successfully!")
