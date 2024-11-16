@@ -333,16 +333,16 @@ export default {
         // Kiểm tra nếu response.data.result và response.data.result.content tồn tại
         if (response.status === 200 && response.data.result && Array.isArray(response.data.result.content)) {
           this.students = response.data.result.content.map((item) => ({
-            id: item.rollNumber, // Giả sử rollNumber là duy nhất và dùng làm id
-            rollNumber: item.rollNumber,
-            fullname: item.user.fullName,
-            japaneseName: item.user.japaneseName,
-            email: item.user.email,
-            class: item.class || "Unknown",
-            classColor: this.getClassColor(item.class),
-            dob: item.user.dob,
-            phone: item.user.phone,
-            gender: item.user.gender
+            id: item.studentId || "Unknown ID",
+            rollNumber: item.rollNumber || "N/A",
+            fullname: item.userInforResponse?.fullName || "Unknown Name",
+            japaneseName: item.userInforResponse?.japaneseName || "N/A",
+            email: item.userInforResponse?.email || "N/A",
+            class: item.classResponse?.name || "Unknown",
+            classColor: this.getClassColor(item.classResponse?.name),
+            dob: item.userInforResponse?.dob || "N/A",
+            phone: item.userInforResponse?.phone || "N/A",
+            gender: item.userInforResponse?.gender === false ? "Female" : "Male",
           }));
 
           this.totalElements = response.data.result.totalElements;

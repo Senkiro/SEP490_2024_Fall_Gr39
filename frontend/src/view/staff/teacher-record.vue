@@ -189,7 +189,7 @@ export default {
           japaneseName: this.newTeacher.japaneseName,
           email: this.newTeacher.email,
           dob: this.newTeacher.dob,
-          gender: this.newTeacher.gender,
+          gender: this.newTeacher.gender === "Male",
           active: true
         }, {
           headers: { Authorization: `Bearer ${token}` }
@@ -209,8 +209,8 @@ export default {
           active: true
         };
 
+        this.fetchTeachers();
         this.showNotification("Thêm giáo viên thành công!", "success");
-
       } catch (error) {
         console.error('Lỗi khi thêm giáo viên:', error);
         const errorMessage = error.response && error.response.data && error.response.data.message
