@@ -21,7 +21,7 @@ public class SessionCreattionRequest {
 
     String timeSlotId;
 
-    String roomName;
+    String roomNumber;
 
     String examId;
 

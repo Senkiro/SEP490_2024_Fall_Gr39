@@ -25,12 +25,13 @@ public class SessionResponse {
 
     TimeSlotResponse timeSlotResponse;
 
-    String roomName;
+    String roomNumber;
 
     ExamResponse examResponse;
 
     String eventName;
 
-    String userId;
+    String fullName;
+    String email;
 
 }
