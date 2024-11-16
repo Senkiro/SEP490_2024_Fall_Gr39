@@ -9,11 +9,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventCreateRequest {
-    @NotBlank(message = "NOTNULL_EVENT_TITLE")
+public class EventUpdateRequest {
     String eventName;
 
-    @NotBlank(message = "NOTNULL_EVENT_ADDRESS")
     String address;
 
     String description;

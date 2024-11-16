@@ -89,7 +89,7 @@ const routes = [
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/staff/event-detail',
+        path: '/staff/event-detail/:eventId',
         name: 'EventDetail',
         component: () => import('../view/staff/event-detail.vue'),
         meta: { layout: 'app', requiresAuth: true },
