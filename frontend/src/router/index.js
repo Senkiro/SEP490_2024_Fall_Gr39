@@ -148,7 +148,18 @@ const routes = [
         component: () => import('../view/staff/student-mark-report.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
-
+    {
+        path: '/staff/attendance',
+        name: 'AttendanceReport',
+        component: () => import('../view/staff/attendance-report.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/:id',
+        name: 'StudentAttendanceReport',
+        component: () => import('../view/staff/student-attendance-report.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
 ];
 
 

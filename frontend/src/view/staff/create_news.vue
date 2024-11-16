@@ -26,10 +26,9 @@ import TextEditor from "@/components/text-editor.vue";
 
 export default {
   name: "CreateNews",
-  components: {TextEditor,}
+  components: { TextEditor },
 };
 </script>
 
 <style scoped>
-
 </style>
