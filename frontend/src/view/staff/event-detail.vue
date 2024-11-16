@@ -20,7 +20,7 @@
             </div>
 
             <p>Event Information</p>
-            <TextEditor v-if="isActive" />
+            <TextEditor v-model="content" v-if="isActive" />
 
             <div v-if="!isActive" class="actions">
                 <button @click="openTextEditor()">
@@ -68,6 +68,7 @@ export default {
     },
     data() {
         return {
+            content: '<p>123<p> 123333333333333',
             isActive: false,
             tabs: {
                 blue: true,
