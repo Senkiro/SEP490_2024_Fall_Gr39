@@ -4,13 +4,11 @@
       <h1>Student Profile</h1>
     </div>
 
-    <section class="student-info-card">
-      <div class="student-info-wrapper">
-        <div class="student-avatar-container">
-          <img src="/path/to/student-image.png" alt="Student Avatar" class="student-avatar">
-        </div>
+    <section class="info-card">
+      <div class="info-wrapper">
+        <img src="../../assets/smiling-young-man-illustration_1308-174669.avif" alt="Student Avatar" class="avatar">
 
-        <div class="student-details-container">
+        <div class="details-container">
           <div class="name-id-container">
             <div class="name-id">
               <h3><strong>Mai Thế Nam - マイ・テ・ナム</strong></h3>
@@ -21,32 +19,32 @@
             </button>
           </div>
 
-          <div class="student-details">
+          <div class="details">
             <div class="column column1">
-              <div class="student-attribute">
+              <div class="attribute">
                 <p>Batch</p>
                 <strong>FALL2024</strong>
               </div>
-              <div class="student-attribute">
+              <div class="attribute">
                 <p>Gender</p>
                 <strong>Male</strong>
               </div>
-              <div class="student-attribute">
+              <div class="attribute">
                 <p>DOB</p>
                 <strong>22/02/2001</strong>
               </div>
             </div>
 
             <div class="column column2">
-              <div class="student-attribute">
+              <div class="attribute">
                 <p>Class</p>
                 <strong style="color: green">Green</strong>
               </div>
-              <div class="student-attribute">
+              <div class="attribute">
                 <p>Phone</p>
                 <strong>0123456789</strong>
               </div>
-              <div class="student-attribute">
+              <div class="attribute">
                 <p>Email</p>
                 <strong>nammthe160123@fpt.edu.vn</strong>
               </div>
@@ -161,31 +159,19 @@ const markReport = ref([
 .container {
   padding: 20px;
 
-  .student-info-wrapper {
+  .info-wrapper {
     display: flex;
     align-items: flex-start;
     gap: 20px;
+    max-height: 400px;
 
+    img {
+      height: 290px;
+      border-radius: 20px;
+    }
   }
 
-  .student-avatar-container {
-    display: flex;
-    align-self: center;
-    width: 150px;
-    height: 200px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .student-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-  }
-
-  .student-details-container {
+  .details-container {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -193,6 +179,7 @@ const markReport = ref([
     border-radius: 20px;
     padding: 20px 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    gap: 30px;
 
     .name-id-container {
       display: flex;
@@ -214,7 +201,7 @@ const markReport = ref([
       }
     }
 
-    .student-details {
+    .details {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -229,7 +216,7 @@ const markReport = ref([
         gap: 20px;
         flex-direction: column;
 
-        .student-attribute {
+        .attribute {
           display: flex;
           flex-direction: column;
           gap: 5px;
@@ -283,38 +270,6 @@ const markReport = ref([
               margin-top: auto;
             }
           }
-        }
-      }
-    }
-  }
-
-  .tab-buttons-container {
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 1rem;
-    padding: 15px;
-
-    .tab-buttons {
-      display: flex;
-      gap: 10px;
-      border-bottom: 1px solid #E0E0E0;
-
-      .tab-button {
-        padding: 10px;
-        background: none;
-        border-radius: 0;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        color: #726C6C;
-      }
-
-      .active {
-        border-bottom: 3px solid #3E5DD4;
-
-        h3 {
-          font-weight: bold;
-          color: #212529;
         }
       }
     }

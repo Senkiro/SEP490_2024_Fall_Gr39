@@ -96,11 +96,30 @@ export default {
         text-align: left;
         padding: 10px 20px;
         background: #dae4f3;
+        color: #171717;
       }
 
       tr {
         text-align: left;
         transition: 3s;
+        color: #979B9F;
+
+
+        .icon-group {
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+        }
+
+        :first-child{
+          max-width: 70px;
+        }
+
+        :nth-child(1),
+        :nth-child(2) {
+          color: #171717;
+          font-weight: bold;
+        }
 
         .tab-index {
           padding-left: 80px;
@@ -305,7 +324,7 @@ export default {
     }
   }
 
-  .tab-container{
+  .tab-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
