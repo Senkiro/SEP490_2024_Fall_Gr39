@@ -19,13 +19,12 @@
       <div class="filters">
         <select id="class-filter" class="filter-select">
           <option value="">Class</option>
-          <option value="Blue">Blue</option>
-          <option value="Red">Red</option>
-          <option value="Green">Green</option>
-          <option value="Yellow">Yellow</option>
-          <option value="Purple">Purple</option>
+          <option v-for="classItem in classList" :key="classItem.id" :value="classItem.id">
+            {{ classItem.name }}
+          </option>
         </select>
       </div>
+
       <!-- Các nút hành động cho Student Record -->
       <div class="actions">
         <button @click="openAddStudentPopup">
@@ -116,7 +115,7 @@
             <td>{{ classItem.name }}</td>
             <td>{{ classItem.color }}</td>
             <td class="center">
-              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
+              <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
             </td>
           </tr>
           <tr v-if="classes.length === 0">
@@ -278,6 +277,7 @@ export default {
       },
       students: [],
       classes: [],
+      classList: [],
       notification: {
         message: '',
         type: ''
@@ -323,7 +323,6 @@ export default {
           japaneseName: addedStudent.japaneseName,
           email: addedStudent.email,
           class: addedStudent.class,
-          classColor: this.getClassColor(addedStudent.class),
           rollNumber: addedStudent.rollNumber,
           gender: addedStudent.gender,
           dob: addedStudent.dob,
@@ -361,7 +360,6 @@ export default {
             japaneseName: item.userInforResponse?.japaneseName || "N/A",
             email: item.userInforResponse?.email || "N/A",
             class: item.classResponse?.name || "Unknown",
-            classColor: this.getClassColor(item.classResponse?.name),
             dob: item.userInforResponse?.dob || "N/A",
             phone: item.userInforResponse?.phone || "N/A",
             gender: item.userInforResponse?.gender === false ? "Female" : "Male",
@@ -383,16 +381,6 @@ export default {
         console.error('Error fetching students:', error);
         alert('Đã có lỗi xảy ra khi kết nối tới server.');
       }
-    },
-    getClassColor(className) {
-      const colors = {
-        Blue: 'blue',
-        Red: 'red',
-        Green: 'green',
-        Yellow: 'yellow',
-        Purple: 'purple'
-      };
-      return colors[className] || 'black';
     },
     resetNewStudent() {
       this.newStudent = {
@@ -484,6 +472,31 @@ export default {
         alert('Đã có lỗi xảy ra khi lấy danh sách lớp.');
       }
     },
+    async fetchClassFilter() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+
+        const response = await axios.get('http://localhost:8088/fja-fap/staff/get-all-class', {
+          params: {
+            page: 0,
+            size: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200 && response.data.result) {
+          this.classList = response.data.result.content.map((item) => ({
+            id: item.classId || "Unknown ID",
+            name: item.className || "Unknown Name",
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+        alert('Đã có lỗi xảy ra khi lấy danh sách lớp.');
+      }
+    },
     updateClassDisplayedPages() {
       const pages = [];
       const { currentPage, totalPages } = this.classPagination;
@@ -518,6 +531,7 @@ export default {
   mounted() {
     this.fetchStudent();
     this.fetchClass();
+    this.fetchClassFilter();
   },
 };
 </script>
