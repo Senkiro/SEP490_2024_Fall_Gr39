@@ -17,6 +17,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
@@ -93,6 +94,9 @@ public class StaffController {
     @Autowired
     SessionService sessionService;
 
+    @Autowired
+    private ExcelHelper excelHelper;
+
 
     /**********************************
      * Manage Student
@@ -156,10 +160,9 @@ public class StaffController {
 
     @PostMapping("/upload-students")
     public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("file") MultipartFile file) {
-        if (ExcelHelper.hasExcelFormat(file)) {
+        if (excelHelper.hasExcelFormat(file)) {
             try {
-                ExcelHelper excelHelper = new ExcelHelper(batchRepository); // Inject batchRepository
-                List<StudentEntity> students = ExcelHelper.excelToStudents(file.getInputStream());
+                List<StudentEntity> students = excelHelper.excelToStudents(file.getInputStream());
                 studentService.saveAll(students);
                 return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
             } catch (Exception e) {
@@ -175,10 +178,18 @@ public class StaffController {
 
     //get all batch
     @GetMapping("/batch")
-    ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<BatchEntity>>builder()
+    ApiResponse<Page<BatchResponse>> getAllBatch(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<BatchResponse>>builder()
                 .code(1000)
                 .result(batchService.getBatches(page, size))
+                .build();
+    }
+
+    @GetMapping("/search-batch")
+    public ApiResponse<Page<BatchResponse>> searchBatchByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<BatchResponse> batchEntityList = batchService.findBatchsByName(name, page, size);
+        return ApiResponse.<Page<BatchResponse>>builder()
+                .result(batchEntityList)
                 .build();
     }
 
@@ -560,7 +571,7 @@ public class StaffController {
      **********************************/
     //create a class
     @PostMapping("/create-class")
-    public ApiResponse<?> createClass(@RequestBody ClassRequest request) {
+    public ApiResponse<?> createClass(@RequestBody ClassRequest request ) {
         classService.createClass(request);
         return ApiResponse.builder()
                 .message("Create new class successfully!")
@@ -572,6 +583,14 @@ public class StaffController {
     public ApiResponse<Page<ClassResponse>> getAllClass(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<ClassResponse>>builder()
                 .result(classService.getAllClass(page, size))
+                .build();
+    }
+
+    //get by batch
+    @GetMapping("/get-class-by-batch")
+    public ApiResponse<Page<ClassResponse>> getClassByBatch(@RequestParam String batch_name, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<ClassResponse>>builder()
+                .result(classService.getClassByBatch(batch_name,page, size))
                 .build();
     }
 
