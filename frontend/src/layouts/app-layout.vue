@@ -85,8 +85,7 @@ export default {
     gap: 40px;
 
     table {
-      border-collapse: separate;
-      border-radius: 20px;
+      border-collapse: collapse;
 
       .center {
         text-align: center;
@@ -97,26 +96,22 @@ export default {
         padding: 10px 20px;
         background: #dae4f3;
         color: #171717;
+        border: 2px solid #fff;
+        border-bottom: 2px solid #dae4f3;
       }
 
       tr {
         text-align: left;
         transition: 3s;
         color: #979B9F;
+        cursor: context-menu;
 
-
-        .icon-group {
-          display: flex;
-          gap: 10px;
-          justify-content: center;
+        td:first-child, th:first-child {
+          max-width: 10%;
         }
 
-        :first-child{
-          max-width: 70px;
-        }
-
-        :nth-child(1),
-        :nth-child(2) {
+        td:nth-child(1),
+        td:nth-child(2){
           color: #171717;
           font-weight: bold;
         }
@@ -127,8 +122,7 @@ export default {
         }
 
         td {
-          padding: 5px 20px;
-          border-radius: 20px;
+          padding: 10px 20px;
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
@@ -142,13 +136,11 @@ export default {
         }
       }
 
-      thead:first-child tr:first-child th:first-child,
-      tbody:first-child tr:first-child td:first-child {
+      thead:first-child tr:first-child th:first-child{
         border-radius: 20px 0 0 0;
       }
 
-      thead:first-child tr:last-child th:last-child,
-      tbody:last-child tr:last-child td:first-child {
+      thead:first-child tr:last-child th:last-child{
         border-radius: 0 20px 0 0;
       }
 
@@ -160,6 +152,10 @@ export default {
       .status-graduated,
       .status-finished {
         color: #6ECBB8;
+      }
+
+      .attended{
+        color: #00B968;
       }
     }
 
