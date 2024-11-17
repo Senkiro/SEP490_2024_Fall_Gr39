@@ -6,67 +6,73 @@
 
     <div class="actions">
       <button>
-        <VsxIcon iconName="Chart" size="20" type="bold" />
+        <VsxIcon iconName="Chart" size="20" type="bold"/>
         View statistical chart
       </button>
       <button @click="showAddBatchPopup = true">
-        <VsxIcon iconName="AddCircle" size="20" type="bold" />
+        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
         Add batch
       </button>
     </div>
 
     <div class="actions">
       <div class="search-container">
-        <input type="text" placeholder="Search..." class="search-field">
-        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+        <input
+          type="text"
+          placeholder="Search..."
+          class="search-field"
+          v-model="searchQuery"
+          @input="searchBatchs"
+        />
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
       </div>
     </div>
 
     <div class="table-container">
       <table>
         <thead>
-          <tr>
-            <th class="center">No</th>
-            <th>Batch</th>
-            <th>Year</th>
-            <th>Start time</th>
-            <th>End time</th>
-            <th class="center">Number of students</th>
-            <th>Status</th>
-            <th class="center">Action</th>
-          </tr>
+        <tr>
+          <th class="center">No</th>
+          <th>Batch</th>
+          <th>Year</th>
+          <th>Start time</th>
+          <th>End time</th>
+          <th class="center">Number of students</th>
+          <th>Status</th>
+          <th class="center">Action</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-            <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-            <td @click="viewBatchDetail(batchEntity)" class="clickable">{{ batchEntity.batchName }}</td>
-            <td>{{ batchEntity.year }}</td>
-            <td>{{ batchEntity.startTime }}</td>
-            <td>{{ batchEntity.endTime }}</td>
-            <td class="center">{{ batchEntity.studentCount || 0 }}</td>
-            <td
+        <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
+          <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+          <td @click="viewBatchDetail(batchEntity)" class="clickable">{{ batchEntity.batchName }}</td>
+          <td>{{ batchEntity.year }}</td>
+          <td>{{ batchEntity.startTime }}</td>
+          <td>{{ batchEntity.endTime }}</td>
+          <td class="center">{{ batchEntity.studentCount || 0 }}</td>
+          <td
               :class="{ 'status-progress': getStatus(batchEntity.endTime) === 'On progress', 'status-graduated': getStatus(batchEntity.endTime) === 'Graduated' }">
-              {{ getStatus(batchEntity.endTime) }}
-            </td>
-            <td class="center">
-              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)" />
-            </td>
-          </tr>
-          <tr v-if="batches.length === 0">
-            <td colspan="8" class="center">No record.</td>
-          </tr>
+            {{ getStatus(batchEntity.endTime) }}
+          </td>
+          <td class="center">
+            <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)"/>
+          </td>
+        </tr>
+        <tr v-if="batches.length === 0">
+          <td colspan="8" class="center">No record.</td>
+        </tr>
         </tbody>
       </table>
       <div class="pagination" v-if="totalPages > 0">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
-          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
                 @click="changePage(page)">
           {{ page }}
         </button>
         <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
         </button>
       </div>
     </div>
@@ -79,19 +85,19 @@
         <form @submit.prevent="addBatch">
           <div class="form-group">
             <label for="batchName">Name <span class="required">*</span></label>
-            <input type="text" id="batchName" v-model="newBatch.name" required />
+            <input type="text" id="batchName" v-model="newBatch.name" required/>
           </div>
           <div class="form-group">
             <label for="startTime">Start time <span class="required">*</span></label>
-            <input type="date" id="startTime" v-model="newBatch.startTime" required />
+            <input type="date" id="startTime" v-model="newBatch.startTime" required/>
           </div>
           <div class="form-group">
             <label for="endTime">End time <span class="required">*</span></label>
-            <input type="date" id="endTime" v-model="newBatch.endTime" />
+            <input type="date" id="endTime" v-model="newBatch.endTime"/>
           </div>
           <div class="form-group">
             <label for="year">Year <span class="required">*</span></label>
-            <input type="number" id="year" v-model="newBatch.year" min="2000" max="2100" />
+            <input type="number" id="year" v-model="newBatch.year" min="2000" max="2100"/>
           </div>
           <div class="actions">
             <button class="btn-cancel" @click="confirmCancel">Cancel</button>
@@ -109,7 +115,7 @@
 </template>
 
 <script>
-import { VsxIcon } from "vue-iconsax";
+import {VsxIcon} from "vue-iconsax";
 import axios from 'axios';
 
 export default {
@@ -137,6 +143,7 @@ export default {
         message: "",
         type: "" // "success" or "error"
       },
+      searchQuery: '',
     };
   },
   mounted() {
@@ -148,8 +155,8 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+            `http://localhost:8088/fja-fap/staff/batch?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            {headers: {Authorization: `Bearer ${token}`}}
         );
         this.batches = response.data.result.content;
         this.totalElements = response.data.result.totalElements;
@@ -157,10 +164,10 @@ export default {
 
         this.updateDisplayedPages();
         await Promise.all(
-          this.batches.map(async (batch) => {
-            const studentCount = await this.countStudents(batch.batchName);
-            batch.studentCount = studentCount;
-          })
+            this.batches.map(async (batch) => {
+              const studentCount = await this.countStudents(batch.batchName);
+              batch.studentCount = studentCount;
+            })
         );
       } catch (error) {
         console.error('Error fetching batches:', error);
@@ -176,7 +183,7 @@ export default {
       }
     },
     viewBatchDetail(batchEntity) {
-      this.$router.push({ name: 'BatchDetail', params: { batchName: batchEntity.batchName } });
+      this.$router.push({name: 'BatchDetail', params: {batchName: batchEntity.batchName}});
     },
     async addBatch() {
       if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
@@ -187,17 +194,17 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         await axios.post('http://localhost:8088/fja-fap/staff/save-batch',
-          {
-            batchName: this.newBatch.name,
-            startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0],
-            endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],
-            year: this.newBatch.year,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
+            {
+              batchName: this.newBatch.name,
+              startTime: new Date(this.newBatch.startTime).toISOString().split("T")[0],
+              endTime: new Date(this.newBatch.endTime).toISOString().split("T")[0],
+              year: this.newBatch.year,
+            },
+            {headers: {Authorization: `Bearer ${token}`}}
         );
         await this.fetchBatches();
         this.showAddBatchPopup = false;
-        this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
+        this.newBatch = {name: "", startTime: "", endTime: "", year: ""};
         this.errorMessage = "";
 
         // Show success notification
@@ -208,10 +215,40 @@ export default {
         this.showNotification(error.response?.data?.message || "Error creating batch. Please try again.", 'error');
       }
     },
+    async searchBatchs() {
+      if (this.searchQuery.trim() === "") {
+        this.fetchBatches();
+        return;
+      }
+      this.isLoading = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/search-batch?name=${this.searchQuery}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        this.batches = response.data.result.content;
+        this.totalElements = response.data.result.totalElements;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        this.updateDisplayedPages();
+
+        await Promise.all(
+            this.batches.map(async (batch) => {
+              const studentCount = await this.countStudents(batch.batchName);
+              batch.studentCount = studentCount;
+            })
+        );
+      } catch (error) {
+        console.error("Error searching events:", error);
+        this.showNotification("Error searching batch. Please try again.", 'error');
+      } finally {
+        this.isLoading = false;
+      }
+    },
     confirmCancel() {
       this.showAddBatchPopup = false;
       this.errorMessage = "";
-      this.newBatch = { name: "", startTime: "", endTime: "", year: "" };
+      this.newBatch = {name: "", startTime: "", endTime: "", year: ""};
     },
     getStatus(endTime) {
       const currentDate = new Date();
@@ -219,7 +256,7 @@ export default {
       return batchEndDate < currentDate ? 'Graduated' : 'On progress';
     },
     showNotification(message, type) {
-      this.notification = { message, type };
+      this.notification = {message, type};
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
@@ -245,7 +282,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-student-by-batch?page=0&size=1000&batch_name=${batchName}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: {Authorization: `Bearer ${token}`}
         });
         return response.data.result.totalElements;
       } catch (error) {
@@ -257,7 +294,8 @@ export default {
   watch: {
     // Watcher to update URL when `currentPage` changes
     currentPage(newPage) {
-      this.$router.push({ path: '/staff/batch-record', query: { page: newPage } }).catch(() => { });
+      this.$router.push({path: '/staff/batch-record', query: {page: newPage}}).catch(() => {
+      });
     }
   }
 };

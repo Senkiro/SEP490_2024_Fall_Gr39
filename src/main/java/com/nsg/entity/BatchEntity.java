@@ -36,4 +36,7 @@ public class BatchEntity extends BaseEntity {
     @JsonIgnore
     @OneToMany( mappedBy = "batchEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
+
+    @OneToMany(mappedBy = "batchEntity", fetch = FetchType.EAGER)
+    List<ClassEntity> classEntityList;
 }

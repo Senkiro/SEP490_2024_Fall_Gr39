@@ -16,5 +16,4 @@ public class StudentCreattionRequest extends UserCreationRequest {
     String rollNumber;
     String batchName;
     String className;
-
 }

@@ -32,4 +32,8 @@ public class ClassEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
+
+    @ManyToOne
+    @JoinColumn(name = "batch_name")
+    BatchEntity batchEntity;
 }

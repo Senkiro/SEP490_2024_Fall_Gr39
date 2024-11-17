@@ -1,19 +1,37 @@
 <template>
   <div class="container">
-    <div id="daily-status">
-      <div class="daily-status-bar" id="student-attendance">
-        <p class="status-number">298</p>
-        <p class="status-description">students present today</p>
+    <div class="daily-information">
+      <div id="daily-status">
+        <div class="daily-status-bar" id="student-attendance">
+          <p class="status-number">298</p>
+          <p class="status-description">students present today</p>
+        </div>
+
+        <div class="daily-status-bar">
+          <p class="status-number">260</p>
+          <p class="status-description">exams marked today</p>
+        </div>
+
+        <div class="daily-status-bar">
+          <p class="status-number">38</p>
+          <p class="status-description">exams unmarked today</p>
+        </div>
       </div>
 
-      <div class="daily-status-bar">
-        <p class="status-number">260</p>
-        <p class="status-description">exams marked today</p>
-      </div>
-
-      <div class="daily-status-bar">
-        <p class="status-number">38</p>
-        <p class="status-description">exams unmarked today</p>
+      <div class="calendar">
+        <div class="date-month">
+          <p class="date">
+            6
+          </p>
+          <p class="month">
+            November
+          </p>
+        </div>
+        <div class="weekday">
+          <p class="weekday">
+            Friday
+          </p>
+        </div>
       </div>
     </div>
 
@@ -132,35 +150,69 @@ export default {
     margin: 0;
   }
 
-  #daily-status {
+  .daily-information {
     display: flex;
     flex-direction: row;
-    gap: 30px;
+    justify-content: space-between;
 
-    .daily-status-bar {
+    .calendar {
       display: flex;
-      flex-direction: column;
-      padding: 20px 60px 20px 40px;
+      flex-direction: row;
       border-radius: 10px;
-      background-color: #BCC5E6;
+      background-color: #233E8B;
+      padding: 10px 20px;
+      color: #fff;
+      gap: 20px;
+      .date-month {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-right: 20px;
+        border-right: 2px dashed #fff;
 
-      .status-number {
-        font-size: 30px;
-        font-weight: bold;
-        color: #233E8B;
+        .date {
+          font-size: 48px;
+          font-weight: bold;
+        }
       }
 
-      .status-description {
-        color: #233E8B;
+      .weekday {
+        font-size: 24px;
+        display: flex;
+        align-items: center;
       }
     }
 
-    #student-attendance {
-      background-color: #233E8B;
+    #daily-status {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
 
-      .status-number,
-      .status-description {
-        color: #fff;
+      .daily-status-bar {
+        display: flex;
+        flex-direction: column;
+        padding: 20px 60px 20px 40px;
+        border-radius: 10px;
+        background-color: #BCC5E6;
+
+        .status-number {
+          font-size: 30px;
+          font-weight: bold;
+          color: #233E8B;
+        }
+
+        .status-description {
+          color: #233E8B;
+        }
+      }
+
+      #student-attendance {
+        background-color: #233E8B;
+
+        .status-number,
+        .status-description {
+          color: #fff;
+        }
       }
     }
   }
@@ -185,7 +237,7 @@ export default {
           width: 50%;
           display: flex;
           flex-direction: column;
-          border: 2px solid #3F5FD8;
+          border: 2px solid #233E8B;
           border-radius: 10px;
           padding: 20px;
           gap: 30px;
@@ -213,7 +265,7 @@ export default {
               justify-content: center;
               padding: 5px 15px;
               border-radius: 50%;
-              background: #3F5FD8;
+              background: #233E8B;
             }
           }
 
@@ -222,7 +274,7 @@ export default {
 
             button {
               width: 100%;
-              background: #3F5FD8;
+              background: #233E8B;
               font-weight: bold;
               justify-content: center;
             }
@@ -268,11 +320,11 @@ export default {
           flex-direction: row;
           gap: 10px;
 
-          .title{
-          white-space: nowrap;
-          width: 100%;
-          text-overflow: ellipsis;
-          overflow: hidden;
+          .title {
+            white-space: nowrap;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
         }
       }

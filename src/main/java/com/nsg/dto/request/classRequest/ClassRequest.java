@@ -19,4 +19,6 @@ public class ClassRequest {
 
     @NotBlank(message = "CLASS_COLOUR_IS_NULL")
     String classColour;
+
+    String batchName;
 }

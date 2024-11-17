@@ -2,65 +2,65 @@
   <div class="tiptap-container">
     <div v-if="editor" class="tiptap-buttons">
       <button @click="editor.chain().focus().toggleBold().run()"
-        :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
+              :disabled="!editor.can().chain().focus().toggleBold().run()" :class="{ 'is-active': editor.isActive('bold') }">
         <BoldIcon />
       </button>
       <button @click="editor.chain().focus().toggleItalic().run()"
-        :disabled="!editor.can().chain().focus().toggleItalic().run()"
-        :class="{ 'is-active': editor.isActive('italic') }">
-        <ItalicIcon />
+              :disabled="!editor.can().chain().focus().toggleItalic().run()"
+              :class="{ 'is-active': editor.isActive('italic') }">
+        <ItalicIcon/>
       </button>
       <button @click="editor.chain().focus().toggleUnderline().run()"
-        :disabled="!editor.can().chain().focus().toggleUnderline().run()"
-        :class="{ 'is-active': editor.isActive('underline') }">
-        <UnderlineIcon />
+              :disabled="!editor.can().chain().focus().toggleUnderline().run()"
+              :class="{ 'is-active': editor.isActive('underline') }">
+        <UnderlineIcon/>
       </button>
       <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
-        <Heading1Icon />
+              :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }">
+        <Heading1Icon/>
       </button>
       <button @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
-        <Heading2Icon />
+              :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }">
+        <Heading2Icon/>
       </button>
       <button @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
-        <Heading3Icon />
+              :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }">
+        <Heading3Icon/>
       </button>
       <button @click="editor.chain().focus().toggleBulletList().run()"
-        :class="{ 'is-active': editor.isActive('bulletList') }">
-        <BulletListIcon />
+              :class="{ 'is-active': editor.isActive('bulletList') }">
+        <BulletListIcon/>
       </button>
       <button @click="editor.chain().focus().toggleOrderedList().run()"
-        :class="{ 'is-active': editor.isActive('orderedList') }">
-        <OrderedListIcon />
+              :class="{ 'is-active': editor.isActive('orderedList') }">
+        <OrderedListIcon/>
       </button>
       <button @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
-        <TableIcon />
+        <TableIcon/>
       </button>
       <button @click="editor.chain().focus().addColumnAfter().run()">
-        <AddColumnIcon />
+        <AddColumnIcon/>
       </button>
       <button @click="editor.chain().focus().deleteColumn().run()">
-        <RemoveColumnIcon />
+        <RemoveColumnIcon/>
       </button>
       <button @click="editor.chain().focus().addRowAfter().run()">
-        <AddRowIcon />
+        <AddRowIcon/>
       </button>
       <button @click="editor.chain().focus().deleteRow().run()">
-        <RemoveRowIcon />
+        <RemoveRowIcon/>
       </button>
       <button @click="editor.chain().focus().deleteTable().run()">
-        <RemoveTableIcon />
+        <RemoveTableIcon/>
       </button>
       <button @click="editor.chain().focus().mergeCells().run()">
-        <MergeCellIcon />
+        <MergeCellIcon/>
       </button>
       <button @click="editor.chain().focus().splitCell().run()">
-        <SplitCellIcon />
+        <SplitCellIcon/>
       </button>
     </div>
-    <editor-content :editor="editor" />
+    <editor-content :editor="editor"/>
   </div>
 </template>
 
@@ -98,10 +98,7 @@ import MergeCellIcon from 'vue-material-design-icons/TableMergeCells.vue';
 import SplitCellIcon from 'vue-material-design-icons/TableSplitCell.vue';
 
 
-
-
-
-import { useEditor, EditorContent } from '@tiptap/vue-3'
+import {Editor, EditorContent} from '@tiptap/vue-3'
 
 export default {
   components: {
@@ -124,9 +121,38 @@ export default {
     SplitCellIcon
   },
 
-  setup() {
-    const editor = useEditor({
-      content: "",
+  props: {
+    modelValue: {
+      type: String,
+      default: '',
+    },
+  },
+
+  emits: ['update:modelValue'],
+
+  watch: {
+    modelValue(value) {
+      // HTML
+      const isSame = this.editor.getHTML() === value
+
+      // JSON
+      // const isSame = JSON.stringify(this.editor.getJSON()) === JSON.stringify(value)
+
+      if (isSame) {
+        return
+      }
+
+      this.editor.commands.setContent(value, false)
+    },
+  },
+  data() {
+    return {
+      editor: null,
+    }
+  },
+
+  mounted() {
+    this.editor = new Editor({
       extensions: [
         Text,
         Paragraph,
@@ -147,9 +173,19 @@ export default {
           levels: [1, 2, 3],
         }),
       ],
-    })
+      content: this.modelValue,
+      onUpdate: () => {
+        // HTML
+        this.$emit('update:modelValue', this.editor.getHTML())
 
-    return { editor }
+        // JSON
+        // this.$emit('update:modelValue', this.editor.getJSON())
+      },
+    })
+  },
+
+  beforeUnmount() {
+    this.editor.destroy()
   },
 }
 </script>

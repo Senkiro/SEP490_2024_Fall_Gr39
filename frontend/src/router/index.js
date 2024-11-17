@@ -85,11 +85,11 @@ const routes = [
     {
         path: '/staff/event',
         name: 'Event',
-        component: () => import('../view/staff/event-list.vue'),
+        component: () => import('../view/staff/event-record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
-        path: '/staff/event-detail',
+        path: '/staff/event-detail/:eventId',
         name: 'EventDetail',
         component: () => import('../view/staff/event-detail.vue'),
         meta: { layout: 'app', requiresAuth: true },
@@ -97,7 +97,7 @@ const routes = [
     {
         path: '/staff/room',
         name: 'Room',
-        component: () => import('../view/staff/room_list.vue'),
+        component: () => import('../view/staff/room-record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
@@ -127,7 +127,7 @@ const routes = [
     {
         path: '/staff/news',
         name: 'News',
-        component: () => import('../view/staff/new_list.vue'),
+        component: () => import('../view/staff/news-record.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
     {
@@ -145,10 +145,21 @@ const routes = [
     {
         path: '/staff/student-mark-report',
         name: 'StudentMarkReport',
-        component: () => import('../view/staff/student_mark_report.vue'),
+        component: () => import('../view/staff/student-mark-report.vue'),
         meta: { layout: 'app', requiresAuth: true },
     },
-
+    {
+        path: '/staff/attendance',
+        name: 'AttendanceReport',
+        component: () => import('../view/staff/attendance-report.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
+    {
+        path: '/staff/:id',
+        name: 'StudentAttendanceReport',
+        component: () => import('../view/staff/student-attendance-report.vue'),
+        meta: { layout: 'app', requiresAuth: true },
+    },
 ];
 
 

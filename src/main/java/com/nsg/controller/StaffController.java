@@ -4,6 +4,7 @@ import com.nsg.common.enums.UserRole;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
+import com.nsg.dto.request.event.EventUpdateRequest;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
@@ -16,7 +17,9 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
@@ -33,6 +36,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Page;
@@ -90,13 +94,16 @@ public class StaffController {
     @Autowired
     SessionService sessionService;
 
+    @Autowired
+    private ExcelHelper excelHelper;
+
 
     /**********************************
      * Manage Student
      **********************************/
     //create new student
     @PostMapping("/create-student")
-    public ApiResponse<StudentResponse> createStudent(@RequestBody @Valid StudentCreattionRequest request){
+    public ApiResponse<StudentResponse> createStudent(@RequestBody @Valid StudentCreattionRequest request) {
         studentService.createStudent(request);
         return ApiResponse.<StudentResponse>builder()
                 .message("Create student successfully!")
@@ -105,7 +112,7 @@ public class StaffController {
 
     @GetMapping("/student-list")
     public ApiResponse<Page<StudentResponse>> viewStudents(@RequestParam int page,
-                                                           @RequestParam int size){
+                                                           @RequestParam int size) {
         Page<StudentResponse> studentList = studentService.getAllStudent(page, size);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
@@ -116,7 +123,7 @@ public class StaffController {
     @GetMapping("/get-student-by-batch")
     public ApiResponse<Page<StudentResponse>> viewStudentByBatchName(@RequestParam int page,
                                                                      @RequestParam int size,
-                                                                     @RequestParam String batch_name){
+                                                                     @RequestParam String batch_name) {
         Page<StudentResponse> studentList = studentService.getStudentByBatchName(page, size, batch_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
@@ -128,7 +135,7 @@ public class StaffController {
     public ApiResponse<Page<StudentResponse>> viewStudentByBatchNameAndClassName(@RequestParam int page,
                                                                                  @RequestParam int size,
                                                                                  @RequestParam String batch_name,
-                                                                                 @RequestParam String class_name){
+                                                                                 @RequestParam String class_name) {
         Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_name);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
@@ -137,14 +144,14 @@ public class StaffController {
 
     //get a student by studentId
     @GetMapping("/get-student/{student_id}")
-    public ApiResponse<StudentResponse> getStudent(@PathVariable("student_id") String student_id){
+    public ApiResponse<StudentResponse> getStudent(@PathVariable("student_id") String student_id) {
         return ApiResponse.<StudentResponse>builder()
                 .result(studentService.getStudent(student_id))
                 .build();
     }
 
     @DeleteMapping("/delete-student/{student_id}")
-    public ApiResponse<?> deleteStudent(@PathVariable("student_id") String student_id){
+    public ApiResponse<?> deleteStudent(@PathVariable("student_id") String student_id) {
         userService.deleteUser(student_id);
         return ApiResponse.builder()
                 .message("Delete successful")
@@ -153,10 +160,9 @@ public class StaffController {
 
     @PostMapping("/upload-students")
     public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("file") MultipartFile file) {
-        if (ExcelHelper.hasExcelFormat(file)) {
+        if (excelHelper.hasExcelFormat(file)) {
             try {
-                ExcelHelper excelHelper = new ExcelHelper(batchRepository); // Inject batchRepository
-                List<StudentEntity> students = ExcelHelper.excelToStudents(file.getInputStream());
+                List<StudentEntity> students = excelHelper.excelToStudents(file.getInputStream());
                 studentService.saveAll(students);
                 return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
             } catch (Exception e) {
@@ -172,10 +178,18 @@ public class StaffController {
 
     //get all batch
     @GetMapping("/batch")
-    ApiResponse<Page<BatchEntity>> getAllBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<BatchEntity>>builder()
+    ApiResponse<Page<BatchResponse>> getAllBatch(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<BatchResponse>>builder()
                 .code(1000)
                 .result(batchService.getBatches(page, size))
+                .build();
+    }
+
+    @GetMapping("/search-batch")
+    public ApiResponse<Page<BatchResponse>> searchBatchByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<BatchResponse> batchEntityList = batchService.findBatchsByName(name, page, size);
+        return ApiResponse.<Page<BatchResponse>>builder()
+                .result(batchEntityList)
                 .build();
     }
 
@@ -198,7 +212,7 @@ public class StaffController {
 
     //create new batch
     @PostMapping("/save-batch")
-    ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request){
+    ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request) {
         batchService.saveBatch(request);
         BatchEntity batchEntity = batchService.getBatch(request.getBatchName());
         return ApiResponse.<BatchEntity>builder()
@@ -209,7 +223,7 @@ public class StaffController {
 
     //update
     @PostMapping("/update-batch")
-    ApiResponse<BatchEntity> updateBatch(@RequestBody BatchCreationRequest request){
+    ApiResponse<BatchEntity> updateBatch(@RequestBody BatchCreationRequest request) {
         BatchEntity batch = batchService.updateBatch(request.getBatchName(), request);
         return ApiResponse.<BatchEntity>builder()
                 .result(batch)
@@ -218,7 +232,7 @@ public class StaffController {
 
     //delete batch
     @DeleteMapping("/delete-batch/{batchName}")
-    ApiResponse<?> deleteBatch(@PathVariable("batchName") String batchName){
+    ApiResponse<?> deleteBatch(@PathVariable("batchName") String batchName) {
         batchService.deleteBatch(batchName);
         return ApiResponse.builder()
                 .message("Delete successfully!")
@@ -231,9 +245,9 @@ public class StaffController {
 
     //get all
     @GetMapping("/lesson")
-    ApiResponse<Page<LessonEntity>> getAllLesson(@RequestParam int page, @RequestParam int size){
-        Page<LessonEntity> lessonEntityList = lessonService.getLessons(page,size);
-        return  ApiResponse.<Page<LessonEntity>>builder()
+    ApiResponse<Page<LessonEntity>> getAllLesson(@RequestParam int page, @RequestParam int size) {
+        Page<LessonEntity> lessonEntityList = lessonService.getLessons(page, size);
+        return ApiResponse.<Page<LessonEntity>>builder()
                 .result(lessonEntityList)
                 .build();
     }
@@ -249,7 +263,7 @@ public class StaffController {
 
     //get a lesson by id
     @GetMapping("/get-lesson/{lesson_id}")
-    ApiResponse<LessonResponse> getLesson(@PathVariable("lesson_id") String lesson_id){
+    ApiResponse<LessonResponse> getLesson(@PathVariable("lesson_id") String lesson_id) {
         return ApiResponse.<LessonResponse>builder()
                 .result(lessonService.getLesson(lesson_id))
                 .build();
@@ -257,7 +271,7 @@ public class StaffController {
 
     //delete lesson
     @DeleteMapping("/lesson/{lessonId}")
-    ApiResponse<?> deleteLesson(@PathVariable("lessonId") String lessonId){
+    ApiResponse<?> deleteLesson(@PathVariable("lessonId") String lessonId) {
         lessonService.deleteLesson(lessonId);
         return ApiResponse.builder()
                 .message("Delete lesson successfully!")
@@ -296,7 +310,7 @@ public class StaffController {
 
     //create teacher
     @PostMapping("/create-teacher")
-    public ApiResponse<?> createTeacher(@RequestBody @Valid @Validated UserCreationRequest request){
+    public ApiResponse<?> createTeacher(@RequestBody @Valid @Validated UserCreationRequest request) {
         UserRole role = UserRole.TEACHER;
         return ApiResponse.builder()
                 .result(userService.createUser(request, role))
@@ -309,7 +323,7 @@ public class StaffController {
 
     //create time slot
     @PostMapping("/create-time-slot")
-    public ApiResponse<TimeSlotResponse> createTimeSlot(@RequestBody @Valid TimeSlotCreationRequest request){
+    public ApiResponse<TimeSlotResponse> createTimeSlot(@RequestBody @Valid TimeSlotCreationRequest request) {
         return ApiResponse.<TimeSlotResponse>builder()
                 .result(timeSlotService.createTimeSlot(request))
                 .message("Create time slot successfully!")
@@ -355,7 +369,7 @@ public class StaffController {
      **********************************/
     //create room
     @PostMapping("/create-room")
-    public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomRequest request){
+    public ApiResponse<RoomResponse> createRoom(@RequestBody @Valid RoomRequest request) {
         return ApiResponse.<RoomResponse>builder()
                 .result(roomService.createRoom(request))
                 .message("Create room successfully!")
@@ -364,7 +378,7 @@ public class StaffController {
 
     //get all room
     @GetMapping("/get-all-room")
-    public ApiResponse<List<RoomResponse>> getAllRoom(){
+    public ApiResponse<List<RoomResponse>> getAllRoom() {
         return ApiResponse.<List<RoomResponse>>builder()
                 .result(roomService.getAllRoom())
                 .build();
@@ -372,7 +386,7 @@ public class StaffController {
 
     //get a room by id
     @GetMapping("/get-room/{roomId}")
-    public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId){
+    public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId) {
         return ApiResponse.<RoomResponse>builder()
                 .result(roomService.getRoom(roomId))
                 .build();
@@ -380,7 +394,7 @@ public class StaffController {
 
     //update one room
     @PostMapping("/update-room/{roomId}")
-    public ApiResponse<RoomResponse> updateRoom(@PathVariable("roomId") String roomId, @RequestBody RoomRequest request){
+    public ApiResponse<RoomResponse> updateRoom(@PathVariable("roomId") String roomId, @RequestBody RoomRequest request) {
         return ApiResponse.<RoomResponse>builder()
                 .result(roomService.updateRoom(roomId, request))
                 .build();
@@ -388,7 +402,7 @@ public class StaffController {
 
     //delete room
     @DeleteMapping("/delete-room/{roomId}")
-    public ApiResponse<?> deleteRoom(@PathVariable("roomId") String roomId){
+    public ApiResponse<?> deleteRoom(@PathVariable("roomId") String roomId) {
         roomService.deleteRoom(roomId);
         return ApiResponse.builder()
                 .message("Delete room successfully!")
@@ -456,7 +470,7 @@ public class StaffController {
 
     //get all exam
     @GetMapping("/get-all-exam")
-    public ApiResponse<List<ExamResponse>> getAllExam(){
+    public ApiResponse<List<ExamResponse>> getAllExam() {
         return ApiResponse.<List<ExamResponse>>builder()
                 .result(examService.getAllExam())
                 .build();
@@ -487,25 +501,68 @@ public class StaffController {
                 .message("Delete exam successfully!")
                 .build();
     }
+
     /**********************************
      * Manage Event
      **********************************/
 
     //get all
     @GetMapping("/event")
-    public ApiResponse<Page<EventEntity>> getAllEvent(@RequestParam int page, @RequestParam int size){
-        Page<EventEntity> eventEntityList = eventService.getEvents(page,size);
-        return  ApiResponse.<Page<EventEntity>>builder()
+    public ApiResponse<Page<EventEntity>> getAllEvent(@RequestParam int page, @RequestParam int size) {
+        Page<EventEntity> eventEntityList = eventService.getEvents(page, size);
+        return ApiResponse.<Page<EventEntity>>builder()
                 .result(eventEntityList)
                 .build();
     }
 
     //create new batch
     @PostMapping("/create-event")
-    public ApiResponse<EventEntity> createEvnet(@RequestBody @Validated EventCreateRequest request){
+    public ApiResponse<EventEntity> createEvnet(@RequestBody @Validated EventCreateRequest request) {
         eventService.createEvent(request);
         return ApiResponse.<EventEntity>builder()
                 .message("A new event have been created!")
+                .build();
+    }
+
+    // getEventById
+    @GetMapping("/get-event")
+    public ApiResponse<EventEntity> getEventById(@RequestParam String eventId) {
+        EventEntity eventEntity = eventService.getEventById(eventId);
+        return ApiResponse.<EventEntity>builder()
+                .result(eventEntity)
+                .build();
+    }
+
+    // search and paginate
+    @GetMapping("/search-event")
+    public ApiResponse<Page<EventEntity>> getEventByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<EventEntity> eventEntityList = eventService.findEventsByName(name, page, size);
+        return ApiResponse.<Page<EventEntity>>builder()
+                .result(eventEntityList)
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-event/{event_id}")
+    public ApiResponse<?> deleteEvent(@PathVariable("event_id") String event_id) {
+        eventService.deleteEvent(event_id);
+        return ApiResponse.builder()
+                .message("Delete event successfully!")
+                .build();
+    }
+
+    @PostMapping(value = "/update-event/{event_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<EventResponse> updateEvent(
+            @PathVariable("event_id") String eventId,
+            @RequestPart("eventDetail") EventUpdateRequest eventRequest, // Nhận JSON payload
+            @RequestPart(value = "image", required = false) MultipartFile image) { // Nhận file ảnh
+
+        // Xử lý update
+        EventResponse eventResponse = eventService.updateEventById(eventId, eventRequest, image);
+
+        return ApiResponse.<EventResponse>builder()
+                .result(eventResponse)
+                .message("Update event successfully!")
                 .build();
     }
 
@@ -514,7 +571,7 @@ public class StaffController {
      **********************************/
     //create a class
     @PostMapping("/create-class")
-    public ApiResponse<?> createClass(@RequestBody ClassRequest request) {
+    public ApiResponse<?> createClass(@RequestBody ClassRequest request ) {
         classService.createClass(request);
         return ApiResponse.builder()
                 .message("Create new class successfully!")
@@ -523,9 +580,17 @@ public class StaffController {
 
     //get all class
     @GetMapping("/get-all-class")
-    public ApiResponse<Page<ClassResponse>> getAllClass(@RequestParam int page, @RequestParam int size){
+    public ApiResponse<Page<ClassResponse>> getAllClass(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<ClassResponse>>builder()
                 .result(classService.getAllClass(page, size))
+                .build();
+    }
+
+    //get by batch
+    @GetMapping("/get-class-by-batch")
+    public ApiResponse<Page<ClassResponse>> getClassByBatch(@RequestParam String batch_name, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<ClassResponse>>builder()
+                .result(classService.getClassByBatch(batch_name,page, size))
                 .build();
     }
 
@@ -569,7 +634,7 @@ public class StaffController {
 
     //get all class
     @GetMapping("/get-all-session")
-    public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size){
+    public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<SessionResponse>>builder()
                 .result(sessionService.getAllSession(page, size))
                 .build();

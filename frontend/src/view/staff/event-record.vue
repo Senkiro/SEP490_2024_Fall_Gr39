@@ -3,7 +3,7 @@
     <div class="headContent">
       <h1>Event List</h1>
     </div>
-    
+
     <div class="actions">
       <button @click="showAddEventPopup = true">
         <VsxIcon iconName="AddCircle" size="20" type="bold"/>
@@ -13,7 +13,13 @@
 
     <div class="actions">
       <div class="search-container">
-        <input type="text" placeholder="Search..." class="search-field">
+        <input
+            type="text"
+            placeholder="Search..."
+            class="search-field"
+            v-model="searchQuery"
+            @input="searchEvents"
+        />
         <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
       </div>
     </div>
@@ -39,12 +45,12 @@
           <td style="width: 550px">
             <span v-if="!isExpanded[index]">
               {{ shortenText(event.description) }}
-                <span v-if="event.description.length > maxDescriptionLength" class="expand-text"
-                      @click="toggleExpand(index)"> Expand</span></span>
+              <span v-if="event.description.length > maxDescriptionLength" class="expand-text"
+                    @click="toggleExpand(index)"> Expand</span></span>
             <span v-else>
-                {{ event.description }}
-                <span class="expand-text" @click="toggleExpand(index)"> Collapse </span>
-                </span>
+              {{ event.description }}
+              <span class="expand-text" @click="toggleExpand(index)"> Collapse </span>
+            </span>
           </td>
           <td :class="event.status ? 'status-finished' : 'status-pending'">
             {{ event.status ? 'Finished' : 'Not happen' }}
@@ -52,8 +58,8 @@
           <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
           <td class="center">
             <div class="icon-group">
-              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail"/>
-              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
+              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail(event)"/>
+              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"  @click="deleteEvent(event.eventId)"/>
             </div>
           </td>
         </tr>
@@ -64,12 +70,16 @@
       </table>
 
       <div class="pagination" v-if="totalPages > 0">
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">‹</button>
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
+        </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
                 @click="changePage(page)">
           {{ page }}
         </button>
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">›</button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
+        </button>
       </div>
     </div>
 
@@ -104,8 +114,10 @@
 
 <script>
 import axios from "axios";
+import {VsxIcon} from "vue-iconsax";
 
 export default {
+  components: {VsxIcon},
   data() {
     return {
       events: [],
@@ -126,8 +138,9 @@ export default {
         type: ''
       },
       errorMessage: '',
-      maxDescriptionLength: 100, // Giới hạn số ký tự hiển thị
-      isExpanded: {} // Trạng thái mở rộng hoặc rút gọn cho từng mục
+      maxDescriptionLength: 100,
+      isExpanded: {},
+      searchQuery: '' // Thêm biến cho từ khóa tìm kiếm
     };
   },
   methods: {
@@ -144,9 +157,8 @@ export default {
         this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
         this.updateDisplayedPages();
 
-        // Khởi tạo trạng thái rút gọn cho từng mục
         this.isExpanded = this.events.reduce((acc, event, index) => {
-          acc[index] = false; // ban đầu tất cả mục đều rút gọn
+          acc[index] = false;
           return acc;
         }, {});
       } catch (error) {
@@ -154,6 +166,49 @@ export default {
         this.showNotification("Error fetching events. Please try again.", 'error');
       } finally {
         this.isLoading = false;
+      }
+    },
+    async searchEvents() {
+      if (this.searchQuery.trim() === "") {
+        this.fetchEvents();
+        return;
+      }
+      this.isLoading = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/search-event?name=${this.searchQuery}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const result = response.data.result || {};
+        this.events = result.content || [];
+        this.totalElements = result.totalElements || this.events.length;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        this.updateDisplayedPages();
+      } catch (error) {
+        console.error("Error searching events:", error);
+        this.showNotification("Error searching events. Please try again.", 'error');
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async deleteEvent(eventId) {
+      if (!confirm("Are you sure you want to delete this event?")) {
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        await axios.delete(
+            `http://localhost:8088/fja-fap/staff/delete-event/${eventId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        this.showNotification("Event deleted successfully!", "success");
+        await this.fetchEvents();
+      } catch (error) {
+        console.error('Error deleting room:', error);
+        this.showNotification("Error deleting event. Please try again.", "error");
       }
     },
     shortenText(text) {
@@ -199,18 +254,15 @@ export default {
         this.showNotification(error.response?.data?.message || "Error creating Event. Please try again.", 'error');
       }
     },
-    viewEventDetail() {
-      this.$router.push({ name: 'EventDetail'});
+    viewEventDetail(event) {
+      console.log("Event ID:", event.eventId);
+      this.$router.push({ name: 'EventDetail', params: { eventId: event.eventId } });
     },
     showNotification(message, type) {
       this.notification = {message, type};
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
-    },
-    handleFileChange(event) {
-      const file = event.target.files[0];
-      this.fileName = file ? file.name : 'No file selected';
     }
   },
   mounted() {
@@ -219,16 +271,5 @@ export default {
 };
 </script>
 
-
 <style scoped>
-.expand-text {
-  color: blue;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.custom-file-input input[type="file"] {
-  display: none;
-}
-
 </style>
