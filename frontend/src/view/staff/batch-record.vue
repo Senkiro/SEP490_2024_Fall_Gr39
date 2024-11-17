@@ -89,7 +89,12 @@
           </div>
           <div class="form-group">
             <label for="startTime">Start time <span class="required">*</span></label>
-            <input type="date" id="startTime" v-model="newBatch.startTime" required/>
+            <input
+                type="date"
+                id="startTime"
+                v-model="newBatch.startTime"
+                @change="handleStartDateChange"
+            />
           </div>
           <div class="form-group">
             <label for="endTime">End time <span class="required">*</span></label>
@@ -101,7 +106,7 @@
           </div>
           <div class="actions">
             <button class="btn-cancel" @click="confirmCancel">Cancel</button>
-            <button type="submit">Create</button>
+            <button type="submit" :disabled="!validateBatch()"> Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -244,6 +249,64 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    handleStartDateChange() {
+      const startDate = new Date(this.newBatch.startTime);
+
+      if (!this.isWeekday(startDate)) {
+        this.showNotification("Start date must be a weekday (Mon-Fri).", "error");
+        return;
+      }
+
+      // Tính toán ngày kết thúc sau 45 ngày làm việc
+      const endDate = this.calculateEndDate(startDate, 45);
+      this.newBatch.endTime = endDate.toISOString().split("T")[0];
+    },
+
+    // Hàm kiểm tra ngày làm việc
+    isWeekday(date) {
+      const day = date.getDay();
+      return day >= 1 && day <= 5;
+    },
+
+    // Hàm tính ngày kết thúc
+    calculateEndDate(startDate, workDays) {
+      let currentDate = new Date(startDate);
+      let daysAdded = 0;
+
+      while (daysAdded < workDays) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        if (this.isWeekday(currentDate)) {
+          daysAdded++;
+        }
+      }
+
+      return currentDate;
+    },
+    validateBatch() {
+      const startDate = new Date(this.newBatch.startTime);
+      const endDate = new Date(this.newBatch.endTime);
+
+      if (!this.newBatch.startTime || !this.newBatch.endTime) {
+        this.showNotification("Start time and End time are required.", "error");
+        return false;
+      }
+
+      if (!this.isWeekday(startDate)) {
+        this.showNotification("Start date must be a weekday (Mon-Fri).", "error");
+        return false;
+      }
+
+      const expectedEndDate = this.calculateEndDate(startDate, 45);
+      if (expectedEndDate.getTime() !== endDate.getTime()) {
+        this.showNotification(
+            `End date must be ${expectedEndDate.toISOString().split("T")[0]}.`,
+            "error"
+        );
+        return false;
+      }
+
+      return true;
     },
     confirmCancel() {
       this.showAddBatchPopup = false;
