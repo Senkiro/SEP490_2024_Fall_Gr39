@@ -42,18 +42,15 @@ public class ExcelHelper {
         try (Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Đọc batch và class từ file Excel
             String batchName = getStringCellValue(sheet.getRow(2).getCell(1)).trim();
             String className = getStringCellValue(sheet.getRow(3).getCell(1)).trim();
 
-            // Kiểm tra Batch
             if (batchName.isEmpty()) {
                 throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
             }
             BatchEntity batch = batchRepository.findByBatchName(batchName)
                     .orElseThrow(() -> new AppException(ErrorCode.BATCH_NOT_EXISTED));
 
-            // Kiểm tra Class
             List<ClassEntity> classes = classRepository.findByClassNameAndBatchEntityBatchName(className, batchName);
             System.out.println("Batch name from Excel: '" + batchName + "'");
             System.out.println("Class name from Excel: '" + className + "'");
