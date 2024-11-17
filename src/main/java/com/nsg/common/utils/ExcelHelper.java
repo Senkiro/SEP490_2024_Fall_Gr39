@@ -64,6 +64,7 @@ public class ExcelHelper {
             Iterator<Row> rows = sheet.iterator();
             rows.next(); // Bỏ qua Batch
             rows.next(); // Bỏ qua Class
+            rows.next();
             rows.next(); // Bỏ qua tiêu đề cột
 
             while (rows.hasNext()) {

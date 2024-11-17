@@ -7,7 +7,7 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
-import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.BatchEntity;
@@ -17,6 +17,7 @@ import com.nsg.entity.UserEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.repository.ClassRepository;
 import com.nsg.repository.StudentRepository;
+import com.nsg.repository.UserRepository;
 import com.nsg.service.StudentService;
 import com.nsg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,9 @@ public class StudentServiceImp implements StudentService {
 
     @Autowired
     BatchRepository batchRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     UserService userService;
@@ -244,5 +247,38 @@ public class StudentServiceImp implements StudentService {
 
     public void saveAll(List<StudentEntity> students) {
         studentRepository.saveAll(students);
+    }
+
+    @Override
+    public Page<StudentResponse> findStudentsByName(String name, int page, int size) {
+        //find all student
+        Page<UserEntity> userEntityList = userRepository.findByFullNameContaining(name,PageRequest.of(page, size));
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = new ArrayList<>();
+
+        //for
+        for (UserEntity user : userEntityList) {
+            StudentResponse studentResponse = new StudentResponse();
+            //get,set rollNumber
+            studentResponse.setRollNumber(user.getStudentEntity().getRollNumber());
+            studentResponse.setStudentId(user.getStudentEntity().getStudentId());
+
+            //map user to UserInforResponse
+            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
+            //set user
+            studentResponse.setUserInforResponse(userInforResponse);
+
+            //set batch
+            studentResponse.setBatchName(user.getStudentEntity().getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(user.getStudentEntity().getClassEntity()));
+
+            //add to response list
+            studentListResponse.add(studentResponse);
+        }
+
+        return new PageImpl<>(studentListResponse, userEntityList.getPageable(), userEntityList.getTotalElements());
     }
 }

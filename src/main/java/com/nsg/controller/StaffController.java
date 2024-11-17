@@ -172,6 +172,14 @@ public class StaffController {
         return ResponseEntity.badRequest().body(ApiResponse.<String>builder().message("Please upload an Excel file.").build());
     }
 
+    @GetMapping("/search-student")
+    public ApiResponse<Page<StudentResponse>> searchStudentByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<StudentResponse> studentEntityList = studentService.findStudentsByName(name, page, size);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentEntityList)
+                .build();
+    }
+
     /**********************************
      * Manage Batch
      **********************************/
