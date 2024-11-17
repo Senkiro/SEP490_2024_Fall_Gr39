@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SessionResponse {
-    String sessionId;
+    int sessionId;
 
     LocalDate date;
 
