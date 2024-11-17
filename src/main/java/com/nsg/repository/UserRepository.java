@@ -1,8 +1,10 @@
 package com.nsg.repository;
 
+import com.nsg.common.enums.UserRole;
 import com.nsg.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -14,6 +16,10 @@ public interface UserRepository extends BaseRepository<UserEntity, String> {
 
     //check username existed
     boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
+    List<UserEntity> getByRoles(UserRole role);
 
 //    public Optional<User> findByUserId(String userId);
 

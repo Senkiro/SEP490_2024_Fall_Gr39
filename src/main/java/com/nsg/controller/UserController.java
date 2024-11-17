@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping("/create-user")
     public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request){
-        return ApiResponse.ok(userService.userCreate(request));
+        return ApiResponse.ok(userService.createUser(request, null));
     }
 
     //get all users in database
@@ -39,8 +39,8 @@ public class UserController {
 
     //update user
     @PutMapping("/{userId}")
-    UserEntity updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
-        return userService.updateUser(userId, request);
+    UserEntity updateUserPassword(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+        return userService.updateUserPass(userId, request);
     }
 
     //Delete user

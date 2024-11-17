@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventEntity {
+public class EventEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "event_id", columnDefinition = "VARCHAR(36)")
@@ -26,11 +26,18 @@ public class EventEntity {
     @Column(name = "address")
     String address;
 
+    @Column(name = "img")
+    private String imagePath;
+
     @Column(name = "status")
     boolean status;
 
-    @Column(name = "description")
+    @Lob
+    @Column(columnDefinition = "LONGTEXT",name = "description")
     String description;
+
+    @Column(name = "avg_rate")
+    Float avgRate;
 
     @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

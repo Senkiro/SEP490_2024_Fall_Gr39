@@ -13,9 +13,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LessonEntity {
+public class LessonEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "lesson_id", columnDefinition = "VARCHAR(36)")
@@ -24,13 +23,26 @@ public class LessonEntity {
     @Column(name = "lesson_title")
     String lessonTitle;
 
-    @Column(name = "lesson_content")
-    String lessonContent;
+//    @Column(name = "lesson_content")
+//    String lessonContent;
 
-    @Column(name = "created_at")
-    Date createdAt;
+    @Lob
+    @Column(name = "vocabulary")
+    String vocabulary;
+
+    @Lob
+    @Column(name = "kanji")
+    String kanji;
+
+    @Lob
+    @Column(name = "grammar")
+    String grammar;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
+
+    @ManyToOne
+    @JoinColumn(name = "chapter_id")
+    ChapterEntity chapterEntity;
 
 }

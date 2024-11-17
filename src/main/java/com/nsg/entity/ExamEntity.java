@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ExamEntity {
+public class ExamEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "exam_id", columnDefinition = "VARCHAR(36)")
@@ -24,11 +24,9 @@ public class ExamEntity {
     @Column(name = "exam_title")
     String examTitle;
 
-    @Column(name = "exam_content")
+    @Lob
+    @Column(name = "exam_content", columnDefinition = "LONGTEXT")
     String examContent;
-
-    @Column(name = "created_at")
-    Date createdAt;
 
     @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
@@ -39,4 +37,8 @@ public class ExamEntity {
     @ManyToOne
     @JoinColumn(name = "exam_type")
     ExamTypeRateEntity examTypeRateEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "chapter_id")
+    ChapterEntity chapterEntity;
 }

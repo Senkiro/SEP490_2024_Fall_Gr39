@@ -1,0 +1,113 @@
+package com.nsg.service.imp;
+
+import com.nsg.Mapper.EventMapper;
+import com.nsg.Mapper.ExamTypeMapper;
+import com.nsg.common.exception.AppException;
+import com.nsg.common.exception.ErrorCode;
+import com.nsg.dto.request.event.EventCreateRequest;
+import com.nsg.dto.request.event.EventUpdateRequest;
+import com.nsg.dto.response.event.EventResponse;
+import com.nsg.entity.EventEntity;
+import com.nsg.repository.EventRepository;
+import com.nsg.service.EventService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+@Service
+public class EventServiceImp implements EventService {
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private EventMapper eventMapper;
+
+    @Override
+    public List<EventEntity> getAllEvent() {
+        return eventRepository.findAll();
+    }
+
+    @Override
+    public Page<EventEntity> getEvents(int page, int size){
+        return eventRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
+    public void createEvent(EventCreateRequest request) {
+        EventEntity event = eventMapper.toEventEntity(request);
+        if(eventRepository.findByEventName(request.getEventName()).isEmpty()){
+            eventRepository.save(event);
+        }else {
+            throw new AppException(ErrorCode.EVENT_EXISTED);
+        }
+    }
+
+    @Override
+    public EventEntity getEventById(String eventId) {
+        return eventRepository.findByEventId(eventId).orElseThrow(
+                () -> new AppException(ErrorCode.EVENT_NOT_EXIST)
+        );
+    }
+
+    @Override
+    public Page<EventEntity> findEventsByName(String name, int page, int size) {
+        return eventRepository.findByEventNameContaining(name, PageRequest.of(page, size));
+    }
+
+    @Override
+    public void deleteEvent(String examId) {
+        eventRepository.deleteById(examId);
+    }
+
+
+    @Override
+    public EventResponse updateEventById(String eventId, EventUpdateRequest eventRequest, MultipartFile image) {
+        // Lấy event từ database
+        EventEntity event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // Cập nhật thông tin từ eventRequest
+        event.setEventName(eventRequest.getEventName());
+        event.setAddress(eventRequest.getAddress());
+        event.setDescription(eventRequest.getDescription());
+
+        // Xử lý ảnh nếu có upload file
+        if (image != null && !image.isEmpty()) {
+            String savedImagePath = saveImageToAssetsFolder(image);
+            event.setImagePath(savedImagePath);
+        } else if (eventRequest.getImagePath() != null) {
+            event.setImagePath(eventRequest.getImagePath()); // Path ảnh cũ
+        }
+
+        return EventMapper.INSTANCE.toEventResponse(eventRepository.save(event));
+    }
+
+    private String saveImageToAssetsFolder(MultipartFile image) {
+        try {
+            // Đường dẫn thư mục lưu trữ ảnh
+            String uploadDir = System.getProperty("user.dir") + "/frontend/public/event_image/";
+            File dir = new File(uploadDir);
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            // Lưu ảnh vào thư mục
+            String filePath = uploadDir + image.getOriginalFilename();
+            File file = new File(filePath);
+            image.transferTo(file);
+
+            // Trả về đường dẫn tương đối để Vue sử dụng
+            return "event_image/" + image.getOriginalFilename();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image", e);
+        }
+    }
+}

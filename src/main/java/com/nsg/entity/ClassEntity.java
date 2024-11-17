@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClassEntity {
+public class ClassEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "class_id", columnDefinition = "VARCHAR(36)")
@@ -25,9 +25,9 @@ public class ClassEntity {
     String className;
 
     @Column(name = "class_colour")
-    Date classColour;
+    String classColour;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classEntity", fetch = FetchType.EAGER)

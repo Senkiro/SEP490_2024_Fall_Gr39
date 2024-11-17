@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TimeSlotEntity {
+public class TimeSlotEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "time_slot_id", columnDefinition = "VARCHAR(36)")
@@ -26,12 +28,10 @@ public class TimeSlotEntity {
     String name;
 
     @Column(name = "start_time")
-    Date startTime;
+    LocalTime startTime;
 
     @Column(name = "end_time")
-    Date endTime;
-
-    Date createdAt;
+    LocalTime endTime;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "timeSlotEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;

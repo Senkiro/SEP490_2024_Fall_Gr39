@@ -1,152 +1,179 @@
 <template>
-  <div class="sidebar">
-    <div class="top">
+  <aside :class="`${is_expanded && 'is-expanded'}`">
+    <div class="sidebar-container">
       <div class="logo">
-        <img src="https://png.pngtree.com/illustrations/20190322/ourmid/pngtree-japan-city-building-landmarks-png-image_37377.jpg" width="100px" height="100px">
-        <span>Nihon Study Guide</span>
+        <img src="">
       </div>
-      <i class="bx bx-menu" id="menu-btn"></i>
+
+      <div class="menu-toggle-wrap">
+        <button class="menu-toggle" @click="ToggleMenu">
+          <span class="material-icons">keyboard_double_arrow_right</span>
+        </button>
+      </div>
+
+      <div class="sidebar-menu">
+        <router-link class="sidebar-item" to="/staff">
+          <span class="material-icons">
+            <VsxIcon iconName="Home3" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Homepage</span>
+        </router-link>
+
+        <!-- -----Record----- -->
+
+        <div class="dropdown" :class="{ active: dropdowns.record }">
+          <button class="dropdown-header" @click="toggleDropdown('record', 'learningMaterial', 'schedule')">
+            <span class="material-icons">
+              <VsxIcon iconName="Note" :size="32" color="#1A2C6F" type="linear" />
+            </span>
+            <span class="text">Record</span>
+          </button>
+
+          <div v-if="dropdowns.record" class="dropdown-container">
+            <router-link class="sidebar-item dropdown-item" to="/staff/batch-record">
+              <span class="material-icons">
+                <VsxIcon iconName="LanguageCircle" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Batch record</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/student-record">
+              <span class="material-icons">
+                <VsxIcon iconName="Profile2User" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Student record</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/class-record">
+              <span class="material-icons">
+                <VsxIcon iconName="People" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Class record</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/teacher-record">
+              <span class="material-icons">
+                <VsxIcon iconName="Teacher" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Teacher record</span>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- -----Schedule Management----- -->
+
+        <div class="dropdown" :class="{ active: dropdowns.schedule }">
+          <button class="dropdown-header" @click="toggleDropdown('schedule', 'learningMaterial', 'record')">
+            <span class="material-icons">
+              <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
+            </span>
+            <span class="text">Schedule</span>
+          </button>
+
+          <div v-if="dropdowns.schedule" class="dropdown-container">
+            <router-link class="sidebar-item dropdown-item" to="/staff/schedule">
+              <span class="material-icons">
+                <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Schedule</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/time-slot">
+              <span class="material-icons">
+                <VsxIcon iconName="Clock" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Time slot</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/event">
+              <span class="material-icons">
+                <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Event</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/room">
+              <span class="material-icons">
+                <VsxIcon iconName="House2" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Room</span>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- -----Learning Material----- -->
+
+        <div class="dropdown" :class="{ active: dropdowns.learningMaterial }">
+          <button class="dropdown-header" @click="toggleDropdown('learningMaterial', 'record', 'schedule')">
+            <span class="material-icons">
+              <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
+            </span>
+            <span class="text">Material</span>
+          </button>
+
+          <div v-if="dropdowns.learningMaterial" class="dropdown-container">
+            <router-link class="sidebar-item dropdown-item" to="/staff/lesson">
+              <span class="material-icons">
+                <VsxIcon iconName="Book" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Lesson</span>
+            </router-link>
+
+            <router-link class="sidebar-item dropdown-item" to="/staff/exam">
+              <span class="material-icons">
+                <VsxIcon iconName="Task" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Exam</span>
+            </router-link>
+          </div>
+        </div>
+
+        <router-link class="sidebar-item" to="/staff/mark">
+          <span class="material-icons">
+            <VsxIcon iconName="Award" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Mark</span>
+        </router-link>
+
+        <router-link class="sidebar-item" to="/staff/attendance">
+          <span class="material-icons">
+            <VsxIcon iconName="Document" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Attendance</span>
+        </router-link>
+
+        <router-link class="sidebar-item" to="/staff/news">
+          <span class="material-icons">
+            <VsxIcon iconName="Information" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">News</span>
+        </router-link>
+
+        <router-link class="sidebar-item" to="/staff/guide">
+          <span class="material-icons">
+            <VsxIcon iconName="BookSquare" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Guide</span>
+        </router-link>
+      </div>
     </div>
-    <ul class="sidebar-menu">
-      <li class="sidebar-item" :class="{ active: $route.path === '/homepage' }">
-        <router-link to="/homepage">
-          <VsxIcon iconName="Home3" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Homepage</p>
-        </router-link>
-      </li>
-
-      <li class="sidebar-item" @click="toggleDropdown('record')">
-        <div class="dropdown-header">
-          <VsxIcon iconName="Note" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Record</p>
-          <VsxIcon :iconName="dropdowns.record ? 'ArrowDown2' : 'ArrowDown2'" :size="30" color="#1A2C6F"
-            class="dropdown-icon" />
-        </div>
-        <ul v-if="dropdowns.record" class="dropdown-menu">
-          <li class="dropdown-item">
-            <router-link to="/staff/batch-record">
-              <VsxIcon iconName="LanguageCircle" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Batch Record</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/class-record">
-              <VsxIcon iconName="Profile2User" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Class Record</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/student-record">
-              <VsxIcon iconName="People" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Student Record</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/teacher-record">
-              <VsxIcon iconName="Teacher" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Teacher Record</p>
-            </router-link>
-          </li>
-        </ul>
-      </li>
-
-      <li class="sidebar-item" @click="toggleDropdown('schedule')">
-        <div class="dropdown-header">
-          <VsxIcon iconName="Calendar" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Schedule Management</p>
-          <VsxIcon :iconName="dropdowns.schedule ? 'ArrowDown2' : 'ArrowDown2'" :size="30" color="#1A2C6F"
-            class="dropdown-icon" />
-        </div>
-        <ul v-if="dropdowns.schedule" class="dropdown-menu">
-          <li class="dropdown-item">
-            <router-link to="/schedule/class">
-              <VsxIcon iconName="Calendar" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Schedule</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/schedule/time-slot">
-              <VsxIcon iconName="Clock" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Time Slot</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/schedule/event">
-              <VsxIcon iconName="Activity" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Event</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/schedule/room">
-              <VsxIcon iconName="House2" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Room</p>
-            </router-link>
-          </li>
-        </ul>
-      </li>
-
-      <li class="sidebar-item" @click="toggleDropdown('learningMaterial')">
-        <div class="dropdown-header">
-          <VsxIcon iconName="Book1" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Learning Material</p>
-          <VsxIcon :iconName="dropdowns.learningMaterial ? 'ArrowDown2' : 'ArrowDown2'" :size="30" color="#1A2C6F"
-            class="dropdown-icon" />
-        </div>
-        <ul v-if="dropdowns.learningMaterial" class="dropdown-menu">
-          <li class="dropdown-item">
-            <router-link to="/learning-material/lesson">
-              <VsxIcon iconName="Book" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Lesson</p>
-            </router-link>
-          </li>
-          <li class="dropdown-item">
-            <router-link to="/learning-material/exam">
-              <VsxIcon iconName="Task" :size="30" color="#1A2C6F" type="linear" class="icon" />
-              <p>Exam</p>
-            </router-link>
-          </li>
-        </ul>
-      </li>
-
-      <li class="sidebar-item">
-        <router-link to="/mark">
-          <VsxIcon iconName="Award" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Mark</p>
-        </router-link>
-      </li>
-
-      <li class="sidebar-item">
-        <router-link to="/attendance">
-          <VsxIcon iconName="Document" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Attendance</p>
-        </router-link>
-      </li>
-
-      <li class="sidebar-item">
-        <router-link to="/news">
-          <VsxIcon iconName="Information" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>News</p>
-        </router-link>
-      </li>
-
-      <li class="sidebar-item">
-        <router-link to="/guide">
-          <VsxIcon iconName="BookSquare" :size="30" color="#1A2C6F" type="linear" class="icon" />
-          <p>Guide</p>
-        </router-link>
-      </li>
-    </ul>
-  </div>
+  </aside>
 </template>
 
 <script>
+import { ref } from 'vue';
 import { VsxIcon } from "vue-iconsax";
+
+const is_expanded = ref(false)
+const ToggleMenu = () => (is_expanded.value = !is_expanded.value)
 
 export default {
   name: "AppSidebar",
   components: {
     VsxIcon
   },
+  is_expanded,
+  ToggleMenu,
   data() {
     return {
       dropdowns: {
@@ -157,116 +184,192 @@ export default {
     };
   },
   methods: {
-    toggleDropdown(menu) {
+    toggleDropdown(menu, off1, off2) {
       this.dropdowns[menu] = !this.dropdowns[menu];
+      this.dropdowns[off1] = false;
+      this.dropdowns[off2] = false;
     }
+  },
+  setup() {
+    return { is_expanded, ToggleMenu }
   }
 };
 </script>
 
-<style scoped>
-.sidebar {
-  height: 100vh;
-  background: #DFE7FB;
-  width: auto;
-  margin-right: 24px;
-  overflow-y: hidden;
-  scrollbar-gutter: stable;
-}
-
-.logo{
-  padding: 10px;
+<style lang="scss" scoped>
+aside {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.logo img{
-  margin-bottom: 20px;
-}
+  width: 72px;
+  overflow: hidden;
+  min-height: 100vh;
 
-.sidebar:hover {
-  overflow-y: auto;
-}
+  background-color: var(--side-background);
+  color: var(--light);
 
-img{
-  border-radius: 50%;
-}
+  transition: 0.2s ease-out;
 
-.sidebar::-webkit-scrollbar {
-  width: 16px;
-}
+  .sidebar-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 68px;
+    padding: 1rem;
+    transition: 0.2s ease-out;
 
-.sidebar::-webkit-scrollbar-track {
-  position: absolute;
-  background: transparent;
-  border-radius: 8px;
-}
 
-.sidebar::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-  background-image: linear-gradient(180deg, #677dcf 0%, #304CB2 100%);
-}
 
-.sidebar-logo {
-  height: 150px;
-}
+    button {
+      border: none;
+      background: none;
+    }
 
-ul {
-  list-style: none;
-}
+    .logo {
+      margin-bottom: 1rem;
 
-.sidebar-item {
-  padding: 10px 0px 10px 10px;
-  height: fit-content;
-}
+      img {
+        width: 2rem;
+      }
+    }
 
-.sidebar-item:focus {
-  background-image: linear-gradient(90deg, #1A2C6F 0%, #3254D5 100%);
-}
+    .menu-toggle-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+      position: relative;
+      top: 0;
+      transition: 0.2s ease-out;
 
-.sidebar-item:focus p{
-color: white;
-font-weight: bold;
-}
+      .menu-toggle {
+        transition: 0.2s ease-out;
+        padding: 0px;
 
-.sidebar-item:focus .icon{
-}
+        .material-icons {
+          font-size: 2rem;
+          color: var(--primary);
+        }
 
-p {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: center;
-  color: #1A2C6F;
-  width: auto;
-}
+        &:hover {
+          .material-icons {
+            color: var(--primary-alt);
+            transform: translateX(0.5rem);
+          }
+        }
+      }
+    }
 
-a {
-  color: #1A2C6F;
-  display: flex;
+    .text {
+      display: none;
+      color: var(--primary);
+      padding-left: 0.5rem;
+      font-size: 1rem;
+    }
 
-}
+    .sidebar-menu {
+      margin: 0 -1rem;
+      display: flex;
+      flex-direction: column;
 
-.dropdown-header {
-  color: #1A2C6F;
-  display: flex;
-}
+      .active {
+        background-color: #6281cb;
 
-.dropdown-item {
-  padding: 20px 0px 0px 20px;
-}
+        .dropdown-header {
+          .text {
+            color: white;
+            transition: 0.2s ease-out;
+          }
+        }
 
-.icon {
-  margin-right: 10px;
-}
+        .dropdown-container {
+          background-color: #c9d6f3;
+          transition: 0.2s ease-out;
+        }
+      }
 
-.dropdown-icon {
-  height: 30px;
-  width: 30px;
-  margin-left: auto;
-}
-.dropdown-menu{
-  padding-bottom: 0px;
+      .dropdown {
+        flex-direction: column;
+
+        &:hover {
+          background-color: #c8d6f8;
+        }
+
+        .dropdown-header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 0.5rem 1rem;
+          transition: 0.2s ease-out;
+          width: 100%;
+          gap: 0px;
+        }
+
+        .dropdown-container {
+
+          &:hover {
+            .dropdown-item {
+              background-color: #c8d6f8;
+            }
+          }
+        }
+      }
+
+      .sidebar-item {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+
+        .dropdown-item {
+          padding: 1rem 0rem 0rem 0rem;
+          z-index: 99;
+        }
+
+        &:hover {
+          background-color: #c8d6f8;
+
+          .text {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  &.is-expanded {
+    width: var(--sidebar-width);
+
+    .sidebar-container {
+      width: 214px;
+
+
+      .menu-toggle-wrap {
+        top: -3rem;
+
+        .menu-toggle {
+          transform: rotate(-180deg);
+          transition: 0.3s ease-out;
+        }
+      }
+
+      .sidebar-menu {
+        .dropdown {
+          .dropdown-container {
+            .dropdown-item {
+              padding-left: 2rem;
+            }
+          }
+        }
+      }
+
+      .text {
+        width: 250px;
+        display: flex;
+      }
+    }
+  }
+
+  @media(max-width: 768px) {
+    position: fixed;
+    z-index: 99;
+  }
 }
 </style>

@@ -12,8 +12,13 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -24,30 +29,46 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request ->
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(request ->
                         request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
                                 .requestMatchers("/admin/**").hasAuthority(ADMIN_SCOPE)
-                                .requestMatchers("/teacher/**").hasAuthority(TEACHER_SCOPE)
+                                .requestMatchers("/fja-fap/teacher/**").hasAuthority(TEACHER_SCOPE)
                                 .requestMatchers("/student/**").hasAuthority(STUDENT_SCOPE)
-                                .requestMatchers("/staff/**").hasAuthority(STAFF_SCOPE)
-                                .anyRequest().authenticated())
+                                .requestMatchers("/fja-fap/staff/**").hasAuthority(STAFF_SCOPE)
+                                .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                )
                 .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 
     @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec spec = new SecretKeySpec(signerKey.getBytes(),"HS512");
+    JwtDecoder jwtDecoder() {
+        SecretKeySpec spec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         return NimbusJwtDecoder
                 .withSecretKey(spec)
                 .macAlgorithm(MacAlgorithm.HS512).build();
-    };
+    }
 
     private static final String ADMIN_SCOPE = "ADMIN";
     private static final String TEACHER_SCOPE = "TEACHER";
@@ -65,8 +86,9 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html"
     };
+
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

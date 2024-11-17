@@ -5,9 +5,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
 @Entity
 @Table(name = "User")
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,32 +23,32 @@ public class UserEntity {
     @Column(name = "user_id", columnDefinition = "VARCHAR(36)")
     private String userId;
 
-//    @Column(name = "first_name")
-//    private String firstName;
-//
-//    @Column(name = "last_name")
-//    private String lastName;
-//
     @Column(name = "username")
     private String username;
-//
-//    @Column(name = "img")
-//    private String img;
-//
-//    @Column(name = "dob")
-//    private LocalDate dob;
-//
-//    @Column(name = "gender")
-//    private boolean gender;
-//
-//    @Column(name = "address")
-//    private String address;
+
+    @Column(name = "full_name")
+    String fullName;
+
+    @Column(name = "japanese_name")
+    String japaneseName;
+
+    @Column(name = "dob")
+    LocalDate dob;
+
+    @Column(name = "img")
+    String img;
+
+    @Column(name = "gender")
+    boolean gender;
 
     @Column(name = "password")
     private String password;
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name = "is_active")
     private boolean isActive;
@@ -54,22 +57,14 @@ public class UserEntity {
     @Column(name = "role")
     UserRole roles;
 
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    Student student;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     StudentEntity studentEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    TeacherEntity teacherEntity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    StaffEntity staffEntity;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    ManagerEntity managerEntity;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    AdminEntity adminEntity;
-
+    public void setRole(String role) {
+        this.roles = UserRole.valueOf(role);
+    }
 }

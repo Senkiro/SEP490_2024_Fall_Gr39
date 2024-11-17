@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -15,14 +16,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SessionEntity {
+public class SessionEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "session_id", columnDefinition = "VARCHAR(36)")
     String sessionId;
 
     @Column(name = "date")
-    Date date;
+    LocalDate date;
 
     @Column(name = "status")
     boolean status;
@@ -54,9 +55,8 @@ public class SessionEntity {
     @JoinColumn(name = "event_id")
     EventEntity eventEntity;
 
-    @OneToOne
-            @MapsId
-            @JoinColumn(name = "session_id")
-    TeacherEntity teacherEntity;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    UserEntity user;
 
 }

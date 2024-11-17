@@ -12,15 +12,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventFeedbackEntity {
+public class EventFeedbackEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "event_feedback_id", columnDefinition = "VARCHAR(36)")
     String eventFeedbackId;
 
-
-    @Column(name = "feedback_grade")
-    String feedbackGrade;
+    @Column(name = "feedback_rate")
+    int feedbackRate;
 
     @Column(name = "feedback_content")
     String feedbackContent;
@@ -32,5 +31,4 @@ public class EventFeedbackEntity {
     @ManyToOne
     @JoinColumn(name = "student_id")
     StudentEntity studentEntity;
-
 }

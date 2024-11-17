@@ -2,23 +2,40 @@ package com.nsg.service.imp;
 
 
 import com.nsg.Mapper.UserMapper;
+import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
+import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
+import com.nsg.dto.response.user.UserInforResponse;
+import com.nsg.entity.BatchEntity;
+import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
+import com.nsg.repository.BatchRepository;
+import com.nsg.repository.StudentRepository;
 import com.nsg.repository.UserRepository;
 import com.nsg.service.EmailService;
 import com.nsg.service.UserService;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @Service
@@ -33,6 +50,12 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    BatchRepository batchRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     //generate random string (8 characters)
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -61,20 +84,20 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserEntity userCreate(UserCreationRequest request) {
-        UserEntity user = new UserEntity();
+    public UserEntity createUser(UserCreationRequest request, UserRole role) {
+//        UserEntity user = new UserEntity();
+        UserEntity user = userMapper.toUserEntity(request);
 
         //checking username is existed or not
-        if (userRepository.existsByUsername(request.getUsername())){
-            //if existed -> throw runtime exception
-             throw new AppException(ErrorCode.USER_EXISTED);
+        if (userRepository.existsByEmail(request.getEmail())){
+            //if existed -> throw app exception
+             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
         //else: create new user
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail());
-//        user.setRole(request.getRole());
+        String defaultPassword = "12341234";
+        user.setPassword(passwordEncoder.encode(defaultPassword));
+        user.setRoles(role);
         user.setActive(true);
 
         return userRepository.save(user);
@@ -84,7 +107,7 @@ public class UserServiceImp implements UserService {
     public UserEntity getUserById(String userId) {
         //return result: user, if not then throw an exception: User not found (call to class exception in package Exception)
         return userRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
     }
 
@@ -92,30 +115,54 @@ public class UserServiceImp implements UserService {
     public UserEntity getUserByEmail(String email) {
         //return result: user, if not then throw an exception: User not found (call to class exception in package Exception)
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException("User not found")
+                () -> new AppException(ErrorCode.EMAIL_NOT_EXISTED)
         );
     }
 
     @Override
-    public UserEntity updateUser(String userId, UserUpdateRequest request) {
+    public UserEntity updateUserPass(String userId, UserUpdateRequest request) {
         UserEntity user = getUserById(userId);
-
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName());
-//        user.setGender(request.isGender());
         user.setPassword(request.getPassword());
-//        user.setDob(request.getDob());
-//        user.setAddress(request.getAddress());
-//        user.setImg(request.getImg());
 
         return userRepository.save(user);
     }
+
+    //get one user information by id
+    @Override
+    public UserInforResponse getUserInforById(String userId){
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+        UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
+
+        return userInforResponse;
+    }
+
+
+    //update user information
+    @Override
+    public UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request){
+        //get user by id
+        UserEntity user = getUserById(userId);
+
+        //map
+        user = UserMapper.INSTANCE.toUserEntity(request);
+
+        //save new user, map result
+        UserInforResponse response = UserMapper.INSTANCE.toUserInforResponse(userRepository.save(user));
+
+        return response;
+    };
 
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
+    @Override
+    public List<UserEntity> getUserByRoles(UserRole role) {
+        return userRepository.getByRoles(role);
+    }
 
     @Override
     public Object create(Object request) {
@@ -139,7 +186,6 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String resetPassword(UserEntity user, String newpass) {
-        //receive a UserEnity, a string of new password
 
         //mapper UserEntity to userUpdateRequest
         UserUpdateRequest userUpdateRequest = userMapper.toUserUpdateRequest(user);
@@ -149,12 +195,11 @@ public class UserServiceImp implements UserService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String encodedPassword = passwordEncoder.encode(newpass);
 
-
         //set new pass
         userUpdateRequest.setPassword(encodedPassword);
 
         //update user with new password
-        UserEntity userUpdate = updateUser(user.getUserId(), userUpdateRequest);
+        UserEntity userUpdate = updateUserPass(user.getUserId(), userUpdateRequest);
 
         String result = "";
 
@@ -173,31 +218,31 @@ public class UserServiceImp implements UserService {
 
         //set content for email
         String fromEmail = "hoangson00as@gmail.com";
-        String subject = "NewEntity password for your account";
+        String subject = "New password for your account";
         String body = "Your new password is: ";
 
-        //validate email
 
         //generate a new random password (8 character)
         String newpass = generateRandomPassword();
         body = body + newpass;
 
-        System.out.println("NewEntity pass: "+newpass);
+        System.out.println("New pass: "+newpass);
 
         //try:
         try{
             //update new password for user in database
             resetPassword(user, newpass);
 
-            //send email with new password to email
-            emailService.sendEmail(fromEmail, toEmail, subject, body);
+            //add new email with new password to queue
+//            emailService.sendEmail(fromEmail, toEmail, subject, body);
+            emailService.queueEmail(fromEmail, toEmail, subject, body);
             return "Email sent to " + toEmail;
         }
         //catch:
         //set error
         catch (Exception e) {
-
-            return "Error: "+e.getMessage();
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+//            return "Error: "+e.getMessage();
         }
     }
 

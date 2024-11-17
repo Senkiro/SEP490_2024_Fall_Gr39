@@ -12,12 +12,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MarkEntity {
+public class MarkEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "mark_id", columnDefinition = "VARCHAR(36)")
     String markId;
-
 
     @Column(name = "mark")
     float mark;
@@ -30,7 +29,7 @@ public class MarkEntity {
     StudentEntity studentEntity;
 
     @ManyToOne
-            @JoinColumn(name = "exam_id")
+    @JoinColumn(name = "exam_id")
     ExamEntity examEntity;
 
 }
