@@ -63,7 +63,9 @@
               <td>{{ student.fullname }}</td>
               <td>{{ student.rollNumber }}</td>
               <td>{{ student.japaneseName }}</td>
-              <td :style="{ color: student.classColor }">{{ student.class }}</td>
+              <td :style="{ color: student.classResponse?.classColour || '#000' }">
+                {{ student.classResponse?.className || "Unknown" }}
+              </td>
               <td>{{ student.email }}</td>
               <td class="center">
                 <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
@@ -115,11 +117,12 @@
             <td>{{ classItem.name }}</td>
             <td>{{ classItem.color }}</td>
             <td class="center">
-              <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
+              <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear"
+                       @click="openEditClassPopup(classItem)" />
             </td>
           </tr>
           <tr v-if="classes.length === 0">
-            <td colspan="3" class="center">No classes available.</td>
+            <td colspan="8" class="center">No record.</td>
           </tr>
           </tbody>
         </table>
@@ -164,11 +167,9 @@
             <label for="class">Class <span class="required">*</span></label>
             <select id="class" v-model="newStudent.class" required>
               <option value="">Choose class now or later</option>
-              <option value="Blue">Blue</option>
-              <option value="Red">Red</option>
-              <option value="Green">Green</option>
-              <option value="Yellow">Yellow</option>
-              <option value="Purple">Purple</option>
+              <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
+                {{ classItem.name }}
+              </option>
             </select>
           </div>
           <div class="form-group">
@@ -227,6 +228,31 @@
       </div>
     </div>
 
+    <div v-if="showEditClassPopup" class="popup-overlay">
+      <div class="popup">
+        <div class="popup-title">
+          <h2>Edit Class</h2>
+        </div>
+        <form @submit.prevent="editClass">
+          <div class="form-group">
+            <label for="className">Class Name <span class="required">*</span></label>
+            <input type="text" id="className" v-model="editedClass.name" required />
+          </div>
+          <div class="form-group">
+            <label for="classColor">Class Color <span class="required">*</span></label>
+            <div id="color-picker">
+              <input type="color" id="classColor" v-model="editedClass.color" required />
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit">Save</button>
+            <button class="btn btn-cancel" @click="showEditClassPopup = false">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
@@ -249,6 +275,7 @@ export default {
       activeTab: 'student',
       showAddStudentPopup: false,
       showAddClassPopup: false,
+      showEditClassPopup: false,
       studentPagination: {
         currentPage: 1,
         itemsPerPage: 5,
@@ -308,7 +335,8 @@ export default {
             dob: this.formatDate(this.newStudent.dob),
             phone: this.newStudent.phone,
             gender: genderBoolean,
-            batchName: this.batchName
+            batchName: this.batchName,
+            className: this.newStudent.class
           },
           {
             headers: {
@@ -361,6 +389,7 @@ export default {
             japaneseName: item.userInforResponse?.japaneseName || "N/A",
             email: item.userInforResponse?.email || "N/A",
             class: item.classResponse?.name || "Unknown",
+            classResponse: item.classResponse || {},
             dob: item.userInforResponse?.dob || "N/A",
             phone: item.userInforResponse?.phone || "N/A",
             gender: item.userInforResponse?.gender === false ? "Female" : "Male",
@@ -368,10 +397,6 @@ export default {
 
           this.studentPagination.totalElements = response.data.result.totalElements;
           this.studentPagination.totalPages = Math.ceil(this.studentPagination.totalElements / this.studentPagination.itemsPerPage);
-          console.log('Items Per Page:', this.studentPagination.itemsPerPage);
-          console.log('Total Elements:', this.studentPagination.totalElements);
-          console.log('Total Pages:', this.studentPagination.totalPages);
-
           this.updateStudentDisplayedPages();
         } else {
           console.error('No student data available:', response);
@@ -395,16 +420,6 @@ export default {
     },
     openAddClassPopup() {
       this.showAddClassPopup = true;
-    },
-    addClass() {
-      this.classes.push({
-        id: this.classes.length + 1,
-        name: this.newClass.name,
-        classColor: this.newClass.color,
-        studentCount: 0
-      });
-      this.showAddClassPopup = false;
-      this.resetNewClass();
     },
     resetNewClass() {
       this.newClass = {
@@ -451,7 +466,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
 
-        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-all-class?page=${this.classPagination.currentPage - 1}&size=${this.classPagination.itemsPerPage}`, {
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-class-by-batch?batch_name=${this.batchName}&page=${this.classPagination.currentPage - 1}&size=${this.classPagination.itemsPerPage}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -477,7 +492,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
 
-        const response = await axios.get('http://localhost:8088/fja-fap/staff/get-all-class', {
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-class-by-batch?batch_name=${this.batchName}&page=${this.classPagination.currentPage - 1}&size=${this.classPagination.itemsPerPage}`, {
           params: {
             page: 0,
             size: 100,
@@ -497,6 +512,91 @@ export default {
         console.error('Error fetching classes:', error);
         alert('Đã có lỗi xảy ra khi lấy danh sách lớp.');
       }
+    },
+    async addClass() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+
+        // API call to create a new class
+        const response = await axios.post(
+            'http://localhost:8088/fja-fap/staff/create-class',
+            {
+              className: this.newClass.name,
+              classColour: this.newClass.color,
+              batchName: this.batchName,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        // Successfully created the class
+        const addedClass = response.data;
+        this.classes.push({
+          id: addedClass.id,
+          name: addedClass.className,
+          color: addedClass.classColour,
+        });
+
+        // Reset class form and close popup
+        this.resetNewClass();
+        this.showAddClassPopup = false;
+        this.fetchClass();
+        this.fetchClassFilter();
+        this.showNotification('Class created successfully!', 'success');
+      } catch (error) {
+        console.error('Error creating class:', error);
+
+        if (error.response && error.response.data) {
+          this.showNotification(error.response.data.message || 'Error creating class!', 'error');
+        } else {
+          this.showNotification('Unexpected error occurred!', 'error');
+        }
+      }
+    },
+    async editClass() {
+      if (!this.editedClass.name.trim()) {
+        this.showNotification("Class name is required.", "error");
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        await axios.post(
+            `http://localhost:8088/fja-fap/staff/update-class/${this.editedClass.id}`, // Include the classId in the URL
+            {
+              className: this.editedClass.name,
+              classColour: this.editedClass.color,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+
+        // Reload the class list after updating
+        await this.fetchClass();
+        await this.fetchClassFilter();
+        this.showEditClassPopup = false;
+
+        // Reset the edited class object
+        this.editedClass = { id: "", name: "", color: "" };
+
+        // Show success notification
+        this.showNotification("Class updated successfully!", "success");
+      } catch (error) {
+        console.error("Error updating class:", error);
+        this.showNotification(error.response?.data?.message || "Error updating class. Please try again.", "error");
+      }
+    },
+    openEditClassPopup(classItem) {
+      this.editedClass = {
+        id: classItem.id,
+        name: classItem.name,
+        color: classItem.color,
+      };
+      this.showEditClassPopup = true;
     },
     updateClassDisplayedPages() {
       const pages = [];

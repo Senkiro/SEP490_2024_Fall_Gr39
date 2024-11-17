@@ -47,39 +47,39 @@ public class StudentServiceImp implements StudentService {
     ClassRepository classRepository;
 
     @Override
-    public StudentResponse createStudent(StudentCreattionRequest request){
+    public StudentResponse createStudent(StudentCreattionRequest request) {
         StudentEntity student = new StudentEntity();
         student.setRollNumber(generateRollNumber());
 
-        //map
         UserCreationRequest userCreationRequest = request;
-        //create user
         UserEntity user = userService.createUser(userCreationRequest, UserRole.STUDENT);
-
-        //set user
         student.setUser(user);
 
-        //get batch by batchName
-        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
-                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
-        );
-        //set batch
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName())
+                .orElseThrow(() -> new AppException(ErrorCode.BATCH_NOT_EXISTED));
         student.setBatchEntity(batch);
-        batch.getStudentEntityList().add(student);
-        batchRepository.save(batch);
 
-        //class
-        ClassEntity classEntity = classRepository.findByClassName(request.getClassName());
-        //set class
+        List<ClassEntity> classes = classRepository.findByClassNameAndBatchEntityBatchName(
+                request.getClassName(), request.getBatchName());
+
+        if (classes.size() > 1) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        } else if (classes.isEmpty()) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+        ClassEntity classEntity = classes.get(0);
         student.setClassEntity(classEntity);
+
+        batch.getStudentEntityList().add(student);
         classEntity.getStudentEntityList().add(student);
+
+        studentRepository.save(student);
+        batchRepository.save(batch);
         classRepository.save(classEntity);
 
-        //save student
-        studentRepository.save(student);
-
         return null;
-    };
+    }
+
 
 
     @Override

@@ -6,6 +6,7 @@ import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.ClassEntity;
+import com.nsg.entity.StudentEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.repository.ClassRepository;
 import com.nsg.service.ClassService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassServiceImp implements ClassService {
@@ -31,7 +33,7 @@ public class ClassServiceImp implements ClassService {
     public void createClass(ClassRequest request) {
 
         //check class name existed?
-        if (classRepository.findByClassName(request.getClassName()) != null) {
+        if (classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()) != null) {
             throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
         } else {
             //create new class
@@ -81,6 +83,26 @@ public class ClassServiceImp implements ClassService {
 
         return new PageImpl<>(responseList, classEntityList.getPageable(), classEntityList.getTotalElements());
     }
+
+    @Override
+    public Page<ClassResponse> getClassByBatch(String batchName, int page, int size) {
+        if (!batchRepository.existsByBatchName(batchName)) {
+            throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
+        }
+
+        Page<ClassEntity> classEntitiesList = classRepository.findByBatchEntityBatchName(batchName, PageRequest.of(page, size));
+
+        List<ClassResponse> responseList = classEntitiesList.stream()
+                .map(classEntity -> new ClassResponse(
+                        classEntity.getClassId(),
+                        classEntity.getClassName(),
+                        classEntity.getClassColour()
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responseList, classEntitiesList.getPageable(), classEntitiesList.getTotalElements());
+    }
+
 
     @Override
     public ClassResponse updateClass(String classId, ClassRequest request) {

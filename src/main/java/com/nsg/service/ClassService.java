@@ -19,6 +19,9 @@ public interface ClassService {
     //get all class
     Page<ClassResponse> getAllClass(int page, int size);
 
+    //get all class by batch
+    Page<ClassResponse> getClassByBatch(String batchName, int page, int size);
+
     //update a class
     ClassResponse updateClass(String classId, ClassRequest request);
 

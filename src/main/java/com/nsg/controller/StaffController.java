@@ -584,6 +584,14 @@ public class StaffController {
                 .build();
     }
 
+    //get class by batch
+    @GetMapping("/get-class-by-batch")
+    public ApiResponse<Page<ClassResponse>> getClassByBatch(@RequestParam String batch_name, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<ClassResponse>>builder()
+                .result(classService.getClassByBatch(batch_name,page, size))
+                .build();
+    }
+
     //get a class
     @GetMapping("/get-class/{class_id}")
     public ApiResponse<ClassResponse> getClass(@PathVariable("class_id") String class_id) {
