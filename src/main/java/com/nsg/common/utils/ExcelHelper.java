@@ -3,11 +3,14 @@ package com.nsg.common.utils;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.entity.BatchEntity;
+import com.nsg.entity.ClassEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.BatchRepository;
+import com.nsg.repository.ClassRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Component;
 
@@ -22,11 +25,11 @@ import java.util.Random;
 @Component
 public class ExcelHelper {
 
-    static BatchRepository batchRepository;
+    @Autowired
+    private BatchRepository batchRepository;
 
-    public ExcelHelper(BatchRepository batchRepository) {
-        this.batchRepository = batchRepository;
-    }
+    @Autowired
+    private ClassRepository classRepository;
 
     public static boolean hasExcelFormat(MultipartFile file) {
         String contentType = file.getContentType();
@@ -34,60 +37,62 @@ public class ExcelHelper {
                 || contentType.equals("application/vnd.ms-excel"));
     }
 
-    public static List<StudentEntity> excelToStudents(InputStream is) {
+    public List<StudentEntity> excelToStudents(InputStream is) {
         List<StudentEntity> students = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Đọc batch và class từ ô B3
-            String batchName = getStringCellValue(sheet.getRow(2) != null ? sheet.getRow(2).getCell(1) : null).trim();
+            // Đọc batch và class từ file Excel
+            String batchName = getStringCellValue(sheet.getRow(2).getCell(1)).trim();
+            String className = getStringCellValue(sheet.getRow(3).getCell(1)).trim();
 
-            System.out.println("Batch name from Excel: '" + batchName + "'");
-
+            // Kiểm tra Batch
             if (batchName.isEmpty()) {
-                System.out.println("Batch name is empty or null. Please check the Excel file.");
                 throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
             }
-
             BatchEntity batch = batchRepository.findByBatchName(batchName)
                     .orElseThrow(() -> new AppException(ErrorCode.BATCH_NOT_EXISTED));
 
+            // Kiểm tra Class
+            List<ClassEntity> classes = classRepository.findByClassNameAndBatchEntityBatchName(className, batchName);
+            System.out.println("Batch name from Excel: '" + batchName + "'");
+            System.out.println("Class name from Excel: '" + className + "'");
+            System.out.println("Class name from Excel: '" + classes + "'");
+            if (classes.isEmpty()) {
+                throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+            }
+            ClassEntity classEntity = classes.get(0);
+            System.out.println("Class found: " + classEntity.getClassName());
+
             Iterator<Row> rows = sheet.iterator();
-            rows.next(); // Bỏ qua dòng chứa Batch
-            rows.next(); // Bỏ qua dòng chứa Class
-            rows.next(); // Bỏ qua dòng chứa tiêu đề cột
-            rows.next(); // Bỏ qua dòng đầu tiên chứa dữ liệu (dòng thứ 5)
+            rows.next(); // Bỏ qua Batch
+            rows.next(); // Bỏ qua Class
+            rows.next(); // Bỏ qua tiêu đề cột
 
             while (rows.hasNext()) {
                 Row currentRow = rows.next();
-                if (currentRow == null || isRowEmpty(currentRow)) {
-                    continue; // Bỏ qua hàng trống
+                if (isRowEmpty(currentRow)) {
+                    continue;
                 }
 
                 UserEntity user = new UserEntity();
                 user.setFullName(getStringCellValue(currentRow.getCell(1)));
                 user.setJapaneseName(getStringCellValue(currentRow.getCell(2)));
                 user.setEmail(getStringCellValue(currentRow.getCell(3)));
-
-                // Gán role là STUDENT
                 user.setRole("STUDENT");
+                user.setPassword("12341234");
 
-                // Tạo Roll Number
-                String rollNumber = generateRollNumber();
-
-                // Xử lý ngày sinh và giới tính
                 Cell dobCell = currentRow.getCell(4);
-                if (dobCell != null && dobCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dobCell)) {
+                if (dobCell != null && DateUtil.isCellDateFormatted(dobCell)) {
                     user.setDob(dobCell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 }
-
-                Cell genderCell = currentRow.getCell(5);
-                user.setGender("Male".equalsIgnoreCase(getStringCellValue(genderCell)));
+                user.setGender("Male".equalsIgnoreCase(getStringCellValue(currentRow.getCell(5))));
 
                 StudentEntity student = new StudentEntity();
                 student.setUser(user);
-                student.setRollNumber(rollNumber); // Set Roll Number đã được tạo ra
-                student.setBatchEntity(batch); // Gắn batch cho sinh viên
+                student.setRollNumber(generateRollNumber());
+                student.setBatchEntity(batch);
+                student.setClassEntity(classEntity);
 
                 students.add(student);
             }
@@ -95,7 +100,6 @@ public class ExcelHelper {
             e.printStackTrace();
             throw new AppException(ErrorCode.PARSE_ERROR);
         }
-        System.out.println("Total students read: " + students.size());
         return students;
     }
 

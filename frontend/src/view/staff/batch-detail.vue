@@ -94,7 +94,7 @@
     </div>
 
     <!-- Nội dung Class Record -->
-    <div v-if="activeTab === 'class'">
+    <div v-if="activeTab === 'class'" class="class-record">
       <div class="actions">
         <button @click="openAddClassPopup">
           <VsxIcon iconName="AddCircle" size="20" type="bold" />

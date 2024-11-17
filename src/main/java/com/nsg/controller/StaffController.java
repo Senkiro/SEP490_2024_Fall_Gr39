@@ -94,6 +94,9 @@ public class StaffController {
     @Autowired
     SessionService sessionService;
 
+    @Autowired
+    private ExcelHelper excelHelper;
+
 
     /**********************************
      * Manage Student
@@ -157,10 +160,9 @@ public class StaffController {
 
     @PostMapping("/upload-students")
     public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("file") MultipartFile file) {
-        if (ExcelHelper.hasExcelFormat(file)) {
+        if (excelHelper.hasExcelFormat(file)) {
             try {
-                ExcelHelper excelHelper = new ExcelHelper(batchRepository); // Inject batchRepository
-                List<StudentEntity> students = ExcelHelper.excelToStudents(file.getInputStream());
+                List<StudentEntity> students = excelHelper.excelToStudents(file.getInputStream());
                 studentService.saveAll(students);
                 return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
             } catch (Exception e) {
@@ -584,7 +586,7 @@ public class StaffController {
                 .build();
     }
 
-    //get class by batch
+    //get by batch
     @GetMapping("/get-class-by-batch")
     public ApiResponse<Page<ClassResponse>> getClassByBatch(@RequestParam String batch_name, @RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<ClassResponse>>builder()
