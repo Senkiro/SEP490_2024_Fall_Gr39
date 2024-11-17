@@ -80,7 +80,7 @@ public class ExcelHelper {
                 user.setPassword("12341234");
 
                 Cell dobCell = currentRow.getCell(4);
-                if (dobCell != null && DateUtil.isCellDateFormatted(dobCell)) {
+                if (dobCell != null && dobCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dobCell)) {
                     user.setDob(dobCell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 }
                 user.setGender("Male".equalsIgnoreCase(getStringCellValue(currentRow.getCell(5))));

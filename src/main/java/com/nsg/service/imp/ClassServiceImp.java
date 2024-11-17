@@ -33,7 +33,7 @@ public class ClassServiceImp implements ClassService {
     public void createClass(ClassRequest request) {
 
         //check class name existed?
-        if (classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()) != null) {
+        if (!classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()).isEmpty()) {
             throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
         } else {
             //create new class
