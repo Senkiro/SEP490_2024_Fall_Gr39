@@ -186,9 +186,9 @@ public class StaffController {
     }
 
     @GetMapping("/search-batch")
-    public ApiResponse<Page<BatchEntity>> searchBatchByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
-        Page<BatchEntity> batchEntityList = batchService.findBatchsByName(name, page, size);
-        return ApiResponse.<Page<BatchEntity>>builder()
+    public ApiResponse<Page<BatchResponse>> searchBatchByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<BatchResponse> batchEntityList = batchService.findBatchsByName(name, page, size);
+        return ApiResponse.<Page<BatchResponse>>builder()
                 .result(batchEntityList)
                 .build();
     }

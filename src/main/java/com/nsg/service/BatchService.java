@@ -28,5 +28,5 @@ public interface BatchService {
 
     Page<BatchResponse> getBatches(int page, int size);
 
-    Page<BatchEntity> findBatchsByName(String batchName, int page, int size);
+    Page<BatchResponse> findBatchsByName(String batchName, int page, int size);
 }
