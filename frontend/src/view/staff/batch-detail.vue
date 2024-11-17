@@ -17,9 +17,9 @@
     <!-- Nội dung Student Record -->
     <div v-if="activeTab === 'student'" class="student-record">
       <div class="filters">
-        <select id="class-filter" class="filter-select">
-          <option value="">Class</option>
-          <option v-for="classItem in classList" :key="classItem.id" :value="classItem.id">
+        <select id="class-filter" class="filter-select" @change="filterStudentsByClass">
+          <option value="">All Class</option>
+          <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
             {{ classItem.name }}
           </option>
         </select>
@@ -28,11 +28,11 @@
       <!-- Các nút hành động cho Student Record -->
       <div class="actions">
         <button @click="openAddStudentPopup">
-          <VsxIcon iconName="AddCircle" size="20" type="bold" />
+          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
           Add student
         </button>
         <button @click="navigateToImportStudent">
-          <VsxIcon iconName="Import" size="20" type="bold" />
+          <VsxIcon iconName="Import" size="20" type="bold"/>
           Import student
         </button>
       </div>
@@ -40,22 +40,22 @@
       <div class="actions">
         <div class="search-container">
           <input type="text" placeholder="Search..." class="search-field">
-          <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+          <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
         </div>
       </div>
 
       <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th class="center">No</th>
-              <th>Fullname</th>
-              <th>Roll number</th>
-              <th>Japanese name</th>
-              <th>Class</th>
-              <th>Email</th>
-              <th class="center">Action</th>
-            </tr>
+          <tr>
+            <th class="center">No</th>
+            <th>Fullname</th>
+            <th>Roll number</th>
+            <th>Japanese name</th>
+            <th>Class</th>
+            <th>Email</th>
+            <th class="center">Action</th>
+          </tr>
           </thead>
           <tbody>
           <tr v-for="(student, index) in students" :key="student.id">
@@ -71,25 +71,28 @@
             <td>{{ student.email }}</td>
             <td class="center">
               <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
-                       @click="navigateToProfile(student.id)" />
+                       @click="navigateToProfile(student.id)"/>
             </td>
           </tr>
           <tr v-if="students.length === 0">
-              <td colspan="8" class="center">No record.</td>
-            </tr>
+            <td colspan="8" class="center">No record.</td>
+          </tr>
           </tbody>
         </table>
 
         <div class="pagination" v-if="studentPagination.totalElements > 0">
-          <button @click="changeStudentPage(studentPagination.currentPage - 1)" :disabled="studentPagination.currentPage <= 1">
-            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          <button @click="changeStudentPage(studentPagination.currentPage - 1)"
+                  :disabled="studentPagination.currentPage <= 1">
+            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
           </button>
-          <button v-for="page in studentPagination.displayedPages" :key="page" :class="{ active: page === studentPagination.currentPage }"
+          <button v-for="page in studentPagination.displayedPages" :key="page"
+                  :class="{ active: page === studentPagination.currentPage }"
                   @click="changeStudentPage(page)">
             {{ page }}
           </button>
-          <button @click="changeStudentPage(studentPagination.currentPage + 1)" :disabled="studentPagination.currentPage >= studentPagination.totalPages">
-            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          <button @click="changeStudentPage(studentPagination.currentPage + 1)"
+                  :disabled="studentPagination.currentPage >= studentPagination.totalPages">
+            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
           </button>
         </div>
       </div>
@@ -99,7 +102,7 @@
     <div v-if="activeTab === 'class'" class="class-record">
       <div class="actions">
         <button @click="openAddClassPopup">
-          <VsxIcon iconName="AddCircle" size="20" type="bold" />
+          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
           Add class
         </button>
       </div>
@@ -118,11 +121,11 @@
             <td class="center">{{ index + 1 }}</td>
             <!-- Áp dụng màu từ cột Color -->
             <td :style="{ color: classItem.color }">{{ classItem.name }}</td>
-<!--            <td class="center">{{ batchEntity.studentCount || 0 }}</td>-->
+            <!--            <td class="center">{{ batchEntity.studentCount || 0 }}</td>-->
             <td class="center">0</td>
             <td class="center">
               <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear"
-                       @click="openEditClassPopup(classItem)" />
+                       @click="openEditClassPopup(classItem)"/>
             </td>
           </tr>
           <tr v-if="classes.length === 0">
@@ -132,15 +135,18 @@
         </table>
 
         <div class="pagination" v-if="classPagination.totalElements > 0">
-          <button @click="changeClassPage(classPagination.currentPage - 1)" :disabled="classPagination.currentPage <= 1">
-            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          <button @click="changeClassPage(classPagination.currentPage - 1)"
+                  :disabled="classPagination.currentPage <= 1">
+            <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
           </button>
-          <button v-for="page in classPagination.displayedPages" :key="page" :class="{ active: page === classPagination.currentPage }"
+          <button v-for="page in classPagination.displayedPages" :key="page"
+                  :class="{ active: page === classPagination.currentPage }"
                   @click="changeClassPage(page)">
             {{ page }}
           </button>
-          <button @click="changeClassPage(classPagination.currentPage + 1)" :disabled="classPagination.currentPage >= studentPagination.totalPages">
-            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          <button @click="changeClassPage(classPagination.currentPage + 1)"
+                  :disabled="classPagination.currentPage >= studentPagination.totalPages">
+            <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
           </button>
         </div>
       </div>
@@ -149,7 +155,7 @@
     <div v-if="showAddStudentPopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddStudentPopup = false" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddStudentPopup = false"/>
         </div>
         <div class="popup-title">
           <h2>Add student</h2>
@@ -157,20 +163,20 @@
         <form @submit.prevent="addStudent">
           <div class="form-group">
             <label for="fullname">Full name <span class="required">*</span></label>
-            <input type="text" id="fullname" v-model="newStudent.fullname" required />
+            <input type="text" id="fullname" v-model="newStudent.fullname" required/>
           </div>
           <div class="form-group">
             <label for="japaneseName">Japanese name <span class="required">*</span></label>
-            <input type="text" id="japaneseName" v-model="newStudent.japaneseName" required />
+            <input type="text" id="japaneseName" v-model="newStudent.japaneseName" required/>
           </div>
           <div class="form-group">
             <label for="email">Email <span class="required">*</span></label>
-            <input type="email" id="email" v-model="newStudent.email" required />
+            <input type="email" id="email" v-model="newStudent.email" required/>
           </div>
           <div class="form-group">
             <label for="class">Class <span class="required">*</span></label>
             <select id="class" v-model="newStudent.class" required>
-              <option value="">Choose class </option>
+              <option value="">Choose class</option>
               <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
                 {{ classItem.name }}
               </option>
@@ -178,24 +184,24 @@
           </div>
           <div class="form-group">
             <label for="dob">DOB <span class="required">*</span></label>
-            <input type="date" id="dob" v-model="newStudent.dob" placeholder="dd/mm/yyyy" required />
+            <input type="date" id="dob" v-model="newStudent.dob" placeholder="dd/mm/yyyy" required/>
           </div>
           <div class="form-group">
             <label>Gender <span class="required">*</span></label>
             <div class="gender-group">
               <div class="radio">
-                <input type="radio" id="male" value="Male" name="gender" v-model="newStudent.gender" checked />
+                <input type="radio" id="male" value="Male" name="gender" v-model="newStudent.gender" checked/>
                 <label for="male">Male</label>
               </div>
               <div class="radio">
-                <input type="radio" id="female" value="Female" name="gender" v-model="newStudent.gender" />
+                <input type="radio" id="female" value="Female" name="gender" v-model="newStudent.gender"/>
                 <label for="female">Female</label>
               </div>
             </div>
           </div>
           <div class="form-group">
             <label for="phone">Phone <span class="required">*</span></label>
-            <input type="text" id="phone" v-model="newStudent.phone" required />
+            <input type="text" id="phone" v-model="newStudent.phone" required/>
           </div>
           <div class="actions">
             <button type="submit">Create</button>
@@ -214,12 +220,12 @@
         <form @submit.prevent="addClass">
           <div class="form-group">
             <label for="className">Class name <span class="required">*</span></label>
-            <input type="text" id="className" v-model="newClass.name" required />
+            <input type="text" id="className" v-model="newClass.name" required/>
           </div>
           <div class="form-group">
             <label for="classColor">Color <span class="required">*</span></label>
             <div id="color-picker">
-              <input type="color" id="classColor" v-model="newClass.color" required />
+              <input type="color" id="classColor" v-model="newClass.color" required/>
             </div>
 
           </div>
@@ -239,12 +245,12 @@
         <form @submit.prevent="editClass">
           <div class="form-group">
             <label for="className">Class Name <span class="required">*</span></label>
-            <input type="text" id="className" v-model="editedClass.name" required />
+            <input type="text" id="className" v-model="editedClass.name" required/>
           </div>
           <div class="form-group">
             <label for="classColor">Class Color <span class="required">*</span></label>
             <div id="color-picker">
-              <input type="color" id="classColor" v-model="editedClass.color" required />
+              <input type="color" id="classColor" v-model="editedClass.color" required/>
             </div>
           </div>
           <div class="actions">
@@ -264,7 +270,7 @@
 </template>
 
 <script>
-import { VsxIcon } from "vue-iconsax";
+import {VsxIcon} from "vue-iconsax";
 import axios from "axios";
 
 export default {
@@ -319,7 +325,7 @@ export default {
       this.activeTab = tab;
     },
     navigateToProfile(studentId) {
-      this.$router.push({ name: "StudentProfile", params: { id: studentId } });
+      this.$router.push({name: "StudentProfile", params: {id: studentId}});
     },
     openAddStudentPopup() {
       this.showAddStudentPopup = true;
@@ -330,22 +336,22 @@ export default {
         const genderBoolean = this.newStudent.gender === 'Male';
 
         const response = await axios.post(
-          `http://localhost:8088/fja-fap/staff/create-student`,
-          {
-            fullName: this.newStudent.fullname,
-            japaneseName: this.newStudent.japaneseName,
-            email: this.newStudent.email,
-            dob: this.formatDate(this.newStudent.dob),
-            phone: this.newStudent.phone,
-            gender: genderBoolean,
-            batchName: this.batchName,
-            className: this.newStudent.class
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
+            `http://localhost:8088/fja-fap/staff/create-student`,
+            {
+              fullName: this.newStudent.fullname,
+              japaneseName: this.newStudent.japaneseName,
+              email: this.newStudent.email,
+              dob: this.formatDate(this.newStudent.dob),
+              phone: this.newStudent.phone,
+              gender: genderBoolean,
+              batchName: this.batchName,
+              className: this.newStudent.class
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
             }
-          }
         );
 
         const addedStudent = response.data;
@@ -375,12 +381,12 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&batch_name=${this.batchName}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
+            `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&batch_name=${this.batchName}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
             }
-          }
         );
 
         // Kiểm tra nếu response.data.result và response.data.result.content tồn tại
@@ -431,17 +437,17 @@ export default {
       };
     },
     navigateToImportStudent() {
-      this.$router.push({ name: 'ImportStudentPage' });
+      this.$router.push({name: 'ImportStudentPage'});
     },
     showNotification(message, type) {
-      this.notification = { message, type };
+      this.notification = {message, type};
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
     },
     updateStudentDisplayedPages() {
       const pages = [];
-      const { currentPage, totalPages } = this.studentPagination;
+      const {currentPage, totalPages} = this.studentPagination;
 
       if (totalPages <= 5) {
         for (let i = 1; i <= totalPages; i++) {
@@ -574,7 +580,7 @@ export default {
               classColour: this.editedClass.color,
             },
             {
-              headers: { Authorization: `Bearer ${token}` },
+              headers: {Authorization: `Bearer ${token}`},
             }
         );
 
@@ -582,7 +588,7 @@ export default {
         await this.fetchClassFilter();
         this.showEditClassPopup = false;
 
-        this.editedClass = { id: "", name: "", color: "" };
+        this.editedClass = {id: "", name: "", color: ""};
 
         this.showNotification("Class updated successfully!", "success");
       } catch (error) {
@@ -598,9 +604,61 @@ export default {
       };
       this.showEditClassPopup = true;
     },
+    async filterStudentsByClass(event) {
+      const selectedClass = event.target.value; // Lấy giá trị từ dropdown
+
+      if (selectedClass === "") {
+        // Nếu chọn "All Class", gọi lại fetchStudent
+        this.fetchStudent();
+        return;
+      }
+
+      const token = sessionStorage.getItem('jwtToken'); // Lấy token nếu cần
+
+      try {
+        // Gọi API với `class_name` và `batch_name`
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-student-by-batch-class`,
+            {
+              params: {
+                page: this.studentPagination.currentPage - 1, // Phân trang
+                size: this.studentPagination.itemsPerPage,
+                batch_name: this.batchName, // Tên batch
+                class_name: selectedClass // Lớp được chọn
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              }
+            }
+        );
+
+        // Cập nhật danh sách sinh viên và phân trang
+        if (response.status === 200 && response.data.result) {
+          this.students = response.data.result.content.map((item) => ({
+            id: item.studentId || "Unknown ID",
+            rollNumber: item.rollNumber || "N/A",
+            fullname: item.userInforResponse?.fullName || "Unknown Name",
+            japaneseName: item.userInforResponse?.japaneseName || "N/A",
+            email: item.userInforResponse?.email || "N/A",
+            class: item.classResponse?.name || "Unknown",
+            classResponse: item.classResponse || {},
+            dob: item.userInforResponse?.dob || "N/A",
+            phone: item.userInforResponse?.phone || "N/A",
+            gender: item.userInforResponse?.gender === false ? "Female" : "Male",
+          }));
+
+          this.studentPagination.totalElements = response.data.result.totalElements;
+          this.studentPagination.totalPages = Math.ceil(this.studentPagination.totalElements / this.studentPagination.itemsPerPage);
+          this.updateStudentDisplayedPages();
+        }
+      } catch (error) {
+        console.error("Error filtering students by class:", error);
+        alert("Đã xảy ra lỗi khi lọc danh sách sinh viên.");
+      }
+    },
     updateClassDisplayedPages() {
       const pages = [];
-      const { currentPage, totalPages } = this.classPagination;
+      const {currentPage, totalPages} = this.classPagination;
       if (totalPages <= 5) {
         for (let i = 1; i <= totalPages; i++) {
           pages.push(i);
