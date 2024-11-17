@@ -109,7 +109,6 @@
           <tr>
             <th class="center">No</th>
             <th>Class Name</th>
-            <th>Color</th>
             <th class="center">Number of students</th>
             <th class="center">Action</th>
           </tr>
@@ -119,7 +118,6 @@
             <td class="center">{{ index + 1 }}</td>
             <!-- Áp dụng màu từ cột Color -->
             <td :style="{ color: classItem.color }">{{ classItem.name }}</td>
-            <td>{{ classItem.color }}</td>
 <!--            <td class="center">{{ batchEntity.studentCount || 0 }}</td>-->
             <td class="center">0</td>
             <td class="center">
