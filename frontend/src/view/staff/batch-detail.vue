@@ -58,21 +58,23 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(student, index) in students" :key="student.id">
-              <td class="center">{{ index + 1 }}</td>
-              <td>{{ student.fullname }}</td>
-              <td>{{ student.rollNumber }}</td>
-              <td>{{ student.japaneseName }}</td>
-              <td :style="{ color: student.classResponse?.classColour || '#000' }">
-                {{ student.classResponse?.className || "Unknown" }}
-              </td>
-              <td>{{ student.email }}</td>
-              <td class="center">
-                <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
-                  @click="navigateToProfile(student.id)" />
-              </td>
-            </tr>
-            <tr v-if="students.length === 0">
+          <tr v-for="(student, index) in students" :key="student.id">
+            <td class="center">{{ index + 1 }}</td>
+            <td>
+              {{ student.fullname }}
+            </td>
+            <td>{{ student.rollNumber }}</td>
+            <td>{{ student.japaneseName }}</td>
+            <td :style="{ color: student.classResponse?.classColour || '#000' }">
+              {{ student.classResponse?.className || "Unknown" }}
+            </td>
+            <td>{{ student.email }}</td>
+            <td class="center">
+              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
+                       @click="navigateToProfile(student.id)" />
+            </td>
+          </tr>
+          <tr v-if="students.length === 0">
               <td colspan="8" class="center">No record.</td>
             </tr>
           </tbody>
@@ -108,14 +110,18 @@
             <th class="center">No</th>
             <th>Class Name</th>
             <th>Color</th>
+            <th class="center">Number of students</th>
             <th class="center">Action</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="(classItem, index) in classes" :key="classItem.id">
             <td class="center">{{ index + 1 }}</td>
-            <td>{{ classItem.name }}</td>
+            <!-- Áp dụng màu từ cột Color -->
+            <td :style="{ color: classItem.color }">{{ classItem.name }}</td>
             <td>{{ classItem.color }}</td>
+<!--            <td class="center">{{ batchEntity.studentCount || 0 }}</td>-->
+            <td class="center">0</td>
             <td class="center">
               <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear"
                        @click="openEditClassPopup(classItem)" />
@@ -194,7 +200,6 @@
             <input type="text" id="phone" v-model="newStudent.phone" required />
           </div>
           <div class="actions">
-            <!-- <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button> -->
             <button type="submit">Create</button>
           </div>
         </form>
@@ -565,7 +570,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         await axios.post(
-            `http://localhost:8088/fja-fap/staff/update-class/${this.editedClass.id}`, // Include the classId in the URL
+            `http://localhost:8088/fja-fap/staff/update-class/${this.editedClass.id}`,
             {
               className: this.editedClass.name,
               classColour: this.editedClass.color,
@@ -575,15 +580,12 @@ export default {
             }
         );
 
-        // Reload the class list after updating
         await this.fetchClass();
         await this.fetchClassFilter();
         this.showEditClassPopup = false;
 
-        // Reset the edited class object
         this.editedClass = { id: "", name: "", color: "" };
 
-        // Show success notification
         this.showNotification("Class updated successfully!", "success");
       } catch (error) {
         console.error("Error updating class:", error);
