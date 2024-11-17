@@ -166,7 +166,7 @@
           <div class="form-group">
             <label for="class">Class <span class="required">*</span></label>
             <select id="class" v-model="newStudent.class" required>
-              <option value="">Choose class now or later</option>
+              <option value="">Choose class </option>
               <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
                 {{ classItem.name }}
               </option>
