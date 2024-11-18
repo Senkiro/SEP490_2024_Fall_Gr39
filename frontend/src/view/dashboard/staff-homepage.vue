@@ -21,18 +21,19 @@
       <div class="calendar">
         <div class="date-month">
           <p class="date">
-            6
+            {{ currentDate }}
           </p>
           <p class="month">
-            November
+            {{ currentMonth }}
           </p>
         </div>
         <div class="weekday">
           <p class="weekday">
-            Friday
+            {{ currentWeekday }}
           </p>
         </div>
       </div>
+
     </div>
 
 
@@ -43,7 +44,7 @@
             <div class="shortcut-upper">
               <div class="information">
                 <h2>Student Record</h2>
-                <p class="shortcut-description">300 records</p>
+                <p class="shortcut-description">{{ totalStudentRecords }} records</p>
               </div>
               <div class="logo">
                 <VsxIcon iconName="People" size="25" type="linear" color="#fff" />
@@ -51,7 +52,7 @@
 
             </div>
             <div class="shortcut-lower">
-              <button>View</button>
+              <button @click="navigateToStudentRecord">View</button>
             </div>
           </div>
 
@@ -59,7 +60,7 @@
             <div class="shortcut-upper">
               <div class="information">
                 <h2>Teacher Record</h2>
-                <p class="shortcut-description">7 records</p>
+                <p class="shortcut-description">{{ totalTeacherRecords }} records</p>
               </div>
               <div class="logo">
                 <VsxIcon iconName="Teacher" size="25" type="linear" color="#fff" />
@@ -67,7 +68,7 @@
 
             </div>
             <div class="shortcut-lower">
-              <button>View</button>
+              <button @click="navigateToTeacherRecord">View</button>
             </div>
           </div>
         </div>
@@ -85,7 +86,7 @@
 
             </div>
             <div class="shortcut-lower">
-              <button>View</button>
+              <button @click="navigateToSchedule">View</button>
             </div>
           </div>
 
@@ -101,7 +102,7 @@
 
             </div>
             <div class="shortcut-lower">
-              <button>View</button>
+              <button @click="navigateToMarkRecord">View</button>
             </div>
           </div>
         </div>
@@ -131,11 +132,111 @@
 
 <script>
 import { VsxIcon } from 'vue-iconsax';
+import axios from "axios";
 
 export default {
   name: "StaffHomepage",
   components: {
     VsxIcon
+  },
+  data(){
+    return {
+      currentDate: null,
+      currentMonth: null,
+      currentWeekday: null,
+      totalTeacherRecords: 0,
+      totalStudentRecords: 0,
+    }
+  },
+  methods: {
+    updateDate() {
+      const date = new Date();
+      this.currentDate = date.getDate();
+      this.currentMonth = date.toLocaleString('en-US', { month: 'long' });
+      this.currentWeekday = date.toLocaleString('en-US', { weekday: 'long' });
+    },
+    showNotification(message, type) {
+      console.log(`${type.toUpperCase()}: ${message}`);
+      // toast
+    },
+    navigateToStudentRecord() {
+      this.$router.push({ name: "StudentRecord" });
+    },
+    navigateToTeacherRecord() {
+      this.$router.push({ name: "TeacherRecord" });
+    },
+    navigateToSchedule() {
+      this.$router.push({ name: "Schedule" });
+    },
+    navigateToMarkRecord() {
+      this.$router.push({ name: "Mark" });
+    },
+    async countTeacherRecord() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/teacher`,
+            {
+              params: {
+                page: 0,
+                size: 1000
+              },
+              headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        if (response.data.code === 1000) {
+          this.totalTeacherRecords = response.data.result.totalElements || 0;
+        } else {
+          this.showNotification(
+              'Unable to load teacher records: ' + response.data.message,
+              'error'
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching teacher records:', error);
+        this.showNotification(
+            'An error occurred while loading teacher records.',
+            'error'
+        );
+      }
+    },
+    async countStudentRecord() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-student-by-batch`,
+            {
+              params: {
+                page: 0,
+                size: 10000,
+                batch_name: "SPRING24"
+              },
+              headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        if (response.data.code === 0) {
+          this.totalStudentRecords = response.data.result.totalElements || 0;
+        } else {
+          this.showNotification(
+              'Unable to load student records: ' + response.data.message,
+              'error'
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching student records:', error);
+        this.showNotification(
+            'An error occurred while loading student records.',
+            'error'
+        );
+      }
+    },
+  },
+  mounted() {
+    this.updateDate();
+    this.countTeacherRecord();
+    this.countStudentRecord();
   }
 }
 </script>
