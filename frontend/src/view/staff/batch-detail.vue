@@ -39,7 +39,13 @@
 
       <div class="actions">
         <div class="search-container">
-          <input type="text" placeholder="Search..." class="search-field">
+          <input
+              type="text"
+              placeholder="Search..."
+              class="search-field"
+              v-model="searchQuery"
+              @input="searchStudent"
+          />
           <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
         </div>
       </div>
@@ -119,10 +125,8 @@
           <tbody>
           <tr v-for="(classItem, index) in classes" :key="classItem.id">
             <td class="center">{{ index + 1 }}</td>
-            <!-- Áp dụng màu từ cột Color -->
             <td :style="{ color: classItem.color }">{{ classItem.name }}</td>
-            <!--            <td class="center">{{ batchEntity.studentCount || 0 }}</td>-->
-            <td class="center">0</td>
+            <td class="center">{{ classItem.numberOfStudents }}</td>
             <td class="center">
               <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear"
                        @click="openEditClassPopup(classItem)"/>
@@ -317,7 +321,8 @@ export default {
       notification: {
         message: '',
         type: ''
-      }
+      },
+      searchQuery: '',
     };
   },
   methods: {
@@ -469,6 +474,50 @@ export default {
       if (newPage > 0 && newPage <= this.studentPagination.totalPages) {
         this.studentPagination.currentPage = newPage;
         this.fetchStudent();
+      }
+    },
+    async searchStudent() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/search-student?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+        );
+
+        if (response.status === 200 && response.data.result) {
+          this.students = response.data.result.content.map((item) => ({
+            id: item.studentId || "Unknown ID",
+            rollNumber: item.rollNumber || "N/A",
+            fullname: item.userInforResponse?.fullName || "Unknown Name",
+            japaneseName: item.userInforResponse?.japaneseName || "N/A",
+            email: item.userInforResponse?.email || "N/A",
+            dob: item.userInforResponse?.dob || "N/A",
+            phone: item.userInforResponse?.phone || "N/A",
+            gender: item.userInforResponse?.gender ? "Male" : "Female",
+            class: item.classResponse?.className || "Unknown",
+            classResponse: item.classResponse || {},
+          }));
+
+          // Cập nhật thông tin phân trang
+          this.studentPagination.totalElements = response.data.result.totalElements;
+          this.studentPagination.totalPages = Math.ceil(
+              this.studentPagination.totalElements /
+              this.studentPagination.itemsPerPage
+          );
+
+          this.updateStudentDisplayedPages();
+        } else {
+          console.error('No student data available:', response);
+          this.students = []; // Reset dữ liệu nếu không có kết quả
+        }
+      } catch (error) {
+        console.error('Error searching students:', error);
+        alert('Đã xảy ra lỗi khi tìm kiếm sinh viên.');
       }
     },
     async fetchClass() {
@@ -650,10 +699,50 @@ export default {
           this.studentPagination.totalElements = response.data.result.totalElements;
           this.studentPagination.totalPages = Math.ceil(this.studentPagination.totalElements / this.studentPagination.itemsPerPage);
           this.updateStudentDisplayedPages();
+          return response.data.result.numberOfElements;
         }
       } catch (error) {
         console.error("Error filtering students by class:", error);
         alert("Đã xảy ra lỗi khi lọc danh sách sinh viên.");
+      }
+    },
+    async fetchClassWithStudentCount() {
+      const token = sessionStorage.getItem('jwtToken');
+
+      try {
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-class-by-batch`,
+            {
+              params: {
+                batch_name: this.batchName,
+                page: 0, // Fetch tất cả classes trong batch
+                size: 100 // Số lượng lớn để đảm bảo lấy đủ dữ liệu
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              }
+            }
+        );
+
+        if (response.status === 200 && response.data.result) {
+          this.classes = await Promise.all(
+              response.data.result.content.map(async (classItem) => {
+                const numberOfStudents = await this.filterStudentsByClass({
+                  target: { value: classItem.className }
+                });
+
+                return {
+                  id: classItem.classId || "Unknown ID",
+                  name: classItem.className || "Unknown Name",
+                  color: classItem.classColour || "#000000",
+                  numberOfStudents: numberOfStudents || 0
+                };
+              })
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching classes with student count:", error);
+        alert("Đã xảy ra lỗi khi lấy danh sách lớp.");
       }
     },
     updateClassDisplayedPages() {
@@ -691,6 +780,7 @@ export default {
     this.fetchStudent();
     this.fetchClass();
     this.fetchClassFilter();
+    this.fetchClassWithStudentCount();
   },
 };
 </script>
