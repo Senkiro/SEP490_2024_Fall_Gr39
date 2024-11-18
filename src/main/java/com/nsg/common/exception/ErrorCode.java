@@ -70,6 +70,10 @@ public enum ErrorCode {
     //Student
     STUDENT_NOT_FOUND(1240, "Student not found!"),
 
+    //session
+    SESSION_NOT_FOUND(1260, "Session not found"),
+
+    //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 
     ErrorCode(int code, String message) {

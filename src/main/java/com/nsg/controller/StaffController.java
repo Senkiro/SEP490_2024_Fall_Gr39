@@ -659,9 +659,34 @@ public class StaffController {
     }
 
     @GetMapping("/get-session-week")
-    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week) {
+    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week, @RequestParam String class_name) {
         return ApiResponse.<List<SessionResponse>>builder()
-                .result(sessionService.getSessionByClassAndWeek(week))
+                .result(sessionService.getSessionByClassAndWeek(week, class_name))
+                .build();
+    }
+
+    //get session by id
+    @GetMapping("/get-session/{session_id}")
+    public ApiResponse<SessionResponse> getSessionById(@PathVariable("session_id") String session_id) {
+        return ApiResponse.<SessionResponse>builder()
+                .result(sessionService.getSession(session_id))
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-session/{session_id}")
+    public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
+        return ApiResponse.<SessionResponse>builder()
+                .result(sessionService.updateSession(session_id, request))
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-session/{session_id}")
+    public ApiResponse<SessionResponse> deleteSessionById(@PathVariable("session_id") String session_id) {
+        sessionService.deleteSession(session_id);
+        return ApiResponse.<SessionResponse>builder()
+                .message("Delete session successfully!")
                 .build();
     }
 

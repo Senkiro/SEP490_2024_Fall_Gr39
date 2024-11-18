@@ -1,9 +1,6 @@
 package com.nsg.service.imp;
 
-import com.nsg.Mapper.ClassMapper;
-import com.nsg.Mapper.ExamMapper;
-import com.nsg.Mapper.LessonMapper;
-import com.nsg.Mapper.TimeSlotMapper;
+import com.nsg.Mapper.*;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
@@ -11,13 +8,11 @@ import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.*;
-import com.nsg.service.EventService;
 import com.nsg.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -75,9 +70,7 @@ public class SessionServiceImp implements SessionService {
 
         //lesson
         if (request.getLessionId() != null) {
-            LessonEntity lesson = lessonRepository.findById(request.getLessionId()).orElseThrow(
-                    () -> new AppException(ErrorCode.LESSON_NOT_FOUND)
-            );
+            LessonEntity lesson = lessonRepository.findById(request.getLessionId()).orElse(null);
             session.setLessonEntity(lesson);
         } else {
             session.setLessonEntity(null);
@@ -85,9 +78,7 @@ public class SessionServiceImp implements SessionService {
 
         if (request.getExamId() != null) {
             //exam
-            ExamEntity examEntity = examRepository.findById(request.getExamId()).orElseThrow(
-                    () -> new AppException(ErrorCode.EXAM_NOT_FOUND)
-            );
+            ExamEntity examEntity = examRepository.findById(request.getExamId()).orElse(null);
             session.setExamEntity(examEntity);
         }else {
             session.setExamEntity(null);
@@ -145,8 +136,6 @@ public class SessionServiceImp implements SessionService {
 
         LocalDate startDate = batchEntity.getStartTime();
 
-        System.out.println("Start date: "+startDate);
-
         int sessionNo = 1;
         int totalDay = 1;
         int week = 0;
@@ -178,6 +167,10 @@ public class SessionServiceImp implements SessionService {
                 //tao session voi lesson va exam va ngay la: dateOfSession
                 sessionCreattionRequest.setTimeSlotId(request.getTimeSlotId());
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
+
+                //get lesson, exam
+                sessionCreattionRequest.setLessionId(String.valueOf(sessionNo));
+                sessionCreattionRequest.setExamId(String.valueOf( (sessionNo-1) ));
 
                 //session tang 1
                 sessionNo += 1;
@@ -248,9 +241,9 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
-    public List<SessionResponse> getSessionByClassAndWeek(int week) {
+    public List<SessionResponse> getSessionByClassAndWeek(int week, String className) {
         //get all
-        List<SessionEntity> sessionEntities = sessionRepository.findBySessionWeek(week);
+        List<SessionEntity> sessionEntities = sessionRepository.findBySessionWeekAndClassEntityClassName(week, className);
 
         List<SessionResponse> responseList = new ArrayList<>();
 
@@ -298,22 +291,144 @@ public class SessionServiceImp implements SessionService {
 
             responseList.add(tempResponse);
         }
+        //sort
         Collections.sort(responseList, Comparator.comparingInt(SessionResponse::getSessionNumber));
         return responseList;
     }
 
     @Override
     public SessionResponse getSession(String sessionId) {
-        return null;
+
+        //get session
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        //mapping
+        SessionResponse response = new SessionResponse();
+        response.setSessionId(sessionEntity.getSessionId());
+        response.setSessionNumber(sessionEntity.getSessionNumber());
+        response.setSessionWeek(sessionEntity.getSessionWeek());
+
+        LocalDate localDate = sessionEntity.getDate();
+        DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+
+        response.setDayOfWeek(dayOfWeek);
+
+
+        response.setDate(sessionEntity.getDate());
+        response.setStatus(sessionEntity.isStatus());
+
+        response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(sessionEntity.getClassEntity()));
+
+        response.setLessonResponse(LessonMapper.INSTANCE.toLessonResponse(sessionEntity.getLessonEntity()));
+
+        response.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(sessionEntity.getTimeSlotEntity()));
+
+        if (sessionEntity.getRoomEntity() != null) {
+            response.setRoomNumber(sessionEntity.getRoomEntity().getRoomNumber());
+        } else {
+            response.setRoomNumber(null);
+        }
+
+        response.setExamResponse(ExamMapper.INSTANCE.toExamResponse(sessionEntity.getExamEntity()));
+
+        if (sessionEntity.getEventEntity() != null) {
+            response.setEventName(sessionEntity.getEventEntity().getEventName());
+        }else {
+            response.setEventName(null);
+        }
+
+        if (sessionEntity.getUser() != null) {
+            response.setFullName(sessionEntity.getUser().getFullName());
+            response.setEmail(sessionEntity.getUser().getEmail());
+        } else {
+            response.setFullName(null);
+            response.setEmail(null);
+        }
+
+        return response;
     }
 
     @Override
     public SessionResponse updateSession(String sessionId, SessionCreattionRequest request) {
-        return null;
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        //mapping
+        sessionEntity.setSessionNumber(request.getSessionNumber());
+        sessionEntity.setSessionWeek(request.getSessionWeek());
+
+        sessionEntity.setDate(request.getDate());
+        sessionEntity.setStatus(request.isStatus());
+
+        //class
+        ClassEntity classEntity = classRepository.findByClassName(request.getClassName());
+        sessionEntity.setClassEntity(classEntity);
+
+        //lesson
+        if (!Objects.equals(request.getLessionId(), "")) {
+            sessionEntity.setLessonEntity(lessonRepository.findById(request.getLessionId()).orElseThrow(
+                    () -> new AppException(ErrorCode.LESSON_NOT_FOUND)
+            ));
+        } else {
+            sessionEntity.setLessonEntity(null);
+        }
+
+        //time slot
+        if (!Objects.equals(request.getTimeSlotId(), "")) {
+            sessionEntity.setTimeSlotEntity(timeSlotRepository.findById(request.getTimeSlotId()).orElseThrow(
+                    () -> new AppException(ErrorCode.TIME_SLOT_NOT_FOUND))
+            );
+        } else {
+            sessionEntity.setTimeSlotEntity(null);
+        }
+
+        //room
+        if (!Objects.equals(request.getRoomNumber(), "")) {
+            sessionEntity.setRoomEntity(roomRepository.findByRoomNumber(request.getRoomNumber()).orElseThrow(
+                    () -> new AppException(ErrorCode.ROOM_NOT_FOUND))
+            );
+        } else {
+            sessionEntity.setRoomEntity(null);
+        }
+
+        //exam
+        if (!Objects.equals(request.getExamId(), "")) {
+            sessionEntity.setExamEntity(examRepository.findById(request.getExamId()).orElseThrow(
+                    () -> new AppException(ErrorCode.EXAM_NOT_FOUND))
+            );
+        } else {
+            sessionEntity.setEventEntity(null);
+        }
+
+        //event
+        if (!Objects.equals(request.getEventId(), "")) {
+            sessionEntity.setEventEntity(eventRepository.findByEventId(request.getEventId()).orElseThrow(
+                    () -> new AppException(ErrorCode.EVENT_NOT_FOUND))
+            );
+        } else {
+            sessionEntity.setEventEntity(null);
+        }
+
+        //teacher
+        if (!Objects.equals(request.getUserId(), "")) {
+            sessionEntity.setUser(userRepository.findById(request.getUserId()).orElseThrow(
+                    () -> new AppException(ErrorCode.USER_NOT_FOUND)
+            ));
+        } else {
+            sessionEntity.setUser(null);
+        }
+
+        //save
+        sessionRepository.save(sessionEntity);
+
+        return getSession(sessionId);
     }
 
     @Override
     public void deleteSession(String sessionId) {
-
+        sessionRepository.deleteById(sessionId);
     }
 }

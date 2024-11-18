@@ -19,7 +19,8 @@ public interface SessionService {
     //get all session
     Page<SessionResponse> getAllSession(int page, int size);
 
-    List<SessionResponse> getSessionByClassAndWeek(int week);
+
+    List<SessionResponse> getSessionByClassAndWeek(int week, String className);
 
     //get a session
     SessionResponse getSession(String sessionId);

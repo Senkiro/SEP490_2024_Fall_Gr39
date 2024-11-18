@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface SessionRepository extends BaseRepository<SessionEntity, String> {
-    List<SessionEntity> findBySessionWeek(int week);
+    List<SessionEntity> findBySessionWeekAndClassEntityClassName(int week, String className);
 }
