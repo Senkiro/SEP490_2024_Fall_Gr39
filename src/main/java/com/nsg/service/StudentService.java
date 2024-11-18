@@ -27,5 +27,7 @@ public interface StudentService {
     Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size, String batchName, String className);
 
     void saveAll(List<StudentEntity> students);
+
+    Page<StudentResponse> findStudentsByName(String name, int page, int size);
 }
 

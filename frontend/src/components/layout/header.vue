@@ -2,22 +2,16 @@
   <header class="header">
     <div class="header-left">
       <ul class="breadcrumb">
-        <li><router-link to="/homepage">Homepage</router-link></li>
-        <li>Current Page</li>
+        <li v-for="breadcrumb in this.$route.meta.breadcrumbs" :key="breadcrumb.name">
+          <router-link :to="breadcrumb.link">{{ breadcrumb.name }}</router-link>
+        </li>
       </ul>
     </div>
     <div class="header-right">
       <slot name="user-actions">
         <VsxIcon iconName="UserSquare" :size="30" color="#01447e" type="linear" class="icon" />
-        <VsxIcon
-            iconName="Logout"
-            :size="30"
-            color="#01447e"
-            type="linear"
-            class="icon logout-icon"
-            @click="logout"
-        style="cursor: pointer;"
-        />
+        <VsxIcon iconName="Logout" :size="30" color="#01447e" type="linear" class="icon logout-icon" @click="logout"
+          style="cursor: pointer;" />
       </slot>
     </div>
   </header>
@@ -40,7 +34,7 @@ export default {
       router.push("/login");
     };
     return { logout };
-  }
+  },
 };
 </script>
 
@@ -55,7 +49,7 @@ export default {
 }
 
 ul.breadcrumb {
-  padding: 10px 16px;
+  padding: 10px 0;
   list-style: none;
   margin: 0;
 }

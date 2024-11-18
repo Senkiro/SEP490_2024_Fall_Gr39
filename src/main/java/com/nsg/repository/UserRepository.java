@@ -1,7 +1,10 @@
 package com.nsg.repository;
 
 import com.nsg.common.enums.UserRole;
+import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,6 +23,8 @@ public interface UserRepository extends BaseRepository<UserEntity, String> {
     boolean existsByEmail(String email);
 
     List<UserEntity> getByRoles(UserRole role);
+
+    Page<UserEntity> findByFullNameContaining(String name, PageRequest of);
 
 //    public Optional<User> findByUserId(String userId);
 

@@ -58,73 +58,24 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>
+                        <td rowspan="2">
                             <div class="schedule-date">
-                                <h2>2</h2>
+                                <h1>2</h1>
                                 <p>Sunday</p>
                             </div>
                         </td>
-                        <td>
-                            <div class="filters">
-                                <select id="slot-filter" class="filter-select">
-                                    <option value="">7:30 - 12:30</option>
-                                    <option value="">13:30 - 17:30</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="filters">
-                                <select id="teacher-filter" class="filter-select">
-                                    <option value="">Yuri Ikeda</option>
-                                    <option value="">Nakamura Shinsudei</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="filters">
-                                <select id="room-filter" class="filter-select">
-                                    <option value="">101</option>
-                                    <option value="">102</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="filters">
-                                <select id="lesson-filter" class="filter-select">
-                                    <option value="">Chapter 1 - Lesson 1</option>
-                                    <option value="">Chapter 1 - Lesson 2</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="filters">
-                                <select id="exam-filter" class="filter-select">
-                                    <option value="">Chapter 1 - Vocabulary</option>
-                                    <option value="">Chapter 1 - Kanji</option>
-                                </select>
-                            </div>
-                        </td>
+                        <td>7:30 - 12:30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td>
                             <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
                                 @click="openEventListPopup" />
                         </td>
                     </tr>
-
                     <tr>
-                        <td>
-                            <div class="schedule-date">
-                                <h2>3</h2>
-                                <p>Tuesday</p>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="filters">
-                                <select id="slot-filter" class="filter-select">
-                                    <option value="">7:30 - 12:30</option>
-                                    <option value="">13:30 - 17:30</option>
-                                </select>
-                            </div>
-                        </td>
+                        <td>13:30 - 17:30</td>
                         <td>
                             <div class="filters">
                                 <select id="teacher-filter" class="filter-select">
@@ -141,22 +92,50 @@
                                 </select>
                             </div>
                         </td>
+                        <td>Chapter 1 - Lesson 1</td>
+                        <td></td>
+                        <td>
+                            <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
+                                @click="openEventListPopup" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">
+                            <div class="schedule-date">
+                                <h1>3</h1>
+                                <p>Monday</p>
+                            </div>
+                        </td>
+                        <td>7:30 - 12:30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
+                                @click="openEventListPopup" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>13:30 - 17:30</td>
                         <td>
                             <div class="filters">
-                                <select id="lesson-filter" class="filter-select">
-                                    <option value="">Chapter 1 - Lesson 1</option>
-                                    <option value="">Chapter 1 - Lesson 2</option>
+                                <select id="teacher-filter" class="filter-select">
+                                    <option value="">Yuri Ikeda</option>
+                                    <option value="">Nakamura Shinsudei</option>
                                 </select>
                             </div>
                         </td>
                         <td>
                             <div class="filters">
-                                <select id="exam-filter" class="filter-select">
-                                    <option value="">Chapter 1 - Vocabulary</option>
-                                    <option value="">Chapter 1 - Kanji</option>
+                                <select id="room-filter" class="filter-select">
+                                    <option value="">101</option>
+                                    <option value="">102</option>
                                 </select>
                             </div>
                         </td>
+                        <td>Chapter 1 - Lesson 2</td>
+                        <td>Chapter 1 - Vocabulary</td>
                         <td>
                             <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
                                 @click="openEventListPopup" />
@@ -236,9 +215,16 @@ export default {
             text-align: center;
         }
 
+        tr,
+        td {
+            border: 2px solid #DFE7FB;
+        }
+
         td {
             text-align: center;
             padding: 30px 0;
+            color: #171717;
+
 
             .filters {
                 align-items: center;
@@ -251,9 +237,10 @@ export default {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                gap: 10px;
 
-                h2 {
-                    margin: 10px 0;
+                h1 {
+                    margin: 0;
                 }
             }
         }
