@@ -18,9 +18,15 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SessionEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "session_id")
-    int sessionId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "session_id", columnDefinition = "VARCHAR(36)")
+    String sessionId;
+
+    @Column(name = "session_number")
+    int sessionNumber;
+
+    @Column(name = "session_week")
+    int sessionWeek;
 
     @Column(name = "date")
     LocalDate date;

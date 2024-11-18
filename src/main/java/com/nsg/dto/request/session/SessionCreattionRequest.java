@@ -16,14 +16,17 @@ import java.util.List;
 public class SessionCreattionRequest {
     LocalDate date;
     boolean status;
+    int sessionNumber;
+    int sessionWeek;
 
     String lessionId;
+    String examId;
 
     String timeSlotId;
 
     String roomNumber;
 
-    String examId;
+    String className;
 
     String eventId;
     String userId;

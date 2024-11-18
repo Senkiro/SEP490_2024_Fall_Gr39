@@ -11,6 +11,7 @@ import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.room.RoomRequest;
+import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
@@ -632,11 +633,27 @@ public class StaffController {
                 .build();
     }
 
+    //create a schedule
+    @PostMapping("/create-schedule")
+    public ApiResponse<?> createSchedule(@RequestParam String batch_name, @RequestParam String class_name, @RequestBody ScheduleCreationRequest request) {
+        sessionService.createSchedule(batch_name, class_name, request);
+        return ApiResponse.builder()
+                .message("Create new session successfully!")
+                .build();
+    }
+
     //get all class
     @GetMapping("/get-all-session")
     public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<SessionResponse>>builder()
                 .result(sessionService.getAllSession(page, size))
+                .build();
+    }
+
+    @GetMapping("/get-session-week")
+    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week) {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result(sessionService.getSessionByClassAndWeek(week))
                 .build();
     }
 
