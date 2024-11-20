@@ -10,6 +10,7 @@ import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.request.news.NewsRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
@@ -23,6 +24,7 @@ import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
+import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.student.StudentResponse;
@@ -96,6 +98,8 @@ public class StaffController {
 
     @Autowired
     private ExcelHelper excelHelper;
+    @Autowired
+    private NewsService newsService;
 
 
     /**********************************
@@ -648,4 +652,39 @@ public class StaffController {
                 .build();
     }
 
+    /**********************************
+     * Manage News
+     **********************************/
+    @PostMapping("/create-news")
+    public ApiResponse<NewsResponse> createNews(@RequestBody @Valid NewsRequest request) {
+        return ApiResponse.<NewsResponse>builder()
+                .result(newsService.createNews(request))
+                .message("Create draft news successfully!")
+                .build();
+    }
+
+    //get news by batch
+    @GetMapping("/get-all-news")
+    public ApiResponse<Page<NewsResponse>> getNewsByBatch(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<NewsResponse>>builder()
+                .result(newsService.getAllNews(page, size))
+                .build();
+    }
+
+    //update news
+    @PostMapping("/update-news/{newsId}")
+    public ApiResponse<NewsResponse> updateNews(@PathVariable("newsId") String newsId, @RequestBody NewsRequest request) {
+        return ApiResponse.<NewsResponse>builder()
+                .result(newsService.updateNews(newsId, request))
+                .build();
+    }
+
+    //delete room
+    @DeleteMapping("/delete-news/{newsId}")
+    public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
+        newsService.deleteNews(newsId);
+        return ApiResponse.builder()
+                .message("Delete news successfully!")
+                .build();
+    }
 }
