@@ -26,7 +26,7 @@ public class SessionCreattionRequest {
 
     String roomNumber;
 
-    String className;
+    String classId;
 
     String eventId;
     String userId;

@@ -60,13 +60,10 @@ public class SessionServiceImp implements SessionService {
         session.setSessionWeek(request.getSessionWeek());
 
         //class
-        ClassEntity classEntity = classRepository.findByClassName(request.getClassName());
-
-        if (classEntity == null) {
-            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
-        } else {
-            session.setClassEntity(classEntity);
-        }
+        ClassEntity classEntity = classRepository.findById(request.getClassId()).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+        session.setClassEntity(classEntity);
 
         //lesson
         if (request.getLessionId() != null) {
@@ -76,8 +73,8 @@ public class SessionServiceImp implements SessionService {
             session.setLessonEntity(null);
         }
 
+        //exam
         if (request.getExamId() != null) {
-            //exam
             ExamEntity examEntity = examRepository.findById(request.getExamId()).orElse(null);
             session.setExamEntity(examEntity);
         }else {
@@ -127,10 +124,22 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
-    public void createSchedule(String batchName, String className, ScheduleCreationRequest request) {
+    public void createSchedule(String class_id, ScheduleCreationRequest request) {
+
+        //get session by className and batchName
+        //check class: find class by className and batchName
+        ClassEntity classEntity = classRepository.findById(class_id).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        //check schedule for one class existed by: find class by id
+        //if existed -> throw exception
+        if (sessionRepository.existsByClassEntityClassId(classEntity.getClassId())) {
+            throw new AppException(ErrorCode.SCHEDULE_EXISTED);
+        }
 
         //get batch and count days in batch
-        BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElseThrow(
+        BatchEntity batchEntity = batchRepository.findByBatchName(classEntity.getBatchEntity().getBatchName()).orElseThrow(
                 () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
         );
 
@@ -149,7 +158,7 @@ public class SessionServiceImp implements SessionService {
             //tao session voi date
             SessionCreattionRequest sessionCreattionRequest = new SessionCreattionRequest();
             sessionCreattionRequest.setDate(dateOfSession);
-            sessionCreattionRequest.setClassName(className);
+            sessionCreattionRequest.setClassId(classEntity.getClassId());
 
             sessionCreattionRequest.setSessionNumber(totalDay);
 
@@ -171,6 +180,7 @@ public class SessionServiceImp implements SessionService {
                 //get lesson, exam
                 sessionCreattionRequest.setLessionId(String.valueOf(sessionNo));
                 sessionCreattionRequest.setExamId(String.valueOf( (sessionNo-1) ));
+
 
                 //session tang 1
                 sessionNo += 1;
@@ -241,9 +251,9 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
-    public List<SessionResponse> getSessionByClassAndWeek(int week, String className) {
+    public List<SessionResponse> getSessionByClassAndWeek(int week, String classId) {
         //get all
-        List<SessionEntity> sessionEntities = sessionRepository.findBySessionWeekAndClassEntityClassName(week, className);
+        List<SessionEntity> sessionEntities = sessionRepository.findBySessionWeekAndClassEntityClassId(week, classId);
 
         List<SessionResponse> responseList = new ArrayList<>();
 
@@ -364,7 +374,9 @@ public class SessionServiceImp implements SessionService {
         sessionEntity.setStatus(request.isStatus());
 
         //class
-        ClassEntity classEntity = classRepository.findByClassName(request.getClassName());
+        ClassEntity classEntity = classRepository.findById(request.getClassId()).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
         sessionEntity.setClassEntity(classEntity);
 
         //lesson

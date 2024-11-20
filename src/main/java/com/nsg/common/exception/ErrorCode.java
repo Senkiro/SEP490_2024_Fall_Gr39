@@ -73,6 +73,9 @@ public enum ErrorCode {
     //session
     SESSION_NOT_FOUND(1260, "Session not found"),
 
+    //schedule
+    SCHEDULE_EXISTED(1280, "Schedule for this class already existed!"),
+
     //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 

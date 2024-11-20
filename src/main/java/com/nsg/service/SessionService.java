@@ -14,7 +14,7 @@ public interface SessionService {
     //create session
     void createSession(SessionCreattionRequest request);
 
-    void createSchedule(String batchName, String className, ScheduleCreationRequest request);
+    void createSchedule(String class_id, ScheduleCreationRequest request);
 
     //get all session
     Page<SessionResponse> getAllSession(int page, int size);

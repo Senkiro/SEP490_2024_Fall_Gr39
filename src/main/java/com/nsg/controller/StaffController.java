@@ -642,9 +642,9 @@ public class StaffController {
     }
 
     //create a schedule
-    @PostMapping("/create-schedule")
-    public ApiResponse<?> createSchedule(@RequestParam String batch_name, @RequestParam String class_name, @RequestBody ScheduleCreationRequest request) {
-        sessionService.createSchedule(batch_name, class_name, request);
+    @PostMapping("/create-schedule/{class_id}")
+    public ApiResponse<?> createSchedule(@PathVariable("class_id") String class_id, @RequestBody ScheduleCreationRequest request) {
+        sessionService.createSchedule(class_id, request);
         return ApiResponse.builder()
                 .message("Create new session successfully!")
                 .build();
@@ -659,9 +659,9 @@ public class StaffController {
     }
 
     @GetMapping("/get-session-week")
-    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week, @RequestParam String class_name) {
+    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week, @RequestParam String class_id) {
         return ApiResponse.<List<SessionResponse>>builder()
-                .result(sessionService.getSessionByClassAndWeek(week, class_name))
+                .result(sessionService.getSessionByClassAndWeek(week, class_id))
                 .build();
     }
 
