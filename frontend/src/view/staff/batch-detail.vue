@@ -17,7 +17,7 @@
     <!-- Nội dung Student Record -->
     <div v-if="activeTab === 'student'" class="student-record">
       <div class="filters">
-        <select id="class-filter" class="filter-select" @change="filterStudentsByClass">
+        <select id="class-filter" class="filter-select" v-model="selectedClass" @change="filterStudentsByClass">
           <option value="">All Class</option>
           <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
             {{ classItem.name }}
@@ -286,6 +286,7 @@ export default {
     return {
       batchName: this.$route.params.batchName,
       activeTab: 'student',
+      selectedClass: "",
       showAddStudentPopup: false,
       showAddClassPopup: false,
       showEditClassPopup: false,
@@ -382,6 +383,7 @@ export default {
         this.showNotification(error.response?.data?.message || "Error creating student. Please try again.", 'error');
       }
     },
+
     async fetchStudent() {
       try {
         const token = sessionStorage.getItem('jwtToken');
@@ -422,6 +424,7 @@ export default {
         alert('Đã có lỗi xảy ra khi kết nối tới server.');
       }
     },
+
     resetNewStudent() {
       this.newStudent = {
         fullname: '',
@@ -441,15 +444,18 @@ export default {
         color: '#000000'
       };
     },
+
     navigateToImportStudent() {
       this.$router.push({name: 'ImportStudentPage'});
     },
+
     showNotification(message, type) {
       this.notification = {message, type};
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
     },
+
     updateStudentDisplayedPages() {
       const pages = [];
       const {currentPage, totalPages} = this.studentPagination;
@@ -470,13 +476,19 @@ export default {
 
       this.studentPagination.displayedPages = pages;
     },
+
     changeStudentPage(newPage) {
       if (newPage > 0 && newPage <= this.studentPagination.totalPages) {
         this.studentPagination.currentPage = newPage;
         this.fetchStudent();
       }
     },
+
     async searchStudent() {
+      if (!this.searchQuery.trim()) {
+        await this.fetchStudent();
+        return;
+      }
       try {
         const token = sessionStorage.getItem('jwtToken');
 
@@ -517,9 +529,9 @@ export default {
         }
       } catch (error) {
         console.error('Error searching students:', error);
-        alert('Đã xảy ra lỗi khi tìm kiếm sinh viên.');
       }
     },
+
     async fetchClass() {
       try {
         const token = sessionStorage.getItem('jwtToken');
@@ -531,14 +543,22 @@ export default {
         });
 
         if (response.status === 200 && response.data.result) {
-          this.classes = response.data.result.content.map((item) => ({
-            id: item.classId || "Unknown ID",
-            name: item.className || "Unknown Name",
-            color: item.classColour || "Unknown Color",
-          }));
+          this.classes = await Promise.all(
+              response.data.result.content.map(async (classItem) => {
+                // Gọi API lấy số lượng sinh viên cho từng lớp
+                const studentCount = await this.fetchStudentCountByClass(classItem.className);
+                return {
+                  id: classItem.classId || "Unknown ID",
+                  name: classItem.className || "Unknown Name",
+                  color: classItem.classColour || "#000000",
+                  numberOfStudents: studentCount || 0 // Gán số lượng sinh viên
+                };
+              })
+          );
 
           this.classPagination.totalElements = response.data.result.totalElements;
           this.classPagination.totalPages = response.data.result.totalPages;
+
           this.updateClassDisplayedPages();
         }
       } catch (error) {
@@ -546,6 +566,7 @@ export default {
         alert('Đã có lỗi xảy ra khi lấy danh sách lớp.');
       }
     },
+
     async fetchClassFilter() {
       try {
         const token = sessionStorage.getItem('jwtToken');
@@ -571,6 +592,7 @@ export default {
         alert('Đã có lỗi xảy ra khi lấy danh sách lớp.');
       }
     },
+
     async addClass() {
       try {
         const token = sessionStorage.getItem('jwtToken');
@@ -614,6 +636,7 @@ export default {
         }
       }
     },
+
     async editClass() {
       if (!this.editedClass.name.trim()) {
         this.showNotification("Class name is required.", "error");
@@ -645,6 +668,7 @@ export default {
         this.showNotification(error.response?.data?.message || "Error updating class. Please try again.", "error");
       }
     },
+
     openEditClassPopup(classItem) {
       this.editedClass = {
         id: classItem.id,
@@ -653,11 +677,10 @@ export default {
       };
       this.showEditClassPopup = true;
     },
+
     async filterStudentsByClass(event) {
       const selectedClass = event.target.value; // Lấy giá trị từ dropdown
-
       if (selectedClass === "") {
-        // Nếu chọn "All Class", gọi lại fetchStudent
         this.fetchStudent();
         return;
       }
@@ -706,45 +729,31 @@ export default {
         alert("Đã xảy ra lỗi khi lọc danh sách sinh viên.");
       }
     },
-    async fetchClassWithStudentCount() {
-      const token = sessionStorage.getItem('jwtToken');
 
+    async fetchStudentCountByClass(className) {
       try {
-        const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-class-by-batch`,
-            {
-              params: {
-                batch_name: this.batchName,
-                page: 0, // Fetch tất cả classes trong batch
-                size: 100 // Số lượng lớn để đảm bảo lấy đủ dữ liệu
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              }
-            }
-        );
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-student-by-batch-class`, {
+          params: {
+            batch_name: this.batchName,
+            class_name: className,
+            page: 0, // Không cần phân trang khi đếm số lượng
+            size: 1000
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.status === 200 && response.data.result) {
-          this.classes = await Promise.all(
-              response.data.result.content.map(async (classItem) => {
-                const numberOfStudents = await this.filterStudentsByClass({
-                  target: { value: classItem.className }
-                });
-
-                return {
-                  id: classItem.classId || "Unknown ID",
-                  name: classItem.className || "Unknown Name",
-                  color: classItem.classColour || "#000000",
-                  numberOfStudents: numberOfStudents || 0
-                };
-              })
-          );
+          return response.data.result.totalElements || 0; // Trả về số lượng sinh viên
         }
       } catch (error) {
-        console.error("Error fetching classes with student count:", error);
-        alert("Đã xảy ra lỗi khi lấy danh sách lớp.");
+        console.error(`Error fetching student count for class ${className}:`, error);
+        return 0; // Trả về 0 nếu có lỗi
       }
     },
+
     updateClassDisplayedPages() {
       const pages = [];
       const {currentPage, totalPages} = this.classPagination;
@@ -763,24 +772,26 @@ export default {
       }
       this.classPagination.displayedPages = pages;
     },
+
     changeClassPage(newPage) {
       if (newPage > 0 && newPage <= this.classPagination.totalPages) {
         this.classPagination.currentPage = newPage;
         this.fetchClass();
       }
     },
+
     formatDate(dob) {
       if (!dob) return '';
 
       const [year, month, day] = dob.split('-');
       return `${year}-${month}-${day}`;
     }
+
   },
   mounted() {
     this.fetchStudent();
     this.fetchClass();
     this.fetchClassFilter();
-    this.fetchClassWithStudentCount();
   },
 };
 </script>

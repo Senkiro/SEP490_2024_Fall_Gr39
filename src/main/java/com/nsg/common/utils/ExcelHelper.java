@@ -51,14 +51,20 @@ public class ExcelHelper {
             BatchEntity batch = batchRepository.findByBatchName(batchName)
                     .orElseThrow(() -> new AppException(ErrorCode.BATCH_NOT_EXISTED));
 
-            List<ClassEntity> classes = classRepository.findByClassNameAndBatchEntityBatchName(className, batchName);
+            ClassEntity newClassEntity = new ClassEntity();
+            List<ClassEntity> classes = classRepository.findByClassName(className);
+            for(ClassEntity classEntity : classes) {
+                if(classEntity.getBatchEntity().getBatchName().equals(batchName)) {
+                    newClassEntity = classEntity;
+                }
+            }
             System.out.println("Batch name from Excel: '" + batchName + "'");
             System.out.println("Class name from Excel: '" + className + "'");
-            System.out.println("Class name from Excel: '" + classes + "'");
-            if (classes.isEmpty()) {
+            System.out.println("Class name from Excel: '" + newClassEntity + "'");
+            if (newClassEntity==null) {
                 throw new AppException(ErrorCode.CLASS_NOT_FOUND);
             }
-            ClassEntity classEntity = classes.get(0);
+            ClassEntity classEntity = newClassEntity;
             System.out.println("Class found: " + classEntity.getClassName());
 
             Iterator<Row> rows = sheet.iterator();

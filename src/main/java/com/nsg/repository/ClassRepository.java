@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ClassRepository extends BaseRepository<ClassEntity, String> {
-    ClassEntity findByClassName(String className);
+    //ClassEntity findByClassName(String className);
 
     Page<ClassEntity> findAll(Pageable pageable);
 
@@ -19,6 +19,7 @@ public interface ClassRepository extends BaseRepository<ClassEntity, String> {
 
     List<ClassEntity> findByClassNameAndBatchEntityBatchName(String className, String batchName);
 
+    List<ClassEntity> findByClassName(String className);
 }
 
 
