@@ -1,7 +1,11 @@
 package com.nsg.dto.response.news;
 
+import com.nsg.entity.BaseEntity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Builder
@@ -16,4 +20,10 @@ public class NewsResponse {
     String newContent;
 
     boolean status;
+
+    Date createDate;
+
+    private String createdBy;
+
 }
+

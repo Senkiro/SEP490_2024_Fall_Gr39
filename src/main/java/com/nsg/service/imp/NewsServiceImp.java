@@ -47,7 +47,9 @@ public class NewsServiceImp implements NewsService {
                         newEntity.getNewId(),
                         newEntity.getNewContent(),
                         newEntity.getNewTitle(),
-                        newEntity.isStatus()
+                        newEntity.isStatus(),
+                        newEntity.getCreatedDate(),
+                        newEntity.getCreatedBy()
                 ))
                 .collect(Collectors.toList());
 
@@ -63,6 +65,7 @@ public class NewsServiceImp implements NewsService {
         news.setNewContent(request.getNewContent());
         news.setNewTitle(request.getNewTitle());
         news.setStatus(request.isStatus());
+        news.setCreatedBy(request.getCreatedBy());
 
         newsRepository.save(news);
         return getNews(newsId);
@@ -79,6 +82,8 @@ public class NewsServiceImp implements NewsService {
         newsResponse.setNewContent(news.getNewContent());
         newsResponse.setNewTitle(news.getNewTitle());
         newsResponse.setStatus(news.isStatus());
+        newsResponse.setCreatedBy(news.getCreatedBy());
+        newsResponse.setCreateDate(news.getCreatedDate());
         return newsResponse;
     }
 
