@@ -167,15 +167,22 @@ public class StaffController {
                 studentService.saveAll(students);
                 return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
             } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder().message("Failed to parse file.").build());
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                        .message("Failed to parse file.")
+                        .build());
             }
         }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder().message("Please upload an Excel file.").build());
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Please upload an Excel file.")
+                .build());
     }
 
     @GetMapping("/search-student")
-    public ApiResponse<Page<StudentResponse>> searchStudentByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
-        Page<StudentResponse> studentEntityList = studentService.findStudentsByName(name, page, size);
+    public ApiResponse<Page<StudentResponse>> searchStudentByName(@RequestParam String name,
+                                                                  @RequestParam String class_id,
+                                                                  @RequestParam int page,
+                                                                  @RequestParam int size) {
+        Page<StudentResponse> studentEntityList = studentService.findStudentsByName(name, class_id, page, size);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentEntityList)
                 .build();
@@ -650,7 +657,7 @@ public class StaffController {
                 .build();
     }
 
-    //get all class
+    //get all session
     @GetMapping("/get-all-session")
     public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<SessionResponse>>builder()

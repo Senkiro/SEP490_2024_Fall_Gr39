@@ -252,7 +252,7 @@ public class SessionServiceImp implements SessionService {
 
     @Override
     public List<SessionResponse> getSessionByClassAndWeek(int week, String classId) {
-        //get all
+        //get list of session by week and classId
         List<SessionEntity> sessionEntities = sessionRepository.findBySessionWeekAndClassEntityClassId(week, classId);
 
         List<SessionResponse> responseList = new ArrayList<>();
@@ -366,7 +366,7 @@ public class SessionServiceImp implements SessionService {
                 () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
         );
 
-        //mapping
+        //convert
         sessionEntity.setSessionNumber(request.getSessionNumber());
         sessionEntity.setSessionWeek(request.getSessionWeek());
 
