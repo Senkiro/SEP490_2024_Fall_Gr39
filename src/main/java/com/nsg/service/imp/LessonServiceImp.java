@@ -11,10 +11,12 @@ import com.nsg.service.LessonService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,7 @@ public class LessonServiceImp implements LessonService {
 
     @Override
     public List<LessonEntity> getAllLesson() {
+
         return lessonRepository.findAll();
     }
 
@@ -43,8 +46,25 @@ public class LessonServiceImp implements LessonService {
     }
 
     @Override
-    public Page<LessonEntity> getLessons(int page, int size){
-        return lessonRepository.findAll(PageRequest.of(page, size));
+    public Page<LessonResponse> getLessons(int page, int size){
+
+        Page<LessonEntity> lessonEntityPage = lessonRepository.findAll(PageRequest.of(page, size));
+
+        List<LessonResponse> lessonResponseList = new ArrayList<>();
+
+        for (LessonEntity lesson : lessonEntityPage) {
+            LessonResponse tempResponse = new LessonResponse();
+
+            tempResponse.setLessonId(String.valueOf(lesson.getLessonId()));
+            tempResponse.setLessonTitle(lesson.getLessonTitle());
+            tempResponse.setVocabulary(lesson.getVocabulary());
+            tempResponse.setKanji(lesson.getKanji());
+            tempResponse.setGrammar(lesson.getGrammar());
+
+            lessonResponseList.add(tempResponse);
+        }
+
+        return new PageImpl<>(lessonResponseList, lessonEntityPage.getPageable(), lessonEntityPage.getTotalElements());
     }
 
     @Override
@@ -69,5 +89,10 @@ public class LessonServiceImp implements LessonService {
     @Override
     public void deleteLesson(String lessonId) {
         lessonRepository.deleteById(lessonId);
+    }
+
+    @Override
+    public void saveAll(List<LessonEntity> lessons) {
+        lessonRepository.saveAll(lessons);
     }
 }

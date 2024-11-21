@@ -3,6 +3,7 @@ package com.nsg.service;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.entity.LessonEntity;
+import com.nsg.entity.StudentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public interface LessonService {
     //get a lesson by id
     LessonResponse getLesson(String lessonId);
 
-    Page<LessonEntity> getLessons(int page, int size);
+    Page<LessonResponse> getLessons(int page, int size);
 
     //create new lesson
     void createLesson(LessonCreateRequest request);
@@ -27,4 +28,6 @@ public interface LessonService {
 
     //delete lesson
     void deleteLesson(String lessonId);
+
+    void saveAll(List<LessonEntity> lessons);
 }
