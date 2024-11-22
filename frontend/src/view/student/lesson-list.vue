@@ -84,10 +84,6 @@ export default {
     .table-container {
         table {
             tr {
-                .chapter, .tab-index {
-                    cursor: pointer;
-                }
-
                 td:nth-child(2) {
                     font-weight: normal;
                 }
