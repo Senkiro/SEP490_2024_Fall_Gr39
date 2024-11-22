@@ -47,9 +47,10 @@
                                     </div>
 
                                     <div class="information">
-                                        <b>Chapter 2 - Lesson 1</b>
-                                        <span>Exam: <b>Chapter 1 - Grammar</b></span>
+                                        <b>Chapter 1 - Lesson 1</b>
+                                        <span>Exam: <b></b></span>
                                         <span>Teacher: <b>Yuri Ikeda</b></span>
+                                        <span>Room: <b>102</b></span>
                                         <b class="attended">Attended</b>
                                     </div>
                                 </div>
@@ -105,55 +106,6 @@ export default {
                 }
             }
         }
-    }
-}
-
-.activities-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    .activity {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        color: #1A2C6F;
-        cursor: context-menu;
-
-        b {
-            cursor: pointer;
-        }
-
-        .thumbnail {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #3E5DD4;
-            color: #fff;
-            padding: 10px;
-            gap: 5px;
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-
-            #lesson {
-                font-size: 16px;
-            }
-
-            #number {
-                font-size: 30px;
-                font-weight: bold;
-            }
-        }
-
-        .information {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 3px;
-        }
-
     }
 }
 </style>
