@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -43,7 +42,7 @@ public class SessionEntity extends BaseEntity {
     LessonEntity lessonEntity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", fetch = FetchType.EAGER)
-    List<AttendenceEntity> attendenceEntityList;
+    List<AttendanceEntity> attendanceEntityList;
 
     @ManyToOne
     @JoinColumn(name = "time_slot_id")
