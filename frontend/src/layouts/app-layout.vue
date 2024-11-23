@@ -87,6 +87,19 @@ export default {
     table {
       border-collapse: collapse;
 
+      .table-button {
+        background: #3E5DD4;
+        padding: 5px 10px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
       .center {
         text-align: center;
       }
@@ -101,17 +114,28 @@ export default {
       }
 
       tr {
+
+        .chapter {
+          font-weight: bold !important;
+        }
+
+        .chapter, .tab-index {
+          cursor: pointer;
+        }
+
+
         text-align: left;
         transition: 3s;
         color: #979B9F;
         cursor: context-menu;
 
-        td:first-child, th:first-child {
+        td:first-child,
+        th:first-child {
           max-width: 10%;
         }
 
         td:nth-child(1),
-        td:nth-child(2){
+        td:nth-child(2) {
           color: #171717;
           font-weight: bold;
         }
@@ -128,6 +152,73 @@ export default {
           overflow: hidden;
           max-width: 350px;
 
+          .status-button {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            align-items: center;
+          }
+
+          .activities-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            .activity {
+              display: flex;
+              flex-direction: row;
+              gap: 20px;
+              color: #1A2C6F;
+              cursor: context-menu;
+              align-items: center;
+
+              b {
+                cursor: pointer;
+              }
+
+              .thumbnail {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background-color: #3E5DD4;
+                color: #fff;
+                padding: 20px;
+                gap: 5px;
+                aspect-ratio: 1 / 1;
+                height: 100%;
+                border-radius: 20px;
+
+                #lesson {
+                  font-size: 16px;
+                }
+
+                #number {
+                  font-size: 30px;
+                  font-weight: bold;
+                }
+              }
+
+              .information {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 5px;
+              }
+            }
+          }
+
+          .schedule-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+
+            h1 {
+              margin: 0;
+            }
+          }
+
           .icon-group {
             display: flex;
             gap: 10px;
@@ -136,11 +227,11 @@ export default {
         }
       }
 
-      thead:first-child tr:first-child th:first-child{
+      thead:first-child tr:first-child th:first-child {
         border-radius: 20px 0 0 0;
       }
 
-      thead:first-child tr:last-child th:last-child{
+      thead:first-child tr:last-child th:last-child {
         border-radius: 0 20px 0 0;
       }
 
@@ -154,7 +245,7 @@ export default {
         color: #6ECBB8;
       }
 
-      .attended{
+      .attended {
         color: #00B968;
       }
     }
