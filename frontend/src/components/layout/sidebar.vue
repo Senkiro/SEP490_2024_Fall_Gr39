@@ -112,6 +112,13 @@
           </button>
 
           <div v-if="dropdowns.learningMaterial" class="dropdown-container">
+            <router-link class="sidebar-item dropdown-item" to="/staff/chapter">
+              <span class="material-icons">
+                <VsxIcon iconName="Category" :size="32" color="#1A2C6F" type="linear" />
+              </span>
+              <span class="text">Chapter</span>
+            </router-link>
+
             <router-link class="sidebar-item dropdown-item" to="/staff/lesson">
               <span class="material-icons">
                 <VsxIcon iconName="Book" :size="32" color="#1A2C6F" type="linear" />
@@ -125,6 +132,7 @@
               </span>
               <span class="text">Exam</span>
             </router-link>
+
           </div>
         </div>
 

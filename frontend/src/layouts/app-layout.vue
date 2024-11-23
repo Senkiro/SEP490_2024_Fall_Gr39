@@ -79,6 +79,10 @@ export default {
     }
   }
 
+  .text-editor-container {
+    margin: 5px 0;
+  }
+
   .table-container {
     display: flex;
     flex-direction: column;
@@ -119,7 +123,8 @@ export default {
           font-weight: bold !important;
         }
 
-        .chapter, .tab-index {
+        .chapter,
+        .tab-index {
           cursor: pointer;
         }
 
@@ -131,7 +136,7 @@ export default {
 
         td:first-child,
         th:first-child {
-          max-width: 10%;
+          max-width: 100px;
         }
 
         td:nth-child(1),
@@ -270,6 +275,28 @@ export default {
     }
   }
 
+  .input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    label {
+      display: flex;
+      width: fit-content;
+      gap: 5px;
+    }
+
+    input {
+      width: 500px;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+
+    }
+  }
+
   .popup-overlay {
     position: fixed;
     top: 0;
@@ -357,13 +384,6 @@ export default {
         font-size: 14px;
         margin-top: 10px;
       }
-
-      .required {
-        color: red;
-        font-weight: bold;
-      }
-
-
     }
   }
 
@@ -423,6 +443,11 @@ export default {
 
   .error {
     background-color: #f44336;
+  }
+
+  .required {
+    color: red;
+    font-weight: bold;
   }
 
   form {

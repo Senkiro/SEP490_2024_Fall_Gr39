@@ -5,12 +5,11 @@
     </div>
 
     <div class="actions">
-      <div class="search-container">
-        <input type="text" placeholder="Search..." class="search-field">
-        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
-      </div>
+      <button @click="showAddEventPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        Add Exam
+      </button>
     </div>
-
 
     <div class="table-container">
       <table>
@@ -22,13 +21,12 @@
         </tr>
         </thead>
         <tbody>
-        <tr style="cursor: pointer;" @click="toggleExpand()">
+        <tr @click="toggleExpand()">
           <td class="center">1</td>
-          <td>Chapter 1: Introduction to Dekiru</td>
+          <td class="chapter">Chapter 1: Introduction to Dekiru</td>
           <td class="center">
             <div class="icon-group">
               <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear"/>
-              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
             </div>
           </td>
         </tr>
@@ -39,7 +37,6 @@
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewExamDetail()"/>
-                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
               </div>
             </td>
           </tr>
@@ -49,7 +46,6 @@
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"/>
-                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
               </div>
             </td>
           </tr>
@@ -59,18 +55,16 @@
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"/>
-                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
               </div>
             </td>
           </tr>
         </template>
-        <tr style="cursor: pointer;" @click="toggleExpand()">
+        <tr @click="toggleExpand()">
           <td class="center">2</td>
-          <td>Chapter 2: Introduction to Dekiru</td>
+          <td class="chapter">Chapter 2: Introduction to Dekiru</td>
           <td class="center">
             <div class="icon-group">
               <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear"/>
-              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"/>
             </div>
           </td>
         </tr>
@@ -116,4 +110,22 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.container {
+  .table-container {
+    table {
+      tr {
+        .chapter {
+          cursor: pointer;
+        }
+
+        td:nth-child(2){
+          font-weight: normal;
+        }
+
+      }
+
+    }
+  }
+}
+</style>

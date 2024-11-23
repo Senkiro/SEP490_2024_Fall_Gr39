@@ -170,7 +170,7 @@ const routes = [
     {
         path: '/staff/event',
         name: 'Event',
-        component: () => import('../view/staff/event-record.vue'),
+        component: () => import('../view/staff/event-list.vue'),
         meta: { layout: 'app', requiresAuth: false, 
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},
@@ -225,6 +225,17 @@ const routes = [
         },
     },
     {
+        path: '/staff/chapter',
+        name: 'ChapterList',
+        component: () => import('../view/staff/chapter-list.vue'),
+        meta: { layout: 'app', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Chapter list", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/exam',
         name: 'ExamList',
         component: () => import('../view/staff/exam-list.vue'),
@@ -250,7 +261,7 @@ const routes = [
     {
         path: '/staff/news',
         name: 'News',
-        component: () => import('../view/staff/news-record.vue'),
+        component: () => import('../view/staff/news-list.vue'),
         meta: { layout: 'app', requiresAuth: false, 
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},
@@ -259,12 +270,15 @@ const routes = [
         },
     },
     {
-        path: "/staff/news/update/:id",
-        name: "UpdateNews",
-        component: () => import("../view/staff/news-update.vue"),
-        meta: {
-            layout: "app",
-            requiresAuth: true,
+        path: "/staff/news-detail/:id",
+        name: "NewsDetail",
+        component: () => import("../view/staff/news-detail.vue"),
+        meta: {layout: "app", requiresAuth: false,
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "News list", link:"/staff/news"},
+                {name: "News detail", link: ""}
+            ]
         },
     },
 
@@ -282,8 +296,8 @@ const routes = [
     {
         path: '/staff/create-news',
         name: 'CreateNews',
-        component: () => import('../view/staff/news-create.vue'),
-        meta: { layout: 'app', requiresAuth: true,
+        component: () => import('../view/staff/create-news.vue'),
+        meta: { layout: 'app', requiresAuth: false,
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},
                 {name: "News list", link: "/staff/news"},

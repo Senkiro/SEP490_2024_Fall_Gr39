@@ -24,7 +24,7 @@
             </div>
 
             <div class="actions">
-                <button>
+                <button @click="showAddSchedulePopup=true">
                     <VsxIcon iconName="AddCircle" size="20" type="bold" />
                     Create new schedule
                 </button>
@@ -54,6 +54,7 @@
                         <th>Lesson</th>
                         <th>Exam</th>
                         <th>Event</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,6 +74,7 @@
                             <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
                                 @click="openEventListPopup" />
                         </td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>13:30 - 17:30</td>
@@ -98,6 +100,9 @@
                             <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
                                 @click="openEventListPopup" />
                         </td>
+                        <td>
+                            <VsxIcon iconName="ArrowSwapVertical" :size="25" color="#171717" type="linear" />
+                        </td>
                     </tr>
                     <tr>
                         <td rowspan="2">
@@ -115,6 +120,7 @@
                             <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
                                 @click="openEventListPopup" />
                         </td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>13:30 - 17:30</td>
@@ -140,10 +146,14 @@
                             <VsxIcon iconName="AddCircle" :size="25" color="#dae4f3" type="bold"
                                 @click="openEventListPopup" />
                         </td>
+                        <td>
+                            <VsxIcon iconName="ArrowSwapVertical" :size="25" color="#171717" type="linear" />
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
         <div v-if="showEventListPopup" class="popup-overlay">
             <div class="popup">
                 <div class="exit-icon">
@@ -174,6 +184,51 @@
                 </form>
             </div>
         </div>
+
+        <div v-if="showAddSchedulePopup" class="popup-overlay">
+            <div class="popup">
+                <div class="popup-title">
+                    <h2>Add Schedule</h2>
+                </div>
+                <form @submit.prevent="addSchedule">
+                    <div class="form-group">
+                        <label for="startTime">Class<span class="required">*</span></label>
+                        <div class="filters">
+                            <select id="class-filter" class="filter-select" v-model="selectedClass">
+                                <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
+                                    {{ classItem.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">Room <span class="required">*</span></label>
+                        <div class="filters">
+                            <select id="room-filter" class="filter-select" v-model="selectedClass">
+                                <option v-for="roomItem in roomList" :key="roomItem.id" :value="roomItem.name">
+                                    {{ roomItem.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Slot <span class="required">*</span></label>
+                        <div class="filters">
+                            <select id="slot-filter" class="filter-select" v-model="selectedClass">
+                                <option v-for="slotItem in slotList" :key="slotItem.id" :value="slotItem.name">
+                                    {{ slotItem.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-cancel" @click="showAddSchedulePopup=false">Cancel</button>
+                        <button type="submit"> Create</button>
+                    </div>
+                </form>
+                <p v-if="errorMessage" class="error"></p>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -187,7 +242,8 @@ export default {
     },
     data() {
         return {
-            showEventListPopup: false
+            showEventListPopup: false,
+            showAddSchedulePopup: false
         };
     },
     methods: {

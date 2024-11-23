@@ -3,6 +3,7 @@
     <div class="headContent">
       <h1>News List</h1>
     </div>
+
     <div class="actions">
       <button @click="goToCreateNews">
         <VsxIcon iconName="AddCircle" size="20" type="bold"/>
@@ -33,20 +34,10 @@
           <td>{{ newsItem.status ? 'Published' : 'Draft' }}</td>
           <td class="center">
             <div class="icon-group">
-              <VsxIcon
-                  iconName="Eye"
-                  :size="25"
-                  color="#171717"
-                  type="linear"
-                  @click="goToUpdateNews(newsItem.newId)"
-              />
-              <VsxIcon
-                  iconName="Slash"
-                  :size="25"
-                  color="#171717"
-                  type="linear"
-                  @click="confirmDelete(newsItem.newId)"
-              />
+              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
+                  @click="goToNewsDetail(newsItem.newId)"/>
+              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"
+                  @click="confirmDelete(newsItem.newId)"/>
             </div>
           </td>
         </tr>
@@ -147,10 +138,10 @@ export default {
         this.showNotification("Failed to delete news. Please try again.", "error");
       }
     },
-    goToUpdateNews(newsId) {
-      console.log("Navigating to update news with ID:", newsId); // Debug log
+    goToNewsDetail(newsId) {
+      console.log("Navigating to news detail with ID:", newsId); // Debug log
       this.$router.push({
-        name: "UpdateNews",
+        name: "NewsDetail",
         params: {id: newsId},
       });
     },
