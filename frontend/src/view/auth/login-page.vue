@@ -59,6 +59,7 @@ export default {
           const data = await response.json();
           sessionStorage.setItem('jwtToken', data.result.token);
           sessionStorage.setItem('userRole', data.result.scope);
+          sessionStorage.setItem('userName', this.username);
           this.redirectUser(data.result.scope);
         } else {
           const errorData = await response.json();
