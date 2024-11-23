@@ -1,13 +1,13 @@
 <template>
     <div class="container">
         <div class="headContent">
-            <h1>Chapter list</h1>
+            <h1>Curriculumn list</h1>
         </div>
 
         <div class="actions">
-            <button @click="showAddChapterPopup = true">
-                <VsxIcon iconName="AddCircle" size="20" type="bold" />
-                Add chapter
+            <button @click="navigateToImportCurriculumn">
+                <VsxIcon iconName="Import" size="20" type="bold" />
+                Import curriculumn
             </button>
         </div>
 
@@ -16,26 +16,17 @@
                 <thead>
                     <tr>
                         <th class="center">No</th>
-                        <th>Chapter</th>
+                        <th>Curriculumn</th>
                         <th class="center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="center">1</td>
-                        <td>Chapter 1: Introduction to Dekiru</td>
+                        <td>Dekiru Nihongo Pre-Intermediate</td>
                         <td class="center">
                             <div class="icon-group">
-                                <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" />
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="center">2</td>
-                        <td>Chapter 2: Introduction to Dekiru</td>
-                        <td class="center">
-                            <div class="icon-group">
-                                <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" />
+                                <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" />
                             </div>
                         </td>
                     </tr>
@@ -52,25 +43,6 @@
                 <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
                     <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
                 </button>
-            </div>
-        </div>
-
-        <div v-if="showAddChapterPopup" class="popup-overlay">
-            <div class="popup">
-                <div class="popup-title">
-                    <h2>Add Chapter</h2>
-                </div>
-                <form @submit.prevent="addChapter">
-                    <div class="form-group">
-                        <label for="chapterName">Name <span class="required">*</span></label>
-                        <input type="text" id="chapterName" required />
-                    </div>
-                    <div class="actions">
-                        <button class="btn-cancel" @click="confirmCancel">Cancel</button>
-                        <button type="submit"> Create</button>
-                    </div>
-                </form>
-                <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
             </div>
         </div>
     </div>
@@ -90,15 +62,9 @@ export default {
         }
     },
     methods: {
-        toggleExpand() {
-            this.isExpanded = !this.isExpanded;
-        },
-        viewExamDetail() {
-            this.$router.push({ name: 'ExamDetail' });
-        },
-        confirmCancel() {
-            this.showAddChapterPopup = false;
-        },
+        navigateToImportCurriculumn() {
+      this.$router.push({name: 'ImportCurriculumnPage'});
+    },
     }
 
 }

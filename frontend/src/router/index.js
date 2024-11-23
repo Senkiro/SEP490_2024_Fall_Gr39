@@ -140,6 +140,18 @@ const routes = [
         },
     },
     {
+        path: '/staff/import-curriculumn',
+        name: 'ImportCurriculumnPage',
+        component: () => import('../view/staff/import-curriculumn.vue'),
+        meta: { layout: 'app', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Curriculumn list", link: "/staff/curriculumn"},
+                {name: "Import curriculumn", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/schedule',
         name: 'StaffSchedule',
         component: () => import('../view/staff/schedule-management.vue'),
@@ -219,13 +231,13 @@ const routes = [
         },
     },
     {
-        path: '/staff/chapter',
-        name: 'ChapterList',
-        component: () => import('../view/staff/chapter-list.vue'),
+        path: '/staff/curriculumn',
+        name: 'CurriculumnList',
+        component: () => import('../view/staff/curriculumn-list.vue'),
         meta: { layout: 'app', requiresAuth: false, 
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},
-                {name: "Chapter list", link: ""}
+                {name: "Curriculumn list", link: ""}
             ]
         },
     },
