@@ -6,13 +6,15 @@
 
     <section class="info-card">
       <div class="info-wrapper">
-        <img src="../../assets/smiling-young-man-illustration_1308-174669.avif" alt="Student Avatar" class="avatar">
+        <img :src="studentData.userInforResponse.img || require('@/assets/smiling-young-man-illustration_1308-174669.avif')"
+             alt="Student Avatar"
+             class="avatar">
 
         <div class="details-container">
           <div class="name-id-container">
             <div class="name-id">
-              <h3><strong>Mai Thế Nam - マイ・テ・ナム</strong></h3>
-              <p>HE123456</p>
+              <h3><strong>{{ studentData.userInforResponse.fullName }} - {{ studentData.userInforResponse.japaneseName }}</strong></h3>
+              <p>{{ studentData.rollNumber }}</p>
             </div>
             <button class="btn-edit">
               <VsxIcon iconName="Edit2" :size="18" color="#495057" type="linear" />Edit
@@ -23,30 +25,30 @@
             <div class="column column1">
               <div class="attribute">
                 <p>Batch</p>
-                <strong>FALL2024</strong>
+                <strong>{{ studentData.batchName }}</strong>
               </div>
               <div class="attribute">
                 <p>Gender</p>
-                <strong>Male</strong>
+                <strong>{{ studentData.userInforResponse.gender ? 'Male' : 'Female' }}</strong>
               </div>
               <div class="attribute">
                 <p>DOB</p>
-                <strong>22/02/2001</strong>
+                <strong>{{ formatDate(studentData.userInforResponse.dob) }}</strong>
               </div>
             </div>
 
             <div class="column column2">
               <div class="attribute">
                 <p>Class</p>
-                <strong style="color: green">Green</strong>
+                <strong :style="{ color: studentData.classResponse.classColour }">{{ studentData.classResponse.className }}</strong>
               </div>
               <div class="attribute">
                 <p>Phone</p>
-                <strong>0123456789</strong>
+                <strong>{{ studentData.userInforResponse.phone || 'N/A' }}</strong>
               </div>
               <div class="attribute">
                 <p>Email</p>
-                <strong>nammthe160123@fpt.edu.vn</strong>
+                <strong>{{ studentData.userInforResponse.email }}</strong>
               </div>
             </div>
 
@@ -62,6 +64,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -85,57 +88,57 @@
     <div class="table-container">
       <table v-if="showAttendance">
         <thead>
-          <tr>
-            <th class="center">Session No</th>
-            <th>Date</th>
-            <th>Slot</th>
-            <th>Teacher</th>
-            <th class="center">Attendance</th>
-          </tr>
+        <tr>
+          <th class="center">Session No</th>
+          <th>Date</th>
+          <th>Slot</th>
+          <th>Teacher</th>
+          <th class="center">Attendance</th>
+        </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="center">1</td>
-            <td>2/9/2024</td>
-            <td>Morning (8:30 - 12:30)</td>
-            <td>Yuri Ikeda</td>
-            <td class="center attended">Attend</td>
-          </tr>
-          <tr>
-            <td class="center">2</td>
-            <td>x/5/2024</td>
-            <td>Morning (8:30 - 12:30)</td>
-            <td>Yuri Ikeda</td>
-            <td class="center attended">Attend</td>
-          </tr>
-          <tr>
-            <td class="center">3</td>
-            <td>y/1/2024</td>
-            <td>Morning (8:30 - 12:30)</td>
-            <td>Yuri Ikeda</td>
-            <td class="center absent">Absent</td>
-          </tr>
+        <tr>
+          <td class="center">1</td>
+          <td>2/9/2024</td>
+          <td>Morning (8:30 - 12:30)</td>
+          <td>Yuri Ikeda</td>
+          <td class="center attended">Attend</td>
+        </tr>
+        <tr>
+          <td class="center">2</td>
+          <td>x/5/2024</td>
+          <td>Morning (8:30 - 12:30)</td>
+          <td>Yuri Ikeda</td>
+          <td class="center attended">Attend</td>
+        </tr>
+        <tr>
+          <td class="center">3</td>
+          <td>y/1/2024</td>
+          <td>Morning (8:30 - 12:30)</td>
+          <td>Yuri Ikeda</td>
+          <td class="center absent">Absent</td>
+        </tr>
         </tbody>
       </table>
 
       <table v-else>
         <thead>
-          <tr>
-            <th>Grade Category</th>
-            <th>Grade Item</th>
-            <th>Weight</th>
-            <th>Value</th>
-            <th>Comment</th>
-          </tr>
+        <tr>
+          <th>Grade Category</th>
+          <th>Grade Item</th>
+          <th>Weight</th>
+          <th>Value</th>
+          <th>Comment</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="grade in markReport" :key="grade.category">
-            <td>{{ grade.category }}</td>
-            <td>{{ grade.item }}</td>
-            <td>{{ grade.weight }}</td>
-            <td>{{ grade.value }}</td>
-            <td>{{ grade.comment }}</td>
-          </tr>
+        <tr v-for="grade in markReport" :key="grade.category">
+          <td>{{ grade.category }}</td>
+          <td>{{ grade.item }}</td>
+          <td>{{ grade.weight }}</td>
+          <td>{{ grade.value }}</td>
+          <td>{{ grade.comment }}</td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -143,7 +146,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useRoute } from 'vue-router';
+
+const studentId = ref('');
+const studentData = ref({
+  studentId: '',
+  rollNumber: '',
+  userInforResponse: {
+    fullName: '',
+    japaneseName: '',
+    dob: '',
+    img: '',
+    gender: '',
+    email: '',
+    phone: ''
+  },
+  batchName: '',
+  classResponse: {
+    classId: '',
+    className: '',
+    classColour: ''
+  }
+});
 
 const showAttendance = ref(true);
 const markReport = ref([
@@ -153,6 +179,38 @@ const markReport = ref([
   { category: 'Final Exam', item: 'Average', weight: '40%', value: '7.5', comment: 'Good' },
   { category: 'Course Total', item: 'Status', weight: '-', value: '-', comment: 'Good' },
 ]);
+
+studentId.value = useRoute().params.id;
+
+const fetchStudentData = async () => {
+  try {
+    const token = sessionStorage.getItem('jwtToken');
+    const response = await axios.get(
+        `http://localhost:8088/fja-fap/staff/get-student/${studentId.value}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+    );
+
+    if (response.data && response.data.result) {
+      studentData.value = response.data.result;
+    }
+  } catch (error) {
+    console.error('Error fetching student data:', error);
+  }
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
+onMounted(() => {
+  fetchStudentData();
+});
 </script>
 
 <style lang="scss" scoped>
