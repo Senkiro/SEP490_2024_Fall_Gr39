@@ -106,7 +106,7 @@
           </div>
           <div class="actions">
             <button class="btn-cancel" @click="confirmCancel">Cancel</button>
-            <button type="submit" :disabled="!validateBatch()"> Create</button>
+            <button type="submit"> Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -191,6 +191,10 @@ export default {
       this.$router.push({name: 'BatchDetail', params: {batchName: batchEntity.batchName}});
     },
     async addBatch() {
+      if (!this.validateBatch()) {
+        return;
+      }
+
       if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
         this.showNotification("Start time must be before end time.", "error");
         return;

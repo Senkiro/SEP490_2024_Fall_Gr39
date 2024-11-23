@@ -13,6 +13,12 @@ const routes = [
         component: () => import('../view/auth/forgot-password.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
+    {
+        path: '/user-profile/:id',
+        name: 'UserProfile',
+        component: () => import('../view/auth/view-profile.vue'),
+        meta: { layout: 'auth', requiresAuth: false },
+    },
     //dashboard
     {
         path: '/staff',

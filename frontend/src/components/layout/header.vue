@@ -9,7 +9,14 @@
     </div>
     <div class="header-right">
       <slot name="user-actions">
-        <VsxIcon iconName="UserSquare" :size="30" color="#01447e" type="linear" class="icon" />
+        <VsxIcon
+            iconName="UserSquare"
+            :size="30"
+            color="#01447e"
+            type="linear"
+            class="icon"
+            @click="navigateToUserProfile"
+        />
         <VsxIcon iconName="Logout" :size="30" color="#01447e" type="linear" class="icon logout-icon" @click="logout"
           style="cursor: pointer;" />
       </slot>
@@ -29,11 +36,18 @@ export default {
   setup() {
     const router = useRouter();
 
+    const userId = sessionStorage.getItem("userId") || "defaultUserId";
+
     const logout = () => {
       sessionStorage.clear();
       router.push("/login");
     };
-    return { logout };
+
+    const navigateToUserProfile = () => {
+      router.push({ name: "UserProfile", params: { id: userId } });
+    };
+
+    return { logout , navigateToUserProfile };
   },
 };
 </script>

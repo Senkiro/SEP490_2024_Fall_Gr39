@@ -236,7 +236,7 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            "http://localhost:8088/fja-fap/staff/get-all-news",
+            "http://localhost:8088/fja-fap/staff/get-all-publish-news",
             {
               params: {
                 page: 0,
