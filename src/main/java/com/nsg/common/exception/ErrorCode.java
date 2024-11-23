@@ -66,6 +66,9 @@ public enum ErrorCode {
     EVENT_NOT_EXIST(1220, "Event not existed!"),
     EVENT_EXISTED(1221, "Event existed!"),
 
+    //news
+    NEWS_NOT_FOUND(2000, "News not found"),
+
     //Student
     STUDENT_NOT_FOUND(1240, "Student not found!"),
 

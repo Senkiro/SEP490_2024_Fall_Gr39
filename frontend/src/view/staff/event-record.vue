@@ -43,14 +43,23 @@
           <td>{{ event.eventName }}</td>
           <td style="width: 250px">{{ event.address }}</td>
           <td style="width: 550px">
-            <span v-if="!isExpanded[index]">
-              {{ shortenText(event.description) }}
-              <span v-if="event.description.length > maxDescriptionLength" class="expand-text"
-                    @click="toggleExpand(index)"> Expand</span></span>
+          <span v-if="!isExpanded[index]">
+          <span v-html="shortenText(event.description)"></span>
+          <span
+              v-if="event.description.length > maxDescriptionLength"
+              class="expand-text"
+              @click="toggleExpand(index)">
+            Expand
+          </span>
+          </span>
             <span v-else>
-              {{ event.description }}
-              <span class="expand-text" @click="toggleExpand(index)"> Collapse </span>
+          <span v-html="event.description"></span>
+          <span
+              class="expand-text"
+              @click="toggleExpand(index)">
+            Collapse
             </span>
+          </span>
           </td>
           <td :class="event.status ? 'status-finished' : 'status-pending'">
             {{ event.status ? 'Finished' : 'Not happen' }}

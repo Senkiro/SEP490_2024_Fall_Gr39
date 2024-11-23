@@ -253,6 +253,16 @@ const routes = [
         },
     },
     {
+        path: "/staff/news/update/:id",
+        name: "UpdateNews",
+        component: () => import("../view/staff/news-update.vue"),
+        meta: {
+            layout: "app",
+            requiresAuth: true,
+        },
+    },
+
+    {
         path: '/staff/mark',
         name: 'Mark',
         component: () => import('../view/staff/mark_report.vue'),
@@ -266,8 +276,8 @@ const routes = [
     {
         path: '/staff/create-news',
         name: 'CreateNews',
-        component: () => import('../view/staff/create_news.vue'),
-        meta: { layout: 'app', requiresAuth: false, 
+        component: () => import('../view/staff/news-create.vue'),
+        meta: { layout: 'app', requiresAuth: true,
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},
                 {name: "News list", link: "/staff/news"},
