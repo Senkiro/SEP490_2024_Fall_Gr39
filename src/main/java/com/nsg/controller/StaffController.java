@@ -11,6 +11,7 @@ import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.request.news.NewsRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
@@ -26,6 +27,7 @@ import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
+import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.student.StudentResponse;
@@ -102,6 +104,8 @@ public class StaffController {
 
     @Autowired
     private ExcelHelper excelHelper;
+    @Autowired
+    private NewsService newsService;
 
 
     /**********************************
@@ -709,38 +713,6 @@ public class StaffController {
     public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<SessionResponse>>builder()
                 .result(sessionService.getAllSession(page, size))
-                .build();
-    }
-
-    @GetMapping("/get-session-week")
-    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week, @RequestParam String class_id) {
-        return ApiResponse.<List<SessionResponse>>builder()
-                .result(sessionService.getSessionByClassAndWeek(week, class_id))
-                .build();
-    }
-
-    //get session by id
-    @GetMapping("/get-session/{session_id}")
-    public ApiResponse<SessionResponse> getSessionById(@PathVariable("session_id") String session_id) {
-        return ApiResponse.<SessionResponse>builder()
-                .result(sessionService.getSession(session_id))
-                .build();
-    }
-
-    //update
-    @PostMapping("/update-session/{session_id}")
-    public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
-        return ApiResponse.<SessionResponse>builder()
-                .result(sessionService.updateSession(session_id, request))
-                .build();
-    }
-
-    //delete
-    @DeleteMapping("/delete-session/{session_id}")
-    public ApiResponse<SessionResponse> deleteSessionById(@PathVariable("session_id") String session_id) {
-        sessionService.deleteSession(session_id);
-        return ApiResponse.<SessionResponse>builder()
-                .message("Delete session successfully!")
                 .build();
     }
 

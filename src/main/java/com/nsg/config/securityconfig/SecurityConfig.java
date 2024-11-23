@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
                                 .requestMatchers("/admin/**").hasAuthority(ADMIN_SCOPE)
                                 .requestMatchers("/fja-fap/teacher/**").hasAuthority(TEACHER_SCOPE)
-                                .requestMatchers("/student/**").hasAuthority(STUDENT_SCOPE)
+                                .requestMatchers("/fja-fap/student/**").hasAuthority(STUDENT_SCOPE)
                                 .requestMatchers("/fja-fap/staff/**").hasAuthority(STAFF_SCOPE)
                                 .anyRequest().authenticated()
                 )
