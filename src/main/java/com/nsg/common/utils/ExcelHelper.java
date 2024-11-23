@@ -9,6 +9,7 @@ import com.nsg.repository.ExamTypeRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,9 @@ public class ExcelHelper {
 
     @Autowired
     private ExamTypeRepository examTypeRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     public static boolean hasExcelFormat(MultipartFile file) {
         String contentType = file.getContentType();
@@ -85,7 +89,9 @@ public class ExcelHelper {
                 user.setJapaneseName(getStringCellValue(currentRow.getCell(2)));
                 user.setEmail(getStringCellValue(currentRow.getCell(3)));
                 user.setRole("STUDENT");
-                user.setPassword("12341234");
+                String defaultPassword = "12341234";
+                user.setPassword(passwordEncoder.encode(defaultPassword));
+                user.setActive(true);
 
                 Cell dobCell = currentRow.getCell(4);
                 if (dobCell != null && dobCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dobCell)) {
