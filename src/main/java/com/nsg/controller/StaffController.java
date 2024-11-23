@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.common.utils.ExcelHelper;
+import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.request.event.EventUpdateRequest;
@@ -12,12 +13,14 @@ import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.news.NewsRequest;
 import com.nsg.dto.request.room.RoomRequest;
+import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.event.EventResponse;
@@ -97,6 +100,9 @@ public class StaffController {
     SessionService sessionService;
 
     @Autowired
+    AttendanceService attendanceService;
+
+    @Autowired
     private ExcelHelper excelHelper;
     @Autowired
     private NewsService newsService;
@@ -170,15 +176,22 @@ public class StaffController {
                 studentService.saveAll(students);
                 return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
             } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder().message("Failed to parse file.").build());
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                        .message("Failed to parse file.")
+                        .build());
             }
         }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder().message("Please upload an Excel file.").build());
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Please upload an Excel file.")
+                .build());
     }
 
     @GetMapping("/search-student")
-    public ApiResponse<Page<StudentResponse>> searchStudentByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
-        Page<StudentResponse> studentEntityList = studentService.findStudentsByName(name, page, size);
+    public ApiResponse<Page<StudentResponse>> searchStudentByName(@RequestParam String name,
+                                                                  @RequestParam String class_id,
+                                                                  @RequestParam int page,
+                                                                  @RequestParam int size) {
+        Page<StudentResponse> studentEntityList = studentService.findStudentsByName(name, class_id, page, size);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentEntityList)
                 .build();
@@ -257,9 +270,9 @@ public class StaffController {
 
     //get all
     @GetMapping("/lesson")
-    ApiResponse<Page<LessonEntity>> getAllLesson(@RequestParam int page, @RequestParam int size) {
-        Page<LessonEntity> lessonEntityList = lessonService.getLessons(page, size);
-        return ApiResponse.<Page<LessonEntity>>builder()
+    ApiResponse<Page<LessonResponse>> getAllLesson(@RequestParam int page, @RequestParam int size) {
+        Page<LessonResponse> lessonEntityList = lessonService.getLessons(page, size);
+        return ApiResponse.<Page<LessonResponse>>builder()
                 .result(lessonEntityList)
                 .build();
     }
@@ -297,6 +310,27 @@ public class StaffController {
         return ApiResponse.<LessonEntity>builder()
                 .result(lesson)
                 .build();
+    }
+
+    //upload lesson
+    @PostMapping("/upload-lessons")
+    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
+        if (excelHelper.hasExcelFormat(file)) {
+            try {
+                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
+                lessonService.saveAll(lessons);
+                return ResponseEntity.ok(ApiResponse.<String>builder().
+                        message("File uploaded and lessons added successfully.")
+                        .build());
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                        .message("Failed to parse file.")
+                        .build());
+            }
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Please upload an Excel file.")
+                .build());
     }
 
     /**********************************
@@ -473,8 +507,8 @@ public class StaffController {
 
     //create new exam
     @PostMapping("/create-exam")
-    public ApiResponse<?> createExam(@RequestParam int exam_type, @RequestBody ExamRequest request) {
-        examService.createExam(request, exam_type);
+    public ApiResponse<?> createExam(@RequestBody ExamRequest request) {
+        examService.createExam(request);
         return ApiResponse.builder()
                 .message("Create new exam successfully!")
                 .build();
@@ -512,6 +546,27 @@ public class StaffController {
         return ApiResponse.builder()
                 .message("Delete exam successfully!")
                 .build();
+    }
+
+    //upload exam
+    @PostMapping("/upload-exams")
+    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
+        if (excelHelper.hasExcelFormat(file)) {
+            try {
+                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
+                examService.saveAll(examEntityList);
+                return ResponseEntity.ok(ApiResponse.<String>builder().
+                        message("File uploaded and exams added successfully.")
+                        .build());
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                        .message("Failed to parse file.")
+                        .build());
+            }
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Please upload an Excel file.")
+                .build());
     }
 
     /**********************************
@@ -644,7 +699,16 @@ public class StaffController {
                 .build();
     }
 
-    //get all class
+    //create a schedule
+    @PostMapping("/create-schedule/{class_id}")
+    public ApiResponse<?> createSchedule(@PathVariable("class_id") String class_id, @RequestBody ScheduleCreationRequest request) {
+        sessionService.createSchedule(class_id, request);
+        return ApiResponse.builder()
+                .message("Create new session successfully!")
+                .build();
+    }
+
+    //get all session
     @GetMapping("/get-all-session")
     public ApiResponse<Page<SessionResponse>> getAllSession(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<SessionResponse>>builder()
@@ -653,38 +717,56 @@ public class StaffController {
     }
 
     /**********************************
-     * Manage News
+     * Manage Attendance
      **********************************/
-    @PostMapping("/create-news")
-    public ApiResponse<NewsResponse> createNews(@RequestBody @Valid NewsRequest request) {
-        return ApiResponse.<NewsResponse>builder()
-                .result(newsService.createNews(request))
-                .message("Create draft news successfully!")
-                .build();
-    }
-
-    //get news by batch
-    @GetMapping("/get-all-news")
-    public ApiResponse<Page<NewsResponse>> getNewsByBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<NewsResponse>>builder()
-                .result(newsService.getAllNews(page, size))
-                .build();
-    }
-
-    //update news
-    @PostMapping("/update-news/{newsId}")
-    public ApiResponse<NewsResponse> updateNews(@PathVariable("newsId") String newsId, @RequestBody NewsRequest request) {
-        return ApiResponse.<NewsResponse>builder()
-                .result(newsService.updateNews(newsId, request))
-                .build();
-    }
-
-    //delete room
-    @DeleteMapping("/delete-news/{newsId}")
-    public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
-        newsService.deleteNews(newsId);
+    //create new attendance
+    @PostMapping("/create-attendance")
+    public ApiResponse<?> createAttendance(@RequestBody AttendanceRequest request) {
+        attendanceService.createAttendance(request);
         return ApiResponse.builder()
-                .message("Delete news successfully!")
+                .message("Create new attendance successfully!")
                 .build();
     }
+
+    //get all attendance
+    @GetMapping("/get-all-attendance")
+    public ApiResponse<Page<AttendanceResponse>> getAllAttendance(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAllAttendance(page, size))
+                .build();
+    }
+
+    //get attendance by id
+    @GetMapping("/get-attendance/{attendance_id}")
+    public ApiResponse<AttendanceResponse> getAttendanceById(@PathVariable("attendance_id") String attendance_id) {
+        return ApiResponse.<AttendanceResponse>builder()
+                .result(attendanceService.getAttendance(attendance_id))
+                .build();
+    }
+
+    //get attendance by session
+    @GetMapping("/get-attendance-session/{session_id}")
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAttendanceBySession(session_id, page, size))
+                .build();
+    }
+
+    //update attendance
+    @PostMapping("/update-attendance/{attendance_id}")
+    public ApiResponse<AttendanceResponse> updateSessionById(@PathVariable("attendance_id") String attendance_id, @RequestBody AttendanceRequest request) {
+        return ApiResponse.<AttendanceResponse>builder()
+                .result(attendanceService.updateAttendance(attendance_id, request))
+                .build();
+    }
+
+    //delete attendance
+    @DeleteMapping("/delete-attendance/{attendance_id}")
+    public ApiResponse<?> deleteAttendanceById(@PathVariable("attendance_id") String attendance_id) {
+        attendanceService.deleteAttendance(attendance_id);
+        return ApiResponse.builder()
+                .message("Delete attendance successfully!")
+                .build();
+    }
+
 }

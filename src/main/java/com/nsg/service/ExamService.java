@@ -3,6 +3,7 @@ package com.nsg.service;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.response.exam.ExamResponse;
+import com.nsg.entity.ExamEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface ExamService {
 
     //create exam
-    void createExam(ExamRequest request, int exam_type);
+    void createExam(ExamRequest request);
 
     //get all exam
     List<ExamResponse> getAllExam();
@@ -24,5 +25,7 @@ public interface ExamService {
 
     //delete exam
     void deleteExam(String examId);
+
+    void saveAll(List<ExamEntity> exams);
 
 }

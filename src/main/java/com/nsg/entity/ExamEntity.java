@@ -17,9 +17,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "exam_id", columnDefinition = "VARCHAR(36)")
-    String examId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "exam_id")
+    int examId;
 
     @Column(name = "exam_title")
     String examTitle;

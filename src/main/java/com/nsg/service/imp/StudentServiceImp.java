@@ -234,6 +234,28 @@ public class StudentServiceImp implements StudentService {
                 studentEntityList.getTotalElements());
     }
 
+    @Override
+    public StudentResponse convertToStudentResponse(StudentEntity studentEntity) {
+        StudentResponse studentResponse = new StudentResponse();
+
+        studentResponse.setRollNumber(studentEntity.getRollNumber());
+        studentResponse.setStudentId(studentEntity.getStudentId());
+
+        //map user to UserInforResponse
+        UserInforResponse userInforResponse =
+                UserMapper.INSTANCE.toUserInforResponse(studentEntity.getUser());
+        //set user
+        studentResponse.setUserInforResponse(userInforResponse);
+
+        //set batch
+        studentResponse.setBatchName(studentEntity.getBatchEntity().getBatchName());
+
+        //set class
+        studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()));
+
+        return studentResponse;
+    }
+
     //generate random roll number
     public String generateRollNumber(){
         String prefix = "FA";
@@ -250,7 +272,7 @@ public class StudentServiceImp implements StudentService {
     }
 
     @Override
-    public Page<StudentResponse> findStudentsByName(String name, int page, int size) {
+    public Page<StudentResponse> findStudentsByName(String name, String classId, int page, int size) {
         //find all student
         Page<UserEntity> userEntityList = userRepository.findByFullNameContaining(name,PageRequest.of(page, size));
 
@@ -259,24 +281,28 @@ public class StudentServiceImp implements StudentService {
 
         //for
         for (UserEntity user : userEntityList) {
-            StudentResponse studentResponse = new StudentResponse();
-            //get,set rollNumber
-            studentResponse.setRollNumber(user.getStudentEntity().getRollNumber());
-            studentResponse.setStudentId(user.getStudentEntity().getStudentId());
+            // check classId
+            if (user.getStudentEntity().getClassEntity().getClassId().equals(classId)) {
+                StudentResponse studentResponse = new StudentResponse();
+                //get,set rollNumber
+                studentResponse.setRollNumber(user.getStudentEntity().getRollNumber());
+                studentResponse.setStudentId(user.getStudentEntity().getStudentId());
 
-            //map user to UserInforResponse
-            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
-            //set user
-            studentResponse.setUserInforResponse(userInforResponse);
+                //map user to UserInforResponse
+                UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
+                //set user
+                studentResponse.setUserInforResponse(userInforResponse);
 
-            //set batch
-            studentResponse.setBatchName(user.getStudentEntity().getBatchEntity().getBatchName());
+                //set batch
+                studentResponse.setBatchName(user.getStudentEntity().getBatchEntity().getBatchName());
 
-            //set class
-            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(user.getStudentEntity().getClassEntity()));
+                //set class
+                studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(user.getStudentEntity().getClassEntity()));
 
-            //add to response list
-            studentListResponse.add(studentResponse);
+                //add to response list
+                studentListResponse.add(studentResponse);
+            }
+
         }
 
         return new PageImpl<>(studentListResponse, userEntityList.getPageable(), userEntityList.getTotalElements());

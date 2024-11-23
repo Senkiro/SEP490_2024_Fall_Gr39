@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -42,7 +41,7 @@ public class StudentEntity extends BaseEntity {
     BatchEntity batchEntity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
-    List<AttendenceEntity> attendenceEntityList;
+    List<AttendanceEntity> attendanceEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
     List<MarkEntity> markEntityList;

@@ -5,18 +5,18 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Attendence")
+@Table(name = "Attendance")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AttendenceEntity extends BaseEntity {
+public class AttendanceEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "attendence_id", columnDefinition = "VARCHAR(36)")
-    String attendenceId;
+    @Column(name = "attendance_id", columnDefinition = "VARCHAR(36)")
+    String attendanceId;
 
     @Column(name = "status")
     String status;

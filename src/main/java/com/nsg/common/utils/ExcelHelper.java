@@ -2,12 +2,10 @@ package com.nsg.common.utils;
 
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
-import com.nsg.entity.BatchEntity;
-import com.nsg.entity.ClassEntity;
-import com.nsg.entity.StudentEntity;
-import com.nsg.entity.UserEntity;
+import com.nsg.entity.*;
 import com.nsg.repository.BatchRepository;
 import com.nsg.repository.ClassRepository;
+import com.nsg.repository.ExamTypeRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,9 @@ public class ExcelHelper {
 
     @Autowired
     private ClassRepository classRepository;
+
+    @Autowired
+    private ExamTypeRepository examTypeRepository;
 
     public static boolean hasExcelFormat(MultipartFile file) {
         String contentType = file.getContentType();
@@ -105,6 +106,98 @@ public class ExcelHelper {
             throw new AppException(ErrorCode.PARSE_ERROR);
         }
         return students;
+    }
+
+    //upload lesson
+    public List<LessonEntity> excelToLessons(InputStream is) {
+        List<LessonEntity> lessons = new ArrayList<>();
+
+        try (Workbook workbook = new XSSFWorkbook(is)) {
+
+            if (workbook.getNumberOfSheets() == 0) {
+                throw new IllegalStateException("Excel file has no sheets");
+            }
+
+            Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null) {
+                throw new IllegalStateException("Sheet is null");
+            }
+
+            Iterator<Row> rows = sheet.iterator();
+            rows.next(); // Bỏ qua Batch
+            rows.next(); // Bỏ qua Class
+            rows.next();
+            rows.next(); // Bỏ qua tiêu đề cột
+
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                if (isRowEmpty(currentRow)) {
+                    continue;
+                }
+                LessonEntity lessonEntity = new LessonEntity();
+
+                lessonEntity.setLessonTitle(getStringCellValue(currentRow.getCell(1)));
+                lessonEntity.setVocabulary(getStringCellValue(currentRow.getCell(2)));
+                lessonEntity.setKanji(getStringCellValue(currentRow.getCell(3)));
+                lessonEntity.setGrammar(getStringCellValue(currentRow.getCell(4)));
+
+                lessons.add(lessonEntity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
+            throw new AppException(ErrorCode.PARSE_ERROR);
+        }
+        return lessons;
+    }
+
+    //upload exam
+    public List<ExamEntity> excelToExams(InputStream is) {
+        List<ExamEntity> exams = new ArrayList<>();
+
+        try (Workbook workbook = new XSSFWorkbook(is)) {
+
+            if (workbook.getNumberOfSheets() == 0) {
+                throw new IllegalStateException("Excel file has no sheets");
+            }
+
+            Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null) {
+                throw new IllegalStateException("Sheet is null");
+            }
+
+            Iterator<Row> rows = sheet.iterator();
+            rows.next(); // Bỏ qua Batch
+            rows.next(); // Bỏ qua Class
+            rows.next();
+            rows.next(); // Bỏ qua tiêu đề cột
+
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                if (isRowEmpty(currentRow)) {
+                    continue;
+                }
+                ExamEntity examEntity = new ExamEntity();
+
+                examEntity.setExamTitle(getStringCellValue(currentRow.getCell(1)));
+                examEntity.setExamContent(getStringCellValue(currentRow.getCell(2)));
+                String examType = getStringCellValue(currentRow.getCell(3));
+                ExamTypeRateEntity examTypeRate = examTypeRepository.findByExamType(Integer.valueOf(examType)).orElseThrow(
+                        () -> new AppException(ErrorCode.EXAM_TYPE_NOT_FOUND)
+                );
+
+                if (examTypeRate != null) {
+                    examEntity.setExamTypeRateEntity(examTypeRate);
+                }
+
+                exams.add(examEntity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
+            throw new AppException(ErrorCode.PARSE_ERROR);
+        }
+        return exams;
     }
 
     // Phương thức tạo Roll Number

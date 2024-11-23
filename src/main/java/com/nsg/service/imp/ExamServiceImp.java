@@ -10,6 +10,7 @@ import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.entity.ExamEntity;
 import com.nsg.entity.ExamTypeRateEntity;
+import com.nsg.entity.LessonEntity;
 import com.nsg.repository.ExamRepository;
 import com.nsg.service.ExamService;
 import com.nsg.service.ExamTypeService;
@@ -29,14 +30,14 @@ public class ExamServiceImp implements ExamService {
     ExamTypeService examTypeService;
 
     @Override
-    public void createExam(ExamRequest request, int exam_type) {
+    public void createExam(ExamRequest request) {
         //check exam title existed
         if (examRepository.findByExamTitle(request.getExamTitle()).isPresent()) {
             throw new AppException(ErrorCode.EXAM_TITLE_EXISTED);
         } else {
 
             //get exam type
-            ExamTypeRateEntity examTypeRate = ExamTypeMapper.INSTANCE.toExamTypeRateEntity(examTypeService.getExamType(exam_type));
+            ExamTypeRateEntity examTypeRate = ExamTypeMapper.INSTANCE.toExamTypeRateEntity(examTypeService.getExamType(request.getExam_type()));
 
             ExamEntity exam = ExamMapper.INSTANCE.toExamEntity(request);
             exam.setExamTypeRateEntity(examTypeRate);
@@ -111,5 +112,11 @@ public class ExamServiceImp implements ExamService {
     public void deleteExam(String examId) {
         examRepository.deleteById(examId);
 
+    }
+
+    @Override
+    public void saveAll(List<ExamEntity> exams) {
+
+        examRepository.saveAll(exams);
     }
 }

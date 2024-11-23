@@ -65,6 +65,7 @@ public enum ErrorCode {
     //Event
     EVENT_NOT_EXIST(1220, "Event not existed!"),
     EVENT_EXISTED(1221, "Event existed!"),
+    EVENT_NOT_FOUND(1222, "Event not found"),
 
     //news
     NEWS_NOT_FOUND(2000, "News not found"),
@@ -72,6 +73,16 @@ public enum ErrorCode {
     //Student
     STUDENT_NOT_FOUND(1240, "Student not found!"),
 
+    //session
+    SESSION_NOT_FOUND(1260, "Session not found"),
+
+    //schedule
+    SCHEDULE_EXISTED(1280, "Schedule for this class already existed!"),
+
+    //attendance
+    ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
+
+    //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 
     ErrorCode(int code, String message) {

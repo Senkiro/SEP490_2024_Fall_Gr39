@@ -16,15 +16,12 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "lesson_id", columnDefinition = "VARCHAR(36)")
-    String lessonId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "lesson_id")
+    int lessonId;
 
     @Column(name = "lesson_title")
     String lessonTitle;
-
-//    @Column(name = "lesson_content")
-//    String lessonContent;
 
     @Lob
     @Column(name = "vocabulary")

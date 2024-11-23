@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,6 +21,12 @@ public class SessionEntity extends BaseEntity {
     @Column(name = "session_id", columnDefinition = "VARCHAR(36)")
     String sessionId;
 
+    @Column(name = "session_number")
+    int sessionNumber;
+
+    @Column(name = "session_week")
+    int sessionWeek;
+
     @Column(name = "date")
     LocalDate date;
 
@@ -37,7 +42,7 @@ public class SessionEntity extends BaseEntity {
     LessonEntity lessonEntity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", fetch = FetchType.EAGER)
-    List<AttendenceEntity> attendenceEntityList;
+    List<AttendanceEntity> attendanceEntityList;
 
     @ManyToOne
     @JoinColumn(name = "time_slot_id")

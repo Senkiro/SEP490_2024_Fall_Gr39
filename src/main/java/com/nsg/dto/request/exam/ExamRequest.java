@@ -14,5 +14,7 @@ public class ExamRequest {
     String examTitle;
 
     String examContent;
+
+    int exam_type;
     
 }
