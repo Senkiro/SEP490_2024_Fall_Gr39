@@ -89,12 +89,7 @@
           </div>
           <div class="form-group">
             <label for="startTime">Start time <span class="required">*</span></label>
-            <input
-                type="date"
-                id="startTime"
-                v-model="newBatch.startTime"
-                @change="handleStartDateChange"
-            />
+            <input type="date" id="startTime" v-model="newBatch.startTime" @change="handleStartDateChange"/>
           </div>
           <div class="form-group">
             <label for="endTime">End time <span class="required">*</span></label>

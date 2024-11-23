@@ -1,40 +1,29 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <h1>Update News</h1>
+      <h1>News detail</h1>
     </div>
 
     <form>
-      <div class="input-field">
-        <input
-            v-model="news.newContent"
-            placeholder="Enter news title"
-            required
-            class="textarea-field"
-        />
+      <div class="input-group">
+        <label>News title <span class="required">*</span></label>
+        <input v-model="news.newContent" placeholder="Enter news title" required />
       </div>
 
-      <div class="text-editor-container">
-        <TextEditor v-model="news.newTitle" />
+      <div class="input-group">
+        <label>News content <span class="required">*</span></label>
+        <div class="text-editor-container">
+          <TextEditor v-model="news.newTitle" />
+        </div>
       </div>
 
       <div class="actions">
-        <button
-            type="button"
-            class="action-button save-draft"
-            @click="saveDraft"
-            :disabled="isLoading"
-        >
+        <button type="button" class="action-button save-draft" @click="saveDraft" :disabled="isLoading">
           <VsxIcon iconName="Save2" :size="25" color="#fff" type="bold" />
           <span v-if="isLoading">Saving...</span>
           <span v-else>Save draft</span>
         </button>
-        <button
-            type="button"
-            class="action-button publish-news"
-            @click="publishNews"
-            :disabled="isLoading"
-        >
+        <button type="button" class="action-button publish-news" @click="publishNews" :disabled="isLoading">
           <VsxIcon iconName="ExportCircle" :size="25" color="#fff" type="bold" />
           <span v-if="isLoading">Publishing...</span>
           <span v-else>Publish news</span>
@@ -82,25 +71,25 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         await axios.post(
-            "http://localhost:8088/fja-fap/staff/create-news",
-            {
-              ...this.news,
-              status,
+          "http://localhost:8088/fja-fap/staff/create-news",
+          {
+            ...this.news,
+            status,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
+          }
         );
         const action = status ? "published" : "saved as draft";
         localStorage.setItem(
-            "notification",
-            JSON.stringify({
-              message: `News ${action} successfully!`,
-              type: "success",
-            })
+          "notification",
+          JSON.stringify({
+            message: `News ${action} successfully!`,
+            type: "success",
+          })
         );
         this.resetForm();
         this.$router.push({ name: "News" });
@@ -129,13 +118,4 @@ export default {
 </script>
 
 <style scoped>
-.textarea-field{
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
 </style>
-
