@@ -380,6 +380,7 @@ const routes = [
     },
 
     //----------------------Teacher router----------------------
+
     {
         path: '/teacher/schedule',
         name: 'TeacherSchedule',
