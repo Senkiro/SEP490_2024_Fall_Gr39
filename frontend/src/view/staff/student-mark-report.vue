@@ -2,13 +2,16 @@
   <div class="container">
     <div class="headContent">
       <h1>Student's mark report</h1>
-      <div class="student-info">
-        <p><strong>Student:</strong> {{ student.fullname }} - {{ student.rollNumber }}</p>
-        <p><strong>Batch:</strong> {{ batch }} <strong>Class:</strong> {{ className }} <strong>Current GPA:</strong> {{ currentGPA }}</p>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
+      <p>Student: <strong> {{ student.fullname }} - {{ student.rollNumber }}</strong></p>
+    </div>
+    <div class="actions">
+      <p>Batch: <strong> {{ batch }} </strong></p>
+      <p>Class: <strong> {{ className }} </strong></p>
+      <p>Current GPA:<strong> {{ currentGPA }}</strong></p>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
           <tr>
             <th>Grade category</th>
             <th>Grade item</th>
@@ -16,25 +19,46 @@
             <th>Value</th>
             <th>Comment</th>
           </tr>
-          </thead>
-          <tbody>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="bold">Participation</td>
+            <td class="bold">Participation</td>
+            <td class="bold">10%</td>
+            <td></td>
+            <td></td>
+          </tr>
           <tr v-for="(grade, index) in grades" :key="index">
-            <td>{{ grade.category }}</td>
-            <td>{{ grade.item }}</td>
-            <td>{{ grade.weight }} %</td>
+            <td class="bold" v-if="index === 0 || grades[index - 1].category !== grade.category"
+              :rowspan="calculateRowspan(grades, index, 'category')">{{ grade.category }}</td>
+            <td :class="{ bold: grade.item === 'Total' }">{{ grade.item }}</td>
+            <td :class="{ bold: grade.item === 'Total' }">{{ grade.weight }}</td>
             <td>{{ grade.value }}</td>
-            <td>{{ grade.comment || '' }}</td>
+            <td></td>
           </tr>
-          <tr class="total-row">
-            <td colspan="3"><strong>Total</strong></td>
-            <td colspan="2">{{ totalGPA }}</td>
+          <tr>
+            <td class="bold">Mid-term Exam</td>
+            <td class="bold">Mid-term Exam</td>
+            <td class="bold">10%</td>
+            <td></td>
+            <td></td>
           </tr>
-          </tbody>
-        </table>
-        <div class="gpa-info">
-          <p><strong>Current GPA:</strong> {{ currentGPA }}</p>
-          <p class="grade-remark"><strong>Grade:</strong> <span class="remark">{{ gradeRemark }}</span></p>
-        </div>
+          <tr>
+            <td class="bold">Final Exam</td>
+            <td class="bold">Final Exam</td>
+            <td class="bold">10%</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="bold">Course total</td>
+            <td class="bold" colspan="2">Average</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="actions">
+        <p>Current GPA: <strong>{{ currentGPA }}</strong></p>
+        <p class="grade-remark"><strong>Grade:</strong> <span class="remark">{{ gradeRemark }}</span></p>
       </div>
     </div>
   </div>
@@ -53,24 +77,67 @@ export default {
       className: "Blue",
       currentGPA: 7.6,
       grades: [
-        { category: "Participation", item: "Participation", weight: 10, value: 8.2 },
-        { category: "Daily Exam", item: "Chapter 1 - Vocabulary", weight: 10, value: 8.2 },
-        { category: "Daily Exam", item: "Chapter 1 - Kanji", weight: 10, value: 8.7 },
-        { category: "Daily Exam", item: "Chapter 1 - Grammar", weight: 10, value: 7.8 },
-        { category: "Daily Exam", item: "Chapter 2 - Vocabulary", weight: 10, value: 8.5 },
-        { category: "Daily Exam", item: "Chapter 2 - Kanji", weight: 10, value: 8.0 },
-        { category: "Daily Exam", item: "Chapter 2 - Grammar", weight: 10, value: 9.0 },
-        { category: "Daily Exam", item: "Chapter 3 - Vocabulary", weight: 10, value: 10.0 },
-        { category: "Mid-term Exam", item: "Mid-term Exam", weight: 10, value: 9.0 },
-        { category: "Final Exam", item: "Final Exam", weight: 10, value: 9.5 },
+        { category: "Daily Exam", item: "Chapter 1 - Vocabulary", weight: "", value: 8.2 },
+        { category: "Daily Exam", item: "Chapter 1 - Kanji", weight: "", value: 8.7 },
+        { category: "Daily Exam", item: "Chapter 1 - Grammar", weight: "", value: 7.8 },
+        { category: "Daily Exam", item: "Chapter 2 - Vocabulary", weight: "", value: 8.5 },
+        { category: "Daily Exam", item: "Chapter 2 - Kanji", weight: "", value: 8.0 },
+        { category: "Daily Exam", item: "Chapter 2 - Grammar", weight: "", value: 9.0 },
+        { category: "Daily Exam", item: "Chapter 3 - Vocabulary", weight: "", value: 10.0 },
+        { category: "Daily Exam", item: "Total", weight: "70%", value: 10.0 },
       ],
       totalGPA: 8.6,
       gradeRemark: "Very Good",
     };
   },
+  methods: {
+    calculateRowspan(grades, index, property) {
+      let count = 1;
+      while (index + count < grades.length && grades[index + count][property] === grades[index][property]) {
+        count++;
+      }
+      return count;
+    }
+  }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.bold {
+  color: #171717 !important;
+  font-weight: bold !important;
+}
 
+.container {
+  .table-container {
+    table {
+
+      // tr,
+      // td {
+      //   border: 2px solid #DFE7FB;
+      // }
+
+      tr {
+        color: #979B9F;
+
+        .chapter {
+          cursor: pointer;
+        }
+
+        td:first-child,
+        th:first-child {
+          max-width: 100px;
+        }
+
+        td:first-child,
+        td:nth-child(2) {
+          color: #979B9F;
+          font-weight: normal;
+        }
+
+      }
+
+    }
+  }
+}
 </style>

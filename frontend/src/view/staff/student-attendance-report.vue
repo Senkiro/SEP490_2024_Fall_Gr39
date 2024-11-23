@@ -1,16 +1,18 @@
 <template>
   <div class="container">
-    <h1 class="title-large">Student’s attendance report</h1>
-    <div class="student-info">
+    <div class="headContent">
+      <h1 class="title-large">Student’s attendance report</h1>
       <span class="student-name">Student: <b>{{ student.name }} - {{ student.id }}</b></span>
-      <span class="attendance-summary">Attended: {{ attendanceSummary }}</span>
+    </div>
+    <div class="actions">
+      <span>Attended: <b>{{ attendanceSummary }}</b></span>
     </div>
 
     <div class="table-container">
       <table class="table-standard">
         <thead>
         <tr>
-          <th>Session No</th>
+          <th class="center">Session No</th>
           <th>Date</th>
           <th>Slot</th>
           <th>Teacher</th>
@@ -19,7 +21,7 @@
         </thead>
         <tbody>
         <tr v-for="(session, index) in student.attendance" :key="index">
-          <td>{{ session.number }}</td>
+          <td class="center">{{ session.number }}</td>
           <td>{{ session.date }}</td>
           <td>{{ session.slot }}</td>
           <td>{{ session.teacher }}</td>
@@ -61,11 +63,11 @@ export default {
     getAttendanceClass(status) {
       switch (status) {
         case 'Attend':
-          return 'status-progress';
+          return 'attended';
         case 'Absent':
-          return 'status-absent'; // Màu đỏ cho Absent
+          return 'absent'; // Màu đỏ cho Absent
         case 'Not happen':
-          return 'status-finished';
+          return 'not-happen';
         default:
           return '';
       }
@@ -75,16 +77,6 @@ export default {
 </script>
 
 <style scoped>
-.student-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 16px;
-}
-
-.student-name {
-  font-weight: bold;
-}
 
 .attendance-summary {
   text-align: right;
@@ -92,7 +84,7 @@ export default {
   color: #555;
 }
 
-.status-absent {
+.absent {
   color: red;
 }
 </style>

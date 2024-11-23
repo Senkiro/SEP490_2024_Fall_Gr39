@@ -4,6 +4,13 @@
       <h1>Lesson list</h1>
     </div>
 
+    <div class="actions">
+      <button @click="showAddLessonPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold" />
+        Add Lesson
+      </button>
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
@@ -20,7 +27,6 @@
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" />
-                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
               </div>
             </td>
           </tr>
@@ -31,7 +37,6 @@
               <td class="center">
                 <div class="icon-group">
                   <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" />
-                  <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
                 </div>
               </td>
             </tr>
@@ -41,7 +46,6 @@
               <td class="center">
                 <div class="icon-group">
                   <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" />
-                  <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
                 </div>
               </td>
             </tr>
@@ -51,7 +55,6 @@
               <td class="center">
                 <div class="icon-group">
                   <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewLessonDetail()" />
-                  <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
                 </div>
               </td>
             </tr>
@@ -62,7 +65,6 @@
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" />
-                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
               </div>
             </td>
           </tr>
@@ -81,6 +83,34 @@
         </button>
       </div>
     </div>
+
+    <div v-if="showAddLessonPopup" class="popup-overlay">
+      <div class="popup">
+        <div class="popup-title">
+          <h2>Add Lesson</h2>
+        </div>
+        <form @submit.prevent="addLesson">
+          <div class="form-group">
+            <label for="eventName">Lesson name<span class="required">*</span></label>
+            <input type="text" id="lessonName" required />
+          </div>
+          <div class="form-group">
+            <label for="address">Chapter<span class="required">*</span></label>
+            <div class="filters">
+              <select id="room-filter" class="filter-select">
+                <option value="">Chapter 1</option>
+                <option value="">Chapter 2</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn-cancel" @click="showAddLessonPopup = false">Cancel</button>
+            <button type="submit">Create</button>
+          </div>
+        </form>
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -93,7 +123,8 @@ export default {
   },
   data() {
     return {
-      isExpanded: true
+      isExpanded: true,
+      showAddLessonPopup: false,
     }
   },
   methods: {
@@ -117,7 +148,7 @@ export default {
           cursor: pointer;
         }
 
-        td:nth-child(2){
+        td:nth-child(2) {
           font-weight: normal;
         }
 
