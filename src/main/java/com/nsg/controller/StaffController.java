@@ -716,6 +716,38 @@ public class StaffController {
                 .build();
     }
 
+    @GetMapping("/get-session-week")
+    public ApiResponse<List<SessionResponse>> getSessionByWeek(@RequestParam int week, @RequestParam String class_id) {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result(sessionService.getSessionByClassAndWeek(week, class_id))
+                .build();
+    }
+
+    //get session by id
+    @GetMapping("/get-session/{session_id}")
+    public ApiResponse<SessionResponse> getSessionById(@PathVariable("session_id") String session_id) {
+        return ApiResponse.<SessionResponse>builder()
+                .result(sessionService.getSession(session_id))
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-session/{session_id}")
+    public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
+        return ApiResponse.<SessionResponse>builder()
+                .result(sessionService.updateSession(session_id, request))
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-session/{session_id}")
+    public ApiResponse<SessionResponse> deleteSessionById(@PathVariable("session_id") String session_id) {
+        sessionService.deleteSession(session_id);
+        return ApiResponse.<SessionResponse>builder()
+                .message("Delete session successfully!")
+                .build();
+    }
+
     /**********************************
      * Manage Attendance
      **********************************/
@@ -769,4 +801,56 @@ public class StaffController {
                 .build();
     }
 
+    /**********************************
+     * Manage News
+     **********************************/
+    @PostMapping("/create-news")
+    public ApiResponse<NewsResponse> createNews(@RequestBody @Valid NewsRequest request) {
+        return ApiResponse.<NewsResponse>builder()
+                .result(newsService.createNews(request))
+                .message("Create draft news successfully!")
+                .build();
+    }
+
+    //get news
+    @GetMapping("/get-all-news")
+    public ApiResponse<Page<NewsResponse>> getNewsByBatch(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<NewsResponse>>builder()
+                .result(newsService.getAllNews(page, size))
+                .build();
+    }
+
+    //get publish news
+    @GetMapping("/get-all-publish-news")
+    public ApiResponse<Page<NewsResponse>> getAllPublishNews(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<NewsResponse>>builder()
+                .result(newsService.getAllPublishNews(page, size))
+                .build();
+    }
+
+    //update news
+    @PostMapping("/update-news/{newsId}")
+    public ApiResponse<NewsResponse> updateNews(@PathVariable("newsId") String newsId, @RequestBody NewsRequest request) {
+        return ApiResponse.<NewsResponse>builder()
+                .result(newsService.updateNews(newsId, request))
+                .build();
+    }
+
+    //delete room
+    @DeleteMapping("/delete-news/{newsId}")
+    public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
+        newsService.deleteNews(newsId);
+        return ApiResponse.builder()
+                .message("Delete news successfully!")
+                .build();
+    }
+
+    // getNewsById
+    @GetMapping("/get-news")
+    public ApiResponse<NewEntity> getNewsById(@RequestParam String newsId) {
+        NewEntity newEntity = newsService.getNewtById(newsId);
+        return ApiResponse.<NewEntity>builder()
+                .result(newEntity)
+                .build();
+    }
 }

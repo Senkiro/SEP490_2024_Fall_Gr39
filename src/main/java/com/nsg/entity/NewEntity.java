@@ -24,7 +24,8 @@ public class NewEntity extends BaseEntity {
     @Column(name = "news_title")
     String newTitle;
 
-    @Column(name = "news_content")
+    @Lob
+    @Column(columnDefinition = "LONGTEXT",name = "news_content")
     String newContent;
 
     @Column(name = "status")
