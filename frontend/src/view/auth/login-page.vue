@@ -59,6 +59,7 @@ export default {
           const data = await response.json();
           sessionStorage.setItem('jwtToken', data.result.token);
           sessionStorage.setItem('userRole', data.result.scope);
+          sessionStorage.setItem('userName', this.username);
           this.redirectUser(data.result.scope);
         } else {
           const errorData = await response.json();
@@ -77,7 +78,11 @@ export default {
         this.$router.push({ name: 'ManagerHomePage' });
       } else if (role === 'STAFF') {
         this.$router.push({ name: 'StaffHomePage' });
-      } else {
+      } else if (role === 'TEACHER'){
+        this.$router.push({ name: 'TeacherHomepage' });
+      }else if (role === 'STUDENT'){
+        this.$router.push({ name: 'StudentHomepage' });
+      }else {
         this.$router.push({ name: 'LoginPage' }); // Default route if role is not recognized
       }
     },
