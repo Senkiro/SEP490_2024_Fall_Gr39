@@ -15,7 +15,7 @@
     </div>
 
     <!-- Nội dung Student Record -->
-    <div v-if="activeTab === 'student'" class="student-record">
+    <div v-if="activeTab === 'student'" class="record">
       <div class="filters">
         <select id="class-filter" class="filter-select" v-model="selectedClass" @change="filterStudentsByClass">
           <option value="">All Class</option>
@@ -105,7 +105,7 @@
     </div>
 
     <!-- Nội dung Class Record -->
-    <div v-if="activeTab === 'class'" class="class-record">
+    <div v-if="activeTab === 'class'" class="record">
       <div class="actions">
         <button @click="openAddClassPopup">
           <VsxIcon iconName="AddCircle" size="20" type="bold"/>
@@ -819,9 +819,7 @@ export default {
       color: #1A2C6F;
     }
   }
-
-  .student-record,
-  .class-record {
+  .record {
     display: flex;
     flex-direction: column;
     gap: 20px;
