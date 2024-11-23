@@ -234,6 +234,28 @@ public class StudentServiceImp implements StudentService {
                 studentEntityList.getTotalElements());
     }
 
+    @Override
+    public StudentResponse convertToStudentResponse(StudentEntity studentEntity) {
+        StudentResponse studentResponse = new StudentResponse();
+
+        studentResponse.setRollNumber(studentEntity.getRollNumber());
+        studentResponse.setStudentId(studentEntity.getStudentId());
+
+        //map user to UserInforResponse
+        UserInforResponse userInforResponse =
+                UserMapper.INSTANCE.toUserInforResponse(studentEntity.getUser());
+        //set user
+        studentResponse.setUserInforResponse(userInforResponse);
+
+        //set batch
+        studentResponse.setBatchName(studentEntity.getBatchEntity().getBatchName());
+
+        //set class
+        studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()));
+
+        return studentResponse;
+    }
+
     //generate random roll number
     public String generateRollNumber(){
         String prefix = "FA";

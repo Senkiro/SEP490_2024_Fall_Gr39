@@ -76,6 +76,9 @@ public enum ErrorCode {
     //schedule
     SCHEDULE_EXISTED(1280, "Schedule for this class already existed!"),
 
+    //attendance
+    ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
+
     //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 

@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.common.utils.ExcelHelper;
+import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.request.event.EventUpdateRequest;
@@ -18,6 +19,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.event.EventResponse;
@@ -94,6 +96,9 @@ public class StaffController {
 
     @Autowired
     SessionService sessionService;
+
+    @Autowired
+    AttendanceService attendanceService;
 
     @Autowired
     private ExcelHelper excelHelper;
@@ -736,6 +741,59 @@ public class StaffController {
         sessionService.deleteSession(session_id);
         return ApiResponse.<SessionResponse>builder()
                 .message("Delete session successfully!")
+                .build();
+    }
+
+    /**********************************
+     * Manage Attendance
+     **********************************/
+    //create new attendance
+    @PostMapping("/create-attendance")
+    public ApiResponse<?> createAttendance(@RequestBody AttendanceRequest request) {
+        attendanceService.createAttendance(request);
+        return ApiResponse.builder()
+                .message("Create new attendance successfully!")
+                .build();
+    }
+
+    //get all attendance
+    @GetMapping("/get-all-attendance")
+    public ApiResponse<Page<AttendanceResponse>> getAllAttendance(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAllAttendance(page, size))
+                .build();
+    }
+
+    //get attendance by id
+    @GetMapping("/get-attendance/{attendance_id}")
+    public ApiResponse<AttendanceResponse> getAttendanceById(@PathVariable("attendance_id") String attendance_id) {
+        return ApiResponse.<AttendanceResponse>builder()
+                .result(attendanceService.getAttendance(attendance_id))
+                .build();
+    }
+
+    //get attendance by session
+    @GetMapping("/get-attendance-session/{session_id}")
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAttendanceBySession(session_id, page, size))
+                .build();
+    }
+
+    //update attendance
+    @PostMapping("/update-attendance/{attendance_id}")
+    public ApiResponse<AttendanceResponse> updateSessionById(@PathVariable("attendance_id") String attendance_id, @RequestBody AttendanceRequest request) {
+        return ApiResponse.<AttendanceResponse>builder()
+                .result(attendanceService.updateAttendance(attendance_id, request))
+                .build();
+    }
+
+    //delete attendance
+    @DeleteMapping("/delete-attendance/{attendance_id}")
+    public ApiResponse<?> deleteAttendanceById(@PathVariable("attendance_id") String attendance_id) {
+        attendanceService.deleteAttendance(attendance_id);
+        return ApiResponse.builder()
+                .message("Delete attendance successfully!")
                 .build();
     }
 
