@@ -248,6 +248,18 @@ const routes = [
         },
     },
     {
+        path: '/staff/curriculumn-detail/:id',
+        name: 'CurriculumnDetail',
+        component: () => import('../view/staff/curriculumn-detail.vue'),
+        meta: { layout: 'app', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Curriculumn list", link:"/staff/curriculumn"},
+                {name: "Curriculumn detail", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/exam',
         name: 'ExamList',
         component: () => import('../view/staff/exam-list.vue'),
