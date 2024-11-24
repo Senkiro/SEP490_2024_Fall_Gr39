@@ -39,7 +39,7 @@ public class LessonEntity extends BaseEntity {
     List<SessionEntity> sessionEntityList;
 
     @ManyToOne
-    @JoinColumn(name = "chapter_id")
-    ChapterEntity chapterEntity;
+    @JoinColumn(name = "curriculumn_id")
+    CurriculumnEntity curriculumnEntity;
 
 }

@@ -39,6 +39,6 @@ public class ExamEntity extends BaseEntity {
     ExamTypeRateEntity examTypeRateEntity;
 
     @ManyToOne
-    @JoinColumn(name = "chapter_id")
-    ChapterEntity chapterEntity;
+    @JoinColumn(name = "curriculumn_id")
+    CurriculumnEntity curriculumnEntity;
 }
