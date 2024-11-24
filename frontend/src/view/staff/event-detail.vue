@@ -18,7 +18,7 @@
     </div>
     <form @submit.prevent="submitForm">
       <div class="image-container">
-        <img :src="`/${eventDetail.imagePath}`" alt="Event Image">
+        <img :src="previewImage || `/${eventDetail.imagePath}`" alt="Event Image">
         <div class="middle">
           <template v-if="isActive">
             <button class="edit-btn">
@@ -113,6 +113,8 @@ export default {
         description: '',
         status: false
       },
+      selectedImage: null, // Lưu trữ tệp ảnh được chọn
+      previewImage: '', // Lưu URL ảnh xem trước
       notification: {
         message: '',
         type: ''
@@ -139,6 +141,7 @@ export default {
       const file = event.target.files[0];
       if (file) {
         this.selectedImage = file;
+        this.previewImage = URL.createObjectURL(file); // Tạo URL ảnh xem trước
       }
     },
     async fetchEventDetail() {
@@ -157,6 +160,11 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const formData = new FormData();
+
+        if (this.previewImage) {
+          URL.revokeObjectURL(this.previewImage); // Giải phóng URL
+          this.previewImage = ''; // Reset URL xem trước
+        }
 
         // Thêm dữ liệu JSON
         formData.append(
