@@ -291,7 +291,7 @@ export default {
       display: flex;
       flex-direction: row;
       border-radius: 10px;
-      background-color: #233E8B;
+      background: linear-gradient(to right,#4058ae 5%,#3F5FD8 80%, #4058ae);
       padding: 10px 20px;
       color: #fff;
       gap: 20px;
@@ -369,7 +369,7 @@ export default {
           width: 50%;
           display: flex;
           flex-direction: column;
-          border: 2px solid #233E8B;
+          border: 2px solid #3F5FD8;
           border-radius: 10px;
           padding: 20px;
           gap: 30px;
@@ -397,7 +397,7 @@ export default {
               justify-content: center;
               padding: 5px 15px;
               border-radius: 50%;
-              background: #233E8B;
+              background: radial-gradient(circle, #3F5FD8 70%, #213272);
             }
           }
 
@@ -406,7 +406,7 @@ export default {
 
             button {
               width: 100%;
-              background: #233E8B;
+              background: linear-gradient(to right,#3F5FD8 90%, #4058ae);
               font-weight: bold;
               justify-content: center;
             }

@@ -56,11 +56,10 @@
               <div class="average-score-box">
                 <div class="score-box-upper">
                   <strong>Average Score</strong>
-                  <button class="btn-view-detail">View detail</button>
                 </div>
                 <div class="score-box-lower">
-                  <strong class="score-status">Very Good</strong>
                   <p class="score">8.6</p>
+                  <strong class="score-status">Very Good</strong>
                 </div>
               </div>
             </div>

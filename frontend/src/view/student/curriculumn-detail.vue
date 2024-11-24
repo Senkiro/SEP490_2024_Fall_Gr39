@@ -92,7 +92,7 @@
                             <td class="center">
                                 <div class="icon-group">
                                     <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
-                                        @click="viewLessonDetail()" />
+                                        @click="viewExamDetail()" />
                                 </div>
                             </td>
                         </tr>
@@ -128,9 +128,13 @@ export default {
             this.activeTab = tab;
         },
         viewLessonDetail() {
-            this.$router.push({ name: 'LessonDetail' });
-        }
+            this.$router.push({ name: 'StudentLessonDetail' });
+        },
+        viewExamDetail() {
+            this.$router.push({ name: 'StudentExamDetail' });
+        },
     }
+
 }
 </script>
 
