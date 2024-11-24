@@ -102,8 +102,6 @@
         </div>
 
         <!-- -----Learning Material----- -->
-
-
         <router-link class="sidebar-item" to="/staff/curriculumn">
           <span class="material-icons">
             <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />

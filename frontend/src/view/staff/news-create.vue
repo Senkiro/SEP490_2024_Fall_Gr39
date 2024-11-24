@@ -55,7 +55,6 @@ export default {
       news: {
         newTitle: "",
         newContent: "",
-        createDate: new Date().toISOString().split("T")[0],
         createdBy: sessionStorage.getItem("userName") || "Unknown",
       },
       isLoading: false,

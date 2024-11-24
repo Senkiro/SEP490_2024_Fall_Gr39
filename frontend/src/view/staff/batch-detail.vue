@@ -217,6 +217,9 @@
     <!-- Popup Add Class -->
     <div v-if="showAddClassPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddClassPopup = false"/>
+        </div>
         <div class="popup-title">
           <h2>Add class</h2>
         </div>
@@ -235,7 +238,6 @@
           </div>
           <div class="actions">
             <button type="submit">Create</button>
-            <button class="btn btn-cancel" @click="showAddClassPopup = false">Cancel</button>
           </div>
         </form>
       </div>

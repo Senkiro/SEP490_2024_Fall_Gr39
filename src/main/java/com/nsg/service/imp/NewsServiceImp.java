@@ -49,6 +49,7 @@ public class NewsServiceImp implements NewsService {
                         newEntity.getNewTitle(),
                         newEntity.isStatus(),
                         newEntity.getCreatedDate(),
+                        newEntity.getUpdatedDate(),
                         newEntity.getCreatedBy()
                 ))
                 .collect(Collectors.toList());
@@ -67,6 +68,7 @@ public class NewsServiceImp implements NewsService {
                         newEntity.getNewTitle(),
                         newEntity.isStatus(),
                         newEntity.getCreatedDate(),
+                        newEntity.getUpdatedDate(),
                         newEntity.getCreatedBy()
                 ))
                 .collect(Collectors.toList());

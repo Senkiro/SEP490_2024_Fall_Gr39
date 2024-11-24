@@ -13,6 +13,9 @@
     <!-- Add Time Slot Modal -->
     <div v-if="showAddModal" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="confirmCancel"/>
+        </div>
         <h2>Add New Time Slot</h2>
         <form @submit.prevent="submitNewTimeSlot">
           <div class="form-group">
@@ -32,11 +35,57 @@
 
           <div class="actions">
             <button type="submit" class="btn btn-create">Save</button>
-            <button type="button" class="btn btn-cancel" @click="confirmCancel">Cancel</button>
           </div>
         </form>
       </div>
     </div>
+
+    <!-- Update Slot Modal -->
+    <div v-if="showUpdateModal" class="popup-overlay">
+      <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closeUpdateModal"/>
+        </div>
+        <h2>Update Time Slot</h2>
+        <form @submit.prevent="submitUpdateTimeSlot">
+          <div class="form-group">
+            <label for="slotName">Slot Name</label>
+            <input
+                type="text"
+                v-model="selectedSlot.name"
+                id="slotName"
+                required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="startTime">Start Time</label>
+            <input
+                type="time"
+                v-model="selectedSlot.startTime"
+                id="startTime"
+                required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="endTime">End Time</label>
+            <input
+                type="time"
+                v-model="selectedSlot.endTime"
+                id="endTime"
+                required
+            />
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-create">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
     <div class="table-container">
       <table>
         <thead class="center">
@@ -56,8 +105,8 @@
             <td>{{ formatTime(slot.endTime) }}</td>
             <td class="center">
               <div class="icon-group">
-                <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" />
-                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear" />
+                <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" @click="openUpdateModal(slot)"/>
+                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"  @click="deleteTimeSlot(slot.id)"/>
               </div>
             </td>
           </tr>
@@ -76,21 +125,29 @@
 
 <script>
 import axios from "axios";
+import {VsxIcon} from "vue-iconsax";
 
 export default {
+  components: {VsxIcon},
   data() {
     return {
       slots: [],
       showAddModal: false,
+      showUpdateModal: false,
       newSlot: {
         name: '',
         startTime: '',
-        endTime: ''
+        endTime: '',
       },
-      isLoading: false,
+      selectedSlot: {
+        id: '',
+        name: '',
+        startTime: '',
+        endTime: '',
+      },
       notification: {
-        message: "",
-        type: "" // "success" or "error"
+        message: '',
+        type: '',
       },
     };
   },
@@ -124,6 +181,35 @@ export default {
         this.showNotification("Error retrieving time slot list. Please try again.", "error");
       } finally {
         this.isLoading = false;
+      }
+    },
+    async deleteTimeSlot(id) {
+      if (!confirm("Are you sure you want to delete this time slot?")) {
+        return;
+      }
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.delete(
+            `http://localhost:8088/fja-fap/staff/delete-time-slot/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+        );
+
+        // Kiểm tra kết quả trả về
+        if (response.data.code === 0) {
+          this.showNotification("Delete time slot successfully!", "success");
+
+          // Cập nhật danh sách sau khi xóa
+          this.fetchTimeslot();
+        } else {
+          this.showNotification("Failed to delete time slot. Please try again.", "error");
+        }
+      } catch (error) {
+        console.error("Error deleting time slot:", error);
+        this.showNotification("An error occurred. Please try again.", "error");
       }
     },
     async submitNewTimeSlot() {
@@ -168,6 +254,57 @@ export default {
         this.showNotification(
           error.response?.data?.message || "Error creating time slot. Please try again.",
           'error'
+        );
+      }
+    },
+    openUpdateModal(slot) {
+      this.selectedSlot = { ...slot }; // Gán dữ liệu slot vào selectedSlot
+      this.showUpdateModal = true;
+    },
+    closeUpdateModal() {
+      this.selectedSlot = { id: '', name: '', startTime: '', endTime: '' };
+      this.showUpdateModal = false;
+    },
+    async submitUpdateTimeSlot() {
+      if (!this.selectedSlot.name) {
+        this.showNotification('Time slot name cannot be null', 'error');
+        return;
+      }
+      if (!this.selectedSlot.startTime || !this.selectedSlot.endTime) {
+        this.showNotification('Start time and end time must be in the format HH:mm', 'error');
+        return;
+      }
+
+      // Ensure endTime is greater than startTime
+      if (this.selectedSlot.endTime <= this.selectedSlot.startTime) {
+        this.showNotification('End time must be later than start time', 'error');
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.post(
+            `http://localhost:8088/fja-fap/staff/update-time-slot/${this.selectedSlot.id}`,
+            {
+              name: this.selectedSlot.name,
+              startTime: this.selectedSlot.startTime,
+              endTime: this.selectedSlot.endTime,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.data.code === 0) {
+          this.showNotification('Time slot updated successfully!', 'success');
+          this.fetchTimeslot(); // Cập nhật danh sách
+          this.closeUpdateModal();
+        } else {
+          this.showNotification('Failed to update time slot. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Error updating time slot:', error);
+        this.showNotification(
+            error.response?.data?.message || 'Error updating time slot. Please try again.',
+            'error'
         );
       }
     },
