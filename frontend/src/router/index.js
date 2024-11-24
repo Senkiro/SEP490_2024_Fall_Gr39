@@ -158,6 +158,18 @@ const routes = [
         },
     },
     {
+        path: '/staff/import-holiday',
+        name: 'ImportHoliday',
+        component: () => import('../view/staff/import-holiday.vue'),
+        meta: { layout: 'staff', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Holiday list", link: "/staff/holiday"},
+                {name: "Import holiday", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/schedule',
         name: 'StaffSchedule',
         component: () => import('../view/staff/schedule-management.vue'),
@@ -306,6 +318,17 @@ const routes = [
                 {name: "Homepage", link:"/staff"},
                 {name: "News list", link: "/staff/news"},
                 {name: "Create news", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/staff/holiday',
+        name: 'HolidayList',
+        component: () => import('../view/staff/holiday-list.vue'),
+        meta: { layout: 'staff', requiresAuth: false,
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Holiday list", link: ""}
             ]
         },
     },
