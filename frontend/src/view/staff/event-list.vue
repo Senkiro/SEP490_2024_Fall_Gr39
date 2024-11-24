@@ -267,7 +267,7 @@ export default {
     },
     viewEventDetail(event) {
       console.log("Event ID:", event.eventId);
-      this.$router.push({ name: 'EventDetail', params: { eventId: event.eventId } });
+      this.$router.push({ name: 'StaffEventDetail', params: { eventId: event.eventId } });
     },
     showNotification(message, type) {
       this.notification = {message, type};
