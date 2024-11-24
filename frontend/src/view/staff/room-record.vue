@@ -40,6 +40,9 @@
     <!-- Add Room Popup -->
     <div v-if="showAddRoomPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closePopup"/>
+        </div>
         <div class="popup-title">
           <h2>Add Room</h2>
         </div>
@@ -49,7 +52,6 @@
             <input type="number" id="roomNumber" v-model="newRoom.roomNumber" required/>
           </div>
           <div class="actions">
-            <button class="btn-cancel" @click="closePopup">Cancel</button>
             <button type="submit">Add</button>
           </div>
         </form>
@@ -59,6 +61,9 @@
     <!-- Edit Room Popup -->
     <div v-if="showEditRoomPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closePopup"/>
+        </div>
         <div class="popup-title">
           <h2>Edit Room - {{ editRoom.roomNumber }}</h2>
         </div>
@@ -68,7 +73,6 @@
             <input type="number" id="editRoomNumber" v-model="editRoom.roomNumber" required/>
           </div>
           <div class="actions">
-            <button class="btn-cancel" @click="closePopup">Cancel</button>
             <button type="submit">Update</button>
           </div>
         </form>

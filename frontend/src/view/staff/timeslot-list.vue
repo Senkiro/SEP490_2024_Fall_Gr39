@@ -13,6 +13,9 @@
     <!-- Add Time Slot Modal -->
     <div v-if="showAddModal" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="confirmCancel"/>
+        </div>
         <h2>Add New Time Slot</h2>
         <form @submit.prevent="submitNewTimeSlot">
           <div class="form-group">
@@ -32,7 +35,6 @@
 
           <div class="actions">
             <button type="submit" class="btn btn-create">Save</button>
-            <button type="button" class="btn btn-cancel" @click="confirmCancel">Cancel</button>
           </div>
         </form>
       </div>
@@ -41,6 +43,9 @@
     <!-- Update Slot Modal -->
     <div v-if="showUpdateModal" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closeUpdateModal"/>
+        </div>
         <h2>Update Time Slot</h2>
         <form @submit.prevent="submitUpdateTimeSlot">
           <div class="form-group">
@@ -75,13 +80,6 @@
 
           <div class="actions">
             <button type="submit" class="btn btn-create">Save</button>
-            <button
-                type="button"
-                class="btn btn-cancel"
-                @click="closeUpdateModal"
-            >
-              Cancel
-            </button>
           </div>
         </form>
       </div>
@@ -127,8 +125,10 @@
 
 <script>
 import axios from "axios";
+import {VsxIcon} from "vue-iconsax";
 
 export default {
+  components: {VsxIcon},
   data() {
     return {
       slots: [],

@@ -70,6 +70,9 @@
 
     <div v-if="showAddTeacherPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddTeacherPopup = false"/>
+        </div>
         <div class="popup-title">
           <h2>Add teacher</h2>
         </div>
@@ -108,7 +111,6 @@
             </div>
           </div>
           <div class="actions">
-            <button class="btn btn-cancel" @click="showAddTeacherPopup = false">Cancel</button>
             <button type="submit">Create</button>
           </div>
         </form>

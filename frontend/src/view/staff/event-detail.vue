@@ -1,31 +1,35 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <template v-if="isActive">
-        <input v-model="eventDetail.eventName" class="input-field" placeholder="Enter event name" />
-      </template>
-      <template v-else>
-        <h1>{{ eventDetail.eventName }}</h1>
-      </template>
+      <div class="field-group">
+        <label for="eventName">Title</label>
+        <template v-if="isActive">
+          <input v-model="eventDetail.eventName" id="eventName" class="input-field" placeholder="Enter event name" />
+        </template>
+        <template v-else>
+          <h1>{{ eventDetail.eventName }}</h1>
+        </template>
+      </div>
 
-      <!-- Địa chỉ sự kiện -->
-      <template v-if="isActive">
-        <input v-model="eventDetail.address" class="input-field" placeholder="Enter address" />
-      </template>
-      <template v-else>
-        <p>{{ eventDetail.address }}</p>
-      </template>
+      <div class="field-group">
+        <label for="address">Address</label>
+        <template v-if="isActive">
+          <input v-model="eventDetail.address" id="address" class="input-field" placeholder="Enter address" />
+        </template>
+        <template v-else>
+          <p>{{ eventDetail.address }}</p>
+        </template>
+      </div>
     </div>
+
     <form @submit.prevent="submitForm">
       <div class="image-container">
-        <img :src="previewImage || `/${eventDetail.imagePath}`" alt="Event Image">
+        <img :src="previewImage || `/${eventDetail.imagePath}`" alt="Event Image" />
         <div class="middle">
           <template v-if="isActive">
-            <button class="edit-btn">
+            <label for="img" class="upload-btn">
               <VsxIcon iconName="Image" type="bold" color="#fff" />
-              <label for="img">
-                Upload an image
-              </label>
+              Upload an image
               <input
                   type="file"
                   id="img"
@@ -34,47 +38,49 @@
                   @change="handleImageChange"
                   style="display: none;"
               />
-            </button>
+            </label>
           </template>
         </div>
       </div>
 
       <div>
+        <label for="description">Description</label>
         <template v-if="isActive">
-          <TextEditor v-model= eventDetail.description   @input="updateDescription" />
+          <TextEditor v-model="eventDetail.description" @input="updateDescription" id="description" />
         </template>
-        <template v-else >
-          <div v-html=eventDetail.description></div>
+        <template v-else>
+          <div v-html="eventDetail.description" class="description-display"></div>
         </template>
       </div>
 
-      <div v-if="!isActive" class="actions">
-        <button v-if="!isActive" @click="openTextEditor">
+      <div class="actions">
+        <button v-if="!isActive" @click="openTextEditor" class="edit-btn">
           <VsxIcon iconName="Edit2" color="#fff" type="bold" />
           Edit
         </button>
-      </div>
-      <div v-if="isActive" class="actions">
-        <button v-if="isActive" @click="saveChanges">
-          <VsxIcon iconName="Save2" color="#fff" type="bold" />
-          Save
-        </button>
+        <div v-if="isActive">
+          <button @click="saveChanges" class="save-btn">
+            <VsxIcon iconName="Save2" color="#fff" type="bold" />
+            Save
+          </button>
+          <button @click="cancelEdit" class="cancel-btn">
+            <VsxIcon iconName="CloseCircle" color="#fff" type="bold" />
+            Cancel
+          </button>
+        </div>
       </div>
     </form>
 
     <h2>Feedback</h2>
     <div class="tab-buttons-container">
       <div class="tab-buttons">
-        <button class="tab-button" :class="{ active: tabs.blue }"
-                @click="showTab('blue', 'green', 'red')">
+        <button class="tab-button" :class="{ active: tabs.blue }" @click="showTab('blue', 'green', 'red')">
           <h3>Blue</h3>
         </button>
-        <button class="tab-button" :class="{ active: tabs.green }"
-                @click="showTab('green', 'red', 'blue')">
+        <button class="tab-button" :class="{ active: tabs.green }" @click="showTab('green', 'red', 'blue')">
           <h3>Green</h3>
         </button>
-        <button class="tab-button" :class="{ active: tabs.red }"
-                @click="showTab('red', 'blue', 'green')">
+        <button class="tab-button" :class="{ active: tabs.red }" @click="showTab('red', 'blue', 'green')">
           <h3>Red</h3>
         </button>
       </div>
@@ -83,23 +89,24 @@
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
-
   </div>
 </template>
 
+
 <script>
-import TextEditor from '@/components/text-editor.vue';
-import { VsxIcon } from 'vue-iconsax';
+import TextEditor from "@/components/text-editor.vue";
+import { VsxIcon } from "vue-iconsax";
 import axios from "axios";
 
 export default {
   components: {
     VsxIcon,
-    TextEditor
+    TextEditor,
   },
   data() {
     return {
       isActive: false,
+      backupEventDetail: {}, // Lưu trạng thái ban đầu để khôi phục khi cancel
       eventId: this.$route.params.eventId,
       tabs: {
         blue: true,
@@ -107,23 +114,29 @@ export default {
         red: false,
       },
       eventDetail: {
-        eventName: '',
-        address: '',
-        imagePath: '',
-        description: '',
-        status: false
+        eventName: "",
+        address: "",
+        imagePath: "",
+        description: "",
+        status: false,
       },
       selectedImage: null, // Lưu trữ tệp ảnh được chọn
-      previewImage: '', // Lưu URL ảnh xem trước
+      previewImage: "", // Lưu URL ảnh xem trước
       notification: {
-        message: '',
-        type: ''
+        message: "",
+        type: "",
       },
-    }
+    };
   },
   methods: {
     openTextEditor() {
       this.isActive = true;
+      this.backupEventDetail = JSON.parse(JSON.stringify(this.eventDetail)); // Lưu trạng thái ban đầu
+    },
+    cancelEdit() {
+      this.isActive = false;
+      this.eventDetail = JSON.parse(JSON.stringify(this.backupEventDetail)); // Khôi phục trạng thái ban đầu
+      this.previewImage = ""; // Xóa URL xem trước nếu có
     },
     showTab(open, close1, close2) {
       this.tabs[open] = true;
@@ -131,7 +144,7 @@ export default {
       this.tabs[close2] = false;
     },
     updateDescription(value) {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         this.eventDetail.description = value;
       } else {
         console.error("Invalid description format:", value);
@@ -149,11 +162,15 @@ export default {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
             `http://localhost:8088/fja-fap/staff/get-event?eventId=${this.eventId}`,
-            {headers: {Authorization: `Bearer ${token}`}}
+            { headers: { Authorization: `Bearer ${token}` } }
         );
         this.eventDetail = response.data.result;
       } catch (error) {
-        this.$emit("showNotification", "Failed to fetch event details. Please try again.", "error");
+        this.$emit(
+            "showNotification",
+            "Failed to fetch event details. Please try again.",
+            "error"
+        );
       }
     },
     async saveChanges() {
@@ -163,20 +180,22 @@ export default {
 
         if (this.previewImage) {
           URL.revokeObjectURL(this.previewImage); // Giải phóng URL
-          this.previewImage = ''; // Reset URL xem trước
+          this.previewImage = ""; // Reset URL xem trước
         }
 
         // Thêm dữ liệu JSON
         formData.append(
             "eventDetail",
             new Blob(
-                [JSON.stringify({
-                  eventName: this.eventDetail.eventName,
-                  address: this.eventDetail.address,
-                  description: this.eventDetail.description,
-                  imagePath: this.eventDetail.imagePath,
-                })],
-                {type: "application/json"}
+                [
+                  JSON.stringify({
+                    eventName: this.eventDetail.eventName,
+                    address: this.eventDetail.address,
+                    description: this.eventDetail.description,
+                    imagePath: this.eventDetail.imagePath,
+                  }),
+                ],
+                { type: "application/json" }
             )
         );
 
@@ -195,12 +214,13 @@ export default {
               },
             }
         );
+
         if (response.data && response.data.result) {
           this.eventDetail = response.data.result;
         }
 
-        window.location.reload();
-        this.showNotification('Event update successfully!', 'success');
+        this.isActive = false;
+        this.showNotification("Event updated successfully!", "success");
       } catch (error) {
         console.error("Error saving changes:", error);
         this.showNotification("Failed to update. Please try again.", "error");
@@ -217,7 +237,7 @@ export default {
         this.notification.message = "";
         sessionStorage.removeItem("notification");
       }, 3000);
-    }
+    },
   },
   mounted() {
     this.fetchEventDetail();
@@ -234,17 +254,40 @@ export default {
         sessionStorage.removeItem("notification");
       }, 3000);
     }
-  }
-}
+  },
+};
 </script>
+
 
 <style lang="scss" scoped>
 .headContent {
-  p {
-    font-style: italic;
-    color: #979B9F;
+  .field-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    p, h1 {
+      font-size: 18px;
+      color: #555;
+      margin: 0;
+    }
   }
 }
+
 
 .image-container {
   width: 100%;

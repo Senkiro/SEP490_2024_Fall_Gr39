@@ -79,6 +79,9 @@
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="confirmCancel"/>
+        </div>
         <div class="popup-title">
           <h2>Add Batch</h2>
         </div>
@@ -100,7 +103,6 @@
             <input type="number" id="year" v-model="newBatch.year" min="2000" max="2100"/>
           </div>
           <div class="actions">
-            <button class="btn-cancel" @click="confirmCancel">Cancel</button>
             <button type="submit"> Create</button>
           </div>
         </form>
