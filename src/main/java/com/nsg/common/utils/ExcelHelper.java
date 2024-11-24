@@ -16,10 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Component
 public class ExcelHelper {
@@ -115,96 +112,159 @@ public class ExcelHelper {
     }
 
     //upload lesson
-    public List<LessonEntity> excelToLessons(InputStream is) {
+    public Map<String, List<?>> excelToLessonsAndExams(InputStream is) {
+        Map<String, List<?>> result = new HashMap<>();
+
         List<LessonEntity> lessons = new ArrayList<>();
-
-        try (Workbook workbook = new XSSFWorkbook(is)) {
-
-            if (workbook.getNumberOfSheets() == 0) {
-                throw new IllegalStateException("Excel file has no sheets");
-            }
-
-            Sheet sheet = workbook.getSheetAt(0);
-            if (sheet == null) {
-                throw new IllegalStateException("Sheet is null");
-            }
-
-            Iterator<Row> rows = sheet.iterator();
-            rows.next(); // Bỏ qua Batch
-            rows.next(); // Bỏ qua Class
-            rows.next();
-            rows.next(); // Bỏ qua tiêu đề cột
-
-            while (rows.hasNext()) {
-                Row currentRow = rows.next();
-                if (isRowEmpty(currentRow)) {
-                    continue;
-                }
-                LessonEntity lessonEntity = new LessonEntity();
-
-                lessonEntity.setLessonTitle(getStringCellValue(currentRow.getCell(1)));
-                lessonEntity.setVocabulary(getStringCellValue(currentRow.getCell(2)));
-                lessonEntity.setKanji(getStringCellValue(currentRow.getCell(3)));
-                lessonEntity.setGrammar(getStringCellValue(currentRow.getCell(4)));
-
-                lessons.add(lessonEntity);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e);
-            throw new AppException(ErrorCode.PARSE_ERROR);
-        }
-        return lessons;
-    }
-
-    //upload exam
-    public List<ExamEntity> excelToExams(InputStream is) {
         List<ExamEntity> exams = new ArrayList<>();
+        List<CurriculumnEntity> curriculumns = new ArrayList<>();
+//        CurriculumnEntity curriculumn = new CurriculumnEntity();
 
         try (Workbook workbook = new XSSFWorkbook(is)) {
 
-            if (workbook.getNumberOfSheets() == 0) {
-                throw new IllegalStateException("Excel file has no sheets");
+            if (workbook.getNumberOfSheets() < 2) {
+                throw new IllegalStateException("Excel file must have at least 2 sheets: Lessons and Exams");
             }
 
-            Sheet sheet = workbook.getSheetAt(0);
-            if (sheet == null) {
-                throw new IllegalStateException("Sheet is null");
+            // Process Lessons from the first sheet
+            Sheet lessonSheet = workbook.getSheetAt(0);
+            if (lessonSheet == null) {
+                throw new IllegalStateException("Lesson sheet is null");
             }
+            processLessonSheet(lessonSheet, lessons);
 
-            Iterator<Row> rows = sheet.iterator();
-            rows.next(); // Bỏ qua Batch
-            rows.next(); // Bỏ qua Class
-            rows.next();
-            rows.next(); // Bỏ qua tiêu đề cột
-
-            while (rows.hasNext()) {
-                Row currentRow = rows.next();
-                if (isRowEmpty(currentRow)) {
-                    continue;
-                }
-                ExamEntity examEntity = new ExamEntity();
-
-                examEntity.setExamTitle(getStringCellValue(currentRow.getCell(1)));
-                examEntity.setExamContent(getStringCellValue(currentRow.getCell(2)));
-                String examType = getStringCellValue(currentRow.getCell(3));
-                ExamTypeRateEntity examTypeRate = examTypeRepository.findByExamType(Integer.valueOf(examType)).orElseThrow(
-                        () -> new AppException(ErrorCode.EXAM_TYPE_NOT_FOUND)
-                );
-
-                if (examTypeRate != null) {
-                    examEntity.setExamTypeRateEntity(examTypeRate);
-                }
-
-                exams.add(examEntity);
+            // Process Exams from the second sheet
+            Sheet examSheet = workbook.getSheetAt(1);
+            if (examSheet == null) {
+                throw new IllegalStateException("Exam sheet is null");
             }
+            processExamSheet(examSheet, exams);
+
+            // Process Curriculumns from the third sheet
+            Sheet curriculumnSheet = workbook.getSheetAt(2);
+            if (curriculumnSheet == null) {
+                throw new IllegalStateException("Curriculumn sheet is null");
+            }
+            processCurriculumnSheet(
+                    curriculumnSheet,
+                    curriculumns,
+                    lessons,
+                    exams);
+
+            result.put("lessons", lessons);
+            result.put("exams", exams);
+            result.put("curriculumns", curriculumns);
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
             throw new AppException(ErrorCode.PARSE_ERROR);
         }
-        return exams;
+
+        return result;
     }
+
+    private void processLessonSheet(Sheet sheet, List<LessonEntity> lessons) {
+        Iterator<Row> rows = sheet.iterator();
+//        rows.next();
+//        rows.next();
+        rows.next();
+        rows.next(); // Bỏ qua tiêu đề cột
+
+        while (rows.hasNext()) {
+            Row currentRow = rows.next();
+            if (isRowEmpty(currentRow)) {
+                continue;
+            }
+            LessonEntity lessonEntity = new LessonEntity();
+
+            lessonEntity.setLessonTitle(getStringCellValue(currentRow.getCell(1)));
+            lessonEntity.setVocabulary(getStringCellValue(currentRow.getCell(2)));
+            lessonEntity.setKanji(getStringCellValue(currentRow.getCell(3)));
+            lessonEntity.setGrammar(getStringCellValue(currentRow.getCell(4)));
+
+            lessons.add(lessonEntity);
+        }
+    }
+
+    private void processExamSheet(Sheet sheet, List<ExamEntity> exams) {
+        Iterator<Row> rows = sheet.iterator();
+//        rows.next();
+//        rows.next();
+        rows.next();
+        rows.next(); // Bỏ qua tiêu đề cột
+
+        while (rows.hasNext()) {
+            Row currentRow = rows.next();
+            if (isRowEmpty(currentRow)) {
+                continue;
+            }
+            ExamEntity examEntity = new ExamEntity();
+
+            examEntity.setExamTitle(getStringCellValue(currentRow.getCell(1)));
+            examEntity.setExamContent(getStringCellValue(currentRow.getCell(2)));
+            String examType = getStringCellValue(currentRow.getCell(3));
+            ExamTypeRateEntity examTypeRate = examTypeRepository.findByExamType(Integer.valueOf(examType)).orElseThrow(
+                    () -> new AppException(ErrorCode.EXAM_TYPE_NOT_FOUND)
+            );
+
+            if (examTypeRate != null) {
+                examEntity.setExamTypeRateEntity(examTypeRate);
+            }
+
+            exams.add(examEntity);
+        }
+    }
+
+    private void processCurriculumnSheet(Sheet sheet,
+                                         List<CurriculumnEntity> curriculumns,
+                                         List<LessonEntity> lessons,
+                                         List<ExamEntity> exams) {
+        Iterator<Row> rows = sheet.iterator();
+        rows.next();
+        rows.next(); // Bỏ qua tiêu đề cột
+
+        while (rows.hasNext()) {
+            Row currentRow = rows.next();
+            if (isRowEmpty(currentRow)) {
+                continue;
+            }
+            CurriculumnEntity curriculumn = new CurriculumnEntity();
+
+            String sessionNo = getStringCellValue(currentRow.getCell(0));
+            String lessonTitle = getStringCellValue(currentRow.getCell(1));
+            String examTitle = getStringCellValue(currentRow.getCell(2));
+            String curriculumnListId = getStringCellValue(currentRow.getCell(3));
+
+            curriculumn.setSessionNumber(Integer.valueOf(sessionNo));
+
+            //find in lesson, exam list
+            if (!lessonTitle.isEmpty()) {
+                // Ví dụ tìm kiếm Lesson
+                Optional<LessonEntity> lesson = findLessonByTitle(lessons, lessonTitle);
+                lesson.ifPresentOrElse(
+                        //add lesson
+                        curriculumn::setLessonEntity,
+                        () -> System.out.println("Lesson not found")
+                );
+            } else {
+                curriculumn.setLessonEntity(null);
+            }
+
+            if (!examTitle.isEmpty()) {
+                // Ví dụ tìm kiếm Exam
+                Optional<ExamEntity> exam = findExamByTitle(exams, examTitle);
+                exam.ifPresentOrElse(
+                        curriculumn::setExamEntity,
+                        () -> System.out.println("Exam not found")
+                );
+            } else {
+                curriculumn.setExamEntity(null);
+            }
+            curriculumns.add(curriculumn);
+        }
+    }
+
 
     // Phương thức tạo Roll Number
     private static String generateRollNumber() {
@@ -225,6 +285,18 @@ public class ExcelHelper {
             if (cell != null && cell.getCellType() != CellType.BLANK) return false;
         }
         return true;
+    }
+
+    public static Optional<LessonEntity> findLessonByTitle(List<LessonEntity> lessons, String lessonTitle) {
+        return lessons.stream()
+                .filter(lesson -> lessonTitle.equalsIgnoreCase(lesson.getLessonTitle()))
+                .findFirst();
+    }
+
+    public static Optional<ExamEntity> findExamByTitle(List<ExamEntity> exams, String examTitle) {
+        return exams.stream()
+                .filter(exam -> examTitle.equalsIgnoreCase(exam.getExamTitle()))
+                .findFirst();
     }
 }
 

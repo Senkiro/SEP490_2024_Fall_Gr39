@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,11 +20,16 @@ public class CurriculumnEntity {
     @Column(name = "curriculumn_id")
     int curriculumnId;
 
-    @OneToMany(mappedBy = "chapterEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<LessonEntity> lessonEntityList;
+    @Column(name = "session_number")
+    int sessionNumber;
 
-    @OneToMany(mappedBy = "chapterEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<ExamEntity> examEntityList;
+    @OneToOne
+    @JoinColumn(name = "lesson_id")
+    LessonEntity lessonEntity;
+
+    @OneToOne
+    @JoinColumn(name = "exam_id")
+    ExamEntity examEntity;
 
     @ManyToOne
     @JoinColumn(name = "curriculumn_list_id")

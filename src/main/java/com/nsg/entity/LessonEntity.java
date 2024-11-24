@@ -38,8 +38,8 @@ public class LessonEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
     List<SessionEntity> sessionEntityList;
 
-    @ManyToOne
-    @JoinColumn(name = "curriculumn_id")
+    @OneToOne(mappedBy = "lessonEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     CurriculumnEntity curriculumnEntity;
+
 
 }

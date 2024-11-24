@@ -23,6 +23,7 @@ import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.curriculumn.CurriculumnResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
@@ -104,8 +105,12 @@ public class StaffController {
 
     @Autowired
     private ExcelHelper excelHelper;
+
     @Autowired
     private NewsService newsService;
+
+    @Autowired
+    CurriculumnService curriculumnService;
 
 
     /**********************************
@@ -313,25 +318,25 @@ public class StaffController {
     }
 
     //upload lesson
-    @PostMapping("/upload-lessons")
-    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
-                lessonService.saveAll(lessons);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and lessons added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
-    }
+//    @PostMapping("/upload-lessons")
+//    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
+//        if (excelHelper.hasExcelFormat(file)) {
+//            try {
+//                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
+//                lessonService.saveAll(lessons);
+//                return ResponseEntity.ok(ApiResponse.<String>builder().
+//                        message("File uploaded and lessons added successfully.")
+//                        .build());
+//            } catch (Exception e) {
+//                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+//                        .message("Failed to parse file.")
+//                        .build());
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+//                .message("Please upload an Excel file.")
+//                .build());
+//    }
 
     /**********************************
      * Manage Teacher
@@ -549,25 +554,25 @@ public class StaffController {
     }
 
     //upload exam
-    @PostMapping("/upload-exams")
-    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
-                examService.saveAll(examEntityList);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and exams added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
-    }
+//    @PostMapping("/upload-exams")
+//    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
+//        if (excelHelper.hasExcelFormat(file)) {
+//            try {
+//                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
+//                examService.saveAll(examEntityList);
+//                return ResponseEntity.ok(ApiResponse.<String>builder().
+//                        message("File uploaded and exams added successfully.")
+//                        .build());
+//            } catch (Exception e) {
+//                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+//                        .message("Failed to parse file.")
+//                        .build());
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+//                .message("Please upload an Excel file.")
+//                .build());
+//    }
 
     /**********************************
      * Manage Event
@@ -836,4 +841,51 @@ public class StaffController {
                 .message("Delete news successfully!")
                 .build();
     }
+
+    /**********************************
+     * Manage Curriculumn
+     **********************************/
+    //upload curriculumn
+    @PostMapping("/upload-curriculumn")
+    public ResponseEntity<ApiResponse<String>> uploadFileCurriculumn(@RequestParam("file") MultipartFile file) {
+        if (excelHelper.hasExcelFormat(file)) {
+            try {
+                Map<String, List<?>> data = excelHelper.excelToLessonsAndExams(file.getInputStream());
+                List<LessonEntity> lessons = (List<LessonEntity>) data.get("lessons");
+                lessonService.saveAll(lessons);
+
+                List<ExamEntity> exams = (List<ExamEntity>) data.get("exams");
+                examService.saveAll(exams);
+
+                List<CurriculumnEntity> curriculumn = (List<CurriculumnEntity>) data.get("curriculumns");
+                curriculumnService.createCurriculumn(curriculumn);
+                return ResponseEntity.ok(ApiResponse.<String>builder().
+                        message("File uploaded and exams added successfully.")
+                        .build());
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                        .message("Failed to parse file.")
+                        .build());
+            }
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Please upload an Excel file.")
+                .build());
+    }
+
+    //get all attendance
+    @GetMapping("/get-all-curriculumn")
+    public ApiResponse<List<CurriculumnResponse>> getAllCurriculumn() {
+        return ApiResponse.<List<CurriculumnResponse>>builder()
+                .result(curriculumnService.getAllCurriculumn())
+                .build();
+    }
+
+    /**********************************
+     * Manage Curriculumn List
+     **********************************/
+    //create curriculumn list
+
+
+
 }

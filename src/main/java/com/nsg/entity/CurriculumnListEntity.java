@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Entity
-@Table(name = "Curriculumn")
+@Table(name = "CurriculumnList")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,6 +22,6 @@ public class CurriculumnListEntity {
     @Column(name = "curriculumnTitle")
     String curriculumnTitle;
 
-    @OneToMany(mappedBy = "curriculumn_id", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "curriculumnListEntity", fetch = FetchType.EAGER)
     List<CurriculumnEntity> curriculumnEntityList;
 }

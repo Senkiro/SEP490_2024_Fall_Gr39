@@ -38,7 +38,7 @@ public class ExamEntity extends BaseEntity {
     @JoinColumn(name = "exam_type")
     ExamTypeRateEntity examTypeRateEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "curriculumn_id")
+    @OneToOne(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     CurriculumnEntity curriculumnEntity;
+
 }
