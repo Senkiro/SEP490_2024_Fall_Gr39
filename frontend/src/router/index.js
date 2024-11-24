@@ -121,7 +121,7 @@ const routes = [
     },
     {
         path: '/staff/student-profile/:id',
-        name: 'StudentProfile',
+        name: 'StaffStudentProfile',
         component: () => import('../view/staff/student-profile.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
             breadcrumbs: [
@@ -368,6 +368,16 @@ const routes = [
         },
     },
     {
+        path: '/student/teacher-record',
+        name: 'StudentTeacherRecord',
+        component: () => import('../view/student/teacher-record.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/student"},
+                {name: "Teacher record", link:""},
+            ]},
+    },
+    {
         path: '/student/curriculumn',
         name: 'StudentCurriculumnDetail',
         component: () => import('../view/student/curriculumn-detail.vue'),
@@ -470,6 +480,29 @@ const routes = [
             ]
         },
     },
+    {
+        path: '/student/student-profile/:id',
+        name: 'MyStudentProfile',
+        component: () => import('../view/staff/student-profile.vue'),
+        meta: { layout: 'student', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/student"},
+                {name: "Student profile", link: ""}
+            ] },
+        props: false
+    },
+    {
+        path: '/student/student-profile/:id',
+        name: 'StudentStudentProfile',
+        component: () => import('../view/teacher/student-profile.vue'),
+        meta: { layout: 'student', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/student"},
+                {name: "Class member", link: "/student/class"},
+                {name: "Student profile", link: ""}
+            ] },
+        props: false
+    },
 
     //----------------------Teacher router----------------------
 
@@ -484,13 +517,66 @@ const routes = [
             ]},
     },
     {
+        path: '/teacher/class-record',
+        name: 'TeacherClassRecord',
+        component: () => import('../view/teacher/class-record.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Class record", link:""},
+            ]},
+    },
+    {
+        path: '/teacher/teacher-record',
+        name: 'TeacherTeacherRecord',
+        component: () => import('../view/student/teacher-record.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Teacher record", link:""},
+            ]},
+    },
+    {
+        path: '/teacher/student-record',
+        name: 'TeacherStudentRecord',
+        component: () => import('../view/teacher/student-record.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Class record", link:"/teacher/class"},
+                {name: "Student record", link: ""}
+            ]},
+    },
+    {
+        path: '/teacher/student-profile/:id',
+        name: 'TeacherStudentProfile',
+        component: () => import('../view/teacher/student-profile.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Class record", link: "/teacher/class"},
+                {name: "Student profile", link: ""}
+            ] },
+        props: false
+    },
+    {
+        path: '/teacher/curriculumn',
+        name: 'TeacherCurriculumnDetail',
+        component: () => import('../view/student/curriculumn-detail.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Curriculumn", link: ""}
+            ]},
+    },
+    {
         path: '/teacher/lesson-detail',
         name: 'TeacherLessonDetail',
         component: () => import('../view/student/lesson-detail.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
             breadcrumbs: [
                 {name: "Homepage", link:"/teacher"},
-                {name: "Lesson list", link:"/teacher/lesson"},
+                {name: "Curriculumn", link:"/teacher/curriculumn"},
                 {name: "Lesson detail", link: ""}
             ]},
     },
@@ -501,9 +587,98 @@ const routes = [
         meta: { layout: 'teacher', requiresAuth: false, 
             breadcrumbs: [
                 {name: "Homepage", link:"/teacher"},
-                {name: "Exam list", link:"/teacher/exam"},
+                {name: "Curriculumn", link:"/teacher/curriculumn"},
                 {name: "Exam detail", link: ""}
             ]},
+    },
+    {
+        path: '/teacher/mark',
+        name: 'TeacherMarkEntryManagement',
+        component: () => import('../view/teacher/mark-entry-management.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Mark entry management", link: ""}
+            ]},
+    },
+    {
+        path: '/teacher/mark-management',
+        name: 'TeacherMarkManagement',
+        component: () => import('../view/teacher/mark-management.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Mark entry management", link:"/teacher/mark"},
+                {name: "Mark management", link: ""}
+            ]},
+    },
+    {
+        path: '/teacher/event',
+        name: 'TeacherEventList',
+        component: () => import('../view/student/event-list.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Event list", link: ""}
+            ]},
+    },
+    {
+        path: '/teacher/event-detail',
+        name: 'TeacherEventDetail',
+        component: () => import('../view/student/event-detail.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Event list", link:"/teacher/event"},
+                {name: "Event detail", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/teacher/attendance-management',
+        name: 'TeacherAttendanceManagement',
+        component: () => import('../view/teacher/attendance-management.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Attendance management", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/teacher/take-attendance',
+        name: 'TeacherTakeAttendance',
+        component: () => import('../view/teacher/take-attendance.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Attendance management", link: "/teacher/attendance-management"},
+                {name: "Take attendance", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/teacher/news',
+        name: 'TeacherNewsList',
+        component: () => import('../view/student/news-list.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "News list", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/teacher/news-detail',
+        name: 'TeacherNewsDetail',
+        component: () => import('../view/student/news-detail.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "News list", link: "/teacher/news"},
+                {name: "News detail", link: ""}
+            ]
+        },
     },
 ];
 

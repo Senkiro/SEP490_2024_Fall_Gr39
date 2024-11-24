@@ -128,14 +128,31 @@ export default {
             this.activeTab = tab;
         },
         viewLessonDetail() {
-            this.$router.push({ name: 'StudentLessonDetail' });
+            switch (this.$route.name) {
+                case "TeacherCurriculumnDetail":
+                    this.$router.push({ name: 'TeacherLessonDetail' });
+                    break;
+                case "StudentCurriculumnDetail":
+                    this.$router.push({ name: 'StudentLessonDetail' });
+                    break;
+            }
         },
         viewExamDetail() {
-            this.$router.push({ name: 'StudentExamDetail' });
-        },
-    }
-
+            switch (this.$route.name) {
+                case "TeacherCurriculumnDetail":
+                    this.$router.push({ name: 'TeacherExamDetail' });
+                    break;
+                case "StudentCurriculumnDetail":
+                    this.$router.push({ name: 'StudentExamDetail' });
+                    break;
+            }
+        }
+    },
+    viewExamDetail() {
+        this.$router.push({ name: 'StudentExamDetail' });
+    },
 }
+
 </script>
 
 <style lang="scss" scoped>
