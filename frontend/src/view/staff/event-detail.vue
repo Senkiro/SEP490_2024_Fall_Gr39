@@ -2,8 +2,8 @@
   <div class="container">
     <div class="headContent">
       <div class="field-group">
-        <label for="eventName">Title</label>
         <template v-if="isActive">
+          <label for="eventName">Title</label>
           <input v-model="eventDetail.eventName" id="eventName" class="input-field" placeholder="Enter event name" />
         </template>
         <template v-else>
@@ -12,12 +12,12 @@
       </div>
 
       <div class="field-group">
-        <label for="address">Address</label>
         <template v-if="isActive">
+          <label for="address">Address</label>
           <input v-model="eventDetail.address" id="address" class="input-field" placeholder="Enter address" />
         </template>
         <template v-else>
-          <p>{{ eventDetail.address }}</p>
+          <i>{{ eventDetail.address }}</i>
         </template>
       </div>
     </div>
@@ -25,49 +25,45 @@
     <form @submit.prevent="submitForm">
       <div class="image-container">
         <img :src="previewImage || `/${eventDetail.imagePath}`" alt="Event Image" />
-        <div class="middle">
-          <template v-if="isActive">
+        <template v-if="isActive">
+          <div class="middle">
             <label for="img" class="upload-btn">
               <VsxIcon iconName="Image" type="bold" color="#fff" />
               Upload an image
-              <input
-                  type="file"
-                  id="img"
-                  name="img"
-                  accept="image/*"
-                  @change="handleImageChange"
-                  style="display: none;"
-              />
+              <input type="file" id="img" name="img" accept="image/*" @change="handleImageChange"
+                style="display: none;" />
             </label>
-          </template>
-        </div>
+          </div>
+        </template>
       </div>
 
       <div>
-        <label for="description">Description</label>
         <template v-if="isActive">
-          <TextEditor v-model="eventDetail.description" @input="updateDescription" id="description" />
+          <div class="field-group">
+            <label for="description">Description</label>
+            <TextEditor v-model="eventDetail.description" @input="updateDescription" id="description" />
+          </div>
         </template>
         <template v-else>
           <div v-html="eventDetail.description" class="description-display"></div>
         </template>
       </div>
 
-      <div class="actions">
-        <button v-if="!isActive" @click="openTextEditor" class="edit-btn">
+      <div v-if="!isActive" class="actions">
+        <button @click="openTextEditor" class="edit-btn">
           <VsxIcon iconName="Edit2" color="#fff" type="bold" />
           Edit
         </button>
-        <div v-if="isActive">
-          <button @click="saveChanges" class="save-btn">
-            <VsxIcon iconName="Save2" color="#fff" type="bold" />
-            Save
-          </button>
-          <button @click="cancelEdit" class="cancel-btn">
-            <VsxIcon iconName="CloseCircle" color="#fff" type="bold" />
-            Cancel
-          </button>
-        </div>
+      </div>
+      <div v-if="isActive" class="actions">
+        <button @click="saveChanges" class="save-btn">
+          <VsxIcon iconName="Save2" color="#fff" type="bold" />
+          Save
+        </button>
+        <button @click="cancelEdit" class="cancel-btn">
+          <VsxIcon iconName="CloseCircle" color="#fff" type="bold" />
+          Cancel
+        </button>
       </div>
     </form>
 
@@ -161,15 +157,15 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-event?eventId=${this.eventId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost:8088/fja-fap/staff/get-event?eventId=${this.eventId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         this.eventDetail = response.data.result;
       } catch (error) {
         this.$emit(
-            "showNotification",
-            "Failed to fetch event details. Please try again.",
-            "error"
+          "showNotification",
+          "Failed to fetch event details. Please try again.",
+          "error"
         );
       }
     },
@@ -185,18 +181,18 @@ export default {
 
         // Thêm dữ liệu JSON
         formData.append(
-            "eventDetail",
-            new Blob(
-                [
-                  JSON.stringify({
-                    eventName: this.eventDetail.eventName,
-                    address: this.eventDetail.address,
-                    description: this.eventDetail.description,
-                    imagePath: this.eventDetail.imagePath,
-                  }),
-                ],
-                { type: "application/json" }
-            )
+          "eventDetail",
+          new Blob(
+            [
+              JSON.stringify({
+                eventName: this.eventDetail.eventName,
+                address: this.eventDetail.address,
+                description: this.eventDetail.description,
+                imagePath: this.eventDetail.imagePath,
+              }),
+            ],
+            { type: "application/json" }
+          )
         );
 
         // Thêm file ảnh nếu có
@@ -205,14 +201,14 @@ export default {
         }
 
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/update-event/${this.eventId}`,
-            formData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/update-event/${this.eventId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
 
         if (response.data && response.data.result) {
@@ -260,31 +256,26 @@ export default {
 
 
 <style lang="scss" scoped>
-.headContent {
-  .field-group {
-    margin-bottom: 20px;
+i{
+  color: #b9b9b9;
+}
+.field-group {
+  margin-bottom: 20px;
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-      font-size: 16px;
-      color: #333;
-    }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #333;
+  }
 
-    .input-field {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    p, h1 {
-      font-size: 18px;
-      color: #555;
-      margin: 0;
-    }
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
   }
 }
 
@@ -303,10 +294,16 @@ export default {
     object-position: center;
     transition: .5s ease;
     backface-visibility: hidden;
-    cursor: pointer;
   }
 
   .middle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 50px;
+    border-radius: 20px;
+    background: #b9b9b9;
     transition: .5s ease;
     opacity: 0;
     position: absolute;
@@ -314,9 +311,18 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
+    color: #fff;
+    cursor: pointer;
 
     #img {
       display: none;
+    }
+
+    .upload-btn {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
     }
   }
 
@@ -328,7 +334,7 @@ export default {
 }
 
 .input-field,
-.textarea-field{
+.textarea-field {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
