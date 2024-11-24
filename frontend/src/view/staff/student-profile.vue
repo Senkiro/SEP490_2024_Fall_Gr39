@@ -297,15 +297,6 @@ onMounted(() => {
           .score-box-upper {
             display: flex;
             justify-content: space-between;
-
-            .btn-view-detail {
-              padding: 0px 30px;
-              border-radius: 10px;
-              border: none;
-              background-image: linear-gradient(to left, #1A2C6F 0%, #3254D5 100%);
-              color: white;
-              height: 50px;
-            }
           }
 
           .score-box-lower {
@@ -322,6 +313,7 @@ onMounted(() => {
             }
 
             .score {
+              width: 80px;
               font-size: 20px;
               font-weight: bold;
               margin-top: auto;

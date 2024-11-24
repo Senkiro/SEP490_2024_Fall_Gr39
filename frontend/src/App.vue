@@ -11,6 +11,7 @@
 import staffLayout from "./layouts/staff-layout.vue";
 import authLayout from "./layouts/auth-layout.vue";
 import studentLayout from "./layouts/student-layout.vue";
+import teacherLayout from "./layouts/teacher-layout.vue";
 
 
 export default {
@@ -22,7 +23,8 @@ export default {
   components: {
     staff: staffLayout,
     auth: authLayout,
-    student: studentLayout
+    student: studentLayout,
+    teacher: teacherLayout
   },
   computed: {
     layout() {
@@ -33,6 +35,8 @@ export default {
           return staffLayout;
         case 'student':
           return studentLayout;
+        case 'teacher':
+          return teacherLayout;
         default:
           return authLayout;
       }
@@ -190,7 +194,7 @@ button {
       border-collapse: collapse;
 
       .table-button {
-        background: #3E5DD4;
+        background: #304CB2;
         padding: 5px 10px;
         color: #fff;
         display: flex;
@@ -200,6 +204,10 @@ button {
         border: none;
         border-radius: 10px;
         cursor: pointer;
+      }
+
+      .disabled{
+        opacity: 40%;
       }
 
       .center {
@@ -541,6 +549,21 @@ button {
 
   .error {
     background-color: #f44336;
+  }
+
+  .yes{
+    color: #6ECBB8;
+    font-weight: bold;
+  }
+
+  .no{
+    color: #e95353;
+    font-weight: bold;
+  }
+
+  .not-happen{
+    color: #5376e9;
+    font-weight: bold;
   }
 
   .required {
