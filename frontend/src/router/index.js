@@ -320,7 +320,7 @@ const routes = [
     {
         path: '/staff/create-news',
         name: 'CreateNews',
-        component: () => import('../view/staff/create-news.vue'),
+        component: () => import('../view/staff/news-create.vue'),
         meta: { layout: 'app', requiresAuth: false,
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},

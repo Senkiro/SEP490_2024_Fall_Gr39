@@ -1,15 +1,17 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <h1>News detail</h1>
+      <h1>News Detail</h1>
     </div>
 
     <form>
+      <!-- Input Title -->
       <div class="input-group">
         <label>News title <span class="required">*</span></label>
         <input v-model="news.newContent" placeholder="Enter news title" required />
       </div>
 
+      <!-- Text Editor Content -->
       <div class="input-group">
         <label>News content <span class="required">*</span></label>
         <div class="text-editor-container">
@@ -17,105 +19,136 @@
         </div>
       </div>
 
+      <!-- Action Buttons -->
       <div class="actions">
-        <button type="button" class="action-button save-draft" @click="saveDraft" :disabled="isLoading">
+        <!-- Save as Draft -->
+        <button
+            type="button"
+            class="action-button save-draft"
+            @click="updateNews(false)"
+            :disabled="isLoading"
+        >
           <VsxIcon iconName="Save2" :size="25" color="#fff" type="bold" />
           <span v-if="isLoading">Saving...</span>
-          <span v-else>Save draft</span>
+          <span v-else>Save Draft</span>
         </button>
-        <button type="button" class="action-button publish-news" @click="publishNews" :disabled="isLoading">
+
+        <!-- Publish News -->
+        <button
+            type="button"
+            class="action-button publish-news"
+            @click="updateNews(true)"
+            :disabled="isLoading"
+        >
           <VsxIcon iconName="ExportCircle" :size="25" color="#fff" type="bold" />
           <span v-if="isLoading">Publishing...</span>
-          <span v-else>Publish news</span>
+          <span v-else>Publish News</span>
         </button>
       </div>
     </form>
   </div>
 </template>
 
+
 <script>
 import TextEditor from "@/components/text-editor.vue";
 import { VsxIcon } from "vue-iconsax";
 import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 export default {
-  name: "CreateNews",
+  name: "NewsDetail",
   components: { TextEditor, VsxIcon },
-  data() {
-    return {
-      news: {
-        newTitle: "",
-        newContent: "",
-        createDate: new Date().toISOString().split("T")[0],
-        createdBy: sessionStorage.getItem("userName") || "Unknown",
-      },
-      isLoading: false,
-    };
-  },
-  methods: {
-    validateForm() {
-      if (!this.news.newTitle.trim()) {
-        this.showNotification("Title is required!", "error");
-        return false;
-      }
-      if (!this.news.newContent.trim()) {
-        this.showNotification("Content is required!", "error");
-        return false;
-      }
-      return true;
-    },
-    async handleNewsSubmission(status) {
-      if (!this.validateForm()) return;
+  setup() {
+    const route = useRoute(); // Lấy ID từ route
+    const router = useRouter();
+    const news = ref({
+      newId: "",
+      newTitle: "",
+      newContent: "",
+      status: false, // false = Draft, true = Published
+      createDate: "",
+      createdBy: "",
+    });
+    const isLoading = ref(false);
 
-      this.isLoading = true;
+    // Lấy dữ liệu từ API
+    const fetchNewsDetail = async () => {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-news?newsId=${route.params.id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+        if (response.data && response.data.result) {
+          news.value = response.data.result;
+        }
+      } catch (error) {
+        console.error("Error fetching news detail:", error);
+        alert("Failed to fetch news detail. Please try again.");
+      }
+    };
+
+    // Phương thức cập nhật bài viết
+    const updateNews = async (status) => {
+      if (!validateForm()) return; // Kiểm tra dữ liệu form
+
+      isLoading.value = true;
       try {
         const token = sessionStorage.getItem("jwtToken");
         await axios.post(
-          "http://localhost:8088/fja-fap/staff/create-news",
-          {
-            ...this.news,
-            status,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+            `http://localhost:8088/fja-fap/staff/update-news/${news.value.newId}`,
+            {
+              newTitle: news.value.newTitle,
+              newContent: news.value.newContent,
+              status,
+              createdBy: sessionStorage.getItem("userName") || "Unknown",
+              createDate: new Date().toISOString(),
             },
-          }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
         );
         const action = status ? "published" : "saved as draft";
-        localStorage.setItem(
-          "notification",
-          JSON.stringify({
-            message: `News ${action} successfully!`,
-            type: "success",
-          })
-        );
-        this.resetForm();
-        this.$router.push({ name: "News" });
+        alert(`News ${action} successfully!`);
+        router.push({ name: "News" }); // Quay lại danh sách tin tức
       } catch (error) {
-        const action = status ? "publish" : "save draft";
-        this.showNotification(`Failed to ${action}. Please try again.`, "error");
+        console.error("Error updating news:", error);
+        alert("Failed to update news. Please try again.");
       } finally {
-        this.isLoading = false;
+        isLoading.value = false;
       }
-    },
-    saveDraft() {
-      this.handleNewsSubmission(false);
-    },
-    publishNews() {
-      this.handleNewsSubmission(true);
-    },
-    showNotification(message, type) {
-      alert(`${type.toUpperCase()}: ${message}`);
-    },
-    resetForm() {
-      this.news.newTitle = "";
-      this.news.newContent = "";
-    },
+    };
+
+    // Xác thực form
+    const validateForm = () => {
+      if (!news.value.newTitle.trim()) {
+        alert("Title is required!");
+        return false;
+      }
+      if (!news.value.newContent.trim()) {
+        alert("Content is required!");
+        return false;
+      }
+      return true;
+    };
+
+    onMounted(() => {
+      fetchNewsDetail();
+    });
+
+    return { news, isLoading, updateNews };
   },
 };
 </script>
+
+
 
 <style scoped>
 </style>

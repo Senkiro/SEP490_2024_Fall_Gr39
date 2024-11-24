@@ -19,6 +19,7 @@
           <th>Title</th>
           <th>Content</th>
           <th>Date Created</th>
+          <th>Date Update</th>
           <th>Created By</th>
           <th>Status</th>
           <th class="center">Action</th>
@@ -30,6 +31,7 @@
           <td>{{ newsItem.newTitle }}</td>
           <td v-html="newsItem.newContent"></td>
           <td>{{ formatDate(newsItem.createDate) }}</td>
+          <td>{{ formatDate(newsItem.updateDate) }}</td>
           <td>{{ newsItem.createdBy || "Unknown" }}</td>
           <td>{{ newsItem.status ? 'Published' : 'Draft' }}</td>
           <td class="center">
@@ -139,7 +141,7 @@ export default {
       }
     },
     goToNewsDetail(newsId) {
-      console.log("Navigating to news detail with ID:", newsId); // Debug log
+      console.log("Navigating to news detail with ID:", newsId);
       this.$router.push({
         name: "NewsDetail",
         params: {id: newsId},
