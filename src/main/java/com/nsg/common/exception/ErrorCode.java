@@ -82,6 +82,9 @@ public enum ErrorCode {
     //attendance
     ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
 
+    //holiday
+    HOLIDAY_NOT_FOUND(2100, "Holiday not found"),
+
     //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 

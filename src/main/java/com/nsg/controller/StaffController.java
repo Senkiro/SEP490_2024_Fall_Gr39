@@ -879,4 +879,30 @@ public class StaffController {
                 .build();
     }
 
+    //update holiday
+    @PostMapping("/update-holiday/{holidayId}")
+    public ApiResponse<HolidayResponse> updateHoliday(@PathVariable("holidayId") String holidayId, @RequestBody HolidayRequest request) {
+        return ApiResponse.<HolidayResponse>builder()
+                .result(holidayService.updateHoliday(holidayId, request))
+                .build();
+    }
+
+    //delete holiday
+    @DeleteMapping("/delete-holiday/{holidayId}")
+    public ApiResponse<?> deleteHoliday(@PathVariable("holidayId") String holidayId) {
+        holidayService.deleteHoliday(holidayId);
+        return ApiResponse.builder()
+                .message("Delete holiday successfully!")
+                .build();
+    }
+
+    // get holiday by id
+    @GetMapping("/get-holiday")
+    public ApiResponse<HolidayEntity> getHolidayById(@RequestParam String holidayId) {
+        HolidayEntity holidayEntity = holidayService.getHolidaytById(holidayId);
+        return ApiResponse.<HolidayEntity>builder()
+                .result(holidayEntity)
+                .build();
+    }
+
 }
