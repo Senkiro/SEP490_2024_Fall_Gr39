@@ -18,8 +18,11 @@ public class HolidayEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
-    String id;
+    String holidayId;
 
-    @Column(name = "holiday")
-    LocalDate holiday;
+    @Column(name = "date")
+    LocalDate holidayDate;
+
+    @Column(name = "title")
+    String title;
 }
