@@ -333,7 +333,7 @@ export default {
       this.activeTab = tab;
     },
     navigateToProfile(studentId) {
-      this.$router.push({name: "StudentProfile", params: {id: studentId}});
+      this.$router.push({name: "StaffStudentProfile", params: {id: studentId}});
     },
     openAddStudentPopup() {
       this.showAddStudentPopup = true;
@@ -448,7 +448,7 @@ export default {
     },
 
     navigateToImportStudent() {
-      this.$router.push({name: 'ImportStudentPage'});
+      this.$router.push({name: 'ImportStudent'});
     },
 
     showNotification(message, type) {
