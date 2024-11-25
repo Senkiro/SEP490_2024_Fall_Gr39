@@ -492,7 +492,7 @@ const routes = [
         },
     },
     {
-        path: '/student/news',
+        path: '/student/news-detail',
         name: 'StudentNewsDetail',
         component: () => import('../view/student/news-detail.vue'),
         meta: { layout: 'student', requiresAuth: false, 
@@ -500,6 +500,17 @@ const routes = [
                 {name: "Homepage", link:"/student"},
                 {name: "News list", link:"/student/news"},
                 {name: "News detail", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/student/holiday',
+        name: 'StudentHolidayList',
+        component: () => import('../view/student/holiday-list.vue'),
+        meta: { layout: 'student', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/student"},
+                {name: "Holiday list", link: ""}
             ]
         },
     },
@@ -591,6 +602,17 @@ const routes = [
                 {name: "Homepage", link:"/teacher"},
                 {name: "Curriculumn", link: ""}
             ]},
+    },
+    {
+        path: '/teacher/holiday',
+        name: 'TeacherHolidayList',
+        component: () => import('../view/student/holiday-list.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Holiday list", link: ""}
+            ]
+        },
     },
     {
         path: '/teacher/lesson-detail',
