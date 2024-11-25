@@ -40,6 +40,13 @@
                     <span class="text">Curriculumn</span>
                 </router-link>
 
+                <router-link class="sidebar-item" to="/teacher/holiday">
+                    <span class="material-icons">
+                        <VsxIcon iconName="Cardano" :size="32" color="#1A2C6F" type="linear" />
+                    </span>
+                    <span class="text">Holiday</span>
+                </router-link>
+
                 <router-link class="sidebar-item" to="/teacher/event">
                     <span class="material-icons">
                         <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />

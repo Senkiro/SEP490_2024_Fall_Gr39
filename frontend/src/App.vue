@@ -242,7 +242,7 @@ button {
 
         td:first-child,
         th:first-child {
-          max-width: 100px;
+          width: 10%;
         }
 
         td:nth-child(1),
