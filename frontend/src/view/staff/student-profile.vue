@@ -77,51 +77,58 @@
         </div>
       </div>
     </section>
-    <div v-if="isEditing" class="modal-overlay">
-      <div class="modal">
-        <h2>Edit Student Information </h2>
+    <div v-if="isEditing" class="popup-overlay">
+      <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="toggleEditModal" />
+        </div>
+        <div class="popup-title">
+          <h2>Edit Student Information </h2>
+        </div>
         <form @submit.prevent="saveChanges">
           <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" v-model="editData.fullName" required/>
+            <label for="fullName">Fullname <span class="required">*</span></label>
+            <input id="fullName" type="text" v-model="editData.fullName" required />
           </div>
 
           <div class="form-group">
-            <label for="japaneseName">Japanese Name</label>
-            <input id="japaneseName" type="text" v-model="editData.japaneseName" required/>
+            <label for="japaneseName">Japanese name <span class="required">*</span></label>
+            <input id="japaneseName" type="text" v-model="editData.japaneseName" required />
           </div>
 
           <div class="form-group">
-            <label for="phone">Phone</label>
-            <input id="phone" type="text" v-model="editData.phone"/>
+            <label for="phone">Phone <span class="required">*</span></label>
+            <input id="phone" type="text" v-model="editData.phone"  />
           </div>
           <div class="form-group">
-            <label for="dob">Date of Birth</label>
-            <input
-                id="dob"
-                type="date"
-                v-model="editData.dob"
-                required
-            />
+          <label for="dob">Date of Birth <span class="required">*</span></label>
+          <input
+            id="dob"
+            type="date"
+            v-model="editData.dob"
+            required
+          />
           </div>
           <div class="form-group">
-            <label for="email">Email</label>
-            <input id="email" type="email" v-model="editData.email" required/>
+            <label for="email">Email <span class="required">*</span></label>
+            <input id="email" type="email" v-model="editData.email" required />
           </div>
           <div class="form-group">
             <label for="avatar">Upload Avatar</label>
-            <input
-                id="avatar"
-                type="file"
-                accept="image/png, image/jpeg"
-                @change="onFileChange"
+            <div class="image-container">
+              <input
+              id="avatar"
+              type="file"
+              accept="image/png, image/jpeg"
+              @change="onFileChange"
             />
             <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview"/>
             <p v-if="fileError" class="error">{{ fileError }}</p>
+            </div>
+            
           </div>
-          <div class="modal-actions">
+          <div class="actions">
             <button type="submit" class="btn-save">Save Changes</button>
-            <button type="button" class="btn-cancel" @click="toggleEditModal">Cancel</button>
           </div>
         </form>
       </div>
@@ -348,6 +355,140 @@ const saveChanges = async () => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" >
+.popup{
+  overflow-y: auto;
+  max-height: 90vh;
+}
+.image-container{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.preview{
+  height: 200px;
+  width: 150px;
+}
+.container {
+  padding: 20px;
+
+  .info-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    max-height: 400px;
+
+    img {
+      height: 290px;
+      border-radius: 20px;
+    }
+  }
+
+  .details-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    gap: 30px;
+
+    .name-id-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-bottom: 20px;
+
+      .btn-edit {
+        display: flex;
+        color: var(--border);
+        background: none;
+        border: 0.2px solid var(--border);
+        border-radius: 5px;
+        padding: 3px 8px;
+        font-size: 12px;
+        height: fit-content;
+        align-items: center;
+        gap: 5px;
+      }
+    }
+
+    .details {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      font-size: 14px;
+
+      .column3 {
+        width: 350px;
+      }
+
+      .column {
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+
+        .attribute {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+
+          p {
+            color: #6C757D;
+          }
+        }
+
+        .average-score-box {
+          display: flex;
+          flex-direction: column;
+          border-radius: 12px;
+          background-color: #D6EAFF;
+          padding: 15px;
+          width: 350px;
+          text-align: center;
+          font-size: 14px;
+          gap: 15px;
+
+          .score-box-upper {
+            display: flex;
+            justify-content: space-between;
+          }
+
+          .score-box-lower {
+            display: flex;
+            justify-content: space-between;
+
+            .score-status {
+              border: 2px solid green;
+              background: white;
+              border-radius: 10px;
+              align-content: center;
+              padding: 10px;
+              color: green;
+            }
+
+            .score {
+              width: 80px;
+              font-size: 20px;
+              font-weight: bold;
+              margin-top: auto;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .attended {
+    color: green;
+    font-weight: bold;
+  }
+
+  .absent {
+    color: red;
+    font-weight: bold;
+  }
+}
 
 </style>
