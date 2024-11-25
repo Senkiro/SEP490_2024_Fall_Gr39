@@ -20,8 +20,6 @@
                         <th>Title</th>
                         <th>Destination</th>
                         <th>Information</th>
-                        <th>Status</th>
-                        <th>Avg Rate</th>
                         <th class="center">Action</th>
                     </tr>
                 </thead>
@@ -29,26 +27,10 @@
                     <tr v-for="(event, index) in events" :key="event.eventId">
                         <td class="center">{{ index + 1 }}</td>
                         <td>{{ event.eventName }}</td>
-                        <td style="width: 250px">{{ event.address }}</td>
-                        <td style="width: 550px">
-                            <span v-if="!isExpanded[index]">
-                                <span v-html="shortenText(event.description)"></span>
-                                <span v-if="event.description.length > maxDescriptionLength" class="expand-text"
-                                    @click="toggleExpand(index)">
-                                    Expand
-                                </span>
-                            </span>
-                            <span v-else>
-                                <span v-html="event.description"></span>
-                                <span class="expand-text" @click="toggleExpand(index)">
-                                    Collapse
-                                </span>
-                            </span>
+                        <td>{{ event.address }}</td>
+                        <td>
+                          <div v-html="event.description"></div>
                         </td>
-                        <td :class="event.status ? 'status-finished' : 'status-pending'">
-                            {{ event.status ? 'Finished' : 'Not happen' }}
-                        </td>
-                        <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
                         <td class="center">
                             <div class="icon-group">
                                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
@@ -62,7 +44,7 @@
                 </tbody>
             </table>
 
-            <div class="pagination" v-if="totalPages > 0">
+            <div class="pagination" v-if="totalPages > 1">
                 <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
                     <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
                 </button>
@@ -133,7 +115,7 @@ export default {
             errorMessage: '',
             maxDescriptionLength: 100,
             isExpanded: {},
-            searchQuery: '' // Thêm biến cho từ khóa tìm kiếm
+            searchQuery: ''
         };
     },
     methods: {
@@ -185,34 +167,6 @@ export default {
                 this.isLoading = false;
             }
         },
-        async deleteEvent(eventId) {
-            if (!confirm("Are you sure you want to delete this event?")) {
-                return;
-            }
-
-            try {
-                const token = sessionStorage.getItem('jwtToken');
-                await axios.delete(
-                    `http://localhost:8088/fja-fap/staff/delete-event/${eventId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-
-                this.showNotification("Event deleted successfully!", "success");
-                await this.fetchEvents();
-            } catch (error) {
-                console.error('Error deleting room:', error);
-                this.showNotification("Error deleting event. Please try again.", "error");
-            }
-        },
-        shortenText(text) {
-            if (text.length > this.maxDescriptionLength) {
-                return text.slice(0, this.maxDescriptionLength);
-            }
-            return text;
-        },
-        toggleExpand(index) {
-            this.isExpanded[index] = !this.isExpanded[index];
-        },
         updateDisplayedPages() {
             const pages = [];
             for (let i = 1; i <= this.totalPages; i++) {
@@ -226,27 +180,6 @@ export default {
                 await this.fetchEvents();
             }
         },
-        closePopup() {
-            this.showAddEventPopup = false;
-            this.newBatch = { eventName: '', address: '', description: '' };
-        },
-        async addEvent() {
-            try {
-                const token = sessionStorage.getItem('jwtToken');
-                await axios.post(
-                    'http://localhost:8088/fja-fap/staff/create-event',
-                    this.newBatch,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                this.closePopup();
-                this.fetchEvents();
-
-                this.showNotification('Event added successfully!', 'success');
-            } catch (error) {
-                console.error('Error creating batch:', error);
-                this.showNotification(error.response?.data?.message || "Error creating Event. Please try again.", 'error');
-            }
-        },
         viewEventDetail(event) {
             console.log("Event ID:", event.eventId);
             switch (this.$router.name) {
@@ -258,12 +191,6 @@ export default {
                     break;
             }
         },
-        showNotification(message, type) {
-            this.notification = { message, type };
-            setTimeout(() => {
-                this.notification.message = "";
-            }, 3000);
-        }
     },
     mounted() {
         this.fetchEvents();

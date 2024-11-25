@@ -447,7 +447,7 @@ const routes = [
         },
     },
     {
-        path: '/student/event-detail',
+        path: '/student/event-detail/:id',
         name: 'StudentEventDetail',
         component: () => import('../view/student/event-detail.vue'),
         meta: { layout: 'student', requiresAuth: false, 

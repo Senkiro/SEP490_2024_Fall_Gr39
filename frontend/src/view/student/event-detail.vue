@@ -68,7 +68,7 @@ export default {
             try {
                 const token = sessionStorage.getItem("jwtToken");
                 const response = await axios.get(
-                    `http://localhost:8088/fja-fap/staff/get-event?eventId=${this.eventId}`,
+                    `http://localhost:8088/fja-fap/student/get-event?eventId=${this.eventId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 this.eventDetail = response.data.result;
@@ -76,34 +76,10 @@ export default {
                 this.$emit("showNotification", "Failed to fetch event details. Please try again.", "error");
             }
         },
-        showNotification(message, type) {
-            this.notification = { message, type };
 
-            // Lưu thông báo vào sessionStorage
-            sessionStorage.setItem("notification", JSON.stringify({ message, type }));
-
-            // Xóa thông báo sau 3 giây
-            setTimeout(() => {
-                this.notification.message = "";
-                sessionStorage.removeItem("notification");
-            }, 3000);
-        }
     },
     mounted() {
         this.fetchEventDetail();
-
-        // Kiểm tra nếu có thông báo trong sessionStorage
-        const storedNotification = sessionStorage.getItem("notification");
-        if (storedNotification) {
-            const { message, type } = JSON.parse(storedNotification);
-            this.notification = { message, type };
-
-            // Xóa thông báo sau khi hiển thị
-            setTimeout(() => {
-                this.notification.message = "";
-                sessionStorage.removeItem("notification");
-            }, 3000);
-        }
     }
 }
 </script>
