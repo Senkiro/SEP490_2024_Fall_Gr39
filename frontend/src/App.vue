@@ -111,8 +111,9 @@ h2 {
 }
 
 h3 {
-  font-size: 16px;
-  font-weight: normal;
+  font-size: 20px;
+  font-weight: bold;
+  color: #253f9f
 }
 
 button {
