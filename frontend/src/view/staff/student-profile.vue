@@ -7,10 +7,11 @@
     <section class="info-card">
       <div class="info-wrapper">
         <img
-            :src="`/${studentData.userInforResponse.img}`"
+            :src="studentData.userInforResponse.img ? `/${studentData.userInforResponse.img}` : defaultAvatar"
             alt="Student Avatar"
             class="avatar"
         />
+
 
         <div class="details-container">
           <div class="name-id-container">
@@ -212,7 +213,7 @@
 import {ref, onMounted} from 'vue';
 import axios from 'axios';
 import {useRoute} from 'vue-router';
-// import defaultAvatar from '@/assets/smiling-young-man-illustration_1308-174669.avif';
+import defaultAvatar from '@/assets/smiling-young-man-illustration_1308-174669.avif';
 
 const studentId = ref('');
 const studentData = ref({
