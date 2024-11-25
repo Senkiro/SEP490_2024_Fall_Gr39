@@ -10,6 +10,7 @@ import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
+import com.nsg.dto.request.holiday.HolidayRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.news.NewsRequest;
 import com.nsg.dto.request.room.RoomRequest;
@@ -26,6 +27,7 @@ import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
+import com.nsg.dto.response.holiday.HolidayResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.room.RoomResponse;
@@ -41,6 +43,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -106,6 +109,9 @@ public class StaffController {
     private ExcelHelper excelHelper;
     @Autowired
     private NewsService newsService;
+
+    @Autowired
+    private HolidayService holidayService;
 
 
     /**********************************
@@ -853,4 +859,24 @@ public class StaffController {
                 .result(newEntity)
                 .build();
     }
+
+    /**********************************
+     * Manage Holiday
+     **********************************/
+
+    @GetMapping("/get-all-holiday")
+    public ApiResponse<Page<HolidayResponse>> getAllHoliday(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<HolidayResponse>>builder()
+                .result(holidayService.getAllHoliday(page, size))
+                .build();
+    }
+
+    @PostMapping("/create-holiday")
+    public ApiResponse<HolidayResponse> createHoliday(@RequestBody @Valid HolidayRequest request) {
+        return ApiResponse.<HolidayResponse>builder()
+                .result(holidayService.createHoliday(request))
+                .message("Create holiday successfully!")
+                .build();
+    }
+
 }
