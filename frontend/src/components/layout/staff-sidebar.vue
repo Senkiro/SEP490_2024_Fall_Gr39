@@ -109,6 +109,13 @@
           <span class="text">Curriculumn</span>
         </router-link>
 
+        <router-link class="sidebar-item" to="/staff/holiday">
+          <span class="material-icons">
+            <VsxIcon iconName="Cardano" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Holiday</span>
+        </router-link>
+
         <router-link class="sidebar-item" to="/staff/mark">
           <span class="material-icons">
             <VsxIcon iconName="Award" :size="32" color="#1A2C6F" type="linear" />

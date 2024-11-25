@@ -120,7 +120,17 @@
             <p class="title">{{ news.newTitle }}</p>
           </div>
         </div>
+      </div>
+    </div>
 
+    <div class="row-3">
+      <div class="chart-container">
+        <h3>Daily mark report</h3>
+        <Line id="mark-report" :options="options" :data="chartData" />
+      </div>
+
+      <div class="chart-container">
+        <Line id="mark-report" :options="options" :data="chartData" />
       </div>
     </div>
   </div>
@@ -129,13 +139,18 @@
 <script>
 import { VsxIcon } from 'vue-iconsax';
 import axios from "axios";
+import { Line } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, CategoryScale, LineController, LineElement, LinearScale } from 'chart.js'
+
+ChartJS.register(Title, Tooltip, Legend, PointElement, CategoryScale, LineController, LineElement, LinearScale)
 
 export default {
   name: "StaffHomepage",
   components: {
-    VsxIcon
+    VsxIcon,
+    Line
   },
-  data(){
+  data() {
     return {
       currentDate: null,
       currentMonth: null,
@@ -143,6 +158,52 @@ export default {
       totalTeacherRecords: 0,
       totalStudentRecords: 0,
       newsList: [],
+
+      chartData: {
+        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        datasets: [{
+          label: "Purple",
+          data: [3, 5, 2, 8, 12, 1, 3, 5, 9, 12],
+          fill: true,
+          borderColor: '#AF52DE',
+          tension: 0.5,
+          pointBackgroundColor: '#AF52DE',
+          backgroundColor: '#AF52DE',
+        },
+        {
+          label: "Green",
+          data: [5, 2, 5, 7, 8, 9, 10, 11, 12, 13],
+          fill: true,
+          borderColor: '#6ECBB8',
+          tension: 0.5,
+          pointBackgroundColor: '#6ECBB8',
+          backgroundColor: '#6ECBB8',
+        }]
+      },
+
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Daily mark report'
+          },
+        },
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: "Number of student"
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Mark"
+            }
+          }
+        }
+      },
     }
   },
   methods: {
@@ -175,29 +236,29 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/teacher`,
-            {
-              params: {
-                page: 0,
-                size: 1000
-              },
-              headers: { Authorization: `Bearer ${token}` }
-            }
+          `http://localhost:8088/fja-fap/staff/teacher`,
+          {
+            params: {
+              page: 0,
+              size: 1000
+            },
+            headers: { Authorization: `Bearer ${token}` }
+          }
         );
 
         if (response.data.code === 1000) {
           this.totalTeacherRecords = response.data.result.totalElements || 0;
         } else {
           this.showNotification(
-              'Unable to load teacher records: ' + response.data.message,
-              'error'
+            'Unable to load teacher records: ' + response.data.message,
+            'error'
           );
         }
       } catch (error) {
         console.error('Error fetching teacher records:', error);
         this.showNotification(
-            'An error occurred while loading teacher records.',
-            'error'
+          'An error occurred while loading teacher records.',
+          'error'
         );
       }
     },
@@ -205,30 +266,30 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-student-by-batch`,
-            {
-              params: {
-                page: 0,
-                size: 10000,
-                batch_name: "SPRING24"
-              },
-              headers: { Authorization: `Bearer ${token}` }
-            }
+          `http://localhost:8088/fja-fap/staff/get-student-by-batch`,
+          {
+            params: {
+              page: 0,
+              size: 10000,
+              batch_name: "SPRING24"
+            },
+            headers: { Authorization: `Bearer ${token}` }
+          }
         );
 
         if (response.data.code === 0) {
           this.totalStudentRecords = response.data.result.totalElements || 0;
         } else {
           this.showNotification(
-              'Unable to load student records: ' + response.data.message,
-              'error'
+            'Unable to load student records: ' + response.data.message,
+            'error'
           );
         }
       } catch (error) {
         console.error('Error fetching student records:', error);
         this.showNotification(
-            'An error occurred while loading student records.',
-            'error'
+          'An error occurred while loading student records.',
+          'error'
         );
       }
     },
@@ -236,29 +297,29 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            "http://localhost:8088/fja-fap/staff/get-all-publish-news",
-            {
-              params: {
-                page: 0,
-                size: 10,
-              },
-              headers: { Authorization: `Bearer ${token}` },
-            }
+          "http://localhost:8088/fja-fap/staff/get-all-publish-news",
+          {
+            params: {
+              page: 0,
+              size: 10,
+            },
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
 
         if (response.data.code === 0) {
           this.newsList = response.data.result.content || [];
         } else {
           this.showNotification(
-              "Unable to load news: " + response.data.message,
-              "error"
+            "Unable to load news: " + response.data.message,
+            "error"
           );
         }
       } catch (error) {
         console.error("Error fetching news:", error);
         this.showNotification(
-            "An error occurred while loading news.",
-            "error"
+          "An error occurred while loading news.",
+          "error"
         );
       }
     },
@@ -268,7 +329,7 @@ export default {
     this.countTeacherRecord();
     this.countStudentRecord();
     this.fetchAllNews();
-  }
+  },
 }
 </script>
 
@@ -291,10 +352,11 @@ export default {
       display: flex;
       flex-direction: row;
       border-radius: 10px;
-      background: linear-gradient(to right,#4058ae 5%,#3F5FD8 80%, #4058ae);
+      background: linear-gradient(to right, #4058ae 5%, #3F5FD8 80%, #4058ae);
       padding: 10px 20px;
       color: #fff;
       gap: 20px;
+
       .date-month {
         display: flex;
         flex-direction: column;
@@ -406,7 +468,7 @@ export default {
 
             button {
               width: 100%;
-              background: linear-gradient(to right,#3F5FD8 90%, #4058ae);
+              background: linear-gradient(to right, #3F5FD8 90%, #4058ae);
               font-weight: bold;
               justify-content: center;
             }
@@ -459,6 +521,20 @@ export default {
             overflow: hidden;
           }
         }
+      }
+    }
+  }
+
+  .row-3 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+
+    .chart-container {
+
+      canvas {
+        width: 80%;
       }
     }
   }
