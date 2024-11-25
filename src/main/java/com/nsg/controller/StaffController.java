@@ -203,6 +203,20 @@ public class StaffController {
                 .build();
     }
 
+    @PutMapping("/update-student/{userId}")
+    public ApiResponse<?> updateUser(
+            @PathVariable("userId") String userId,
+            @RequestBody @Valid UserInforUpdateRequest request) {
+        // Gọi service để xử lý logic cập nhật thông tin người dùng
+        var updatedUser = userService.updateUserInfor(userId, request);
+
+        // Trả về kết quả
+        return ApiResponse.builder()
+                .result(updatedUser)
+                .message("User updated successfully!")
+                .build();
+    }
+
     /**********************************
      * Manage Batch
      **********************************/
@@ -859,19 +873,7 @@ public class StaffController {
                 .result(newEntity)
                 .build();
     }
-    @PutMapping("/update-student/{userId}")
-    public ApiResponse<?> updateUser(
-            @PathVariable("userId") String userId,
-            @RequestBody @Valid UserInforUpdateRequest request) {
-        // Gọi service để xử lý logic cập nhật thông tin người dùng
-        var updatedUser = userService.updateUserInfor(userId, request);
 
-        // Trả về kết quả
-        return ApiResponse.builder()
-                .result(updatedUser)
-                .message("User updated successfully!")
-                .build();
-    }
 
     /**********************************
      * Manage Holiday

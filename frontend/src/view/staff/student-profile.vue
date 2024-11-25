@@ -7,21 +7,24 @@
     <section class="info-card">
       <div class="info-wrapper">
         <img
-          :src="studentData.userInforResponse.img || defaultAvatar"
-          alt="Student Avatar"
-          class="avatar"
+            :src="studentData.userInforResponse.img || defaultAvatar"
+            alt="Student Avatar"
+            class="avatar"
         />
 
         <div class="details-container">
           <div class="name-id-container">
             <div class="name-id">
               <h3>
-                <strong>{{ studentData.userInforResponse.fullName }} - {{ studentData.userInforResponse.japaneseName }}</strong>
+                <strong>{{ studentData.userInforResponse.fullName }} - {{
+                    studentData.userInforResponse.japaneseName
+                  }}</strong>
               </h3>
               <p>{{ studentData.rollNumber }}</p>
             </div>
             <button class="btn-edit" @click="toggleEditModal">
-              <VsxIcon iconName="Edit2" :size="18" color="#495057" type="linear" />Edit
+              <VsxIcon iconName="Edit2" :size="18" color="#495057" type="linear"/>
+              Edit
             </button>
           </div>
 
@@ -44,7 +47,9 @@
             <div class="column column2">
               <div class="attribute">
                 <p>Class</p>
-                <strong :style="{ color: studentData.classResponse.classColour }">{{ studentData.classResponse.className }}</strong>
+                <strong :style="{ color: studentData.classResponse.classColour }">{{
+                    studentData.classResponse.className
+                  }}</strong>
               </div>
               <div class="attribute">
                 <p>Phone</p>
@@ -78,40 +83,40 @@
         <form @submit.prevent="saveChanges">
           <div class="form-group">
             <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" v-model="editData.fullName" required />
+            <input id="fullName" type="text" v-model="editData.fullName" required/>
           </div>
 
           <div class="form-group">
             <label for="japaneseName">Japanese Name</label>
-            <input id="japaneseName" type="text" v-model="editData.japaneseName" required />
+            <input id="japaneseName" type="text" v-model="editData.japaneseName" required/>
           </div>
 
           <div class="form-group">
             <label for="phone">Phone</label>
-            <input id="phone" type="text" v-model="editData.phone"  />
+            <input id="phone" type="text" v-model="editData.phone"/>
           </div>
           <div class="form-group">
-          <label for="dob">Date of Birth</label>
-          <input
-            id="dob"
-            type="date"
-            v-model="editData.dob"
-            required
-          />
+            <label for="dob">Date of Birth</label>
+            <input
+                id="dob"
+                type="date"
+                v-model="editData.dob"
+                required
+            />
           </div>
           <div class="form-group">
             <label for="email">Email</label>
-            <input id="email" type="email" v-model="editData.email" required />
+            <input id="email" type="email" v-model="editData.email" required/>
           </div>
           <div class="form-group">
             <label for="avatar">Upload Avatar</label>
             <input
-              id="avatar"
-              type="file"
-              accept="image/png, image/jpeg"
-              @change="onFileChange"
+                id="avatar"
+                type="file"
+                accept="image/png, image/jpeg"
+                @change="onFileChange"
             />
-            <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview" />
+            <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview"/>
             <p v-if="fileError" class="error">{{ fileError }}</p>
           </div>
           <div class="modal-actions">
@@ -139,51 +144,52 @@
     <div class="table-container">
       <table v-if="showAttendance">
         <thead>
-          <tr>
-            <th class="center">Session No</th>
-            <th>Date</th>
-            <th>Slot</th>
-            <th>Teacher</th>
-            <th class="center">Attendance</th>
-          </tr>
+        <tr>
+          <th class="center">Session No</th>
+          <th>Date</th>
+          <th>Slot</th>
+          <th>Teacher</th>
+          <th class="center">Attendance</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="(attendance, index) in attendanceReport" :key="index">
-            <td class="center">{{ index + 1 }}</td>
-            <td>{{ attendance.date || 'N/A' }}</td>
-            <td>{{ attendance.slot || 'N/A' }}</td>
-            <td>{{ attendance.teacher || 'N/A' }}</td>
-            <td class="center" :class="{ attended: attendance.status === 'Attend', absent: attendance.status === 'Absent' }">
-              {{ attendance.status || 'N/A' }}
-            </td>
-          </tr>
-          <tr v-if="attendanceReport.length === 0">
-            <td colspan="5" class="center">No attendance data available.</td>
-          </tr>
+        <tr v-for="(attendance, index) in attendanceReport" :key="index">
+          <td class="center">{{ index + 1 }}</td>
+          <td>{{ attendance.date || 'N/A' }}</td>
+          <td>{{ attendance.slot || 'N/A' }}</td>
+          <td>{{ attendance.teacher || 'N/A' }}</td>
+          <td class="center"
+              :class="{ attended: attendance.status === 'Attend', absent: attendance.status === 'Absent' }">
+            {{ attendance.status || 'N/A' }}
+          </td>
+        </tr>
+        <tr v-if="attendanceReport.length === 0">
+          <td colspan="5" class="center">No attendance data available.</td>
+        </tr>
         </tbody>
       </table>
 
       <table v-else>
         <thead>
-          <tr>
-            <th>Grade Category</th>
-            <th>Grade Item</th>
-            <th>Weight</th>
-            <th>Value</th>
-            <th>Comment</th>
-          </tr>
+        <tr>
+          <th>Grade Category</th>
+          <th>Grade Item</th>
+          <th>Weight</th>
+          <th>Value</th>
+          <th>Comment</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="grade in markReport" :key="grade.category || grade.item">
-            <td>{{ grade.category || 'N/A' }}</td>
-            <td>{{ grade.item || 'N/A' }}</td>
-            <td>{{ grade.weight || 'N/A' }}</td>
-            <td>{{ grade.value || 'N/A' }}</td>
-            <td>{{ grade.comment || 'N/A' }}</td>
-          </tr>
-          <tr v-if="markReport.length === 0">
-            <td colspan="5" class="center">No mark report data available.</td>
-          </tr>
+        <tr v-for="grade in markReport" :key="grade.category || grade.item">
+          <td>{{ grade.category || 'N/A' }}</td>
+          <td>{{ grade.item || 'N/A' }}</td>
+          <td>{{ grade.weight || 'N/A' }}</td>
+          <td>{{ grade.value || 'N/A' }}</td>
+          <td>{{ grade.comment || 'N/A' }}</td>
+        </tr>
+        <tr v-if="markReport.length === 0">
+          <td colspan="5" class="center">No mark report data available.</td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -191,9 +197,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted} from 'vue';
 import axios from 'axios';
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import defaultAvatar from '@/assets/smiling-young-man-illustration_1308-174669.avif';
 
 const studentId = ref('');
@@ -219,17 +225,17 @@ const studentData = ref({
 
 const showAttendance = ref(true);
 const markReport = ref([
-  { category: 'Participation', item: 'Total', weight: '10%', value: '9.0', comment: 'Excellent' },
-  { category: 'Daily Exam', item: 'Total', weight: '20%', value: '8.5', comment: 'Very Good' },
-  { category: 'Mid-term Exam', item: 'Total', weight: '30%', value: '8.0', comment: 'Good' },
-  { category: 'Final Exam', item: 'Average', weight: '40%', value: '7.5', comment: 'Good' },
-  { category: 'Course Total', item: 'Status', weight: '-', value: '-', comment: 'Good' },
+  {category: 'Participation', item: 'Total', weight: '10%', value: '9.0', comment: 'Excellent'},
+  {category: 'Daily Exam', item: 'Total', weight: '20%', value: '8.5', comment: 'Very Good'},
+  {category: 'Mid-term Exam', item: 'Total', weight: '30%', value: '8.0', comment: 'Good'},
+  {category: 'Final Exam', item: 'Average', weight: '40%', value: '7.5', comment: 'Good'},
+  {category: 'Course Total', item: 'Status', weight: '-', value: '-', comment: 'Good'},
 ]);
 
 const attendanceReport = ref([
-  { date: '2/9/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend' },
-  { date: 'x/5/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend' },
-  { date: 'y/1/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Absent' },
+  {date: '2/9/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend'},
+  {date: 'x/5/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend'},
+  {date: 'y/1/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Absent'},
 ]);
 
 studentId.value = useRoute().params.id;
@@ -238,12 +244,12 @@ const fetchStudentData = async () => {
   try {
     const token = sessionStorage.getItem('jwtToken');
     const response = await axios.get(
-      `http://localhost:8088/fja-fap/staff/get-student/${studentId.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+        `http://localhost:8088/fja-fap/staff/get-student/${studentId.value}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
     );
 
     if (response.data && response.data.result) {
@@ -264,7 +270,7 @@ onMounted(() => {
   fetchStudentData();
 });
 const isEditing = ref(false);
-const editData = ref({ ...studentData.value.userInforResponse });
+const editData = ref({...studentData.value.userInforResponse});
 const previewImage = ref(null);
 const fileError = ref(null);
 
@@ -272,7 +278,7 @@ const toggleEditModal = () => {
   isEditing.value = !isEditing.value;
 
   if (isEditing.value) {
-    editData.value = { ...studentData.value.userInforResponse };
+    editData.value = {...studentData.value.userInforResponse};
     previewImage.value = null; // Reset preview
     fileError.value = null; // Reset file error
   }
@@ -322,17 +328,17 @@ const saveChanges = async () => {
     }
 
     await axios.put(
-      `http://localhost:8088/fja-fap/staff/update-student/${studentData.value.studentId}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+        `http://localhost:8088/fja-fap/staff/update-student/${studentData.value.studentId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
     );
 
-    studentData.value.userInforResponse = { ...editData.value };
+    studentData.value.userInforResponse = {...editData.value};
     isEditing.value = false;
     alert('Changes saved successfully!');
   } catch (error) {
@@ -342,7 +348,6 @@ const saveChanges = async () => {
 };
 </script>
 
-<style lang="scss" >
-@import '@/assets/styles/student-profile.scss';
+<style lang="scss">
 
 </style>

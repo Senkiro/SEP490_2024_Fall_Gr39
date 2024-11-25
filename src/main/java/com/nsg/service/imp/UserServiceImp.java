@@ -142,14 +142,42 @@ public class UserServiceImp implements UserService {
     //update user information
     @Override
     public UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request){
-        //get user by id
         UserEntity user = getUserById(userId);
 
-        //map
-        user = UserMapper.INSTANCE.toUserEntity(request);
+        // Cập nhật thông tin người dùng từ request
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getJapaneseName() != null) {
+            user.setJapaneseName(request.getJapaneseName());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getDob() != null) {
+            user.setDob(request.getDob());
+        }
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
 
-        //save new user, map result
-        UserInforResponse response = UserMapper.INSTANCE.toUserInforResponse(userRepository.save(user));
+        if (request.getImg() != null) {
+            user.setImg(request.getImg());
+        }
+
+        // Lưu người dùng đã cập nhật
+        UserEntity updatedUser = userRepository.save(user);
+
+        // Ánh xạ kết quả thành UserInforResponse để trả về
+        UserInforResponse response = new UserInforResponse();
+
+        response.setFullName(updatedUser.getFullName());
+        response.setJapaneseName(updatedUser.getJapaneseName());
+        response.setEmail(updatedUser.getEmail());
+        response.setDob(updatedUser.getDob());
+        response.setPhone(updatedUser.getPhone());
+        response.setGender(updatedUser.isGender());
+        response.setImg(updatedUser.getImg());
 
         return response;
     };

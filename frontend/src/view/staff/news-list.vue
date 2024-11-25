@@ -143,7 +143,7 @@ export default {
     goToNewsDetail(newsId) {
       console.log("Navigating to news detail with ID:", newsId);
       this.$router.push({
-        name: "NewsDetail",
+        name: "StaffNewsDetail",
         params: {id: newsId},
       });
     },
