@@ -182,12 +182,12 @@ export default {
         },
         viewEventDetail(event) {
             console.log("Event ID:", event.eventId);
-            switch (this.$router.name) {
+            switch (this.$route.name) {
                 case "StudentEventList":
-                    this.$router.push({ name: 'StudentEventDetail', params: { eventId: event.eventId } });
+                    this.$router.push({ name: 'StudentEventDetail', params: { id: event.eventId } });
                     break;
                 case "TeacherEventList":
-                    this.$router.push({ name: 'TeacherEventDetail', params: { eventId: event.eventId } });
+                    this.$router.push({ name: 'TeacherEventDetail', params: { id: event.eventId } });
                     break;
             }
         },
