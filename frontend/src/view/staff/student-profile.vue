@@ -363,8 +363,7 @@ const saveChanges = async () => {
       showNotification("Changes saved successfully!", "success");
     }
   } catch (error) {
-    console.error("Failed to save changes:", error);
-    showNotification("Failed to save changes. Please try again.", "error");
+    showNotification(error.response?.data?.message, "error");
   }
 };
 const notification = ref({ message: "", type: "" });
