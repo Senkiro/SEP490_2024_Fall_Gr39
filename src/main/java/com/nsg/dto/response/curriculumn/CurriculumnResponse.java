@@ -20,4 +20,5 @@ public class CurriculumnResponse {
 
     ExamResponse examResponse;
 
+    CurriculumnListResponse curriculumnListResponse;
 }

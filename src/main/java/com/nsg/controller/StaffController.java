@@ -5,6 +5,8 @@ import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
+import com.nsg.dto.request.curriculumn.CurriculumnListRequest;
+import com.nsg.dto.request.curriculumn.CurriculumnRequest;
 import com.nsg.dto.request.event.EventUpdateRequest;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
@@ -23,6 +25,7 @@ import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.curriculumn.CurriculumnListResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
@@ -111,6 +114,9 @@ public class StaffController {
 
     @Autowired
     CurriculumnService curriculumnService;
+
+    @Autowired
+    CurriculumnListService curriculumnListService;
 
 
     /**********************************
@@ -833,7 +839,7 @@ public class StaffController {
                 .build();
     }
 
-    //delete room
+    //delete news
     @DeleteMapping("/delete-news/{newsId}")
     public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
         newsService.deleteNews(newsId);
@@ -881,11 +887,76 @@ public class StaffController {
                 .build();
     }
 
+    //get a curriculumn by id
+    @GetMapping("/get-curriculumn/{curriculumn_id}")
+    public ApiResponse<CurriculumnResponse> getCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id) {
+        return ApiResponse.<CurriculumnResponse>builder()
+                .result(curriculumnService.getCurriculumn(curriculumn_id))
+                .build();
+    }
+
+    //update a curriculumn
+    @PostMapping("/update-curriculumn/{curriculumn_id}")
+    public ApiResponse<CurriculumnResponse> updateCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id, @RequestBody CurriculumnRequest request) {
+        return ApiResponse.<CurriculumnResponse>builder()
+                .result(curriculumnService.updateCurriculumn(curriculumn_id, request))
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-curriculumn/{curriculumn_id}")
+    public ApiResponse<?> deleteCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id) {
+        curriculumnService.deleteCurriculumn(curriculumn_id);
+        return ApiResponse.builder()
+                .message("Delete curriculumn successfully!")
+                .build();
+    }
+
     /**********************************
      * Manage Curriculumn List
      **********************************/
     //create curriculumn list
+    @PostMapping("/create-curriculumn-list")
+    public ApiResponse<?> createCurriculumnList(@RequestBody @Valid CurriculumnListRequest request) {
+        curriculumnListService.createCurriculumnList(request);
+        return ApiResponse.<NewsResponse>builder()
+                .message("Create new curriculumn list successfully!")
+                .build();
+    }
 
+    //get all
+    @GetMapping("/get-all-curriculumn-list")
+    public ApiResponse<List<CurriculumnListResponse>> getAllCurriculumnList(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<List<CurriculumnListResponse>>builder()
+                .result(curriculumnListService.getAllCurriculumnList())
+                .build();
+    }
+
+    //get a currilumn list
+    @GetMapping("/get-curriculumn-list/{id}")
+    public ApiResponse<CurriculumnListResponse> getCurriculumnList(@PathVariable("id") int id) {
+        return ApiResponse.<CurriculumnListResponse>builder()
+                .result(curriculumnListService.getCurriculumnList(id))
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-curriculumn-list/{id}")
+    public ApiResponse<?> updateCurriculumnList(@PathVariable("id") int id, @RequestBody @Valid CurriculumnListRequest request) {
+        curriculumnListService.updateCurriculumnList(id, request);
+        return ApiResponse.<NewsResponse>builder()
+                .message("Update curriculumn list successfully!")
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-curriculumn-list/{id}")
+    public ApiResponse<?> deleteCurriculumnList(@PathVariable("id") int id) {
+        curriculumnListService.deleteCurriculumnList(id);
+        return ApiResponse.builder()
+                .message("Delete curriculumn list successfully!")
+                .build();
+    }
 
 
 }

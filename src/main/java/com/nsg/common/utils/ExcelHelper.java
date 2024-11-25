@@ -5,7 +5,9 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.entity.*;
 import com.nsg.repository.BatchRepository;
 import com.nsg.repository.ClassRepository;
+import com.nsg.repository.CurriculumnListRepository;
 import com.nsg.repository.ExamTypeRepository;
+import com.nsg.service.CurriculumnListService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class ExcelHelper {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    CurriculumnListRepository curriculumnListRepository;
 
     public static boolean hasExcelFormat(MultipartFile file) {
         String contentType = file.getContentType();
@@ -166,8 +171,6 @@ public class ExcelHelper {
 
     private void processLessonSheet(Sheet sheet, List<LessonEntity> lessons) {
         Iterator<Row> rows = sheet.iterator();
-//        rows.next();
-//        rows.next();
         rows.next();
         rows.next(); // Bỏ qua tiêu đề cột
 
@@ -189,8 +192,6 @@ public class ExcelHelper {
 
     private void processExamSheet(Sheet sheet, List<ExamEntity> exams) {
         Iterator<Row> rows = sheet.iterator();
-//        rows.next();
-//        rows.next();
         rows.next();
         rows.next(); // Bỏ qua tiêu đề cột
 
@@ -237,6 +238,12 @@ public class ExcelHelper {
             String curriculumnListId = getStringCellValue(currentRow.getCell(3));
 
             curriculumn.setSessionNumber(Integer.valueOf(sessionNo));
+
+            CurriculumnListEntity curriculumnListEntity = curriculumnListRepository.findById(curriculumnListId).orElseThrow(
+                    () -> new AppException(ErrorCode.CURRICULUMN_LIST_NOT_FOUND)
+            );
+
+            curriculumn.setCurriculumnListEntity(curriculumnListEntity);
 
             //find in lesson, exam list
             if (!lessonTitle.isEmpty()) {
