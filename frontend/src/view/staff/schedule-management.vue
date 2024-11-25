@@ -116,12 +116,14 @@
                             <td>
                                 <div v-if="!isEditing[session.sessionId]">
                                     <div class="button-group">
-                                        <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
-                                        <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
+                                        <VsxIcon iconName="Edit2" size="25" type="linear"
+                                            @click="toggleEdit(session.sessionId)" />
+                                        <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" />
                                     </div>
                                 </div>
                                 <div v-else>
-                                    <VsxIcon iconName="TickCircle" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
+                                    <VsxIcon iconName="TickCircle" size="25" type="linear"
+                                        @click="toggleEdit(session.sessionId)" />
                                 </div>
                             </td>
                         </tr>
@@ -171,16 +173,21 @@
                             <td>
                                 <div v-if="!isEditing[session.sessionId]">
                                     <div class="button-group">
-                                        <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
-                                        <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
+                                        <VsxIcon iconName="Edit2" size="25" type="linear"
+                                            @click="toggleEdit(session.sessionId)" />
+                                        <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" />
                                     </div>
                                 </div>
                                 <div v-else>
-                                    <VsxIcon iconName="TickCircle" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
+                                    <VsxIcon iconName="TickCircle" size="25" type="linear"
+                                        @click="toggleEdit(session.sessionId)" />
                                 </div>
                             </td>
                         </tr>
                     </template>
+                    <tr v-if="sessions.length === 0">
+                        <td colspan="8" class="center">No record.</td>
+                    </tr>
                 </tbody>
 
             </table>
@@ -566,21 +573,25 @@ export default {
     }
 
     table {
-        .filter-select{
+        .filter-select {
             padding: 5px 10px;
-            font-size:16px;
+            font-size: 16px;
             border-radius: 10px;
         }
+
         th {
             text-align: center;
         }
 
-        tr td{
+        tr td {
             height: 60px;
         }
-        #teacher, #room{
+
+        #teacher,
+        #room {
             width: 250px;
         }
+
         tr,
         td {
             border: 2px solid #DFE7FB;

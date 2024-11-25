@@ -41,7 +41,7 @@
           </td>
         </tr>
         <tr>
-          <td colspan="8" class="center">No record.</td>
+          <td colspan="6" class="center">No record.</td>
         </tr>
         </tbody>
 

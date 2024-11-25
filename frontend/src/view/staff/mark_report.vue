@@ -42,11 +42,14 @@
                        @click="viewStudentDetails(student.id)" />
             </td>
           </tr>
+          <tr v-if="students.length === 0">
+            <td colspan="6" class="center">No record.</td>
+          </tr>
           </tbody>
         </table>
 
 
-        <div class="pagination">
+        <div v-if="totalPages > 1" class="pagination">
           <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
             <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
           </button>
@@ -76,14 +79,7 @@ export default {
       selectedClass: 'Blue',
       currentPage: 1,
       itemsPerPage: 5,
-      students: [
-        { id: 1, fullname: "Pham The Minh", rollNumber: "FA171392", japaneseName: "ファム・テ・ミン", averageMark: 8.2 },
-        { id: 2, fullname: "Ngo Quoc Dat", rollNumber: "FA171288", japaneseName: "", averageMark: 9.4 },
-        { id: 3, fullname: "Mai The Nam", rollNumber: "FA162133", japaneseName: "", averageMark: 8.9 },
-        { id: 4, fullname: "Hoang Thai Son", rollNumber: "FA123456", japaneseName: "", averageMark: 9.7 },
-        { id: 5, fullname: "Dang Hai Son", rollNumber: "FA112233", japaneseName: "", averageMark: 8.8 },
-        { id: 6, fullname: "Nguyen Ha Phuong", rollNumber: "FA000001", japaneseName: "", averageMark: 9.0 }
-      ]
+      students: []
     };
   },
   computed: {

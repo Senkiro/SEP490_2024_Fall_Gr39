@@ -35,6 +35,9 @@
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="3" class="center">No record.</td>
+                    </tr>
                 </tbody>
             </table>
             <div class="pagination" v-if="totalPages > 0">

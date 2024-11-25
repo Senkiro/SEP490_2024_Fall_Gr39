@@ -31,7 +31,7 @@
                         <td>{{ teacher.gender ? 'Male' : 'Female' }}</td>
                     </tr>
                     <tr v-if="teachers.length === 0">
-                        <td colspan="8" class="center">No record.</td>
+                        <td colspan="5" class="center">No record.</td>
                     </tr>
                 </tbody>
             </table>
