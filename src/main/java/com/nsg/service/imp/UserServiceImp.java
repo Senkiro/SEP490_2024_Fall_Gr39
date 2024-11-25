@@ -30,7 +30,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -141,7 +144,7 @@ public class UserServiceImp implements UserService {
 
     //update user information
     @Override
-    public UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request){
+    public UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request, MultipartFile avatar){
         UserEntity user = getUserById(userId);
 
         // Cập nhật thông tin người dùng từ request
@@ -161,8 +164,10 @@ public class UserServiceImp implements UserService {
             user.setPhone(request.getPhone());
         }
 
-        if (request.getImg() != null) {
-            user.setImg(request.getImg());
+        // Xử lý file ảnh (nếu có)
+        if (avatar != null && !avatar.isEmpty()) {
+            String savedImagePath = saveImageToAssetsFolder(avatar);
+            user.setImg(savedImagePath);
         }
 
         // Lưu người dùng đã cập nhật
@@ -181,6 +186,29 @@ public class UserServiceImp implements UserService {
 
         return response;
     };
+
+    private String saveImageToAssetsFolder(MultipartFile image) {
+        try {
+            // Đường dẫn thư mục lưu trữ ảnh
+            String uploadDir = System.getProperty("user.dir") + "/frontend/public/avatar_image/";
+            File dir = new File(uploadDir);
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            // Lưu ảnh vào thư mục
+            String filePath = uploadDir + image.getOriginalFilename();
+            File file = new File(filePath);
+            image.transferTo(file);
+
+            // Trả về đường dẫn tương đối để Vue sử dụng
+            return "avatar_image/" + image.getOriginalFilename();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image", e);
+        }
+    }
 
     @Override
     public void deleteUser(String userId) {

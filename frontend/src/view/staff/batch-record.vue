@@ -110,7 +110,7 @@
       </div>
     </div>
 
-    <div v-if="notification.message" :class="['notification', notification.type]">
+    <div v-if="notification.message" class="notification" :class="notification.type">
       {{ notification.message }}
     </div>
   </div>

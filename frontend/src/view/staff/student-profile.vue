@@ -7,7 +7,7 @@
     <section class="info-card">
       <div class="info-wrapper">
         <img
-            :src="studentData.userInforResponse.img || defaultAvatar"
+            :src="`/${studentData.userInforResponse.img}`"
             alt="Student Avatar"
             class="avatar"
         />
@@ -80,7 +80,7 @@
     <div v-if="isEditing" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="toggleEditModal" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="toggleEditModal"/>
         </div>
         <div class="popup-title">
           <h2>Edit Student Information </h2>
@@ -88,44 +88,44 @@
         <form @submit.prevent="saveChanges">
           <div class="form-group">
             <label for="fullName">Fullname <span class="required">*</span></label>
-            <input id="fullName" type="text" v-model="editData.fullName" required />
+            <input id="fullName" type="text" v-model="editData.fullName" required/>
           </div>
 
           <div class="form-group">
             <label for="japaneseName">Japanese name <span class="required">*</span></label>
-            <input id="japaneseName" type="text" v-model="editData.japaneseName" required />
+            <input id="japaneseName" type="text" v-model="editData.japaneseName" required/>
           </div>
 
           <div class="form-group">
             <label for="phone">Phone <span class="required">*</span></label>
-            <input id="phone" type="text" v-model="editData.phone"  />
+            <input id="phone" type="text" v-model="editData.phone"/>
           </div>
           <div class="form-group">
-          <label for="dob">Date of Birth <span class="required">*</span></label>
-          <input
-            id="dob"
-            type="date"
-            v-model="editData.dob"
-            required
-          />
+            <label for="dob">Date of Birth <span class="required">*</span></label>
+            <input
+                id="dob"
+                type="date"
+                v-model="editData.dob"
+                required
+            />
           </div>
           <div class="form-group">
             <label for="email">Email <span class="required">*</span></label>
-            <input id="email" type="email" v-model="editData.email" required />
+            <input id="email" type="email" v-model="editData.email" required/>
           </div>
           <div class="form-group">
             <label for="avatar">Upload Avatar</label>
             <div class="image-container">
               <input
-              id="avatar"
-              type="file"
-              accept="image/png, image/jpeg"
-              @change="onFileChange"
-            />
-            <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview"/>
-            <p v-if="fileError" class="error">{{ fileError }}</p>
+                  id="avatar"
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  @change="onFileChange"
+              />
+              <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview"/>
+              <p v-if="fileError" class="error">{{ fileError }}</p>
             </div>
-            
+
           </div>
           <div class="actions">
             <button type="submit" class="btn-save">Save Changes</button>
@@ -200,6 +200,11 @@
         </tbody>
       </table>
     </div>
+
+    <div v-if="notification.message" class="notification" :class="notification.type">
+      {{ notification.message }}
+    </div>
+
   </div>
 </template>
 
@@ -207,7 +212,7 @@
 import {ref, onMounted} from 'vue';
 import axios from 'axios';
 import {useRoute} from 'vue-router';
-import defaultAvatar from '@/assets/smiling-young-man-illustration_1308-174669.avif';
+// import defaultAvatar from '@/assets/smiling-young-man-illustration_1308-174669.avif';
 
 const studentId = ref('');
 const studentData = ref({
@@ -317,58 +322,81 @@ const onFileChange = (event) => {
     };
     reader.readAsDataURL(file);
 
-    // Attach to editData for submission
     editData.value.img = file;
   }
 };
 
 const saveChanges = async () => {
   try {
-    const token = sessionStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem("jwtToken");
     const formData = new FormData();
-    formData.append('fullName', editData.value.fullName);
-    formData.append('japaneseName', editData.value.japaneseName);
-    formData.append('phone', editData.value.phone);
-    formData.append('email', editData.value.email);
+
+    // Chuẩn bị dữ liệu `userDetail` ở dạng JSON string
+    const userDetail = {
+      fullName: editData.value.fullName,
+      japaneseName: editData.value.japaneseName,
+      phone: editData.value.phone,
+      dob: editData.value.dob,
+      email: editData.value.email,
+    };
+    formData.append("userDetail", new Blob([JSON.stringify(userDetail)], {type: "application/json"}));
+
+    // Thêm avatar file (nếu có)
     if (editData.value.img) {
-      formData.append('avatar', editData.value.img);
+      formData.append("avatar", editData.value.img);
     }
 
-    await axios.put(
+    const response = await axios.put(
         `http://localhost:8088/fja-fap/staff/update-student/${studentData.value.studentId}`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
     );
 
-    studentData.value.userInforResponse = {...editData.value};
-    isEditing.value = false;
-    alert('Changes saved successfully!');
+    if (response.data && response.data.result) {
+      studentData.value.userInforResponse = {...editData.value};
+      isEditing.value = false;
+      showNotification("Changes saved successfully!", "success");
+    }
   } catch (error) {
-    console.error('Failed to save changes:', error);
-    alert('Failed to save changes. Please try again.');
+    console.error("Failed to save changes:", error);
+    showNotification("Failed to save changes. Please try again.", "error");
   }
 };
+const notification = ref({ message: "", type: "" });
+
+const showNotification = (message, type) => {
+  notification.value = { message, type };
+  setTimeout(() => {
+    notification.value.message = "";
+  }, 3000);
+};
+
+
+
 </script>
 
-<style lang="scss" >
-.popup{
+<style lang="scss">
+.popup {
   overflow-y: auto;
   max-height: 90vh;
 }
-.image-container{
+
+.image-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
-.preview{
+
+.preview {
   height: 200px;
   width: 150px;
 }
+
 .container {
   padding: 20px;
 
@@ -488,6 +516,27 @@ const saveChanges = async () => {
   .absent {
     color: red;
     font-weight: bold;
+  }
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+  &.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  &.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
   }
 }
 

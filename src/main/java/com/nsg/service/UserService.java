@@ -9,6 +9,7 @@ import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     UserInforResponse getUserInforById(String userId);
 
-    UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request);
+    UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request, MultipartFile avatar);
 
     String resetPassword(UserEntity user, String newpass);
 

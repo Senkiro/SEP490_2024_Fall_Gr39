@@ -203,12 +203,14 @@ public class StaffController {
                 .build();
     }
 
-    @PutMapping("/update-student/{userId}")
+    @PutMapping(value = "/update-student/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<?> updateUser(
             @PathVariable("userId") String userId,
-            @RequestBody @Valid UserInforUpdateRequest request) {
+            @RequestPart("userDetail") @Valid UserInforUpdateRequest request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+
         // Gọi service để xử lý logic cập nhật thông tin người dùng
-        var updatedUser = userService.updateUserInfor(userId, request);
+        var updatedUser = userService.updateUserInfor(userId, request, avatar);
 
         // Trả về kết quả
         return ApiResponse.builder()
