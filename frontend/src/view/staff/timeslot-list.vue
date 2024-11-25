@@ -85,7 +85,6 @@
       </div>
     </div>
 
-
     <div class="table-container">
       <table>
         <thead class="center">
@@ -111,7 +110,7 @@
             </td>
           </tr>
           <tr v-if="slots.length === 0">
-            <td colspan="8" class="center">No record.</td>
+            <td colspan="5" class="center">No record.</td>
           </tr>
         </tbody>
       </table>

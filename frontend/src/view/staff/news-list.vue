@@ -26,6 +26,16 @@
         </tr>
         </thead>
         <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         <tr v-for="(newsItem, index) in paginatedNews" :key="newsItem.newId">
           <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
           <td>{{ newsItem.newTitle }}</td>
@@ -43,11 +53,14 @@
             </div>
           </td>
         </tr>
+        <tr v-if="news.length === 0">
+            <td colspan="8" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
 
       <!-- Phân trang -->
-      <div class="pagination">
+      <div v-if="totalPages > 1" class="pagination">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>

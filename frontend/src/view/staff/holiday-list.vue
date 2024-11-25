@@ -37,6 +37,9 @@
             </div>
           </td>
         </tr>
+        <tr>
+            <td colspan="4" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
 

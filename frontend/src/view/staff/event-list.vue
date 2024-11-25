@@ -6,20 +6,14 @@
 
     <div class="actions">
       <button @click="showAddEventPopup = true">
-        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        <VsxIcon iconName="AddCircle" size="20" type="bold" />
         Add Event
       </button>
     </div>
 
     <div class="actions">
       <div class="search-container">
-        <input
-            type="text"
-            placeholder="Search..."
-            class="search-field"
-            v-model="searchQuery"
-            @input="searchEvents"
-        />
+        <input type="text" placeholder="Search..." class="search-field" v-model="searchQuery" @input="searchEvents" />
         <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
       </div>
     </div>
@@ -27,67 +21,50 @@
     <div class="table-container">
       <table>
         <thead>
-        <tr>
-          <th class="center">No</th>
-          <th>Title</th>
-          <th>Destination</th>
-          <th>Information</th>
-          <th>Status</th>
-          <th>Avg Rate</th>
-          <th class="center">Action</th>
-        </tr>
+          <tr>
+            <th class="center">No</th>
+            <th>Title</th>
+            <th>Destination</th>
+            <th>Information</th>
+            <th>Status</th>
+            <th>Avg Rate</th>
+            <th class="center">Action</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="(event, index) in events" :key="event.eventId">
-          <td class="center">{{ index + 1 }}</td>
-          <td>{{ event.eventName }}</td>
-          <td style="width: 250px">{{ event.address }}</td>
-          <td style="width: 550px">
-          <span v-if="!isExpanded[index]">
-          <span v-html="shortenText(event.description)"></span>
-          <span
-              v-if="event.description.length > maxDescriptionLength"
-              class="expand-text"
-              @click="toggleExpand(index)">
-            Expand
-          </span>
-          </span>
-            <span v-else>
-          <span v-html="event.description"></span>
-          <span
-              class="expand-text"
-              @click="toggleExpand(index)">
-            Collapse
-            </span>
-          </span>
-          </td>
-          <td :class="event.status ? 'status-finished' : 'status-pending'">
-            {{ event.status ? 'Finished' : 'Not happen' }}
-          </td>
-          <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
-          <td class="center">
-            <div class="icon-group">
-              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail(event)"/>
-              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"  @click="deleteEvent(event.eventId)"/>
-            </div>
-          </td>
-        </tr>
-        <tr v-if="events.length === 0">
-          <td colspan="8" class="center">No record.</td>
-        </tr>
+          <tr v-for="(event, index) in events" :key="event.eventId">
+            <td class="center">{{ index + 1 }}</td>
+            <td>ppppppppppppppppppp{{ event.eventName }}</td>
+            <td>ppppppppppppppppp{{ event.address }}</td>
+            <td v-html="event.description"></td>
+            <td :class="event.status ? 'status-finished' : 'status-pending'">
+              {{ event.status ? 'Finished' : 'Not happen' }}
+            </td>
+            <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
+            <td class="center">
+              <div class="icon-group">
+                <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail(event)" />
+                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"
+                  @click="deleteEvent(event.eventId)" />
+              </div>
+            </td>
+          </tr>
+          <tr v-if="events.length === 0">
+            <td colspan="7" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
 
       <div class="pagination" v-if="totalPages > 0">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
-          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
         </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-                @click="changePage(page)">
+          @click="changePage(page)">
           {{ page }}
         </button>
         <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
         </button>
       </div>
     </div>
@@ -95,7 +72,7 @@
     <div v-if="showAddEventPopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closePopup"/>
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closePopup" />
         </div>
         <div class="popup-title">
           <h2>Add Event</h2>
@@ -103,11 +80,11 @@
         <form @submit.prevent="addEvent">
           <div class="form-group">
             <label for="eventName">Event title <span class="required">*</span></label>
-            <input type="text" id="eventName" v-model="newBatch.eventName" required/>
+            <input type="text" id="eventName" v-model="newBatch.eventName" required />
           </div>
           <div class="form-group">
             <label for="address">Destination <span class="required">*</span></label>
-            <input type="text" id="address" v-model="newBatch.address" required/>
+            <input type="text" id="address" v-model="newBatch.address" required />
           </div>
           <div class="actions">
             <button type="submit">Create</button>
@@ -125,13 +102,13 @@
 
 <script>
 import axios from "axios";
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 
 export default {
-  components: {VsxIcon},
+  components: { VsxIcon },
   data() {
     return {
-      events: [],
+      events: [{ description: '<p>This is some <strong>bold</strong> texttttttttttttttttttttttttt.</p>' }],
       currentPage: 1,
       itemsPerPage: 5,
       totalElements: 0,
@@ -160,8 +137,8 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/event?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
-            {headers: {Authorization: `Bearer ${token}`}}
+          `http://localhost:8088/fja-fap/staff/event?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         this.events = response.data.result.content;
         this.totalElements = response.data.result.totalElements;
@@ -188,8 +165,8 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/search-event?name=${this.searchQuery}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost:8088/fja-fap/staff/search-event?name=${this.searchQuery}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         const result = response.data.result || {};
         this.events = result.content || [];
@@ -211,8 +188,8 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         await axios.delete(
-            `http://localhost:8088/fja-fap/staff/delete-event/${eventId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost:8088/fja-fap/staff/delete-event/${eventId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         this.showNotification("Event deleted successfully!", "success");
@@ -246,15 +223,15 @@ export default {
     },
     closePopup() {
       this.showAddEventPopup = false;
-      this.newBatch = {eventName: '', address: '', description: ''};
+      this.newBatch = { eventName: '', address: '', description: '' };
     },
     async addEvent() {
       try {
         const token = sessionStorage.getItem('jwtToken');
         await axios.post(
-            'http://localhost:8088/fja-fap/staff/create-event',
-            this.newBatch,
-            {headers: {Authorization: `Bearer ${token}`}}
+          'http://localhost:8088/fja-fap/staff/create-event',
+          this.newBatch,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         this.closePopup();
         this.fetchEvents();
@@ -270,7 +247,7 @@ export default {
       this.$router.push({ name: 'StaffEventDetail', params: { eventId: event.eventId } });
     },
     showNotification(message, type) {
-      this.notification = {message, type};
+      this.notification = { message, type };
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
@@ -282,5 +259,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+td {
+  p {
+    width: 100%;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+  }
+}
 </style>

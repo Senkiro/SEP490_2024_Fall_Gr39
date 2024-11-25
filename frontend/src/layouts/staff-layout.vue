@@ -24,6 +24,7 @@ export default {
 <style scoped>
 .content {
   width: 100%;
+  min-width: 85%;
   display: flex;
   padding: 0px 24px;
   flex-direction: column;

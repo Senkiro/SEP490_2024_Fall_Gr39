@@ -81,7 +81,7 @@
             </td>
           </tr>
           <tr v-if="students.length === 0">
-            <td colspan="8" class="center">No record.</td>
+            <td colspan="7" class="center">No record.</td>
           </tr>
           </tbody>
         </table>
@@ -133,7 +133,7 @@
             </td>
           </tr>
           <tr v-if="classes.length === 0">
-            <td colspan="8" class="center">No record.</td>
+            <td colspan="4" class="center">No record.</td>
           </tr>
           </tbody>
         </table>

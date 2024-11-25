@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="headContent">
-            <h1>Event List</h1>
+            <h1>Event list</h1>
         </div>
 
         <div class="actions">
@@ -29,7 +29,7 @@
                         <td>{{ event.eventName }}</td>
                         <td>{{ event.address }}</td>
                         <td>
-                          <div v-html="event.description"></div>
+                            <div v-html="event.description"></div>
                         </td>
                         <td class="center">
                             <div class="icon-group">
@@ -39,7 +39,7 @@
                         </td>
                     </tr>
                     <tr v-if="events.length === 0">
-                        <td colspan="8" class="center">No record.</td>
+                        <td colspan="5" class="center">No record.</td>
                     </tr>
                 </tbody>
             </table>
@@ -182,15 +182,21 @@ export default {
         },
         viewEventDetail(event) {
             console.log("Event ID:", event.eventId);
-            switch (this.$router.name) {
+            switch (this.$route.name) {
                 case "StudentEventList":
-                    this.$router.push({ name: 'StudentEventDetail', params: { eventId: event.eventId } });
+                    this.$router.push({ name: 'StudentEventDetail', params: { id: event.eventId } });
                     break;
                 case "TeacherEventList":
-                    this.$router.push({ name: 'TeacherEventDetail', params: { eventId: event.eventId } });
+                    this.$router.push({ name: 'TeacherEventDetail', params: { id: event.eventId } });
                     break;
             }
         },
+        showNotification(message, type) {
+            this.notification = { message, type };
+            setTimeout(() => {
+                this.notification.message = "";
+            }, 3000);
+        }
     },
     mounted() {
         this.fetchEvents();

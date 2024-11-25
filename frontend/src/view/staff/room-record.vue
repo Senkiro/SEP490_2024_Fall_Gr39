@@ -15,14 +15,14 @@
         <thead>
         <tr>
           <th class="center">No</th>
-          <th>Room</th>
+          <th class="center">Room</th>
           <th class="center">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(room, index) in rooms" :key="index">
           <td class="center">{{ index + 1 }}</td>
-          <td>{{ room.roomNumber }}</td>
+          <td class="center">{{ room.roomNumber }}</td>
           <td class="center">
             <div class="icon-group">
               <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" @click="editRoomPopup(room)"/>
@@ -31,7 +31,7 @@
           </td>
         </tr>
         <tr v-if="rooms.length === 0">
-          <td colspan="8" class="center">No record.</td>
+          <td colspan="3" class="center">No record.</td>
         </tr>
         </tbody>
       </table>
@@ -235,5 +235,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+th:last-child, td:last-child{
+  width: 300px;
+}
 </style>

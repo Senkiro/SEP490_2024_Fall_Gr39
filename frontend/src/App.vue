@@ -190,9 +190,12 @@ button {
     display: flex;
     flex-direction: column;
     gap: 40px;
+    width: 100%;
 
     table {
       border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
 
       .table-button {
         background: #304CB2;
@@ -243,6 +246,7 @@ button {
 
         td:first-child,
         th:first-child {
+          max-width: 80px;
           width: 10%;
         }
 
@@ -262,7 +266,8 @@ button {
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
-          max-width: 350px;
+          max-width: 200px;
+          max-height: 80px;
 
           .status-button {
             display: flex;

@@ -323,10 +323,10 @@ aside {
   }
 
   &.is-expanded {
-    width: var(--sidebar-width);
+    width: 15%;
 
     .sidebar-container {
-      width: 214px;
+      width: 198px;
 
 
       .menu-toggle-wrap {
