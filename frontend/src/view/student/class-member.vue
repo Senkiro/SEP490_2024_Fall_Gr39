@@ -1,50 +1,131 @@
 <template>
-    <div class="container">
-        <div class="headContent">
-            <h1>Class member</h1>
-        </div>
-
-        <div class="filters">
-            <select id="class-filter" class="filter-select" v-model="selectedClass" @change="filterStudentsByClass">
-                <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
-                    {{ classItem.name }}
-                </option>
-            </select>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="center">No</th>
-                        <th>Fullname</th>
-                        <th>Japanese name</th>
-                        <th>Roll number</th>
-                        <th class="center">Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="center">1</td>
-                        <td>Pham The Minh</td>
-                        <td>ファム・テ・ミン</td>
-                        <td>FA171392</td>
-                        <td class="center"><img src="@/assets/smiling-young-man-illustration_1308-174669.avif"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  <div class="container">
+    <div class="headContent">
+      <h1>Class Member</h1>
     </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th class="center">No</th>
+          <th>Fullname</th>
+          <th>Japanese Name</th>
+          <th>Roll Number</th>
+          <th class="center">Image</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr
+            v-for="(student, index) in students"
+            :key="student.studentId"
+            :class="{ highlight: student.studentId === currentUserId }"
+        >
+          <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+          <td>{{ student.userInforResponse.fullName }}</td>
+          <td>{{ student.userInforResponse.japaneseName }}</td>
+          <td>{{ student.rollNumber }}</td>
+          <td class="center">
+            <img
+                v-if="student.userInforResponse.img"
+                :src="student.userInforResponse.img"
+                alt="Student Image"
+            />
+            <span v-else><img src="@/assets/smiling-young-man-illustration_1308-174669.avif"></span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination" v-if="totalPages > 1">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+        </button>
+        <button
+            v-for="page in displayedPages"
+            :key="page"
+            :class="{ active: page === currentPage }"
+            @click="changePage(page)"
+        >
+          {{ page }}
+        </button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
+import axios from "axios";
+import { VsxIcon } from "vue-iconsax";
 
-}
+export default {
+  components: { VsxIcon },
+  data() {
+    return {
+      students: [],
+      currentPage: 1,
+      itemsPerPage: 5,
+      totalPages: 0,
+      currentUserId: "", // ID của người dùng hiện tại
+    };
+  },
+  computed: {
+    displayedPages() {
+      const range = [];
+      for (let i = 1; i <= this.totalPages; i++) {
+        range.push(i);
+      }
+      return range;
+    },
+  },
+  methods: {
+    async fetchStudents() {
+      try {
+        // Get token and userId from session storage
+        const token = sessionStorage.getItem("jwtToken");
+        this.currentUserId = sessionStorage.getItem("userId"); // Lấy userId
+
+        // Send API request
+        const response = await axios.get(`http://localhost:8088/fja-fap/student/get-student-class`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            studentId: this.currentUserId,
+            page: this.currentPage - 1,
+            size: this.itemsPerPage,
+          },
+        });
+
+        // Update student data and total pages
+        this.students = response.data.result.content;
+        this.totalPages = response.data.result.totalPages;
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    },
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+        this.fetchStudents();
+      }
+    },
+  },
+  mounted() {
+    this.fetchStudents();
+  },
+};
 </script>
 
 <style lang="scss">
 img{
     width: 150px;
+}
+
+tr.highlight {
+  background-color: #fffae5; /* Màu nền nổi bật */
 }
 </style>

@@ -12,5 +12,5 @@ public interface StudentRepository extends BaseRepository<StudentEntity, String>
 
     Page<StudentEntity> findByBatchEntityBatchNameAndClassEntityClassName(String batchName, String className, PageRequest pageable);
 
-
+    Page<StudentEntity> findByClassEntityClassId(String classEntityClassId, PageRequest pageable);
 }
