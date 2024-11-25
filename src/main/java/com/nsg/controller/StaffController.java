@@ -19,6 +19,7 @@ import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
@@ -851,6 +852,19 @@ public class StaffController {
         NewEntity newEntity = newsService.getNewtById(newsId);
         return ApiResponse.<NewEntity>builder()
                 .result(newEntity)
+                .build();
+    }
+    @PutMapping("/update-student/{userId}")
+    public ApiResponse<?> updateUser(
+            @PathVariable("userId") String userId,
+            @RequestBody @Valid UserInforUpdateRequest request) {
+        // Gọi service để xử lý logic cập nhật thông tin người dùng
+        var updatedUser = userService.updateUserInfor(userId, request);
+
+        // Trả về kết quả
+        return ApiResponse.builder()
+                .result(updatedUser)
+                .message("User updated successfully!")
                 .build();
     }
 }
