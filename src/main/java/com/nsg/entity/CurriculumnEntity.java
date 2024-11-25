@@ -34,4 +34,7 @@ public class CurriculumnEntity {
     @ManyToOne
     @JoinColumn(name = "curriculumn_list_id")
     CurriculumnListEntity curriculumnListEntity;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "curriculumnEntity", fetch = FetchType.EAGER)
+    List<SessionEntity> sessionEntityList;
 }

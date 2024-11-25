@@ -35,8 +35,8 @@ public class LessonEntity extends BaseEntity {
     @Column(name = "grammar")
     String grammar;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
-    List<SessionEntity> sessionEntityList;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
+//    List<SessionEntity> sessionEntityList;
 
     @OneToOne(mappedBy = "lessonEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     CurriculumnEntity curriculumnEntity;

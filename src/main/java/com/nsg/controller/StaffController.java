@@ -750,6 +750,15 @@ public class StaffController {
                 .build();
     }
 
+    //delete schedule
+    @DeleteMapping("/delete-schedule/{class_id}")
+    public ApiResponse<?> deleteSchedule(@PathVariable("class_id") String class_id) {
+        sessionService.deleteSchedule(class_id);
+        return ApiResponse.builder()
+                .message("Delete schedule successfully!")
+                .build();
+    }
+
     //delete
     @DeleteMapping("/delete-session/{session_id}")
     public ApiResponse<SessionResponse> deleteSessionById(@PathVariable("session_id") String session_id) {
