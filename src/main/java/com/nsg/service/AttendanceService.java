@@ -11,11 +11,16 @@ public interface AttendanceService {
     //create
     void createAttendance(AttendanceRequest request);
 
+    //create attendance for schedule
+    void createAttendancesForSession(String classId);
+
     //get all
     Page<AttendanceResponse> getAllAttendance(int page, int size);
 
     //get list by sessionId
     Page<AttendanceResponse> getAttendanceBySession(String sessionId, int page, int size);
+
+    Page<AttendanceResponse> getAttendanceByStudent(String studentId, int page, int size);
 
     //get by id
     AttendanceResponse getAttendance(String attendanceId);

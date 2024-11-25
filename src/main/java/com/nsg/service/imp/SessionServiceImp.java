@@ -195,7 +195,7 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setTimeSlotId(request.getTimeSlotId());
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
 
-                //get curriculumn
+                //get, set curriculumn
                 CurriculumnEntity curriculumn = curriculumnEntityList.get( (sessionNo - 1) );
                 sessionCreattionRequest.setCurriculumnId(curriculumn.getCurriculumnId());
 

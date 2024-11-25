@@ -714,8 +714,9 @@ public class StaffController {
     @PostMapping("/create-schedule/{class_id}")
     public ApiResponse<?> createSchedule(@PathVariable("class_id") String class_id, @RequestBody ScheduleCreationRequest request) {
         sessionService.createSchedule(class_id, request);
+        attendanceService.createAttendancesForSession(class_id);
         return ApiResponse.builder()
-                .message("Create new session successfully!")
+                .message("Create new schedule successfully!")
                 .build();
     }
 
@@ -801,6 +802,14 @@ public class StaffController {
     public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id, @RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<AttendanceResponse>>builder()
                 .result(attendanceService.getAttendanceBySession(session_id, page, size))
+                .build();
+    }
+
+    //get attendance by student
+    @GetMapping("/get-attendance-student/{student_id}")
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceByStudent(@PathVariable("student_id") String student_id, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAttendanceByStudent(student_id, page, size))
                 .build();
     }
 

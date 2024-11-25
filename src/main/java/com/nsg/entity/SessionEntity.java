@@ -41,7 +41,7 @@ public class SessionEntity extends BaseEntity {
     @JoinColumn(name = "curriculumnId", referencedColumnName = "lesson_id")
     CurriculumnEntity curriculumnEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", orphanRemoval = true)
     List<AttendanceEntity> attendanceEntityList;
 
     @ManyToOne

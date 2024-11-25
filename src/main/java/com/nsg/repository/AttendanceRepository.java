@@ -11,5 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface AttendanceRepository extends BaseRepository<AttendanceEntity, String> {
     Page<AttendanceEntity> findBySessionEntitySessionId(String sessionId, PageRequest of);
 
+    Page<AttendanceEntity> findByStudentEntityStudentId(String studentId, PageRequest of);
+
     void deleteBySessionEntity(SessionEntity session);
 }
