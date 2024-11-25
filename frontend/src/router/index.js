@@ -492,7 +492,7 @@ const routes = [
         },
     },
     {
-        path: '/student/news-detail',
+        path: '/student/news-detail/:id',
         name: 'StudentNewsDetail',
         component: () => import('../view/student/news-detail.vue'),
         meta: { layout: 'student', requiresAuth: false, 

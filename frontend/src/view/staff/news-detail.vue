@@ -117,7 +117,7 @@ export default {
         );
         const action = status ? "published" : "saved as draft";
         alert(`News ${action} successfully!`);
-        router.push({ name: "News" }); // Quay lại danh sách tin tức
+        router.push({ name: "StaffNews" }); // Quay lại danh sách tin tức
       } catch (error) {
         console.error("Error updating news:", error);
         alert("Failed to update news. Please try again.");
