@@ -49,6 +49,26 @@ public class NewsServiceImp implements NewsService {
                         newEntity.getNewTitle(),
                         newEntity.isStatus(),
                         newEntity.getCreatedDate(),
+                        newEntity.getUpdatedDate(),
+                        newEntity.getCreatedBy()
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responseList, newEntitiesList.getPageable(), newEntitiesList.getTotalElements());
+    }
+
+    @Override
+    public Page<NewsResponse> getAllPublishNews(int page, int size) {
+        Page<NewEntity> newEntitiesList = newsRepository.findAllByStatusTrue(PageRequest.of(page, size));
+
+        List<NewsResponse> responseList = newEntitiesList.stream()
+                .map(newEntity -> new NewsResponse(
+                        newEntity.getNewId(),
+                        newEntity.getNewContent(),
+                        newEntity.getNewTitle(),
+                        newEntity.isStatus(),
+                        newEntity.getCreatedDate(),
+                        newEntity.getUpdatedDate(),
                         newEntity.getCreatedBy()
                 ))
                 .collect(Collectors.toList());
@@ -90,6 +110,13 @@ public class NewsServiceImp implements NewsService {
     @Override
         public void deleteNews(String roomId) {
         newsRepository.deleteById(roomId);
+    }
+
+    @Override
+    public NewEntity getNewtById(String newsId) {
+        return newsRepository.findByNewId(newsId).orElseThrow(
+                () -> new AppException(ErrorCode.NEWS_NOT_FOUND)
+        );
     }
 
 }

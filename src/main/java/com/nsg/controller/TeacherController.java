@@ -39,14 +39,14 @@ public class TeacherController {
                 .build();
     }
 
-    @PostMapping("/update-teacher/{teacher_id}")
-    ApiResponse<UserInforResponse> updateTeacherInfor(@PathVariable("teacher_id") String teacherId,
-                                                      @RequestBody @Valid @Validated UserInforUpdateRequest request) {
-        return  ApiResponse.<UserInforResponse>builder()
-                .result(userService.updateUserInfor(teacherId, request))
-                .message("update information successfully!")
-                .build();
-    }
+//    @PostMapping("/update-teacher/{teacher_id}")
+//    ApiResponse<UserInforResponse> updateTeacherInfor(@PathVariable("teacher_id") String teacherId,
+//                                                      @RequestBody @Valid @Validated UserInforUpdateRequest request) {
+//        return  ApiResponse.<UserInforResponse>builder()
+//                .result(userService.updateUserInfor(teacherId, request))
+//                .message("update information successfully!")
+//                .build();
+//    }
 
 
 }

@@ -3,6 +3,7 @@
     <div class="headContent">
       <h1>News List</h1>
     </div>
+
     <div class="actions">
       <button @click="goToCreateNews">
         <VsxIcon iconName="AddCircle" size="20" type="bold"/>
@@ -18,43 +19,48 @@
           <th>Title</th>
           <th>Content</th>
           <th>Date Created</th>
+          <th>Date Update</th>
           <th>Created By</th>
           <th>Status</th>
           <th class="center">Action</th>
         </tr>
         </thead>
         <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         <tr v-for="(newsItem, index) in paginatedNews" :key="newsItem.newId">
           <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
           <td>{{ newsItem.newTitle }}</td>
           <td v-html="newsItem.newContent"></td>
           <td>{{ formatDate(newsItem.createDate) }}</td>
+          <td>{{ formatDate(newsItem.updateDate) }}</td>
           <td>{{ newsItem.createdBy || "Unknown" }}</td>
           <td>{{ newsItem.status ? 'Published' : 'Draft' }}</td>
           <td class="center">
             <div class="icon-group">
-              <VsxIcon
-                  iconName="Eye"
-                  :size="25"
-                  color="#171717"
-                  type="linear"
-                  @click="goToUpdateNews(newsItem.newId)"
-              />
-              <VsxIcon
-                  iconName="Slash"
-                  :size="25"
-                  color="#171717"
-                  type="linear"
-                  @click="confirmDelete(newsItem.newId)"
-              />
+              <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
+                  @click="goToNewsDetail(newsItem.newId)"/>
+              <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"
+                  @click="confirmDelete(newsItem.newId)"/>
             </div>
           </td>
         </tr>
+        <tr v-if="news.length === 0">
+            <td colspan="8" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
 
       <!-- Phân trang -->
-      <div class="pagination">
+      <div v-if="totalPages > 1" class="pagination">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
@@ -147,10 +153,10 @@ export default {
         this.showNotification("Failed to delete news. Please try again.", "error");
       }
     },
-    goToUpdateNews(newsId) {
-      console.log("Navigating to update news with ID:", newsId); // Debug log
+    goToNewsDetail(newsId) {
+      console.log("Navigating to news detail with ID:", newsId);
       this.$router.push({
-        name: "UpdateNews",
+        name: "StaffNewsDetail",
         params: {id: newsId},
       });
     },

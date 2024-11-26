@@ -23,6 +23,8 @@ public class NewsResponse {
 
     Date createDate;
 
+    Date updateDate;
+
     private String createdBy;
 
 }

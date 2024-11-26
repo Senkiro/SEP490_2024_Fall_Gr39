@@ -82,32 +82,69 @@
 
         <div class="row2">
             <div class="graph"></div>
-            <div id="news-container">
-                <div class="news-upper">
-                    <h2>News</h2>
-                    <p id="see-all">See all</p>
-                </div>
-
-                <div class="news-lower">
-                    <div class="news-row">
-                        <p class="date">10/12/2024</p>
-                        <p class="title">Title 1</p>
-                    </div>
-
-                    <div class="news-row">
-                        <p class="date">10/12/2024</p>
-                        <div class="title">Longggg gggggg gggggggg gggg gggggg ggggg ggggg title</div>
-                    </div>
-                </div>
+          <div id="news-container">
+            <div class="news-upper">
+              <h2>News</h2>
+              <p id="see-all" @click="navigateToNewsRecord">See all</p>
             </div>
+
+            <div class="news-lower">
+              <div v-for="news in newsList" :key="news.newId" class="news-row">
+                <p class="date">{{ new Date(news.createDate).toLocaleDateString() }}</p>
+                <p class="title">{{ news.newTitle }}</p>
+              </div>
+            </div>
+          </div>
         </div>
     </div>
 </template>
 
 <script>
-
+import axios from "axios";
 export default {
+  data() {
+    return {
+      newsList: [],
+    }
+  },
+  methods: {
+    async fetchAllNews() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get(
+            "http://localhost:8088/fja-fap/staff/get-all-publish-news",
+            {
+              params: {
+                page: 0,
+                size: 10,
+              },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
 
+        if (response.data.code === 0) {
+          this.newsList = response.data.result.content || [];
+        } else {
+          this.showNotification(
+              "Unable to load news: " + response.data.message,
+              "error"
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        this.showNotification(
+            "An error occurred while loading news.",
+            "error"
+        );
+      }
+    },
+    navigateToNewsRecord() {
+      this.$router.push({ name: "StudentNewsList" });
+    },
+  },
+  mounted() {
+    this.fetchAllNews();
+  },
 }
 </script>
 

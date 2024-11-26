@@ -5,6 +5,7 @@ import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.room.RoomResponse;
+import com.nsg.entity.NewEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ public interface NewsService {
 
     Page<NewsResponse> getAllNews(int page, int size);
 
+    Page<NewsResponse> getAllPublishNews(int page, int size);
+
     //update news
     NewsResponse updateNews(String newsId, NewsRequest request);
 
@@ -25,4 +28,5 @@ public interface NewsService {
     //delete room by id
     void deleteNews(String newsId);
 
+    NewEntity getNewtById(String newsId);
 }

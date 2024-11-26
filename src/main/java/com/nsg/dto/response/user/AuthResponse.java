@@ -12,4 +12,5 @@ public class AuthResponse {
     String token;
     boolean authenticated;
     String scope;
+    String userId;
 }

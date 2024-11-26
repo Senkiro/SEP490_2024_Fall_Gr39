@@ -20,6 +20,8 @@ public interface ClassRepository extends BaseRepository<ClassEntity, String> {
     List<ClassEntity> findByClassNameAndBatchEntityBatchName(String className, String batchName);
 
     List<ClassEntity> findByClassName(String className);
+
+    ClassEntity findByClassId(String classId);
 }
 
 

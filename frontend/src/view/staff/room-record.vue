@@ -15,14 +15,14 @@
         <thead>
         <tr>
           <th class="center">No</th>
-          <th>Room</th>
+          <th class="center">Room</th>
           <th class="center">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(room, index) in rooms" :key="index">
           <td class="center">{{ index + 1 }}</td>
-          <td>{{ room.roomNumber }}</td>
+          <td class="center">{{ room.roomNumber }}</td>
           <td class="center">
             <div class="icon-group">
               <VsxIcon iconName="Edit2" :size="25" color="#171717" type="linear" @click="editRoomPopup(room)"/>
@@ -31,7 +31,7 @@
           </td>
         </tr>
         <tr v-if="rooms.length === 0">
-          <td colspan="8" class="center">No record.</td>
+          <td colspan="3" class="center">No record.</td>
         </tr>
         </tbody>
       </table>
@@ -40,6 +40,9 @@
     <!-- Add Room Popup -->
     <div v-if="showAddRoomPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closePopup"/>
+        </div>
         <div class="popup-title">
           <h2>Add Room</h2>
         </div>
@@ -49,7 +52,6 @@
             <input type="number" id="roomNumber" v-model="newRoom.roomNumber" required/>
           </div>
           <div class="actions">
-            <button class="btn-cancel" @click="closePopup">Cancel</button>
             <button type="submit">Add</button>
           </div>
         </form>
@@ -59,6 +61,9 @@
     <!-- Edit Room Popup -->
     <div v-if="showEditRoomPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="closePopup"/>
+        </div>
         <div class="popup-title">
           <h2>Edit Room - {{ editRoom.roomNumber }}</h2>
         </div>
@@ -68,7 +73,6 @@
             <input type="number" id="editRoomNumber" v-model="editRoom.roomNumber" required/>
           </div>
           <div class="actions">
-            <button class="btn-cancel" @click="closePopup">Cancel</button>
             <button type="submit">Update</button>
           </div>
         </form>
@@ -231,5 +235,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+th:last-child, td:last-child{
+  width: 300px;
+}
 </style>

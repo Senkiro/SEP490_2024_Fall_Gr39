@@ -79,6 +79,9 @@
 
     <div v-if="showAddBatchPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="confirmCancel"/>
+        </div>
         <div class="popup-title">
           <h2>Add Batch</h2>
         </div>
@@ -89,12 +92,7 @@
           </div>
           <div class="form-group">
             <label for="startTime">Start time <span class="required">*</span></label>
-            <input
-                type="date"
-                id="startTime"
-                v-model="newBatch.startTime"
-                @change="handleStartDateChange"
-            />
+            <input type="date" id="startTime" v-model="newBatch.startTime" @change="handleStartDateChange"/>
           </div>
           <div class="form-group">
             <label for="endTime">End time <span class="required">*</span></label>
@@ -105,15 +103,14 @@
             <input type="number" id="year" v-model="newBatch.year" min="2000" max="2100"/>
           </div>
           <div class="actions">
-            <button class="btn-cancel" @click="confirmCancel">Cancel</button>
-            <button type="submit" :disabled="!validateBatch()"> Create</button>
+            <button type="submit"> Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </div>
     </div>
 
-    <div v-if="notification.message" :class="['notification', notification.type]">
+    <div v-if="notification.message" class="notification" :class="notification.type">
       {{ notification.message }}
     </div>
   </div>
@@ -191,6 +188,10 @@ export default {
       this.$router.push({name: 'BatchDetail', params: {batchName: batchEntity.batchName}});
     },
     async addBatch() {
+      if (!this.validateBatch()) {
+        return;
+      }
+
       if (this.newBatch.startTime && this.newBatch.endTime && new Date(this.newBatch.startTime) > new Date(this.newBatch.endTime)) {
         this.showNotification("Start time must be before end time.", "error");
         return;

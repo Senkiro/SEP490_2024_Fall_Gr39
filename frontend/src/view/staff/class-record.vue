@@ -5,29 +5,32 @@
     </div>
     <div class="actions">
       <button @click="openAddClassPopup">
-        <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+        <VsxIcon iconName="AddCircle" size="20" type="bold" />
         Add class
       </button>
     </div>
     <div class="table-container">
       <table>
         <thead>
-        <tr>
-          <th class="center">No</th>
-          <th>Class</th>
-          <th>Number of students</th>
-          <th class="center">Action</th>
-        </tr>
+          <tr>
+            <th class="center">No</th>
+            <th>Class</th>
+            <th>Number of students</th>
+            <th class="center">Action</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="(classItem, index) in classes" :key="classItem.id">
-          <td class="center">{{ index + 1 }}</td>
-          <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
-          <td>{{ classItem.studentCount }}</td>
-          <td class="center">
-            <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)"/>
-          </td>
-        </tr>
+          <tr v-for="(classItem, index) in classes" :key="classItem.id">
+            <td class="center">{{ index + 1 }}</td>
+            <td :style="{ color: classItem.classColor }">{{ classItem.name }}</td>
+            <td>{{ classItem.studentCount }}</td>
+            <td class="center">
+              <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewClassDetail(classItem)" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -59,20 +62,20 @@
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 
 export default {
   name: "ClassRecord",
-  components: {VsxIcon},
+  components: { VsxIcon },
   data() {
     return {
-      batchEntity: {name: 'FALL2024'},
+      batchEntity: { name: 'FALL2024' },
       classes: [
-        {id: 1, name: 'Blue', classColor: 'blue', studentCount: 30},
-        {id: 2, name: 'Red', classColor: 'red', studentCount: 30},
-        {id: 3, name: 'Green', classColor: 'green', studentCount: 30},
-        {id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30},
-        {id: 5, name: 'Purple', classColor: 'purple', studentCount: 30}
+        { id: 1, name: 'Blue', classColor: 'blue', studentCount: 30 },
+        { id: 2, name: 'Red', classColor: 'red', studentCount: 30 },
+        { id: 3, name: 'Green', classColor: 'green', studentCount: 30 },
+        { id: 4, name: 'Yellow', classColor: 'yellow', studentCount: 30 },
+        { id: 5, name: 'Purple', classColor: 'purple', studentCount: 30 }
       ]
     };
   },
@@ -84,5 +87,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

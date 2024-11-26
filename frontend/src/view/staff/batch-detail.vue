@@ -15,7 +15,7 @@
     </div>
 
     <!-- Nội dung Student Record -->
-    <div v-if="activeTab === 'student'" class="student-record">
+    <div v-if="activeTab === 'student'" class="record">
       <div class="filters">
         <select id="class-filter" class="filter-select" v-model="selectedClass" @change="filterStudentsByClass">
           <option value="">All Class</option>
@@ -81,7 +81,7 @@
             </td>
           </tr>
           <tr v-if="students.length === 0">
-            <td colspan="8" class="center">No record.</td>
+            <td colspan="7" class="center">No record.</td>
           </tr>
           </tbody>
         </table>
@@ -105,7 +105,7 @@
     </div>
 
     <!-- Nội dung Class Record -->
-    <div v-if="activeTab === 'class'" class="class-record">
+    <div v-if="activeTab === 'class'" class="record">
       <div class="actions">
         <button @click="openAddClassPopup">
           <VsxIcon iconName="AddCircle" size="20" type="bold"/>
@@ -133,7 +133,7 @@
             </td>
           </tr>
           <tr v-if="classes.length === 0">
-            <td colspan="8" class="center">No record.</td>
+            <td colspan="4" class="center">No record.</td>
           </tr>
           </tbody>
         </table>
@@ -217,6 +217,9 @@
     <!-- Popup Add Class -->
     <div v-if="showAddClassPopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddClassPopup = false"/>
+        </div>
         <div class="popup-title">
           <h2>Add class</h2>
         </div>
@@ -235,7 +238,6 @@
           </div>
           <div class="actions">
             <button type="submit">Create</button>
-            <button class="btn btn-cancel" @click="showAddClassPopup = false">Cancel</button>
           </div>
         </form>
       </div>
@@ -331,7 +333,7 @@ export default {
       this.activeTab = tab;
     },
     navigateToProfile(studentId) {
-      this.$router.push({name: "StudentProfile", params: {id: studentId}});
+      this.$router.push({name: "StaffStudentProfile", params: {id: studentId}});
     },
     openAddStudentPopup() {
       this.showAddStudentPopup = true;
@@ -446,7 +448,7 @@ export default {
     },
 
     navigateToImportStudent() {
-      this.$router.push({name: 'ImportStudentPage'});
+      this.$router.push({name: 'ImportStudent'});
     },
 
     showNotification(message, type) {
@@ -819,9 +821,7 @@ export default {
       color: #1A2C6F;
     }
   }
-
-  .student-record,
-  .class-record {
+  .record {
     display: flex;
     flex-direction: column;
     gap: 20px;

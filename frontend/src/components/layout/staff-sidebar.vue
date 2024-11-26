@@ -102,31 +102,19 @@
         </div>
 
         <!-- -----Learning Material----- -->
+        <router-link class="sidebar-item" to="/staff/curriculumn">
+          <span class="material-icons">
+            <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Curriculumn</span>
+        </router-link>
 
-        <div class="dropdown" :class="{ active: dropdowns.learningMaterial }">
-          <button class="dropdown-header" @click="toggleDropdown('learningMaterial', 'record', 'schedule')">
-            <span class="material-icons">
-              <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
-            </span>
-            <span class="text">Material</span>
-          </button>
-
-          <div v-if="dropdowns.learningMaterial" class="dropdown-container">
-            <router-link class="sidebar-item dropdown-item" to="/staff/lesson">
-              <span class="material-icons">
-                <VsxIcon iconName="Book" :size="32" color="#1A2C6F" type="linear" />
-              </span>
-              <span class="text">Lesson</span>
-            </router-link>
-
-            <router-link class="sidebar-item dropdown-item" to="/staff/exam">
-              <span class="material-icons">
-                <VsxIcon iconName="Task" :size="32" color="#1A2C6F" type="linear" />
-              </span>
-              <span class="text">Exam</span>
-            </router-link>
-          </div>
-        </div>
+        <router-link class="sidebar-item" to="/staff/holiday">
+          <span class="material-icons">
+            <VsxIcon iconName="Cardano" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Holiday</span>
+        </router-link>
 
         <router-link class="sidebar-item" to="/staff/mark">
           <span class="material-icons">
@@ -335,10 +323,10 @@ aside {
   }
 
   &.is-expanded {
-    width: var(--sidebar-width);
+    width: 15%;
 
     .sidebar-container {
-      width: 214px;
+      width: 198px;
 
 
       .menu-toggle-wrap {

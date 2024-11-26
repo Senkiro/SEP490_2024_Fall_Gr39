@@ -73,6 +73,7 @@ public class AuthServiceImp implements AuthService {
             return AuthResponse.builder()
                     .token(token)
                     .authenticated(true)
+                    .userId(user.getUserId())
                     .scope(user.getRoles().name())
                     .build();
         }else {

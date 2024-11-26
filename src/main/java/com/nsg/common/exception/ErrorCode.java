@@ -90,6 +90,9 @@ public enum ErrorCode {
     CURRICULUMN_LIST_NOT_FOUND(1340, "Curriculumn list not found!"),
     CURRICULUMN_LIST_TITLE_EXISTED(1341, "Curriculumn list title already existed!"),
 
+    //holiday
+    HOLIDAY_NOT_FOUND(2100, "Holiday not found"),
+
     //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );
 

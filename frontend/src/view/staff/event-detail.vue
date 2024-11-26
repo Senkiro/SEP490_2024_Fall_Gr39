@@ -1,63 +1,68 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <template v-if="isActive">
-        <input v-model="eventDetail.eventName" class="input-field" placeholder="Enter event name" />
-      </template>
-      <template v-else>
-        <h1>{{ eventDetail.eventName }}</h1>
-      </template>
+      <div class="field-group">
+        <template v-if="isActive">
+          <label for="eventName">Title</label>
+          <input v-model="eventDetail.eventName" id="eventName" class="input-field" placeholder="Enter event name" />
+        </template>
+        <template v-else>
+          <h1>{{ eventDetail.eventName }}</h1>
+        </template>
+      </div>
 
-      <!-- Địa chỉ sự kiện -->
-      <template v-if="isActive">
-        <input v-model="eventDetail.address" class="input-field" placeholder="Enter address" />
-      </template>
-      <template v-else>
-        <p>{{ eventDetail.address }}</p>
-      </template>
+      <div class="field-group">
+        <template v-if="isActive">
+          <label for="address">Address</label>
+          <input v-model="eventDetail.address" id="address" class="input-field" placeholder="Enter address" />
+        </template>
+        <template v-else>
+          <i>{{ eventDetail.address }}</i>
+        </template>
+      </div>
     </div>
+
     <form @submit.prevent="submitForm">
       <div class="image-container">
-        <img :src="`/${eventDetail.imagePath}`" alt="Event Image">
-        <div class="middle">
-          <template v-if="isActive">
-            <button class="edit-btn">
+        <img :src="previewImage || `/${eventDetail.imagePath}`" alt="Event Image" />
+        <template v-if="isActive">
+          <div class="middle">
+            <label for="img" class="upload-btn">
               <VsxIcon iconName="Image" type="bold" color="#fff" />
-              <label for="img">
-                Upload an image
-              </label>
-              <input
-                  type="file"
-                  id="img"
-                  name="img"
-                  accept="image/*"
-                  @change="handleImageChange"
-                  style="display: none;"
-              />
-            </button>
-          </template>
-        </div>
+              Upload an image
+              <input type="file" id="img" name="img" accept="image/*" @change="handleImageChange"
+                style="display: none;" />
+            </label>
+          </div>
+        </template>
       </div>
 
       <div>
         <template v-if="isActive">
-          <TextEditor v-model= eventDetail.description   @input="updateDescription" />
+          <div class="field-group">
+            <label for="description">Description</label>
+            <TextEditor v-model="eventDetail.description" @input="updateDescription" id="description" />
+          </div>
         </template>
-        <template v-else >
-          <div v-html=eventDetail.description></div>
+        <template v-else>
+          <div v-html="eventDetail.description" class="description-display"></div>
         </template>
       </div>
 
       <div v-if="!isActive" class="actions">
-        <button v-if="!isActive" @click="openTextEditor">
+        <button @click="openTextEditor" class="edit-btn">
           <VsxIcon iconName="Edit2" color="#fff" type="bold" />
           Edit
         </button>
       </div>
       <div v-if="isActive" class="actions">
-        <button v-if="isActive" @click="saveChanges">
+        <button @click="saveChanges" class="save-btn">
           <VsxIcon iconName="Save2" color="#fff" type="bold" />
           Save
+        </button>
+        <button @click="cancelEdit" class="cancel-btn">
+          <VsxIcon iconName="CloseCircle" color="#fff" type="bold" />
+          Cancel
         </button>
       </div>
     </form>
@@ -65,16 +70,13 @@
     <h2>Feedback</h2>
     <div class="tab-buttons-container">
       <div class="tab-buttons">
-        <button class="tab-button" :class="{ active: tabs.blue }"
-                @click="showTab('blue', 'green', 'red')">
+        <button class="tab-button" :class="{ active: tabs.blue }" @click="showTab('blue', 'green', 'red')">
           <h3>Blue</h3>
         </button>
-        <button class="tab-button" :class="{ active: tabs.green }"
-                @click="showTab('green', 'red', 'blue')">
+        <button class="tab-button" :class="{ active: tabs.green }" @click="showTab('green', 'red', 'blue')">
           <h3>Green</h3>
         </button>
-        <button class="tab-button" :class="{ active: tabs.red }"
-                @click="showTab('red', 'blue', 'green')">
+        <button class="tab-button" :class="{ active: tabs.red }" @click="showTab('red', 'blue', 'green')">
           <h3>Red</h3>
         </button>
       </div>
@@ -83,23 +85,24 @@
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
-
   </div>
 </template>
 
+
 <script>
-import TextEditor from '@/components/text-editor.vue';
-import { VsxIcon } from 'vue-iconsax';
+import TextEditor from "@/components/text-editor.vue";
+import { VsxIcon } from "vue-iconsax";
 import axios from "axios";
 
 export default {
   components: {
     VsxIcon,
-    TextEditor
+    TextEditor,
   },
   data() {
     return {
       isActive: false,
+      backupEventDetail: {}, // Lưu trạng thái ban đầu để khôi phục khi cancel
       eventId: this.$route.params.eventId,
       tabs: {
         blue: true,
@@ -107,21 +110,29 @@ export default {
         red: false,
       },
       eventDetail: {
-        eventName: '',
-        address: '',
-        imagePath: '',
-        description: '',
-        status: false
+        eventName: "",
+        address: "",
+        imagePath: "",
+        description: "",
+        status: false,
       },
+      selectedImage: null, // Lưu trữ tệp ảnh được chọn
+      previewImage: "", // Lưu URL ảnh xem trước
       notification: {
-        message: '',
-        type: ''
+        message: "",
+        type: "",
       },
-    }
+    };
   },
   methods: {
     openTextEditor() {
       this.isActive = true;
+      this.backupEventDetail = JSON.parse(JSON.stringify(this.eventDetail)); // Lưu trạng thái ban đầu
+    },
+    cancelEdit() {
+      this.isActive = false;
+      this.eventDetail = JSON.parse(JSON.stringify(this.backupEventDetail)); // Khôi phục trạng thái ban đầu
+      this.previewImage = ""; // Xóa URL xem trước nếu có
     },
     showTab(open, close1, close2) {
       this.tabs[open] = true;
@@ -129,7 +140,7 @@ export default {
       this.tabs[close2] = false;
     },
     updateDescription(value) {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         this.eventDetail.description = value;
       } else {
         console.error("Invalid description format:", value);
@@ -139,18 +150,23 @@ export default {
       const file = event.target.files[0];
       if (file) {
         this.selectedImage = file;
+        this.previewImage = URL.createObjectURL(file); // Tạo URL ảnh xem trước
       }
     },
     async fetchEventDetail() {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-event?eventId=${this.eventId}`,
-            {headers: {Authorization: `Bearer ${token}`}}
+          `http://localhost:8088/fja-fap/staff/get-event?eventId=${this.eventId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         this.eventDetail = response.data.result;
       } catch (error) {
-        this.$emit("showNotification", "Failed to fetch event details. Please try again.", "error");
+        this.$emit(
+          "showNotification",
+          "Failed to fetch event details. Please try again.",
+          "error"
+        );
       }
     },
     async saveChanges() {
@@ -158,18 +174,25 @@ export default {
         const token = sessionStorage.getItem("jwtToken");
         const formData = new FormData();
 
+        if (this.previewImage) {
+          URL.revokeObjectURL(this.previewImage); // Giải phóng URL
+          this.previewImage = ""; // Reset URL xem trước
+        }
+
         // Thêm dữ liệu JSON
         formData.append(
-            "eventDetail",
-            new Blob(
-                [JSON.stringify({
-                  eventName: this.eventDetail.eventName,
-                  address: this.eventDetail.address,
-                  description: this.eventDetail.description,
-                  imagePath: this.eventDetail.imagePath,
-                })],
-                {type: "application/json"}
-            )
+          "eventDetail",
+          new Blob(
+            [
+              JSON.stringify({
+                eventName: this.eventDetail.eventName,
+                address: this.eventDetail.address,
+                description: this.eventDetail.description,
+                imagePath: this.eventDetail.imagePath,
+              }),
+            ],
+            { type: "application/json" }
+          )
         );
 
         // Thêm file ảnh nếu có
@@ -178,21 +201,22 @@ export default {
         }
 
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/update-event/${this.eventId}`,
-            formData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/update-event/${this.eventId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
+
         if (response.data && response.data.result) {
           this.eventDetail = response.data.result;
         }
 
-        window.location.reload();
-        this.showNotification('Event update successfully!', 'success');
+        this.isActive = false;
+        this.showNotification("Event updated successfully!", "success");
       } catch (error) {
         console.error("Error saving changes:", error);
         this.showNotification("Failed to update. Please try again.", "error");
@@ -209,7 +233,7 @@ export default {
         this.notification.message = "";
         sessionStorage.removeItem("notification");
       }, 3000);
-    }
+    },
   },
   mounted() {
     this.fetchEventDetail();
@@ -226,17 +250,35 @@ export default {
         sessionStorage.removeItem("notification");
       }, 3000);
     }
-  }
-}
+  },
+};
 </script>
 
+
 <style lang="scss" scoped>
-.headContent {
-  p {
-    font-style: italic;
-    color: #979B9F;
+i{
+  color: #b9b9b9;
+}
+.field-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
   }
 }
+
 
 .image-container {
   width: 100%;
@@ -252,10 +294,16 @@ export default {
     object-position: center;
     transition: .5s ease;
     backface-visibility: hidden;
-    cursor: pointer;
   }
 
   .middle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 50px;
+    border-radius: 20px;
+    background: #b9b9b9;
     transition: .5s ease;
     opacity: 0;
     position: absolute;
@@ -263,9 +311,18 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
+    color: #fff;
+    cursor: pointer;
 
     #img {
       display: none;
+    }
+
+    .upload-btn {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
     }
   }
 
@@ -277,7 +334,7 @@ export default {
 }
 
 .input-field,
-.textarea-field{
+.textarea-field {
   width: 100%;
   padding: 10px;
   margin: 10px 0;

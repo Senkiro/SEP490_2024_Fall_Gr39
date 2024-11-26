@@ -1,21 +1,16 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <h1>Create News</h1>
+      <h1>Create news</h1>
     </div>
 
     <form>
-      <div class="form-group">
-        <label for="className">News Title <span class="required">*</span></label>
-        <input
-            v-model="news.newContent"
-            placeholder="Enter news title"
-            required
-            class="textarea-field"
-        />
+      <div class="input-group">
+        <label>News title <span class="required">*</span></label>
+        <input v-model="news.newContent" placeholder="Enter news title" required/>
       </div>
-      <div class="form-group">
-        <label for="className">News Content <span class="required">*</span></label>
+      <div class="input-group">
+        <label>News content <span class="required">*</span></label>
         <div class="text-editor-container">
           <TextEditor v-model="news.newTitle" />
         </div>
@@ -60,7 +55,6 @@ export default {
       news: {
         newTitle: "",
         newContent: "",
-        createDate: new Date().toISOString().split("T")[0],
         createdBy: sessionStorage.getItem("userName") || "Unknown",
       },
       isLoading: false,

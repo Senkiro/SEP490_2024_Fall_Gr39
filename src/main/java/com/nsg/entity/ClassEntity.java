@@ -36,4 +36,5 @@ public class ClassEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "batch_name")
     BatchEntity batchEntity;
+
 }

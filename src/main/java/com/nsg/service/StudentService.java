@@ -31,5 +31,7 @@ public interface StudentService {
     void saveAll(List<StudentEntity> students);
 
     Page<StudentResponse> findStudentsByName(String name, String classId, int page, int size);
+
+    Page<StudentResponse> getStudentByClass(int page, int size, String studentId);
 }
 
