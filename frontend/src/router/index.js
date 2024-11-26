@@ -356,8 +356,8 @@ const routes = [
         },
     },
     {
-        path: '/staff/student-attendance-report',
-        name: 'StudentAttendanceReport',
+        path: '/staff/student-attendance-report/:id',
+        name: 'StaffStudentAttendanceReport',
         component: () => import('../view/staff/student-attendance-report.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
             breadcrumbs: [
@@ -471,7 +471,7 @@ const routes = [
     },
     {
         path: '/student/attendance',
-        name: 'StudentAttendanceReport',
+        name: 'StudentStudentAttendanceReport',
         component: () => import('../view/student/attendance-report.vue'),
         meta: { layout: 'student', requiresAuth: false, 
             breadcrumbs: [
