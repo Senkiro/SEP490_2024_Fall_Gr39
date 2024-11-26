@@ -345,26 +345,26 @@ public class StaffController {
                 .build();
     }
 
-    //upload lesson
-    @PostMapping("/upload-lessons")
-    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
-                lessonService.saveAll(lessons);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and lessons added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
-    }
+//    //upload lesson
+//    @PostMapping("/upload-lessons")
+//    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
+//        if (excelHelper.hasExcelFormat(file)) {
+//            try {
+//                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
+//                lessonService.saveAll(lessons);
+//                return ResponseEntity.ok(ApiResponse.<String>builder().
+//                        message("File uploaded and lessons added successfully.")
+//                        .build());
+//            } catch (Exception e) {
+//                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+//                        .message("Failed to parse file.")
+//                        .build());
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+//                .message("Please upload an Excel file.")
+//                .build());
+//    }
 
     /**********************************
      * Manage Teacher
@@ -582,25 +582,25 @@ public class StaffController {
     }
 
     //upload exam
-    @PostMapping("/upload-exams")
-    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
-                examService.saveAll(examEntityList);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and exams added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
-    }
+//    @PostMapping("/upload-exams")
+//    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
+//        if (excelHelper.hasExcelFormat(file)) {
+//            try {
+//                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
+//                examService.saveAll(examEntityList);
+//                return ResponseEntity.ok(ApiResponse.<String>builder().
+//                        message("File uploaded and exams added successfully.")
+//                        .build());
+//            } catch (Exception e) {
+//                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+//                        .message("Failed to parse file.")
+//                        .build());
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+//                .message("Please upload an Excel file.")
+//                .build());
+//    }
 
     /**********************************
      * Manage Event
@@ -948,42 +948,6 @@ public class StaffController {
         HolidayEntity holidayEntity = holidayService.getHolidaytById(holidayId);
         return ApiResponse.<HolidayEntity>builder()
                 .result(holidayEntity)
-                .build();
-    }
-
-    /**********************************
-     * Manage News
-     **********************************/
-    @PostMapping("/create-news")
-    public ApiResponse<NewsResponse> createNews(@RequestBody @Valid NewsRequest request) {
-        return ApiResponse.<NewsResponse>builder()
-                .result(newsService.createNews(request))
-                .message("Create draft news successfully!")
-                .build();
-    }
-
-    //get news by batch
-    @GetMapping("/get-all-news")
-    public ApiResponse<Page<NewsResponse>> getNewsByBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<NewsResponse>>builder()
-                .result(newsService.getAllNews(page, size))
-                .build();
-    }
-
-    //update news
-    @PostMapping("/update-news/{newsId}")
-    public ApiResponse<NewsResponse> updateNews(@PathVariable("newsId") String newsId, @RequestBody NewsRequest request) {
-        return ApiResponse.<NewsResponse>builder()
-                .result(newsService.updateNews(newsId, request))
-                .build();
-    }
-
-    //delete news
-    @DeleteMapping("/delete-news/{newsId}")
-    public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
-        newsService.deleteNews(newsId);
-        return ApiResponse.builder()
-                .message("Delete news successfully!")
                 .build();
     }
 
