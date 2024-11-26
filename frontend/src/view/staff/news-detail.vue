@@ -61,7 +61,7 @@ export default {
   name: "NewsDetail",
   components: { TextEditor, VsxIcon },
   setup() {
-    const route = useRoute(); // Lấy ID từ route
+    const route = useRoute();
     const router = useRouter();
     const news = ref({
       newId: "",
@@ -73,7 +73,6 @@ export default {
     });
     const isLoading = ref(false);
 
-    // Lấy dữ liệu từ API
     const fetchNewsDetail = async () => {
       try {
         const token = sessionStorage.getItem("jwtToken");
@@ -94,7 +93,7 @@ export default {
 
     // Phương thức cập nhật bài viết
     const updateNews = async (status) => {
-      if (!validateForm()) return; // Kiểm tra dữ liệu form
+      if (!validateForm()) return;
 
       isLoading.value = true;
       try {
@@ -117,7 +116,7 @@ export default {
         );
         const action = status ? "published" : "saved as draft";
         alert(`News ${action} successfully!`);
-        router.push({ name: "StaffNews" }); // Quay lại danh sách tin tức
+        router.push({ name: "StaffNews" });
       } catch (error) {
         console.error("Error updating news:", error);
         alert("Failed to update news. Please try again.");
@@ -126,7 +125,6 @@ export default {
       }
     };
 
-    // Xác thực form
     const validateForm = () => {
       if (!news.value.newTitle.trim()) {
         alert("Title is required!");

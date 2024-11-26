@@ -1,4 +1,4 @@
-package com.nsg.dto.request.session;
+package com.nsg.dto.request.curriculumn;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -9,13 +9,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ScheduleCreationRequest {
-    @NotBlank
-    String timeSlotId;
+public class CurriculumnRequest {
+    int sessionNo;
 
-    @NotBlank
-    String roomNumber;
+    String lessonId;
 
-    @NotBlank
+    String examId;
+
     int curriculumnListId;
 }

@@ -40,7 +40,7 @@ public class StudentEntity extends BaseEntity {
     @JoinColumn(name = "batch_name", referencedColumnName = "batch_name")
     BatchEntity batchEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "studentEntity", fetch = FetchType.EAGER)
     List<AttendanceEntity> attendanceEntityList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)

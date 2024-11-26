@@ -11,6 +11,7 @@ import com.nsg.entity.BatchEntity;
 import com.nsg.entity.SessionEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.repository.AttendanceRepository;
+import com.nsg.repository.ClassRepository;
 import com.nsg.repository.SessionRepository;
 import com.nsg.repository.StudentRepository;
 import com.nsg.service.AttendanceService;
@@ -39,6 +40,9 @@ public class AttendanceServiceImp implements AttendanceService {
     @Autowired
     StudentService studentService;
 
+    @Autowired
+    ClassRepository classRepository;
+
     @Override
     public void createAttendance(AttendanceRequest request) {
         AttendanceEntity attendanceEntity = new AttendanceEntity();
@@ -61,36 +65,88 @@ public class AttendanceServiceImp implements AttendanceService {
         attendanceRepository.save(attendanceEntity);
     }
 
+    //create attendance for a class in a session
+    @Override
+    public void createAttendancesForSession(String classId) {
+        //check class existed or not
+        if (!classRepository.existsById(classId)) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+
+        // get session by classId
+        List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classId);
+
+        //check session
+        if (sessionEntityList.isEmpty()) {
+            //There are no session for this class
+            throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
+        }
+
+        // filter which session has CurriculumnEntity not null
+        List<SessionEntity> validSessions = new ArrayList<>();
+        for (SessionEntity session : sessionEntityList) {
+            if (session.getCurriculumnEntity() != null) {
+                validSessions.add(session);
+            }
+        }
+
+        // get all student in class
+        List<StudentEntity> studentEntityList = studentRepository.findByClassEntityClassId(classId);
+
+        //if there are no student in class
+        if (studentEntityList.isEmpty()) {
+            throw new AppException(ErrorCode.CLASS_IS_EMPTY);
+        }
+
+        // list AttendanceRequest
+        List<AttendanceRequest> createRequest = new ArrayList<>();
+        String defaultStatus = "incoming";
+
+        for (SessionEntity session : validSessions) {
+            for (StudentEntity student : studentEntityList) {
+                AttendanceRequest attendanceRequest = new AttendanceRequest();
+
+                attendanceRequest.setStatus(defaultStatus);
+                attendanceRequest.setSessionId(session.getSessionId());
+                attendanceRequest.setStudentId(student.getStudentId());
+
+                createRequest.add(attendanceRequest);
+            }
+        }
+
+        // call create attendance function
+        for (AttendanceRequest request : createRequest) {
+            createAttendance(request);
+        }
+    }
+
+
     @Override
     public Page<AttendanceResponse> getAllAttendance(int page, int size) {
         Page<AttendanceEntity> attendanceEntities = attendanceRepository.findAll(PageRequest.of(page, size));
-        List<AttendanceResponse> responseList = new ArrayList<>();
+        List<AttendanceResponse> responseList = toListAttendanceResponse(attendanceEntities);
 
-        for (AttendanceEntity attendance : attendanceEntities) {
-            AttendanceResponse attendanceResponse = new AttendanceResponse();
-
-            attendanceResponse.setAttendanceId(attendance.getAttendanceId());
-            attendanceResponse.setDate(attendance.getSessionEntity().getDate());
-            attendanceResponse.setStatus(attendance.getStatus());
-            attendanceResponse.setNote(attendance.getNote());
-
-            attendanceResponse.setSessionId(attendance.getSessionEntity().getSessionId());
-
-            StudentEntity student = attendance.getStudentEntity();
-
-            //convert to student response
-            StudentResponse studentResponse = studentService.convertToStudentResponse(student);
-
-            attendanceResponse.setStudentResponse(studentResponse);
-
-            responseList.add(attendanceResponse);
-        }
         return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
     }
 
     @Override
     public Page<AttendanceResponse> getAttendanceBySession(String sessionId, int page, int size) {
         Page<AttendanceEntity> attendanceEntities = attendanceRepository.findBySessionEntitySessionId(sessionId, PageRequest.of(page, size));
+        List<AttendanceResponse> responseList = toListAttendanceResponse(attendanceEntities);
+
+        return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
+    }
+
+    @Override
+    public Page<AttendanceResponse> getAttendanceByStudent(String studentId, int page, int size) {
+        Page<AttendanceEntity> attendanceEntities = attendanceRepository.findByStudentEntityStudentId(studentId, PageRequest.of(page, size));
+        List<AttendanceResponse> responseList = toListAttendanceResponse(attendanceEntities);
+
+        return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
+    }
+
+    //convert from page to list response
+    public List<AttendanceResponse> toListAttendanceResponse(Page<AttendanceEntity> attendanceEntities) {
         List<AttendanceResponse> responseList = new ArrayList<>();
 
         for (AttendanceEntity attendance : attendanceEntities) {
@@ -113,7 +169,7 @@ public class AttendanceServiceImp implements AttendanceService {
             responseList.add(attendanceResponse);
         }
 
-        return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
+        return responseList;
     }
 
     @Override

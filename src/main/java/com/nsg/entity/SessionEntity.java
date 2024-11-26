@@ -38,10 +38,10 @@ public class SessionEntity extends BaseEntity {
     ClassEntity classEntity;
 
     @ManyToOne
-    @JoinColumn(name = "lesson_id", referencedColumnName = "lesson_id")
-    LessonEntity lessonEntity;
+    @JoinColumn(name = "curriculumnId", referencedColumnName = "lesson_id")
+    CurriculumnEntity curriculumnEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", orphanRemoval = true)
     List<AttendanceEntity> attendanceEntityList;
 
     @ManyToOne
@@ -51,10 +51,6 @@ public class SessionEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "room_id")
     RoomEntity roomEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "exam_id")
-    ExamEntity examEntity;
 
     @ManyToOne
     @JoinColumn(name = "event_id")

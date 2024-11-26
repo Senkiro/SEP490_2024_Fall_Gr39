@@ -12,7 +12,6 @@
             class="avatar"
         />
 
-
         <div class="details-container">
           <div class="name-id-container">
             <div class="name-id">

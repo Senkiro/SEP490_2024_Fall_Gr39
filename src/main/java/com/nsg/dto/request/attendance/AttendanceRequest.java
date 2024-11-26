@@ -24,4 +24,10 @@ public class AttendanceRequest {
     String sessionId;
 
     String studentId;
+
+    public AttendanceRequest(String defaultStatus, String sessionId, String studentId) {
+        this.status = defaultStatus;
+        this.sessionId = sessionId;
+        this.studentId = studentId;
+    }
 }

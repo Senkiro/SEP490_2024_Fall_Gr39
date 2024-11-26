@@ -8,12 +8,14 @@ import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.*;
+import com.nsg.service.CurriculumnService;
 import com.nsg.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -49,6 +51,18 @@ public class SessionServiceImp implements SessionService {
     @Autowired
     ClassRepository classRepository;
 
+    @Autowired
+    CurriculumnRepository curriculumnRepository;
+
+    @Autowired
+    CurriculumnService curriculumnService;
+
+    @Autowired
+    CurriculumnListRepository curriculumnListRepository;
+
+    @Autowired
+    AttendanceRepository attendanceRepository;
+
 
     @Override
     public void createSession(SessionCreattionRequest request) {
@@ -65,20 +79,14 @@ public class SessionServiceImp implements SessionService {
         );
         session.setClassEntity(classEntity);
 
-        //lesson
-        if (request.getLessionId() != null) {
-            LessonEntity lesson = lessonRepository.findById(request.getLessionId()).orElse(null);
-            session.setLessonEntity(lesson);
+        //curriculumn
+        if (request.getCurriculumnId() >= 0) {
+            CurriculumnEntity curriculumnEntity = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
+                    () -> new AppException(ErrorCode.CURRICULUMN_NOT_FOUND)
+            );
+            session.setCurriculumnEntity(curriculumnEntity);
         } else {
-            session.setLessonEntity(null);
-        }
-
-        //exam
-        if (request.getExamId() != null) {
-            ExamEntity examEntity = examRepository.findById(request.getExamId()).orElse(null);
-            session.setExamEntity(examEntity);
-        }else {
-            session.setExamEntity(null);
+            session.setCurriculumnEntity(null);
         }
 
         //time slot
@@ -145,12 +153,21 @@ public class SessionServiceImp implements SessionService {
 
         LocalDate startDate = batchEntity.getStartTime();
 
+        //get curriculumn list
+        CurriculumnListEntity curriculumnListEntity = curriculumnListRepository.findById(String.valueOf(request.getCurriculumnListId())).orElseThrow(
+                () -> new AppException(ErrorCode.CURRICULUMN_LIST_NOT_FOUND)
+        );
+
+        //get list of curriculumn inside curriculumnList entity
+        List<CurriculumnEntity> curriculumnEntityList = curriculumnListEntity.getCurriculumnEntityList();
+
         int sessionNo = 1;
         int totalDay = 1;
         int week = 0;
 
+        int total_session = curriculumnEntityList.size();
 
-        while (sessionNo < 46) {
+        while (sessionNo < total_session) {
             LocalDate dateOfSession = startDate.plusDays((totalDay-1));
             System.out.print("Date of "+(sessionNo)+" session: "+dateOfSession+" ::: ");
             //check date: 20/11
@@ -168,22 +185,26 @@ public class SessionServiceImp implements SessionService {
                 System.out.print(dow+" là ngày cuối tuần!\n");
                 //tao session rong
                 //session k tang
-                if (dow == DayOfWeek.SUNDAY)
-                    week += 1;
+
+                //set curriculumn = -1
+                sessionCreattionRequest.setCurriculumnId(-1);
 
             } else {
                 System.out.print(dow+" không phải là ngày cuối tuần.\n");
-                //tao session voi lesson va exam va ngay la: dateOfSession
+                //tao session voi room va time_slot va ngay la: dateOfSession
                 sessionCreattionRequest.setTimeSlotId(request.getTimeSlotId());
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
 
-                //get lesson, exam
-                sessionCreattionRequest.setLessionId(String.valueOf(sessionNo));
-                sessionCreattionRequest.setExamId(String.valueOf( (sessionNo-1) ));
-
+                //get, set curriculumn
+                CurriculumnEntity curriculumn = curriculumnEntityList.get( (sessionNo - 1) );
+                sessionCreattionRequest.setCurriculumnId(curriculumn.getCurriculumnId());
 
                 //session tang 1
                 sessionNo += 1;
+
+                //week break
+                if (dow == DayOfWeek.MONDAY)
+                    week += 1;
             }
 
             sessionCreattionRequest.setSessionWeek(week);
@@ -194,6 +215,30 @@ public class SessionServiceImp implements SessionService {
         }
         System.out.println("Total days: "+totalDay);
 
+        //update total week and end date for batch
+        batchEntity.setTotalWeek(week);
+        LocalDate endDate = startDate.plusDays((totalDay-1));
+        batchEntity.setEndTime(endDate);
+
+        batchRepository.save(batchEntity);
+
+    }
+
+    @Override
+    public void deleteSchedule(String classId) {
+        //delete all session have class_id equal to class id receive
+        //find session by class id
+        List<SessionEntity> sessionEntities = sessionRepository.findByClassEntityClassId(classId);
+
+        //for: delete each session in list
+        for (SessionEntity session : sessionEntities) {
+
+            //get session id
+            String sessionId = session.getSessionId();
+
+            deleteSession(sessionId);
+
+        }
     }
 
     @Override
@@ -218,7 +263,10 @@ public class SessionServiceImp implements SessionService {
 
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
 
-            tempResponse.setLessonResponse(LessonMapper.INSTANCE.toLessonResponse(session.getLessonEntity()));
+            //check null
+            if (session.getCurriculumnEntity() != null) {
+                tempResponse.setCurriculumnResponse(curriculumnService.toCurriculumnResponse( session.getCurriculumnEntity() ));
+            }
 
             tempResponse.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(session.getTimeSlotEntity()));
 
@@ -227,8 +275,6 @@ public class SessionServiceImp implements SessionService {
             } else {
                 tempResponse.setRoomNumber(null);
             }
-
-            tempResponse.setExamResponse(ExamMapper.INSTANCE.toExamResponse(session.getExamEntity()));
 
             if (session.getEventEntity() != null) {
                 tempResponse.setEventName(session.getEventEntity().getEventName());
@@ -273,7 +319,10 @@ public class SessionServiceImp implements SessionService {
 
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
 
-            tempResponse.setLessonResponse(LessonMapper.INSTANCE.toLessonResponse(session.getLessonEntity()));
+            //check null
+            if (session.getCurriculumnEntity() != null) {
+                tempResponse.setCurriculumnResponse(curriculumnService.toCurriculumnResponse( session.getCurriculumnEntity() ));
+            }
 
             tempResponse.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(session.getTimeSlotEntity()));
 
@@ -282,8 +331,6 @@ public class SessionServiceImp implements SessionService {
             } else {
                 tempResponse.setRoomNumber(null);
             }
-
-            tempResponse.setExamResponse(ExamMapper.INSTANCE.toExamResponse(session.getExamEntity()));
 
             if (session.getEventEntity() != null) {
                 tempResponse.setEventName(session.getEventEntity().getEventName());
@@ -331,7 +378,7 @@ public class SessionServiceImp implements SessionService {
 
         response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(sessionEntity.getClassEntity()));
 
-        response.setLessonResponse(LessonMapper.INSTANCE.toLessonResponse(sessionEntity.getLessonEntity()));
+        response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
 
         response.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(sessionEntity.getTimeSlotEntity()));
 
@@ -340,8 +387,6 @@ public class SessionServiceImp implements SessionService {
         } else {
             response.setRoomNumber(null);
         }
-
-        response.setExamResponse(ExamMapper.INSTANCE.toExamResponse(sessionEntity.getExamEntity()));
 
         if (sessionEntity.getEventEntity() != null) {
             response.setEventName(sessionEntity.getEventEntity().getEventName());
@@ -379,13 +424,14 @@ public class SessionServiceImp implements SessionService {
         );
         sessionEntity.setClassEntity(classEntity);
 
-        //lesson
-        if (!Objects.equals(request.getLessionId(), "")) {
-            sessionEntity.setLessonEntity(lessonRepository.findById(request.getLessionId()).orElseThrow(
-                    () -> new AppException(ErrorCode.LESSON_NOT_FOUND)
-            ));
+        //curriculumn
+        if (!Objects.equals(request.getCurriculumnId(), "")) {
+            CurriculumnEntity curriculumn = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
+                    () -> new AppException(ErrorCode.CURRICULUMN_NOT_FOUND)
+            );
+            sessionEntity.setCurriculumnEntity(curriculumn);
         } else {
-            sessionEntity.setLessonEntity(null);
+            sessionEntity.setCurriculumnEntity(null);
         }
 
         //time slot
@@ -404,15 +450,6 @@ public class SessionServiceImp implements SessionService {
             );
         } else {
             sessionEntity.setRoomEntity(null);
-        }
-
-        //exam
-        if (!Objects.equals(request.getExamId(), "")) {
-            sessionEntity.setExamEntity(examRepository.findById(request.getExamId()).orElseThrow(
-                    () -> new AppException(ErrorCode.EXAM_NOT_FOUND))
-            );
-        } else {
-            sessionEntity.setEventEntity(null);
         }
 
         //event
@@ -439,8 +476,22 @@ public class SessionServiceImp implements SessionService {
         return getSession(sessionId);
     }
 
+    @Transactional
     @Override
     public void deleteSession(String sessionId) {
-        sessionRepository.deleteById(sessionId);
+        SessionEntity session = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        // Xóa dữ liệu liên quan (ví dụ: attendanceEntityList)
+        attendanceRepository.deleteBySessionEntity(session);
+
+        // Sau đó xóa session
+        try {
+            sessionRepository.deleteSessionBySessionId(session.getSessionId());
+        } catch (Exception e) {
+            System.out.println("ERRRRRRROR: "+e.getMessage());
+            throw e;
+        }
     }
 }

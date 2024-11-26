@@ -29,16 +29,13 @@ public class ExamEntity extends BaseEntity {
     String examContent;
 
     @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<SessionEntity> sessionEntityList;
-
-    @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<MarkEntity> markEntityList;
 
     @ManyToOne
     @JoinColumn(name = "exam_type")
     ExamTypeRateEntity examTypeRateEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "chapter_id")
-    ChapterEntity chapterEntity;
+    @OneToOne(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    CurriculumnEntity curriculumnEntity;
+
 }

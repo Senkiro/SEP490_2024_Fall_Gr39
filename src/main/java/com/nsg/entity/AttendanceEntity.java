@@ -25,7 +25,7 @@ public class AttendanceEntity extends BaseEntity {
     String note;
 
     @ManyToOne
-    @JoinColumn(name = "session_id", referencedColumnName = "session_id")
+    @JoinColumn(name = "session_id")
     SessionEntity sessionEntity;
 
     @ManyToOne
