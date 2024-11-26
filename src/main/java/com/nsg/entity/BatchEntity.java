@@ -30,6 +30,9 @@ public class BatchEntity extends BaseEntity {
     @Column(name = "year")
     int year;
 
+    @Column(name = "total_week")
+    Integer totalWeek;
+
     @Column(name = "batch_status", columnDefinition = "TINYINT")
     Integer batchStatus;
 

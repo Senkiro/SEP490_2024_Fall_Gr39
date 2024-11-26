@@ -35,11 +35,11 @@ public class LessonEntity extends BaseEntity {
     @Column(name = "grammar")
     String grammar;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
-    List<SessionEntity> sessionEntityList;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)
+//    List<SessionEntity> sessionEntityList;
 
-    @ManyToOne
-    @JoinColumn(name = "chapter_id")
-    ChapterEntity chapterEntity;
+    @OneToOne(mappedBy = "lessonEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    CurriculumnEntity curriculumnEntity;
+
 
 }

@@ -5,6 +5,8 @@ import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
+import com.nsg.dto.request.curriculumn.CurriculumnListRequest;
+import com.nsg.dto.request.curriculumn.CurriculumnRequest;
 import com.nsg.dto.request.event.EventUpdateRequest;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
@@ -25,6 +27,8 @@ import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.curriculumn.CurriculumnListResponse;
+import com.nsg.dto.response.curriculumn.CurriculumnResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamTypeResponse;
@@ -107,11 +111,18 @@ public class StaffController {
 
     @Autowired
     private ExcelHelper excelHelper;
+
     @Autowired
     private NewsService newsService;
 
     @Autowired
     private HolidayService holidayService;
+
+    @Autowired
+    CurriculumnService curriculumnService;
+
+    @Autowired
+    CurriculumnListService curriculumnListService;
 
 
     /**********************************
@@ -334,26 +345,26 @@ public class StaffController {
                 .build();
     }
 
-    //upload lesson
-    @PostMapping("/upload-lessons")
-    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
-                lessonService.saveAll(lessons);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and lessons added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
-    }
+//    //upload lesson
+//    @PostMapping("/upload-lessons")
+//    public ResponseEntity<ApiResponse<String>> uploadFileLesson(@RequestParam("file") MultipartFile file) {
+//        if (excelHelper.hasExcelFormat(file)) {
+//            try {
+//                List<LessonEntity> lessons = excelHelper.excelToLessons(file.getInputStream());
+//                lessonService.saveAll(lessons);
+//                return ResponseEntity.ok(ApiResponse.<String>builder().
+//                        message("File uploaded and lessons added successfully.")
+//                        .build());
+//            } catch (Exception e) {
+//                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+//                        .message("Failed to parse file.")
+//                        .build());
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+//                .message("Please upload an Excel file.")
+//                .build());
+//    }
 
     /**********************************
      * Manage Teacher
@@ -571,25 +582,25 @@ public class StaffController {
     }
 
     //upload exam
-    @PostMapping("/upload-exams")
-    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
-                examService.saveAll(examEntityList);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and exams added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
-        }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
-    }
+//    @PostMapping("/upload-exams")
+//    public ResponseEntity<ApiResponse<String>> uploadFileExam(@RequestParam("file") MultipartFile file) {
+//        if (excelHelper.hasExcelFormat(file)) {
+//            try {
+//                List<ExamEntity> examEntityList = excelHelper.excelToExams(file.getInputStream());
+//                examService.saveAll(examEntityList);
+//                return ResponseEntity.ok(ApiResponse.<String>builder().
+//                        message("File uploaded and exams added successfully.")
+//                        .build());
+//            } catch (Exception e) {
+//                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+//                        .message("Failed to parse file.")
+//                        .build());
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+//                .message("Please upload an Excel file.")
+//                .build());
+//    }
 
     /**********************************
      * Manage Event
@@ -725,8 +736,9 @@ public class StaffController {
     @PostMapping("/create-schedule/{class_id}")
     public ApiResponse<?> createSchedule(@PathVariable("class_id") String class_id, @RequestBody ScheduleCreationRequest request) {
         sessionService.createSchedule(class_id, request);
+        attendanceService.createAttendancesForSession(class_id);
         return ApiResponse.builder()
-                .message("Create new session successfully!")
+                .message("Create new schedule successfully!")
                 .build();
     }
 
@@ -758,6 +770,15 @@ public class StaffController {
     public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
         return ApiResponse.<SessionResponse>builder()
                 .result(sessionService.updateSession(session_id, request))
+                .build();
+    }
+
+    //delete schedule
+    @DeleteMapping("/delete-schedule/{class_id}")
+    public ApiResponse<?> deleteSchedule(@PathVariable("class_id") String class_id) {
+        sessionService.deleteSchedule(class_id);
+        return ApiResponse.builder()
+                .message("Delete schedule successfully!")
                 .build();
     }
 
@@ -803,6 +824,14 @@ public class StaffController {
     public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id, @RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<AttendanceResponse>>builder()
                 .result(attendanceService.getAttendanceBySession(session_id, page, size))
+                .build();
+    }
+
+    //get attendance by student
+    @GetMapping("/get-attendance-student/{student_id}")
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceByStudent(@PathVariable("student_id") String student_id, @RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAttendanceByStudent(student_id, page, size))
                 .build();
     }
 
@@ -921,5 +950,126 @@ public class StaffController {
                 .result(holidayEntity)
                 .build();
     }
+
+    /**********************************
+     * Manage Curriculumn
+     **********************************/
+    //upload curriculumn
+    @PostMapping("/upload-curriculumn")
+    public ResponseEntity<ApiResponse<String>> uploadFileCurriculumn(@RequestParam("file") MultipartFile file) {
+        if (excelHelper.hasExcelFormat(file)) {
+            try {
+                Map<String, List<?>> data = excelHelper.excelToLessonsAndExams(file.getInputStream());
+                List<LessonEntity> lessons = (List<LessonEntity>) data.get("lessons");
+                lessonService.saveAll(lessons);
+
+                List<ExamEntity> exams = (List<ExamEntity>) data.get("exams");
+                examService.saveAll(exams);
+
+                List<CurriculumnEntity> curriculumn = (List<CurriculumnEntity>) data.get("curriculumns");
+                curriculumnService.createCurriculumn(curriculumn);
+                return ResponseEntity.ok(ApiResponse.<String>builder().
+                        message("File uploaded and exams added successfully.")
+                        .build());
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                        .message("Failed to parse file.")
+                        .build());
+            }
+        }
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Please upload an Excel file.")
+                .build());
+    }
+
+    //get all attendance
+    @GetMapping("/get-all-curriculumn")
+    public ApiResponse<List<CurriculumnResponse>> getAllCurriculumn() {
+        return ApiResponse.<List<CurriculumnResponse>>builder()
+                .result(curriculumnService.getAllCurriculumn())
+                .build();
+    }
+
+    //get by curriculumn list id
+    @GetMapping("/get-by-curriculumn-list/{curriculumn_list_id}")
+    public ApiResponse<Page<CurriculumnResponse>> getByCurriculumnListId(@PathVariable("curriculumn_list_id") String curriculumn_list_id,
+                                                                         @RequestParam int page,
+                                                                         @RequestParam int size) {
+        return ApiResponse.<Page<CurriculumnResponse>>builder()
+                .result(curriculumnService.getCurriculumnByCurriculumnListId(curriculumn_list_id, page, size))
+                .build();
+    }
+
+    //get a curriculumn by id
+    @GetMapping("/get-curriculumn/{curriculumn_id}")
+    public ApiResponse<CurriculumnResponse> getCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id) {
+        return ApiResponse.<CurriculumnResponse>builder()
+                .result(curriculumnService.getCurriculumn(curriculumn_id))
+                .build();
+    }
+
+    //update a curriculumn
+    @PostMapping("/update-curriculumn/{curriculumn_id}")
+    public ApiResponse<CurriculumnResponse> updateCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id, @RequestBody CurriculumnRequest request) {
+        return ApiResponse.<CurriculumnResponse>builder()
+                .result(curriculumnService.updateCurriculumn(curriculumn_id, request))
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-curriculumn/{curriculumn_id}")
+    public ApiResponse<?> deleteCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id) {
+        curriculumnService.deleteCurriculumn(curriculumn_id);
+        return ApiResponse.builder()
+                .message("Delete curriculumn successfully!")
+                .build();
+    }
+
+    /**********************************
+     * Manage Curriculumn List
+     **********************************/
+    //create curriculumn list
+    @PostMapping("/create-curriculumn-list")
+    public ApiResponse<?> createCurriculumnList(@RequestBody @Valid CurriculumnListRequest request) {
+        curriculumnListService.createCurriculumnList(request);
+        return ApiResponse.<NewsResponse>builder()
+                .message("Create new curriculumn list successfully!")
+                .build();
+    }
+
+    //get all
+    @GetMapping("/get-all-curriculumn-list")
+    public ApiResponse<List<CurriculumnListResponse>> getAllCurriculumnList(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<List<CurriculumnListResponse>>builder()
+                .result(curriculumnListService.getAllCurriculumnList())
+                .build();
+    }
+
+    //get a currilumn list
+    @GetMapping("/get-curriculumn-list/{id}")
+    public ApiResponse<CurriculumnListResponse> getCurriculumnList(@PathVariable("id") int id) {
+        return ApiResponse.<CurriculumnListResponse>builder()
+                .result(curriculumnListService.getCurriculumnList(id))
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-curriculumn-list/{id}")
+    public ApiResponse<?> updateCurriculumnList(@PathVariable("id") int id, @RequestBody @Valid CurriculumnListRequest request) {
+        curriculumnListService.updateCurriculumnList(id, request);
+        return ApiResponse.<NewsResponse>builder()
+                .message("Update curriculumn list successfully!")
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-curriculumn-list/{id}")
+    public ApiResponse<?> deleteCurriculumnList(@PathVariable("id") int id) {
+        curriculumnListService.deleteCurriculumnList(id);
+        return ApiResponse.builder()
+                .message("Delete curriculumn list successfully!")
+                .build();
+    }
+
 
 }

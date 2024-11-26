@@ -54,6 +54,7 @@ public enum ErrorCode {
     CLASS_COLOUR_IS_NULL(1181, "Class colour can not be null!"),
     CLASS_NOT_FOUND(1182, "Class not found!"),
     CLASS_NAME_EXISTED(1183, "Class name already existed!"),
+    CLASS_IS_EMPTY(1184, "This class is empty! There are no student in the class!"),
 
 
     //Lesson
@@ -75,12 +76,19 @@ public enum ErrorCode {
 
     //session
     SESSION_NOT_FOUND(1260, "Session not found"),
+    SESSION_LIST_EMPTY(1261, "There are no session for this class"),
 
     //schedule
     SCHEDULE_EXISTED(1280, "Schedule for this class already existed!"),
 
     //attendance
     ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
+
+    //curriculumn
+    CURRICULUMN_NOT_FOUND(1320, "Curriculumn not found!"),
+    CURRICULUMN_TITLE_NOT_NULL(1321, "Curriculumn title can not be null"),
+    CURRICULUMN_LIST_NOT_FOUND(1340, "Curriculumn list not found!"),
+    CURRICULUMN_LIST_TITLE_EXISTED(1341, "Curriculumn list title already existed!"),
 
     //holiday
     HOLIDAY_NOT_FOUND(2100, "Holiday not found"),

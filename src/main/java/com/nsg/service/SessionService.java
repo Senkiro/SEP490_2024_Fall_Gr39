@@ -14,12 +14,16 @@ public interface SessionService {
     //create session
     void createSession(SessionCreattionRequest request);
 
+    //create schedule
     void createSchedule(String class_id, ScheduleCreationRequest request);
+
+    //delete schedule
+    void deleteSchedule(String class_id);
 
     //get all session
     Page<SessionResponse> getAllSession(int page, int size);
 
-
+    //get session by class and week (get schedule by week)
     List<SessionResponse> getSessionByClassAndWeek(int week, String className);
 
     //get a session
