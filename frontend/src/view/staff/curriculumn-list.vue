@@ -9,10 +9,6 @@
                 <VsxIcon iconName="AddCircle" size="20" type="bold" />
                 Add curriculumn
             </button>
-            <button @click="navigateToImportCurriculumn">
-                <VsxIcon iconName="Import" size="20" type="bold" />
-                Import curriculumn
-            </button>
         </div>
 
         <div class="table-container">
@@ -97,9 +93,6 @@ export default {
         }
     },
     methods: {
-        navigateToImportCurriculumn() {
-            this.$router.push({ name: 'ImportCurriculumnPage' });
-        },
         navigateToCurriculumnDetail() {
             this.$router.push({
                 name: "CurriculumnDetail",
