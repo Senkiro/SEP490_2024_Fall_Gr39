@@ -215,6 +215,17 @@ const routes = [
         },
     },
     {
+        path: '/staff/exam-type',
+        name: 'StaffExamType',
+        component: () => import('../view/staff/exam-type-rate.vue'),
+        meta: { layout: 'staff', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Event type", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/room',
         name: 'RoomList',
         component: () => import('../view/staff/room-record.vue'),
@@ -356,8 +367,8 @@ const routes = [
         },
     },
     {
-        path: '/staff/student-attendance-report',
-        name: 'StudentAttendanceReport',
+        path: '/staff/student-attendance-report/:id',
+        name: 'StaffStudentAttendanceReport',
         component: () => import('../view/staff/student-attendance-report.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
             breadcrumbs: [
@@ -471,7 +482,7 @@ const routes = [
     },
     {
         path: '/student/attendance',
-        name: 'StudentAttendanceReport',
+        name: 'StudentStudentAttendanceReport',
         component: () => import('../view/student/attendance-report.vue'),
         meta: { layout: 'student', requiresAuth: false, 
             breadcrumbs: [

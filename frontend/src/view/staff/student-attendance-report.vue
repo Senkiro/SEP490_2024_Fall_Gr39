@@ -4,12 +4,13 @@
       <h1 class="title-large">Student’s attendance report</h1>
       <span class="student-name">Student: <b>{{ student.name }} - {{ student.id }}</b></span>
     </div>
+    
     <div class="actions">
       <span>Attended: <b>{{ attendanceSummary }}</b></span>
     </div>
 
     <div class="table-container">
-      <table class="table-standard">
+      <table>
         <thead>
         <tr>
           <th class="center">Session No</th>
@@ -63,9 +64,9 @@ export default {
     getAttendanceClass(status) {
       switch (status) {
         case 'Attend':
-          return 'attended';
+          return 'yes';
         case 'Absent':
-          return 'absent'; // Màu đỏ cho Absent
+          return 'no'; // Màu đỏ cho Absent
         case 'Not happen':
           return 'not-happen';
         default:
