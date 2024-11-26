@@ -88,6 +88,7 @@ public enum ErrorCode {
     CURRICULUMN_NOT_FOUND(1320, "Curriculumn not found!"),
     CURRICULUMN_TITLE_NOT_NULL(1321, "Curriculumn title can not be null"),
     CURRICULUMN_LIST_NOT_FOUND(1340, "Curriculumn list not found!"),
+    CURRICULUMN_LIST_TITLE_EXISTED(1341, "Curriculumn list title already existed!"),
 
     //Excel
     PARSE_ERROR(1230,"Failed to parse Excel file" );

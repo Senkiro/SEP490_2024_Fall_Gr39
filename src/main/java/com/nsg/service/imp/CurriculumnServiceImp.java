@@ -20,6 +20,9 @@ import com.nsg.repository.LessonRepository;
 import com.nsg.service.CurriculumnListService;
 import com.nsg.service.CurriculumnService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -61,6 +64,22 @@ public class CurriculumnServiceImp implements CurriculumnService {
         }
 
         return responseList;
+    }
+
+    //get all by curriculumn list id
+    @Override
+    public Page<CurriculumnResponse> getCurriculumnByCurriculumnListId(String currriculumnListId, int page, int size) {
+        Page<CurriculumnEntity> curriculumnEntityList =
+                curriculumnRepository.findByCurriculumnListEntityCurriculumnListId(Integer.parseInt(currriculumnListId), PageRequest.of(page, size));
+
+        List<CurriculumnResponse> responseList = new ArrayList<>();
+
+        for (CurriculumnEntity curriculumn : curriculumnEntityList) {
+            CurriculumnResponse response = toCurriculumnResponse(curriculumn);
+            responseList.add(response);
+        }
+
+        return new PageImpl<>(responseList, curriculumnEntityList.getPageable(), curriculumnEntityList.getTotalElements());
     }
 
     @Override

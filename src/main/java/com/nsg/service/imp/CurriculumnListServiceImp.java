@@ -23,6 +23,12 @@ public class CurriculumnListServiceImp implements CurriculumnListService {
 
     @Override
     public void createCurriculumnList(CurriculumnListRequest request) {
+        //check exist by title
+        if (curriculumnListRepository.existsByCurriculumnTitle(request.getCurriculumnTitle())) {
+            //if already existed -> throw new exception
+            throw new AppException(ErrorCode.CURRICULUMN_LIST_TITLE_EXISTED);
+        }
+
         CurriculumnListEntity curriculumnListEntity = new CurriculumnListEntity();
         curriculumnListEntity.setCurriculumnTitle(request.getCurriculumnTitle());
 

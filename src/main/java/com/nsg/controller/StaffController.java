@@ -905,6 +905,16 @@ public class StaffController {
                 .build();
     }
 
+    //get by curriculumn list id
+    @GetMapping("/get-by-curriculumn-list/{curriculumn_list_id}")
+    public ApiResponse<Page<CurriculumnResponse>> getByCurriculumnListId(@PathVariable("curriculumn_list_id") String curriculumn_list_id,
+                                                                         @RequestParam int page,
+                                                                         @RequestParam int size) {
+        return ApiResponse.<Page<CurriculumnResponse>>builder()
+                .result(curriculumnService.getCurriculumnByCurriculumnListId(curriculumn_list_id, page, size))
+                .build();
+    }
+
     //get a curriculumn by id
     @GetMapping("/get-curriculumn/{curriculumn_id}")
     public ApiResponse<CurriculumnResponse> getCurriculumn(@PathVariable("curriculumn_id") String curriculumn_id) {

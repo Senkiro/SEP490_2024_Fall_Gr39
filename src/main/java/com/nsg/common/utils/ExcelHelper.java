@@ -8,6 +8,7 @@ import com.nsg.repository.ClassRepository;
 import com.nsg.repository.CurriculumnListRepository;
 import com.nsg.repository.ExamTypeRepository;
 import com.nsg.service.CurriculumnListService;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -221,7 +222,14 @@ public class ExcelHelper {
                                          List<CurriculumnEntity> curriculumns,
                                          List<LessonEntity> lessons,
                                          List<ExamEntity> exams) {
+
+        String curriculumnListTitle = getStringCellValue(sheet.getRow(2).getCell(1)).trim();
+        CurriculumnListEntity curriculumnListEntity = curriculumnListRepository.findByCurriculumnTitle(curriculumnListTitle).orElseThrow(
+                () -> new AppException(ErrorCode.CURRICULUMN_LIST_NOT_FOUND)
+        );
+
         Iterator<Row> rows = sheet.iterator();
+        rows.next();
         rows.next();
         rows.next(); // Bỏ qua tiêu đề cột
 
@@ -235,13 +243,11 @@ public class ExcelHelper {
             String sessionNo = getStringCellValue(currentRow.getCell(0));
             String lessonTitle = getStringCellValue(currentRow.getCell(1));
             String examTitle = getStringCellValue(currentRow.getCell(2));
-            String curriculumnListId = getStringCellValue(currentRow.getCell(3));
+//            String curriculumnListId = getStringCellValue(currentRow.getCell(3));
 
-            curriculumn.setSessionNumber(Integer.valueOf(sessionNo));
-
-            CurriculumnListEntity curriculumnListEntity = curriculumnListRepository.findById(curriculumnListId).orElseThrow(
-                    () -> new AppException(ErrorCode.CURRICULUMN_LIST_NOT_FOUND)
-            );
+            if (NumberUtils.isParsable(sessionNo)) {
+                curriculumn.setSessionNumber(Integer.parseInt(sessionNo));
+            }
 
             curriculumn.setCurriculumnListEntity(curriculumnListEntity);
 
@@ -250,7 +256,6 @@ public class ExcelHelper {
                 // Ví dụ tìm kiếm Lesson
                 Optional<LessonEntity> lesson = findLessonByTitle(lessons, lessonTitle);
                 lesson.ifPresentOrElse(
-                        //add lesson
                         curriculumn::setLessonEntity,
                         () -> System.out.println("Lesson not found")
                 );
@@ -259,7 +264,6 @@ public class ExcelHelper {
             }
 
             if (!examTitle.isEmpty()) {
-                // Ví dụ tìm kiếm Exam
                 Optional<ExamEntity> exam = findExamByTitle(exams, examTitle);
                 exam.ifPresentOrElse(
                         curriculumn::setExamEntity,
