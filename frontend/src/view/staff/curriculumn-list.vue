@@ -21,22 +21,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="center">1</td>
-                        <td>Dekiru Nihongo Pre-Intermediate</td>
+                    <tr v-for="(curriculumn, index) in curriculumnList" :key="curriculumn.id">
+                        <td class="center">{{ index + 1 + (currentPage - 1) * 10 }}</td>
+                        <td>{{ curriculumn.curriculumnTitle }}</td>
                         <td class="center">
                             <div class="icon-group">
                                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
-                                    @click="navigateToCurriculumnDetail" />
+                                    @click="navigateToCurriculumnDetail(curriculumn.curriculumnListId)" />
                             </div>
                         </td>
                     </tr>
-                    <tr>
+                    <tr v-if="curriculumnList.length === 0">
                         <td colspan="3" class="center">No record.</td>
                     </tr>
                 </tbody>
             </table>
-            <div class="pagination" v-if="totalPages > 0">
+            <div class="pagination" v-if="totalPages > 1">
                 <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
                     <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
                 </button>
@@ -62,47 +62,135 @@
                 <form @submit.prevent="addCurriculumn">
                     <div class="form-group">
                         <label for="curriculumnName">Name <span class="required">*</span></label>
-                        <input type="text" id="curriculumnName" required />
+                        <input type="text" id="curriculumnName" v-model="newCurriculumnTitle" required />
                     </div>
+                    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+                    <p v-if="successMessage" class="success">{{ successMessage }}</p>
                     <div class="actions">
-                        <button type="submit"> Create</button>
+                        <button type="submit" :disabled="isSubmitting">Create</button>
                     </div>
                 </form>
-                <!-- <p v-if="errorMessage" class="error">{{ errorMessage }}</p> -->
-
             </div>
         </div>
 
-        <!-- <div v-if="notification.message" :class="['notification', notification.type]">
+        <div v-if="notification.message" :class="['notification', notification.type]">
             {{ notification.message }}
-        </div> -->
+        </div>
     </div>
 </template>
 
 <script>
-import { VsxIcon } from 'vue-iconsax';
+import { VsxIcon } from "vue-iconsax";
+import axios from "axios";
 
 export default {
     components: {
-        VsxIcon
+        VsxIcon,
     },
     data() {
         return {
             isExpanded: true,
-            addCurriculumnPopup: false
-        }
+            addCurriculumnPopup: false,
+            curriculumnList: [],
+            newCurriculumnTitle: "",
+            errorMessage: "",
+            successMessage: "",
+            totalPages: 0,
+            currentPage: 1,
+            itemsPerPage: 10,
+            isSubmitting: false,
+            notification: {
+                message: "",
+                type: ""
+            },
+        };
     },
     methods: {
-        navigateToCurriculumnDetail() {
+        navigateToImportCurriculumn() {
+            this.$router.push({ name: "ImportCurriculumn" });
+        },
+        navigateToCurriculumnDetail(id) {
             this.$router.push({
-                name: "CurriculumnDetail",
-                params: { id: 1 },
+                name: "StaffCurriculumnDetail",
+                params: { id },
             });
         },
-    }
 
-}
+        async fetchCurriculumnList() {
+            try {
+                const token = sessionStorage.getItem("jwtToken");
+                const response = await axios.get(
+                    `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (response.data.code === 0) {
+                    // Correctly map the API response to the curriculumnList
+                    this.curriculumnList = response.data.result || [];
+                    this.totalPages = Math.ceil(this.curriculumnList.length / this.itemsPerPage); // Calculate total pages if pagination data isn't provided
+                } else {
+                    console.error("Failed to fetch data:", response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching curriculumn list:", error);
+            }
+        },
+        async addCurriculumn() {
+            if (!this.newCurriculumnTitle.trim()) {
+                this.notification = { message: "Curriculumn title cannot be empty.", type: "error" };
+                return;
+            }
+
+            try {
+                const token = sessionStorage.getItem("jwtToken");
+                const response = await axios.post(
+                    "http://localhost:8088/fja-fap/staff/create-curriculumn-list",
+                    { curriculumnTitle: this.newCurriculumnTitle },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (response.data.code === 0) {
+                    this.addCurriculumnPopup = false;
+                    this.newCurriculumnTitle = "";
+                    this.notification = { message: "Curriculumn added successfully!", type: "success" };
+                    this.hideNotification();
+                    this.fetchCurriculumnList();
+                } else {
+                    this.notification = { message: "Failed to add curriculumn.", type: "error" };
+                    this.hideNotification();
+                }
+            } catch (error) {
+                console.error("Error adding curriculumn:", error);
+                this.notification = { message: error.response?.data?.message, type: "error" };
+                this.hideNotification();
+            }
+        },
+        changePage(page) {
+            if (page > 0 && page <= this.totalPages) {
+                this.currentPage = page;
+                this.fetchCurriculumnList();
+            }
+        },
+        hideNotification() {
+            setTimeout(() => {
+                this.notification = { message: "", type: "" };
+            }, 3000);
+        },
+    },
+    mounted() {
+        this.fetchCurriculumnList();
+    },
+};
 </script>
+
 
 <style lang="scss" scoped>
 .container {
@@ -116,6 +204,26 @@ export default {
             }
 
         }
+    }
+}
+
+.notification {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+
+    &.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    &.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
     }
 }
 </style>
