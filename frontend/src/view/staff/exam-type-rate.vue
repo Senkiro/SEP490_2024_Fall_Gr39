@@ -20,13 +20,13 @@
                         <th>Rate</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td class="center">1</td>
-                        <td>Daily exam</td>
-                        <td>1.6%</td>
-                    </tr>
-                </tbody>
+              <tbody>
+              <tr v-for="(examType, index) in examTypeRateList" :key="examType.examType">
+                <td class="center">{{ index + 1 }}</td>
+                <td>{{ examType.examName }}</td>
+                <td>{{ examType.examRate }}%</td>
+              </tr>
+              </tbody>
             </table>
         </div>
 
@@ -58,14 +58,40 @@
 </template>
 
 <script>
-export default {
-    data() {
-        return {
-            addExamTypePopup: false
-        }
-    }
+import axios from 'axios';
 
+export default {
+  data() {
+    return {
+      addExamTypePopup: false,
+      examTypeRateList: []
+    }
+  },
+  methods: {
+    async fetchExamTypeRate() {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get('http://localhost:8088/fja-fap/staff/get-all-exam-type', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.data.code === 0) {
+          this.examTypeRateList = response.data.result;
+        } else {
+          console.error('Failed to fetch data:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching ExamTypeRate:', error);
+      }
+    }
+  },
+  mounted() {
+    this.fetchExamTypeRate();
+  }
 }
 </script>
+
 
 <style></style>
