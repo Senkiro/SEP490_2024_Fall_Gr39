@@ -4,6 +4,13 @@
             <h1>Dekiru Nihongo Pre-Intermediate</h1>
         </div>
 
+        <div class="actions">
+            <button @click="navigateToImportCurriculumn">
+                <VsxIcon iconName="Import" size="20" type="bold" />
+                Import curriculumn detail
+            </button>
+        </div>
+
         <div class="btn-group">
             <button @click="switchTab('curriculumn')" :class="{ 'active-tab': activeTab === 'curriculumn' }">
                 Curriculumn
@@ -124,6 +131,9 @@ export default {
         }
     },
     methods: {
+        navigateToImportCurriculumn() {
+            this.$router.push({ name: 'ImportCurriculumnPage' });
+        },
         switchTab(tab) {
             this.activeTab = tab;
         },
