@@ -215,6 +215,17 @@ const routes = [
         },
     },
     {
+        path: '/staff/exam-type',
+        name: 'StaffExamType',
+        component: () => import('../view/staff/exam-type-rate.vue'),
+        meta: { layout: 'staff', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Event type", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/room',
         name: 'RoomList',
         component: () => import('../view/staff/room-record.vue'),

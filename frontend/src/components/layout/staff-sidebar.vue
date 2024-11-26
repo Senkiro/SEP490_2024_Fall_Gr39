@@ -101,7 +101,6 @@
           </div>
         </div>
 
-        <!-- -----Learning Material----- -->
         <router-link class="sidebar-item" to="/staff/curriculumn">
           <span class="material-icons">
             <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
@@ -114,6 +113,13 @@
             <VsxIcon iconName="Cardano" :size="32" color="#1A2C6F" type="linear" />
           </span>
           <span class="text">Holiday</span>
+        </router-link>
+
+        <router-link class="sidebar-item" to="/staff/exam-type">
+          <span class="material-icons">
+            <VsxIcon iconName="Category2" :size="32" color="#1A2C6F" type="linear" />
+          </span>
+          <span class="text">Exam type</span>
         </router-link>
 
         <router-link class="sidebar-item" to="/staff/mark">
@@ -188,7 +194,6 @@ export default {
 aside {
   display: flex;
   width: 72px;
-  overflow: hidden;
   min-height: 100vh;
 
   background-color: var(--side-background);
@@ -197,6 +202,7 @@ aside {
   transition: 0.2s ease-out;
 
   .sidebar-container {
+    overflow-y: auto;
     position: fixed;
     display: flex;
     flex-direction: column;
