@@ -74,7 +74,7 @@
                             <!-- Cột Slot -->
                             <td>Morning</td>
                             <!-- Dữ liệu nếu Slot là Morning -->
-                            <td>
+                            <td id="teacher">
                                 <div v-if="!isEditing[session.sessionId]">
                                     {{ session.fullName || "N/A" }}
                                 </div>
@@ -90,7 +90,7 @@
                                 </div>
                             </td>
 
-                            <td>
+                            <td id="room">
                                 <div v-if="!isEditing[session.sessionId]">
                                     {{ session.roomNumber || "N/A" }}
                                 </div>
@@ -590,6 +590,10 @@ export default {
         #teacher,
         #room {
             width: 250px;
+
+            .filter-select{
+                width: 100%;
+            }
         }
 
         tr,
