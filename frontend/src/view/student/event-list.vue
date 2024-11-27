@@ -58,29 +58,6 @@
             </div>
         </div>
 
-        <div v-if="showAddEventPopup" class="popup-overlay">
-            <div class="popup">
-                <div class="popup-title">
-                    <h2>Add Event</h2>
-                </div>
-                <form @submit.prevent="addEvent">
-                    <div class="form-group">
-                        <label for="eventName">Event title <span class="required">*</span></label>
-                        <input type="text" id="eventName" v-model="newBatch.eventName" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Destination <span class="required">*</span></label>
-                        <input type="text" id="address" v-model="newBatch.address" required />
-                    </div>
-                    <div class="actions">
-                        <button class="btn-cancel" @click="closePopup">Cancel</button>
-                        <button type="submit">Create</button>
-                    </div>
-                </form>
-                <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-            </div>
-        </div>
-
         <div v-if="notification.message" :class="['notification', notification.type]">
             {{ notification.message }}
         </div>
@@ -102,7 +79,6 @@ export default {
             totalPages: 0,
             displayedPages: [],
             isLoading: false,
-            showAddEventPopup: false,
             newBatch: {
                 eventName: '',
                 address: '',

@@ -130,7 +130,7 @@
 
           </div>
           <div class="actions">
-            <button type="submit" class="btn-save">Save Changes</button>
+            <button type="submit" class="btn-submit">Save Changes</button>
           </div>
         </form>
       </div>

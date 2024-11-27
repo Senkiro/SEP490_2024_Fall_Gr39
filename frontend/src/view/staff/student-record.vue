@@ -143,7 +143,7 @@
           <input type="text" id="phone" v-model="newStudent.phone" required/>
         </div>
         <div class="actions">
-          <button type="submit">Create</button>
+          <button type="submit" class="btn-submit">Create</button>
         </div>
       </form>
     </div>

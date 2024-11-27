@@ -67,7 +67,7 @@
                     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
                     <p v-if="successMessage" class="success">{{ successMessage }}</p>
                     <div class="actions">
-                        <button type="submit" :disabled="isSubmitting">Create</button>
+                        <button class="btn-submit" type="submit" :disabled="isSubmitting">Create</button>
                     </div>
                 </form>
             </div>

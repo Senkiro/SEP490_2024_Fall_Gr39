@@ -270,6 +270,9 @@
 
     <div v-if="showAddSchedulePopup" class="popup-overlay">
       <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddSchedulePopup = false" />
+        </div>
         <div class="popup-title">
           <h2>Add Schedule</h2>
         </div>
@@ -314,8 +317,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn-cancel" @click="showAddSchedulePopup = false">Cancel</button>
-            <button type="submit"> Create</button>
+            <button class="btn-submit" type="submit"> Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error"></p>

@@ -87,7 +87,7 @@
             <input type="text" id="address" v-model="newBatch.address" required />
           </div>
           <div class="actions">
-            <button type="submit">Create</button>
+            <button class="btn-submit" type="submit">Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>

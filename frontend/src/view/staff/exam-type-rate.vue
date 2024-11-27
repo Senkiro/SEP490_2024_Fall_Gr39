@@ -49,7 +49,7 @@
                         <input type="number" id="rate" min="0" max="100" required />
                     </div>
                     <div class="actions">
-                        <button type="submit">Add</button>
+                        <button class="btn-submit" type="submit">Add</button>
                     </div>
                 </form>
             </div>
