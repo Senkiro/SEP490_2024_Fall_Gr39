@@ -97,7 +97,7 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  margin: 20px 0px;
+  margin-top: 20px;
 }
 
 h2 {
@@ -114,6 +114,11 @@ h3 {
   font-size: 20px;
   font-weight: bold;
   color: #253f9f
+}
+
+h4 {
+  font-size: 20px;
+  font-weight: bold;
 }
 
 button {
@@ -141,6 +146,10 @@ button {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  .headContent {
+    margin-bottom: 20px;
+  }
 
   .actions {
     display: flex;
@@ -210,7 +219,7 @@ button {
         cursor: pointer;
       }
 
-      .disabled{
+      .disabled {
         opacity: 40%;
       }
 
@@ -395,7 +404,10 @@ button {
 
     label {
       display: flex;
-      width: fit-content;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #000;
       gap: 5px;
     }
 
@@ -535,9 +547,9 @@ button {
       .active {
         border-bottom: 3px solid #3E5DD4;
 
-        h3 {
+        h4 {
           font-weight: bold;
-          color: #212529;
+          color: #253f9f
         }
       }
     }
@@ -547,34 +559,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 20px;
-  }
-
-  .success {
-    background-color: #4caf50;
-  }
-
-  .error {
-    background-color: #f44336;
-  }
-
-  .yes{
-    color: #6ECBB8;
-    font-weight: bold;
-  }
-
-  .no{
-    color: #e95353;
-    font-weight: bold;
-  }
-
-  .not-happen{
-    color: #5376e9;
-    font-weight: bold;
-  }
-
-  .required {
-    color: red;
-    font-weight: bold;
+    padding: 0 20px;
   }
 
   form {
@@ -586,21 +571,51 @@ button {
 }
 
 
+.success {
+  background-color: #4caf50;
+}
+
+.error {
+  background-color: #f44336;
+}
+
+.yes {
+  color: #6ECBB8;
+  font-weight: bold;
+}
+
+.no {
+  color: #e95353;
+  font-weight: bold;
+}
+
+.not-happen {
+  color: #5376e9;
+  font-weight: bold;
+}
+
+.required {
+  color: red;
+  font-weight: bold;
+}
+
+
 ::-webkit-scrollbar {
   width: 10px;
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 </style>

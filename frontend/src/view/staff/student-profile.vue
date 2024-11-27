@@ -16,9 +16,11 @@
           <div class="name-id-container">
             <div class="name-id">
               <h3>
-                <strong>{{ studentData.userInforResponse.fullName }} - {{
-                    studentData.userInforResponse.japaneseName
-                  }}</strong>
+                <strong>
+                  {{ studentData.userInforResponse.fullName || 'N/A' }} 
+                  - 
+                  {{studentData.userInforResponse.japaneseName || 'N/A' }}
+                </strong>
               </h3>
               <p>{{ studentData.rollNumber }}</p>
             </div>
@@ -32,7 +34,7 @@
             <div class="column column1">
               <div class="attribute">
                 <p>Batch</p>
-                <strong>{{ studentData.batchName }}</strong>
+                <strong>{{ studentData.batchName || 'N/A' }} </strong>
               </div>
               <div class="attribute">
                 <p>Gender</p>
@@ -47,9 +49,9 @@
             <div class="column column2">
               <div class="attribute">
                 <p>Class</p>
-                <strong :style="{ color: studentData.classResponse.classColour }">{{
-                    studentData.classResponse.className
-                  }}</strong>
+                <strong :style="{ color: studentData.classResponse.classColour }">
+                  {{studentData.classResponse.className || 'N/A' }}
+                </strong>
               </div>
               <div class="attribute">
                 <p>Phone</p>
@@ -136,13 +138,13 @@
     <div class="tab-buttons-container">
       <div class="tab-buttons">
         <button class="tab-button" :class="{ active: showAttendance }" @click="showAttendance = true">
-          <h3>Attendance Report</h3>
+          <h4>Attendance Report</h4>
         </button>
         <button class="tab-button" :class="{ active: !showAttendance }" @click="showAttendance = false">
-          <h3>Mark Report</h3>
+          <h4>Mark Report</h4>
         </button>
         <button class="tab-button">
-          <h3>Essay Submission</h3>
+          <h4>Essay Submission</h4>
         </button>
       </div>
     </div>
