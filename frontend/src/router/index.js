@@ -237,7 +237,7 @@ const routes = [
         },
     },
     {
-        path: '/staff/lesson-detail',
+        path: '/staff/lesson-detail/:id',
         name: 'StaffLessonDetail',
         component: () => import('../view/staff/lesson-detail.vue'),
         meta: { layout: 'staff', requiresAuth: false , 
@@ -273,7 +273,7 @@ const routes = [
         },
     },
     {
-        path: '/staff/exam-detail',
+        path: '/staff/exam-detail/:id',
         name: 'StaffExamDetail',
         component: () => import('../view/staff/exam-detail.vue'),
         meta: { layout: 'staff', requiresAuth: false, 

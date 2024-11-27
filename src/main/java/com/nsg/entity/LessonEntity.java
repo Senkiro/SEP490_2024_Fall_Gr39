@@ -24,15 +24,15 @@ public class LessonEntity extends BaseEntity {
     String lessonTitle;
 
     @Lob
-    @Column(name = "vocabulary")
+    @Column(columnDefinition = "LONGTEXT",name = "vocabulary")
     String vocabulary;
 
     @Lob
-    @Column(name = "kanji")
+    @Column(columnDefinition = "LONGTEXT",name = "kanji")
     String kanji;
 
     @Lob
-    @Column(name = "grammar")
+    @Column(columnDefinition = "LONGTEXT",name = "grammar")
     String grammar;
 
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lessonEntity", fetch = FetchType.EAGER)

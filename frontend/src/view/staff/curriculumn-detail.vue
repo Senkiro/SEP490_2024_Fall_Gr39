@@ -50,11 +50,11 @@
         <table>
           <thead>
           <tr>
-            <th class="center">No</th>
+            <th class="center">Session No</th>
             <th>Lesson</th>
-            <th class="center">Vocabulary</th>
-            <th class="center">Kanji</th>
-            <th class="center">Grammar</th>
+<!--            <th class="center">Vocabulary</th>-->
+<!--            <th class="center">Kanji</th>-->
+<!--            <th class="center">Grammar</th>-->
             <th class="center">Action</th>
           </tr>
           </thead>
@@ -62,13 +62,13 @@
           <tr v-for="(item, index) in curriculumnList" :key="index">
             <td class="center">{{ index + 1 }}</td>
             <td>{{ item.lessonResponse?.lessonTitle || 'N/A' }}</td>
-            <td class="center">{{ item.lessonResponse?.vocabulary || 'N/A' }}</td>
-            <td class="center">{{ item.lessonResponse?.kanji || 'N/A' }}</td>
-            <td class="center">{{ item.lessonResponse?.grammar || 'N/A' }}</td>
+<!--            <td class="center">{{ item.lessonResponse?.vocabulary || 'N/A' }}</td>-->
+<!--            <td class="center">{{ item.lessonResponse?.kanji || 'N/A' }}</td>-->
+<!--            <td class="center">{{ item.lessonResponse?.grammar || 'N/A' }}</td>-->
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
-                         @click="viewLessonDetail()"/>
+                         @click="viewLessonDetail(item.lessonResponse?.lessonId)"/>
               </div>
             </td>
           </tr>
@@ -94,16 +94,21 @@
         <table>
           <thead>
           <tr>
-            <th class="center">No</th>
+            <th class="center">Session No</th>
             <th>Exam</th>
-            <th class="center">Content</th>
+            <th class="center">Action</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="(item, index) in curriculumnList" :key="index">
             <td class="center">{{ index + 1 }}</td>
             <td>{{ item.examResponse?.examTitle || 'N/A' }}</td>
-            <td class="center">{{ item.examResponse?.examContent || 'N/A' }}</td>
+            <td class="center" v-if="item.examResponse">
+              <div class="icon-group">
+                <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
+                         @click="viewExamDetail(item.examResponse?.examId)"/>
+              </div>
+            </td>
           </tr>
           </tbody>
         </table>
@@ -131,10 +136,21 @@ export default {
     switchTab(tab) {
       this.activeTab = tab;
     },
-    viewLessonDetail() {
-      this.$router.push({name: 'StaffLessonDetail'});
+    viewLessonDetail(id) {
+      if (!id) {
+        console.error("Lesson ID is missing.");
+        return;
+      }
+      this.$router.push({ name: 'StaffLessonDetail', params: { id } });
     },
-    async fetchCurriculumnList() {
+    viewExamDetail(id) {
+      if (!id) {
+        console.error("Exam ID is missing.");
+        return;
+      }
+      this.$router.push({ name: 'StaffExamDetail', params: { id } });
+    },
+    async fetchCurriculumData() {
       const id = this.$route.params.id;
 
       if (!id) {
@@ -144,57 +160,35 @@ export default {
 
       try {
         const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-curriculumn-list/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const [curriculumnResponse, detailedResponse] = await Promise.all([
+          axios.get(`http://localhost:8088/fja-fap/staff/get-curriculumn-list/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(
+              `http://localhost:8088/fja-fap/staff/get-by-curriculumn-list/${id}?page=0&size=100`,
+              { headers: { Authorization: `Bearer ${token}` } }
+          ),
+        ]);
 
-        if (response.data.code === 0) {
-          this.curriculumnList = response.data.result || [];
-          this.curriculumnTitle = response.data.result.curriculumnTitle || 'Default Title';
+        if (curriculumnResponse.data.code === 0) {
+          this.curriculumnTitle = curriculumnResponse.data.result.curriculumnTitle || 'Default Title';
         } else {
-          console.error("Failed to fetch data:", response.data);
+          console.error("Failed to fetch curriculumn title:", curriculumnResponse.data);
+        }
+
+        if (detailedResponse.data.code === 0) {
+          this.curriculumnList = detailedResponse.data.result?.content || [];
+        } else {
+          console.error("Failed to fetch detailed data:", detailedResponse.data);
         }
       } catch (error) {
-        console.error("Error fetching curriculumn list:", error);
-      }
-    },
-    async fetchCurriculumnLists() {
-      const id = this.$route.params.id; // Assuming ID is in the route params
-
-      if (!id) {
-        console.error("Invalid ID: No ID provided in the route.");
-        return;
-      }
-
-      try {
-        const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-by-curriculumn-list/${id}?page=0&size=100`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-        );
-
-        if (response.data.code === 0) {
-          const result = response.data.result || {};
-          this.curriculumnList = result.content || [];
-        } else {
-          console.error("Failed to fetch data:", response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching curriculumn list:", error);
+        console.error("Error fetching curriculum data:", error);
       }
     },
   },
   mounted() {
-    this.fetchCurriculumnList();
-    this.fetchCurriculumnLists();
+    this.fetchCurriculumData();
   },
-
 
 }
 </script>
