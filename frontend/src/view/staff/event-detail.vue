@@ -1,30 +1,30 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <div class="field-group">
+      <div class="input-group">
         <template v-if="isActive">
-          <label for="eventName">Title</label>
+          <label for="eventName">Title <span class="required">*</span></label>
           <input v-model="eventDetail.eventName" id="eventName" class="input-field" placeholder="Enter event name" />
         </template>
         <template v-else>
-          <h1>{{ eventDetail.eventName }}</h1>
+          <h1>{{ eventDetail.eventName || N/A }}</h1>
         </template>
       </div>
 
-      <div class="field-group">
+      <div class="input-group">
         <template v-if="isActive">
-          <label for="address">Address</label>
+          <label for="address">Address <span class="required">*</span></label>
           <input v-model="eventDetail.address" id="address" class="input-field" placeholder="Enter address" />
         </template>
         <template v-else>
-          <i>{{ eventDetail.address }}</i>
+          <i>{{ eventDetail.address ||N/A }}</i>
         </template>
       </div>
     </div>
 
     <form @submit.prevent="submitForm">
       <div class="image-container">
-        <img :src="previewImage || `/${eventDetail.imagePath}`" alt="Event Image" />
+        <img :src="previewImage || `/${eventDetail.imagePath}` " alt="Event Image" />
         <template v-if="isActive">
           <div class="middle">
             <label for="img" class="upload-btn">
@@ -39,7 +39,7 @@
 
       <div>
         <template v-if="isActive">
-          <div class="field-group">
+          <div class="input-group">
             <label for="description">Description</label>
             <TextEditor v-model="eventDetail.description" @input="updateDescription" id="description" />
           </div>
@@ -71,13 +71,13 @@
     <div class="tab-buttons-container">
       <div class="tab-buttons">
         <button class="tab-button" :class="{ active: tabs.blue }" @click="showTab('blue', 'green', 'red')">
-          <h3>Blue</h3>
+          <h4>Blue</h4>
         </button>
         <button class="tab-button" :class="{ active: tabs.green }" @click="showTab('green', 'red', 'blue')">
-          <h3>Green</h3>
+          <h4>Green</h4>
         </button>
         <button class="tab-button" :class="{ active: tabs.red }" @click="showTab('red', 'blue', 'green')">
-          <h3>Red</h3>
+          <h4>Red</h4>
         </button>
       </div>
     </div>
@@ -259,26 +259,6 @@ export default {
 i{
   color: #b9b9b9;
 }
-.field-group {
-  margin-bottom: 20px;
-
-  label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 16px;
-    color: #333;
-  }
-
-  .input-field {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-  }
-}
-
 
 .image-container {
   width: 100%;
