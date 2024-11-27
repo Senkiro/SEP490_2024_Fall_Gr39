@@ -599,7 +599,9 @@ button {
   font-weight: bold;
 }
 
-
+::-webkit-scrollbar {
+  display: none;
+}
 ::-webkit-scrollbar {
   width: 10px;
 

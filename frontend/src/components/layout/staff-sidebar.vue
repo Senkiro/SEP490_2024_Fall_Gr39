@@ -195,10 +195,8 @@ aside {
   display: flex;
   width: 72px;
   min-height: 100vh;
-
   background-color: var(--side-background);
   color: var(--light);
-
   transition: 0.2s ease-out;
 
   .sidebar-container {
@@ -209,8 +207,13 @@ aside {
     width: 68px;
     padding: 1rem;
     transition: 0.2s ease-out;
+    height: 100%;
 
-
+    a{
+      &:active{
+        color: #c9d6f3;
+      }
+    }
 
     button {
       border: none;
