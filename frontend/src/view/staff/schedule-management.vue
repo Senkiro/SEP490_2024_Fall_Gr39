@@ -565,8 +565,8 @@ export default {
           timeSlotResponse: session.timeSlotResponse,
           fullName: session.fullName,
           roomNumber: session.roomNumber,
-          lessonResponse: session.lessonResponse,
-          examResponse: session.examResponse,
+          lessonResponse: session.curriculumnResponse?.lessonResponse?.lessonTitle,
+          examResponse: session.curriculumnResponse?.examResponse?.examTitle,
           eventName: session.eventName,
         }));
         console.log("Fetched Sessions:", this.sessions);
