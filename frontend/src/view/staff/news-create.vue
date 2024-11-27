@@ -100,7 +100,7 @@ export default {
             })
         );
         this.resetForm();
-        this.$router.push({ name: "News" });
+        this.$router.push({ name: "StaffNews" });
       } catch (error) {
         const action = status ? "publish" : "save draft";
         this.showNotification(`Failed to ${action}. Please try again.`, "error");
