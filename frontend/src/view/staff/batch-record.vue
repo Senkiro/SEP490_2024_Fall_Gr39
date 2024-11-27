@@ -103,7 +103,7 @@
             <input type="number" id="year" v-model="newBatch.year" min="2000" max="2100"/>
           </div>
           <div class="actions">
-            <button type="submit"> Create</button>
+            <button class="btn-submit" type="submit"> Create</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -365,4 +365,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.btn-submit{
+  width: 100%;
+  justify-content: center;
+}</style>

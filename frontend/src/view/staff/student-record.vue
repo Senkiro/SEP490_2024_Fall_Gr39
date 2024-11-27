@@ -47,6 +47,9 @@
               <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="navigateToProfile(student.id)" />
             </td>
           </tr>
+          <tr v-if="students.length === 0">
+            <td colspan="7" class="center">No record.</td>
+          </tr>
         </tbody>
       </table>
 
@@ -67,6 +70,10 @@
 
   <div v-if="showAddStudentPopup" class="popup-overlay">
     <div class="popup">
+      <div class="exit-icon">
+        <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddStudentPopup = false" />
+      </div>
+
       <div class="popup-title">
         <h2>Add student</h2>
       </div>
@@ -116,7 +123,6 @@
           <input type="text" id="phone" v-model="newStudent.phone" required />
         </div>
         <div class="actions">
-          <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button>
           <button type="submit">Create</button>
         </div>
       </form>

@@ -34,7 +34,7 @@
           </div>
 
           <div class="actions">
-            <button type="submit" class="btn btn-create">Save</button>
+            <button type="submit" class="btn-submit">Save</button>
           </div>
         </form>
       </div>

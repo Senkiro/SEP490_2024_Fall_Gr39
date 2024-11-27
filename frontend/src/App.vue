@@ -156,6 +156,11 @@ button {
     flex-direction: row;
     gap: 20px;
     justify-content: flex-end;
+
+    .btn-submit {
+      width: 100%;
+      justify-content: center;
+    }
   }
 
   .filters {
@@ -602,6 +607,7 @@ button {
 ::-webkit-scrollbar {
   display: none;
 }
+
 ::-webkit-scrollbar {
   width: 10px;
 

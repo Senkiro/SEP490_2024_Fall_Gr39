@@ -73,7 +73,7 @@
             <input type="number" id="editRoomNumber" v-model="editRoom.roomNumber" required/>
           </div>
           <div class="actions">
-            <button type="submit">Update</button>
+            <button class="btn-submit" type="submit">Update</button>
           </div>
         </form>
       </div>

@@ -80,7 +80,7 @@
             <input type="date" id="date" v-model="holidayDate" required />
           </div>
           <div class="actions">
-            <button type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
+            <button class="btn-submit" type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
