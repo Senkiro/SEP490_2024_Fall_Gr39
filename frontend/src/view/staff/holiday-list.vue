@@ -37,9 +37,9 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <tr v-if="holidays.length < 1">
             <td colspan="4" class="center">No record.</td>
-          </tr>
+        </tr>
         </tbody>
       </table>
 

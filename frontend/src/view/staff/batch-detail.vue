@@ -267,7 +267,6 @@
       </div>
     </div>
 
-
     <div v-if="notification.message" :class="['notification', notification.type]">
       {{ notification.message }}
     </div>
@@ -338,6 +337,7 @@ export default {
     openAddStudentPopup() {
       this.showAddStudentPopup = true;
     },
+
     async addStudent() {
       try {
         const token = sessionStorage.getItem('jwtToken');
@@ -437,9 +437,11 @@ export default {
         gender: ''
       };
     },
+
     openAddClassPopup() {
       this.showAddClassPopup = true;
     },
+
     resetNewClass() {
       this.newClass = {
         name: '',
