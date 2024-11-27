@@ -112,12 +112,42 @@
                     "N/A"
               }}
             </td>
-            <td>{{
-                session.timeSlotResponse?.name === "Morning" ? session.examResponse || "N/A" : "N/A"
-              }}
+            <td id="exam">
+              <div v-if="!isEditing[session.sessionId]">
+                {{ session.examResponse || "N/A" }}
+              </div>
+              <div v-else>
+                <select
+                    v-model="selectedExamTable[session.sessionId]"
+                    @change="assignExam(session.sessionId, selectedExamTable[session.sessionId])"
+                    class="filter-select"
+                >
+                  <option value="" disabled>Select Exam</option>
+                  <option v-for="exam in exams" :key="exam.id" :value="exam.id">
+                    {{ exam.title }} ({{ exam.type }} - {{ exam.rate }}%)
+                  </option>
+                </select>
+              </div>
             </td>
-            <td>{{ session.timeSlotResponse?.name === "Morning" ? session.eventName || "N/A" : "N/A" }}
+
+            <td id="event">
+              <div v-if="!isEditing[session.sessionId]">
+                {{ session.eventName || "N/A" }}
+              </div>
+              <div v-else>
+                <select
+                    v-model="selectedEventTable[session.sessionId]"
+                    @change="assignEvent(session.sessionId, selectedEventTable[session.sessionId])"
+                    class="filter-select"
+                >
+                  <option value="" disabled>Select Event</option>
+                  <option v-for="event in events" :key="event.id" :value="event.id">
+                    {{ event.title }}
+                  </option>
+                </select>
+              </div>
             </td>
+
             <td>
               <div v-if="!isEditing[session.sessionId]">
                 <div class="button-group">
@@ -174,20 +204,52 @@
                     "N/A"
               }}
             </td>
-            <td>{{
-                session.timeSlotResponse?.name === "Afternoon" ? session.examResponse || "N/A" :
-                    "N/A"
-              }}
+            <td id="exam">
+              <div v-if="!isEditing[session.sessionId]">
+                {{ session.examResponse || "N/A" }}
+              </div>
+              <div v-else>
+                <select
+                    v-model="selectedExamTable[session.sessionId]"
+                    @change="assignExam(session.sessionId, selectedExamTable[session.sessionId])"
+                    class="filter-select"
+                >
+                  <option value="" disabled>Select Exam</option>
+                  <option v-for="exam in exams" :key="exam.id" :value="exam.id">
+                    {{ exam.title }} ({{ exam.type }} - {{ exam.rate }}%)
+                  </option>
+                </select>
+              </div>
             </td>
-            <td>{{
-                session.timeSlotResponse?.name === "Afternoon" ? session.eventName || "N/A" : "N/A"
-              }}
+
+            <td id="event">
+              <div v-if="!isEditing[session.sessionId]">
+                {{ session.eventName || "N/A" }}
+              </div>
+              <div v-else>
+                <select
+                    v-model="selectedEventTable[session.sessionId]"
+                    @change="assignEvent(session.sessionId, selectedEventTable[session.sessionId])"
+                    class="filter-select"
+                >
+                  <option value="" disabled>Select Event</option>
+                  <option v-for="event in events" :key="event.id" :value="event.id">
+                    {{ event.title }}
+                  </option>
+                </select>
+              </div>
             </td>
+
             <td>
               <div v-if="!isEditing[session.sessionId]">
                 <div class="button-group">
-                  <VsxIcon iconName="Edit2" size="25" type="linear"
-                           @click="toggleEdit(session.sessionId)"/>
+                  <VsxIcon
+                      iconName="Edit2"
+                      size="25"
+                      type="linear"
+                      @click="session.sessionId ? toggleEdit(session.sessionId) : console.error('Session ID is undefined')"
+                  />
+
                   <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
                 </div>
               </div>
@@ -204,37 +266,6 @@
         </tbody>
 
       </table>
-    </div>
-
-    <div v-if="showEventListPopup" class="popup-overlay">
-      <div class="popup">
-        <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold"
-                   @click="showEventListPopup = false"/>
-        </div>
-        <div class="popup-title">
-          <h2>Pick an event</h2>
-        </div>
-
-        <form @submit.prevent="addEvent">
-          <div class="radio">
-            <input type="radio" value="1" name="event-list"/>
-            <label for="1">Trip to Tokyo Tower</label>
-          </div>
-          <div class="radio">
-            <input type="radio" value="2" name="event-list"/>
-            <label for="2">Kabukicho</label>
-          </div>
-          <div class="radio">
-            <input type="radio" value="3" name="event-list"/>
-            <label for="3">Event with long title so that I can test the width</label>
-          </div>
-          <div class="actions">
-            <!-- <button class="btn btn-cancel" @click="showAddStudentPopup = false">Cancel</button> -->
-            <button type="submit">Add</button>
-          </div>
-        </form>
-      </div>
     </div>
 
     <div v-if="showAddSchedulePopup" class="popup-overlay">
@@ -273,7 +304,8 @@
             <div class="filters">
               <select id="curriculum-filter" class="filter-select" v-model="selectedCurriculumId">
                 <option value="" disabled>Select Curriculum</option>
-                <option v-for="curriculum in curriculums" :key="curriculum.curriculumListId" :value="curriculum.curriculumListId">
+                <option v-for="curriculum in curriculums" :key="curriculum.curriculumListId"
+                        :value="curriculum.curriculumListId">
                   {{ curriculum.curriculumTitle }}
                 </option>
               </select>
@@ -326,6 +358,9 @@ export default {
       curriculums: [],
       selectedCurriculumId: '',
       isLoadingCurriculums: false,
+      selectedEventId: "",
+      selectedEventTable: {},
+      selectedExamTable: {},
     };
   },
   methods: {
@@ -546,7 +581,6 @@ export default {
     },
     async fetchSessions() {
       if (this.selectedWeekIndex === "" || !this.selectedClassId) {
-        //alert("Please select a week and a class.");
         return;
       }
 
@@ -572,7 +606,6 @@ export default {
         console.log("Fetched Sessions:", this.sessions);
       } catch (error) {
         console.error("Error fetching sessions:", error);
-        //alert("Failed to fetch sessions. Please try again.");
       }
     },
     async fetchTeachers() {
@@ -594,16 +627,69 @@ export default {
         //alert("Failed to fetch teacher data. Please try again.");
       }
     },
+    async fetchExams() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get("http://localhost:8088/fja-fap/staff/get-all-exam", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data && response.data.result) {
+          this.exams = response.data.result.map(exam => ({
+            id: exam.examId,
+            title: exam.examTitle,
+            type: exam.examTypeRate.examName,
+            rate: exam.examTypeRate.examRate,
+          }));
+        } else {
+          console.error("Unexpected response structure:", response.data);
+          this.exams = [];
+        }
+      } catch (error) {
+        console.error("Error fetching exams:", error);
+      }
+    },
+    async fetchEvents() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get("http://localhost:8088/fja-fap/staff/event", {
+          params: {page: 0, size: 100},
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data && response.data.result && response.data.result.content) {
+          this.events = response.data.result.content.map(event => ({
+            id: event.eventId,
+            title: event.eventName,
+            address: event.address,
+            image: event.imagePath,
+            status: event.status,
+          }));
+        } else {
+          console.error("Unexpected response structure:", response.data);
+          this.events = [];
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        this.events = [];
+      }
+    },
     toggleEdit(sessionId) {
-      // Chuyển đổi trạng thái chỉnh sửa cho từng sessionId
-      this.isEditing = {
-        ...this.isEditing,
-        [sessionId]: !this.isEditing[sessionId],
-      };
+      if (!Object.hasOwn(this.isEditing, sessionId)) {
+        this.isEditing = {
+          ...this.isEditing,
+          [sessionId]: false,
+        };
+      }
+
+      this.isEditing[sessionId] = !this.isEditing[sessionId];
     },
     assignTeacher(sessionId, teacherId) {
       console.log(`Assign teacher ${teacherId} to session ${sessionId}`);
-      // Sau khi gán, có thể chuyển về chế độ xem
       this.toggleEdit(sessionId);
     },
     assignRoom(sessionId, roomId) {
@@ -611,9 +697,60 @@ export default {
       // Sau khi gán, có thể chuyển về chế độ xem
       this.toggleEdit(sessionId);
     },
-    openEventListPopup() {
-      this.showEventListPopup = true;
-    }
+    async assignEvent(sessionId, eventId) {
+      console.log(`Assign event ${eventId} to session ${sessionId}`);
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.post(
+            `http://localhost:8088/fja-fap/staff/assign-event`,
+            {
+              sessionId: sessionId,
+              eventId: eventId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        if (response.data && response.data.code === 0) {
+          console.log("Event assigned successfully!");
+          this.isEditing[sessionId] = false; // Thoát chế độ chỉnh sửa
+        } else {
+          console.error("Failed to assign event:", response.data);
+        }
+      } catch (error) {
+        console.error("Error assigning event:", error);
+      }
+    },
+    async assignExam(sessionId, examId) {
+      console.log(`Assign exam ${examId} to session ${sessionId}`);
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.post(
+            `http://localhost:8088/fja-fap/staff/assign-exam`,
+            {
+              sessionId: sessionId,
+              examId: examId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        if (response.data && response.data.code === 0) {
+          console.log("Exam assigned successfully!");
+          this.isEditing[sessionId] = false; // Thoát chế độ chỉnh sửa
+        } else {
+          console.error("Failed to assign exam:", response.data);
+        }
+      } catch (error) {
+        console.error("Error assigning exam:", error);
+      }
+    },
   },
   mounted() {
     this.fetchBatches();
@@ -621,6 +758,8 @@ export default {
     this.fetchTimeSlots();
     this.fetchTeachers();
     this.fetchCurriculums();
+    this.fetchExams();
+    this.fetchEvents();
   },
 };
 </script>

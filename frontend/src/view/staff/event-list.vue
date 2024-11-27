@@ -34,8 +34,8 @@
         <tbody>
           <tr v-for="(event, index) in events" :key="event.eventId">
             <td class="center">{{ index + 1 }}</td>
-            <td>ppppppppppppppppppp{{ event.eventName }}</td>
-            <td>ppppppppppppppppp{{ event.address }}</td>
+            <td>{{ event.eventName }}</td>
+            <td>{{ event.address }}</td>
             <td v-html="event.description"></td>
             <td :class="event.status ? 'status-finished' : 'status-pending'">
               {{ event.status ? 'Finished' : 'Not happen' }}
@@ -108,7 +108,7 @@ export default {
   components: { VsxIcon },
   data() {
     return {
-      events: [{ description: '<p>This is some <strong>bold</strong> texttttttttttttttttttttttttt.</p>' }],
+      events: [],
       currentPage: 1,
       itemsPerPage: 5,
       totalElements: 0,
