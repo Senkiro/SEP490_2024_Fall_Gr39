@@ -246,11 +246,7 @@ const markReport = ref([
   {category: 'Course Total', item: 'Status', weight: '-', value: '-', comment: 'Good'},
 ]);
 
-const attendanceReport = ref([
-  {date: '2/9/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend'},
-  {date: 'x/5/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend'},
-  {date: 'y/1/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Absent'},
-]);
+const attendanceReport = ref([]);
 
 studentId.value = useRoute().params.id;
 
@@ -274,6 +270,33 @@ const fetchStudentData = async () => {
   }
 };
 
+const fetchAttendanceData = async () => {
+  try {
+    const token = sessionStorage.getItem('jwtToken');
+    const response = await axios.get(
+        `http://localhost:8088/fja-fap/staff/get-attendance-student/${studentId.value}?page=0&size=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+    );
+
+    if (response.data && response.data.result.content) {
+      attendanceReport.value = response.data.result.content
+          .map((attendance) => ({
+            date: attendance.date,
+            slot: "N/A",
+            teacher: "N/A",
+            status: attendance.status,
+          }))
+          .sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+  } catch (error) {
+    console.error('Error fetching attendance data:', error);
+  }
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   const [year, month, day] = dateString.split('-');
@@ -282,6 +305,7 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   fetchStudentData();
+  fetchAttendanceData();
 });
 const isEditing = ref(false);
 const editData = ref({...studentData.value.userInforResponse});
@@ -293,8 +317,8 @@ const toggleEditModal = () => {
 
   if (isEditing.value) {
     editData.value = {...studentData.value.userInforResponse};
-    previewImage.value = null; // Reset preview
-    fileError.value = null; // Reset file error
+    previewImage.value = null;
+    fileError.value = null;
   }
 };
 
@@ -333,7 +357,6 @@ const saveChanges = async () => {
     const token = sessionStorage.getItem("jwtToken");
     const formData = new FormData();
 
-    // Chuẩn bị dữ liệu `userDetail` ở dạng JSON string
     const userDetail = {
       fullName: editData.value.fullName,
       japaneseName: editData.value.japaneseName,
