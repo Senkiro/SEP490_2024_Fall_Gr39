@@ -54,7 +54,7 @@ public enum ErrorCode {
     CLASS_COLOUR_IS_NULL(1181, "Class colour can not be null!"),
     CLASS_NOT_FOUND(1182, "Class not found!"),
     CLASS_NAME_EXISTED(1183, "Class name already existed!"),
-    CLASS_IS_EMPTY(1184, "This class is empty! There are no student in the class!"),
+    STUDENT_LIST_IS_EMPTY(1184, "Student list is empty!"),
 
 
     //Lesson

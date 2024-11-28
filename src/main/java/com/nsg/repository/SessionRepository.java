@@ -14,6 +14,13 @@ import java.util.List;
 @Repository
 public interface SessionRepository extends BaseRepository<SessionEntity, String> {
     List<SessionEntity> findBySessionWeekAndClassEntityClassId(int week, String classId);
+
+//    List<SessionEntity> findByClassEntityClassIdAndUserEntityUserId(String classId, String userId);
+
+    @Query("SELECT s FROM SessionEntity s WHERE s.classEntity.classId = :classId AND s.user.id = :userId")
+    List<SessionEntity> findByClassIdAndUserId(@Param("classId") String classId, @Param("userId") String userId);
+
+
     boolean existsByClassEntityClassId(String classId);
 
     List<SessionEntity> findByClassEntityClassId(String classId);

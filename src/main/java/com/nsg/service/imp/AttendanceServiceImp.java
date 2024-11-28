@@ -65,12 +65,25 @@ public class AttendanceServiceImp implements AttendanceService {
         attendanceRepository.save(attendanceEntity);
     }
 
-    //create attendance for a class in a session
+    //create attendance for all student in class of one session
     @Override
     public void createAttendancesForSession(String classId) {
+        // get all student in class
+        List<StudentEntity> studentEntityList = studentRepository.findByClassEntityClassId(classId);
+        createAttendanceForStudentsInClass(classId, studentEntityList);
+
+    }
+
+    //create attendance for students in a class
+    public void createAttendanceForStudentsInClass(String classId, List<StudentEntity> studentEntityList) {
         //check class existed or not
         if (!classRepository.existsById(classId)) {
             throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+
+        //if there are no student in list
+        if (studentEntityList.isEmpty()) {
+            throw new AppException(ErrorCode.STUDENT_LIST_IS_EMPTY);
         }
 
         // get session by classId
@@ -90,14 +103,6 @@ public class AttendanceServiceImp implements AttendanceService {
             }
         }
 
-        // get all student in class
-        List<StudentEntity> studentEntityList = studentRepository.findByClassEntityClassId(classId);
-
-        //if there are no student in class
-        if (studentEntityList.isEmpty()) {
-            throw new AppException(ErrorCode.CLASS_IS_EMPTY);
-        }
-
         // list AttendanceRequest
         List<AttendanceRequest> createRequest = new ArrayList<>();
         String defaultStatus = "incoming";
@@ -108,7 +113,12 @@ public class AttendanceServiceImp implements AttendanceService {
 
                 attendanceRequest.setStatus(defaultStatus);
                 attendanceRequest.setSessionId(session.getSessionId());
-                attendanceRequest.setStudentId(student.getStudentId());
+
+                if (student.getStudentId() != null) {
+                    attendanceRequest.setStudentId(student.getStudentId());
+                } else {
+
+                }
 
                 createRequest.add(attendanceRequest);
             }
@@ -163,6 +173,13 @@ public class AttendanceServiceImp implements AttendanceService {
 
             //convert to student response
             StudentResponse studentResponse = studentService.convertToStudentResponse(student);
+
+            //get teacher in session
+            SessionEntity session = attendance.getSessionEntity();
+
+            if (session.getUser() != null) {
+                attendanceResponse.setTeacher(session.getUser().getUsername());
+            }
 
             attendanceResponse.setStudentResponse(studentResponse);
 

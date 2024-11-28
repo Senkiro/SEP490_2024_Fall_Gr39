@@ -63,6 +63,9 @@ public class SessionServiceImp implements SessionService {
     @Autowired
     AttendanceRepository attendanceRepository;
 
+    @Autowired
+    HolidayRepository holidayRepository;
+
 
     @Override
     public void createSession(SessionCreattionRequest request) {
@@ -169,8 +172,6 @@ public class SessionServiceImp implements SessionService {
 
         while (sessionNo < total_session) {
             LocalDate dateOfSession = startDate.plusDays((totalDay-1));
-            System.out.print("Date of "+(sessionNo)+" session: "+dateOfSession+" ::: ");
-            //check date: 20/11
 
             //tao session voi date
             SessionCreattionRequest sessionCreattionRequest = new SessionCreattionRequest();
@@ -181,16 +182,13 @@ public class SessionServiceImp implements SessionService {
 
             DayOfWeek dow = dateOfSession.getDayOfWeek();
 
-            if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
-                System.out.print(dow+" là ngày cuối tuần!\n");
-                //tao session rong
-                //session k tang
-
+            if (dow == DayOfWeek.SATURDAY
+                    || dow == DayOfWeek.SUNDAY
+                    || checkHoliday(dateOfSession)) {
                 //set curriculumn = -1
                 sessionCreattionRequest.setCurriculumnId(-1);
 
             } else {
-                System.out.print(dow+" không phải là ngày cuối tuần.\n");
                 //tao session voi room va time_slot va ngay la: dateOfSession
                 sessionCreattionRequest.setTimeSlotId(request.getTimeSlotId());
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
@@ -224,6 +222,22 @@ public class SessionServiceImp implements SessionService {
 
     }
 
+    //check one day is holiday or not?
+    public boolean checkHoliday(LocalDate dateOfSession) {
+        //get list of holiday
+        List<HolidayEntity> holidays = holidayRepository.findAll();
+
+        //check empty
+        if (!holidays.isEmpty()) {
+            for (HolidayEntity holiday: holidays) {
+                if (holiday.getHolidayDate() == dateOfSession) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void deleteSchedule(String classId) {
         //delete all session have class_id equal to class id receive
@@ -246,53 +260,7 @@ public class SessionServiceImp implements SessionService {
         //get all
         Page<SessionEntity> sessionEntities = sessionRepository.findAll(PageRequest.of(page, size));
 
-        List<SessionResponse> responseList = new ArrayList<>();
-
-        for (SessionEntity session : sessionEntities) {
-            SessionResponse tempResponse = new SessionResponse();
-            tempResponse.setSessionId(session.getSessionId());
-            tempResponse.setSessionNumber(session.getSessionNumber());
-
-            LocalDate localDate = session.getDate();
-            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-
-            tempResponse.setDayOfWeek(dayOfWeek);
-
-            tempResponse.setDate(session.getDate());
-            tempResponse.setStatus(session.isStatus());
-
-            tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
-
-            //check null
-            if (session.getCurriculumnEntity() != null) {
-                tempResponse.setCurriculumnResponse(curriculumnService.toCurriculumnResponse( session.getCurriculumnEntity() ));
-            }
-
-            tempResponse.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(session.getTimeSlotEntity()));
-
-            if (session.getRoomEntity() != null) {
-                tempResponse.setRoomNumber(session.getRoomEntity().getRoomNumber());
-            } else {
-                tempResponse.setRoomNumber(null);
-            }
-
-            if (session.getEventEntity() != null) {
-                tempResponse.setEventName(session.getEventEntity().getEventName());
-            }else {
-                tempResponse.setEventName(null);
-            }
-
-            if (session.getUser() != null) {
-                tempResponse.setFullName(session.getUser().getFullName());
-                tempResponse.setEmail(session.getUser().getEmail());
-            } else {
-                tempResponse.setFullName(null);
-                tempResponse.setEmail(null);
-            }
-
-            responseList.add(tempResponse);
-        }
-        Collections.sort(responseList, Comparator.comparingInt(SessionResponse::getSessionNumber));
+        List<SessionResponse> responseList = toListSessionResponse(sessionEntities.getContent());
         return new PageImpl<>(responseList, sessionEntities.getPageable(), sessionEntities.getTotalElements());
     }
 
@@ -300,6 +268,27 @@ public class SessionServiceImp implements SessionService {
     public List<SessionResponse> getSessionByClassAndWeek(int week, String classId) {
         //get list of session by week and classId
         List<SessionEntity> sessionEntities = sessionRepository.findBySessionWeekAndClassEntityClassId(week, classId);
+
+        return toListSessionResponse(sessionEntities);
+    }
+
+    @Override
+    public List<SessionResponse> getSessionByClassAndTeacher(String classId, String teacherId) {
+
+        if (userRepository.findById(teacherId).isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        //get list of session by week and classId
+        List<SessionEntity> sessionEntities = sessionRepository.findByClassIdAndUserId(classId, teacherId);
+        if (!sessionEntities.isEmpty()) {
+            return toListSessionResponse(sessionEntities);
+        } else {
+            return null;
+        }
+    }
+
+    public List<SessionResponse> toListSessionResponse(List<SessionEntity> sessionEntities) {
 
         List<SessionResponse> responseList = new ArrayList<>();
 
