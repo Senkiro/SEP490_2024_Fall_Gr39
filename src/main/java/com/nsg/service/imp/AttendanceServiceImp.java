@@ -165,11 +165,11 @@ public class AttendanceServiceImp implements AttendanceService {
             StudentResponse studentResponse = studentService.convertToStudentResponse(student);
 
             //get teacher in session
-//            SessionEntity session = attendance.getSessionEntity();
-//
-//            if (session.getUser().getUsername() != null) {
-//                attendanceResponse.setTeacher(session.getUser().getUsername());
-//            }
+            SessionEntity session = attendance.getSessionEntity();
+
+            if (session.getUser() != null) {
+                attendanceResponse.setTeacher(session.getUser().getUsername());
+            }
 
             attendanceResponse.setStudentResponse(studentResponse);
 
