@@ -389,30 +389,29 @@ export default {
           while (current <= end) {
             const weekStart = new Date(current);
             const weekEnd = new Date(current);
-            weekEnd.setDate(weekEnd.getDate() + 6); // Cộng 6 ngày cho tuần
-            if (weekEnd > end) weekEnd.setDate(end.getDate()); // Giới hạn trong endTime
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            if (weekEnd > end) weekEnd.setDate(end.getDate());
 
             weeks.push({
-              start: weekStart.toISOString().split('T')[0], // Chuyển thành chuỗi định dạng ngày
+              start: weekStart.toISOString().split('T')[0],
               end: weekEnd.toISOString().split('T')[0]
             });
 
-            current.setDate(current.getDate() + 7); // Sang tuần tiếp theo
+            current.setDate(current.getDate() + 7);
           }
 
           return {
             ...batch,
-            weeks, // Thêm danh sách tuần vào batch
+            weeks,
           };
         });
       } catch (error) {
         console.error('Error fetching batches:', error);
         this.batches = [];
-        // //alert('Không thể tải dữ liệu batch. Vui lòng thử lại sau.');
       }
     },
     async fetchClassesByBatch(batchName) {
-      this.isLoadingClasses = true; // Show the loading indicator
+      this.isLoadingClasses = true;
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
@@ -427,8 +426,6 @@ export default {
               },
             }
         );
-
-        // Extract content array from the response
         if (response.data && response.data.result && response.data.result.content) {
           this.classes = response.data.result.content.map((classItem) => ({
             id: classItem.classId,
@@ -436,15 +433,14 @@ export default {
             colour: classItem.classColour,
           }));
         } else {
-          this.classes = []; // Handle unexpected structure
+          this.classes = [];
           console.error('Unexpected response format', response.data);
         }
       } catch (error) {
         console.error('Error fetching classes:', error);
-        this.classes = []; // Clear the classes array in case of error
-        // //alert('Failed to fetch class data. Please try again.');
+        this.classes = [];
       } finally {
-        this.isLoadingClasses = false; // Hide the loading indicator
+        this.isLoadingClasses = false;
       }
     },
     async fetchRooms() {
@@ -471,7 +467,6 @@ export default {
         }
       } catch (error) {
         console.error('Error fetching rooms:', error);
-        // //alert('Failed to fetch room data. Please try again.');
         this.rooms = [];
       } finally {
         this.isLoadingRooms = false;
@@ -696,7 +691,6 @@ export default {
     },
     assignRoom(sessionId, roomId) {
       console.log(`Assign room ${roomId} to session ${sessionId}`);
-      // Sau khi gán, có thể chuyển về chế độ xem
       this.toggleEdit(sessionId);
     },
     async assignEvent(sessionId, eventId) {
@@ -718,7 +712,7 @@ export default {
 
         if (response.data && response.data.code === 0) {
           console.log("Event assigned successfully!");
-          this.isEditing[sessionId] = false; // Thoát chế độ chỉnh sửa
+          this.isEditing[sessionId] = false;
         } else {
           console.error("Failed to assign event:", response.data);
         }
