@@ -65,7 +65,7 @@ public class AttendanceServiceImp implements AttendanceService {
         attendanceRepository.save(attendanceEntity);
     }
 
-    //create attendance for a class in a session
+    //create attendance for all student in class of one session
     @Override
     public void createAttendancesForSession(String classId) {
         //check class existed or not
@@ -163,6 +163,13 @@ public class AttendanceServiceImp implements AttendanceService {
 
             //convert to student response
             StudentResponse studentResponse = studentService.convertToStudentResponse(student);
+
+            //get teacher in session
+//            SessionEntity session = attendance.getSessionEntity();
+//
+//            if (session.getUser().getUsername() != null) {
+//                attendanceResponse.setTeacher(session.getUser().getUsername());
+//            }
 
             attendanceResponse.setStudentResponse(studentResponse);
 

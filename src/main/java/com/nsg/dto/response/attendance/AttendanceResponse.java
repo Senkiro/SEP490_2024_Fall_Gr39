@@ -24,4 +24,6 @@ public class AttendanceResponse {
     LocalDate date;
 
     StudentResponse studentResponse;
+
+    String teacher;
 }
