@@ -26,6 +26,8 @@ public interface SessionService {
     //get session by class and week (get schedule by week)
     List<SessionResponse> getSessionByClassAndWeek(int week, String className);
 
+    List<SessionResponse> getSessionByClassAndTeacher(String classId, String teacherId);
+
     //get a session
     SessionResponse getSession(String sessionId);
 

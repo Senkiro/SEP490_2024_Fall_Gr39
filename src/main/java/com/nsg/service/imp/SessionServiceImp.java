@@ -272,6 +272,22 @@ public class SessionServiceImp implements SessionService {
         return toListSessionResponse(sessionEntities);
     }
 
+    @Override
+    public List<SessionResponse> getSessionByClassAndTeacher(String classId, String teacherId) {
+
+        if (userRepository.findById(teacherId).isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        //get list of session by week and classId
+        List<SessionEntity> sessionEntities = sessionRepository.findByClassIdAndUserId(classId, teacherId);
+        if (!sessionEntities.isEmpty()) {
+            return toListSessionResponse(sessionEntities);
+        } else {
+            return null;
+        }
+    }
+
     public List<SessionResponse> toListSessionResponse(List<SessionEntity> sessionEntities) {
 
         List<SessionResponse> responseList = new ArrayList<>();
