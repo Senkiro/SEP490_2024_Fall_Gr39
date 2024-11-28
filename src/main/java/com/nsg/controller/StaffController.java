@@ -757,10 +757,10 @@ public class StaffController {
                 .build();
     }
 
-    @GetMapping("/get-session-by-class-teacher")
-    public ApiResponse<List<SessionResponse>> getSessionByClassTeacher(@RequestParam String class_id, @RequestParam String teacher_id) {
+    @GetMapping("/get-session-by-teacher")
+    public ApiResponse<List<SessionResponse>> getSessionByTeacher(@RequestParam String teacher_id) {
         return ApiResponse.<List<SessionResponse>>builder()
-                .result( sessionService.getSessionByClassAndTeacher(class_id, teacher_id) )
+                .result( sessionService.getSessionByClassAndTeacher(teacher_id) )
                 .build();
     }
 
