@@ -31,6 +31,7 @@ import com.nsg.dto.response.curriculumn.CurriculumnListResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
+import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.holiday.HolidayResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
@@ -48,6 +49,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -1078,5 +1080,15 @@ public class StaffController {
                 .build();
     }
 
+
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<Page<ExamResponseForMark>> getExamsByStudent(
+            @PathVariable String studentId,
+            @RequestParam int page,
+            @RequestParam int size) {
+        Page<ExamResponseForMark> exams = examService.getExamsByStudent(studentId, page, size);
+        return ResponseEntity.ok(exams);
+    }
 
 }

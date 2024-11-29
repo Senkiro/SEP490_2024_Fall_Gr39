@@ -4,18 +4,20 @@
       <h1 class="title-large">Student’s attendance report</h1>
       <span class="student-name">Student: <b>{{ student.name }} - {{ student.id }}</b></span>
     </div>
+
     <div class="actions">
-      <span>Attended: <b>{{ attendanceSummary }}</b></span>
+      <span>Attended: <b>{{ attendanceSummary }}</b> sessions</span>
     </div>
 
     <div class="table-container">
-      <table class="table-standard">
+      <table>
         <thead>
         <tr>
           <th class="center">Session No</th>
           <th>Date</th>
           <th>Slot</th>
           <th>Teacher</th>
+          <th>Lesson/Event</th>
           <th>Attendance</th>
         </tr>
         </thead>
@@ -25,6 +27,7 @@
           <td>{{ session.date }}</td>
           <td>{{ session.slot }}</td>
           <td>{{ session.teacher }}</td>
+          <td>{{ session.lesson || session.event }}</td>
           <td :class="getAttendanceClass(session.status)">
             {{ session.status }}
           </td>
@@ -43,11 +46,8 @@ export default {
         name: 'Pham The Minh',
         id: 'FA171392',
         attendance: [
-          { number: 1, date: '2/9/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Ikeda Yuri', status: 'Attend' },
-          { number: 2, date: 'x/5/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Hiroto', status: 'Attend' },
-          { number: 3, date: 'x/1/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Kazuki', status: 'Attend' },
-          { number: 4, date: '2/9/2023', slot: 'Morning (8:30 - 12:30)', teacher: 'Kuro Neko', status: 'Absent' },
-          { number: 6, date: 'x/1/2023', slot: 'Afternoon (1:30 - 5:30)', teacher: 'Shiro Neko', status: 'Not happen' },
+          { number: 1, date: 'dd/mm/yyyy', slot: 'Morning (8:30 - 12:30)', teacher: 'Ikeda Yuri', lesson: 'Chapter 1 - Lesson 1', event: '', status: 'Attend' },
+          { number: 2, date: 'dd/mm/yyyy', slot: 'Morning (8:30 - 12:30)', teacher: 'Hiroto', lesson: '', event: 'Trip to Tokyo Tower', status: 'Not happen' },
         ]
       }
     };
@@ -63,9 +63,9 @@ export default {
     getAttendanceClass(status) {
       switch (status) {
         case 'Attend':
-          return 'attended';
+          return 'yes';
         case 'Absent':
-          return 'absent'; // Màu đỏ cho Absent
+          return 'no';
         case 'Not happen':
           return 'not-happen';
         default:

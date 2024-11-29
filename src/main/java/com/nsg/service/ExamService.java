@@ -3,7 +3,11 @@ package com.nsg.service;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.response.exam.ExamResponse;
+import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.entity.ExamEntity;
+import com.nsg.entity.StudentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,4 +32,5 @@ public interface ExamService {
 
     void saveAll(List<ExamEntity> exams);
 
+    Page<ExamResponseForMark> getExamsByStudent(String studentId, int page, int size);
 }

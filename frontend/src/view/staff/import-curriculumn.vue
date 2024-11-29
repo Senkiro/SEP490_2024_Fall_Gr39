@@ -45,7 +45,7 @@
     name: "ImportStudentPage",
     data() {
       return {
-        templateUrl: "/templates/students_list.xlsx",
+        templateUrl: "/templates/curriculumn.xlsx",
         notification: {
           message: '',
           type: '',
@@ -68,7 +68,7 @@
   
           try {
             const token = sessionStorage.getItem("jwtToken");
-            axios.post('http://localhost:8088/fja-fap/staff/upload-students', formData, {
+            axios.post('http://localhost:8088/fja-fap/staff/upload-curriculumn', formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${token}`,

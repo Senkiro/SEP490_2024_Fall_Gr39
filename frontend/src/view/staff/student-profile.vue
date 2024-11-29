@@ -16,9 +16,11 @@
           <div class="name-id-container">
             <div class="name-id">
               <h3>
-                <strong>{{ studentData.userInforResponse.fullName }} - {{
-                    studentData.userInforResponse.japaneseName
-                  }}</strong>
+                <strong>
+                  {{ studentData.userInforResponse.fullName || 'N/A' }} 
+                  - 
+                  {{studentData.userInforResponse.japaneseName || 'N/A' }}
+                </strong>
               </h3>
               <p>{{ studentData.rollNumber }}</p>
             </div>
@@ -32,7 +34,7 @@
             <div class="column column1">
               <div class="attribute">
                 <p>Batch</p>
-                <strong>{{ studentData.batchName }}</strong>
+                <strong>{{ studentData.batchName || 'N/A' }} </strong>
               </div>
               <div class="attribute">
                 <p>Gender</p>
@@ -47,9 +49,9 @@
             <div class="column column2">
               <div class="attribute">
                 <p>Class</p>
-                <strong :style="{ color: studentData.classResponse.classColour }">{{
-                    studentData.classResponse.className
-                  }}</strong>
+                <strong :style="{ color: studentData.classResponse.classColour }">
+                  {{studentData.classResponse.className || 'N/A' }}
+                </strong>
               </div>
               <div class="attribute">
                 <p>Phone</p>
@@ -128,7 +130,7 @@
 
           </div>
           <div class="actions">
-            <button type="submit" class="btn-save">Save Changes</button>
+            <button type="submit" class="btn-submit">Save Changes</button>
           </div>
         </form>
       </div>
@@ -136,13 +138,13 @@
     <div class="tab-buttons-container">
       <div class="tab-buttons">
         <button class="tab-button" :class="{ active: showAttendance }" @click="showAttendance = true">
-          <h3>Attendance Report</h3>
+          <h4>Attendance Report</h4>
         </button>
         <button class="tab-button" :class="{ active: !showAttendance }" @click="showAttendance = false">
-          <h3>Mark Report</h3>
+          <h4>Mark Report</h4>
         </button>
         <button class="tab-button">
-          <h3>Essay Submission</h3>
+          <h4>Essay Submission</h4>
         </button>
       </div>
     </div>
@@ -244,11 +246,7 @@ const markReport = ref([
   {category: 'Course Total', item: 'Status', weight: '-', value: '-', comment: 'Good'},
 ]);
 
-const attendanceReport = ref([
-  {date: '2/9/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend'},
-  {date: 'x/5/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Attend'},
-  {date: 'y/1/2024', slot: 'Morning (8:30 - 12:30)', teacher: 'Yuri Ikeda', status: 'Absent'},
-]);
+const attendanceReport = ref([]);
 
 studentId.value = useRoute().params.id;
 
@@ -272,6 +270,33 @@ const fetchStudentData = async () => {
   }
 };
 
+const fetchAttendanceData = async () => {
+  try {
+    const token = sessionStorage.getItem('jwtToken');
+    const response = await axios.get(
+        `http://localhost:8088/fja-fap/staff/get-attendance-student/${studentId.value}?page=0&size=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+    );
+
+    if (response.data && response.data.result.content) {
+      attendanceReport.value = response.data.result.content
+          .map((attendance) => ({
+            date: attendance.date,
+            slot: "N/A",
+            teacher: "N/A",
+            status: attendance.status,
+          }))
+          .sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+  } catch (error) {
+    console.error('Error fetching attendance data:', error);
+  }
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   const [year, month, day] = dateString.split('-');
@@ -280,6 +305,7 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   fetchStudentData();
+  fetchAttendanceData();
 });
 const isEditing = ref(false);
 const editData = ref({...studentData.value.userInforResponse});
@@ -291,8 +317,8 @@ const toggleEditModal = () => {
 
   if (isEditing.value) {
     editData.value = {...studentData.value.userInforResponse};
-    previewImage.value = null; // Reset preview
-    fileError.value = null; // Reset file error
+    previewImage.value = null;
+    fileError.value = null;
   }
 };
 
@@ -331,7 +357,6 @@ const saveChanges = async () => {
     const token = sessionStorage.getItem("jwtToken");
     const formData = new FormData();
 
-    // Chuẩn bị dữ liệu `userDetail` ở dạng JSON string
     const userDetail = {
       fullName: editData.value.fullName,
       japaneseName: editData.value.japaneseName,

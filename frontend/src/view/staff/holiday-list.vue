@@ -37,9 +37,9 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <tr v-if="holidays.length < 1">
             <td colspan="4" class="center">No record.</td>
-          </tr>
+        </tr>
         </tbody>
       </table>
 
@@ -80,7 +80,7 @@
             <input type="date" id="date" v-model="holidayDate" required />
           </div>
           <div class="actions">
-            <button type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
+            <button class="btn-submit" type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>

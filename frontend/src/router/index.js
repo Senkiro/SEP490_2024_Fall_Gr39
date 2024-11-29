@@ -215,6 +215,17 @@ const routes = [
         },
     },
     {
+        path: '/staff/exam-type',
+        name: 'StaffExamType',
+        component: () => import('../view/staff/exam-type-rate.vue'),
+        meta: { layout: 'staff', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/staff"},
+                {name: "Event type", link: ""}
+            ]
+        },
+    },
+    {
         path: '/staff/room',
         name: 'RoomList',
         component: () => import('../view/staff/room-record.vue'),
@@ -226,7 +237,7 @@ const routes = [
         },
     },
     {
-        path: '/staff/lesson-detail',
+        path: '/staff/lesson-detail/:id',
         name: 'StaffLessonDetail',
         component: () => import('../view/staff/lesson-detail.vue'),
         meta: { layout: 'staff', requiresAuth: false , 
@@ -262,7 +273,7 @@ const routes = [
         },
     },
     {
-        path: '/staff/exam-detail',
+        path: '/staff/exam-detail/:id',
         name: 'StaffExamDetail',
         component: () => import('../view/staff/exam-detail.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
@@ -312,7 +323,7 @@ const routes = [
     {
         path: '/staff/create-news',
         name: 'CreateNews',
-        component: () => import('../view/staff/create-news.vue'),
+        component: () => import('../view/staff/news-create.vue'),
         meta: { layout: 'staff', requiresAuth: false,
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"},
@@ -356,8 +367,8 @@ const routes = [
         },
     },
     {
-        path: '/staff/student-attendance-report',
-        name: 'StudentAttendanceReport',
+        path: '/staff/student-attendance-report/:id',
+        name: 'StaffStudentAttendanceReport',
         component: () => import('../view/staff/student-attendance-report.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
             breadcrumbs: [
@@ -471,7 +482,7 @@ const routes = [
     },
     {
         path: '/student/attendance',
-        name: 'StudentAttendanceReport',
+        name: 'StudentStudentAttendanceReport',
         component: () => import('../view/student/attendance-report.vue'),
         meta: { layout: 'student', requiresAuth: false, 
             breadcrumbs: [

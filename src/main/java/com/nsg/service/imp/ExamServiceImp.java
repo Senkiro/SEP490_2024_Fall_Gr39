@@ -7,14 +7,21 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.response.exam.ExamResponse;
+import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.dto.response.exam.ExamTypeResponse;
+import com.nsg.entity.AttendanceEntity;
 import com.nsg.entity.ExamEntity;
 import com.nsg.entity.ExamTypeRateEntity;
-import com.nsg.entity.LessonEntity;
+import com.nsg.entity.StudentEntity;
+import com.nsg.repository.AttendanceRepository;
 import com.nsg.repository.ExamRepository;
 import com.nsg.service.ExamService;
 import com.nsg.service.ExamTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +35,9 @@ public class ExamServiceImp implements ExamService {
 
     @Autowired
     ExamTypeService examTypeService;
+
+    @Autowired
+    AttendanceRepository attendanceRepository;
 
     @Override
     public void createExam(ExamRequest request) {
@@ -119,4 +129,22 @@ public class ExamServiceImp implements ExamService {
 
         examRepository.saveAll(exams);
     }
+
+    @Override
+    public Page<ExamResponseForMark> getExamsByStudent(String studentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ExamEntity> listExam = attendanceRepository.findExamsByStudentId(studentId, pageable);
+        List<ExamResponseForMark> responseList = new ArrayList<>();
+        for (ExamEntity exam : listExam) {
+            ExamResponseForMark response = new ExamResponseForMark();
+            response.setExamId(exam.getExamId());
+            response.setExamTitle(exam.getExamTitle());
+            response.setExamContent(exam.getExamContent());
+            response.setExamType(exam.getExamTypeRateEntity().getExamType().toString());
+            responseList.add(response);
+        }
+
+        return new PageImpl<>(responseList, listExam.getPageable(), listExam.getTotalElements());
+    }
+
 }
