@@ -503,7 +503,7 @@ const routes = [
         },
     },
     {
-        path: '/student/news-detail/:id',
+        path: '/student/news-detail/:eventId',
         name: 'StudentNewsDetail',
         component: () => import('../view/student/news-detail.vue'),
         meta: { layout: 'student', requiresAuth: false, 
@@ -582,7 +582,7 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/student-record',
+        path: '/teacher/student-record/:classId',
         name: 'TeacherStudentRecord',
         component: () => import('../view/teacher/student-record.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
@@ -702,7 +702,7 @@ const routes = [
         },
     },
     {
-        path: '/teacher/take-attendance',
+        path: '/teacher/take-attendance/:sessionId',
         name: 'TeacherTakeAttendance',
         component: () => import('../view/teacher/take-attendance.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 

@@ -610,36 +610,36 @@ public class StaffController {
 
     //get all
     @GetMapping("/event")
-    public ApiResponse<Page<EventEntity>> getAllEvent(@RequestParam int page, @RequestParam int size) {
-        Page<EventEntity> eventEntityList = eventService.getEvents(page, size);
-        return ApiResponse.<Page<EventEntity>>builder()
+    public ApiResponse<Page<EventResponse>> getAllEvent(@RequestParam int page, @RequestParam int size) {
+        Page<EventResponse> eventEntityList = eventService.getEvents(page, size);
+        return ApiResponse.<Page<EventResponse>>builder()
                 .result(eventEntityList)
                 .build();
     }
 
     //create new batch
     @PostMapping("/create-event")
-    public ApiResponse<EventEntity> createEvnet(@RequestBody @Validated EventCreateRequest request) {
+    public ApiResponse<EventResponse> createEvnet(@RequestBody @Validated EventCreateRequest request) {
         eventService.createEvent(request);
-        return ApiResponse.<EventEntity>builder()
+        return ApiResponse.<EventResponse>builder()
                 .message("A new event have been created!")
                 .build();
     }
 
     // getEventById
     @GetMapping("/get-event")
-    public ApiResponse<EventEntity> getEventById(@RequestParam String eventId) {
-        EventEntity eventEntity = eventService.getEventById(eventId);
-        return ApiResponse.<EventEntity>builder()
+    public ApiResponse<EventResponse> getEventById(@RequestParam String eventId) {
+        EventResponse eventEntity = eventService.getEventById(eventId);
+        return ApiResponse.<EventResponse>builder()
                 .result(eventEntity)
                 .build();
     }
 
     // search and paginate
     @GetMapping("/search-event")
-    public ApiResponse<Page<EventEntity>> getEventByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
-        Page<EventEntity> eventEntityList = eventService.findEventsByName(name, page, size);
-        return ApiResponse.<Page<EventEntity>>builder()
+    public ApiResponse<Page<EventResponse>> getEventByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        Page<EventResponse> eventEntityList = eventService.findEventsByName(name, page, size);
+        return ApiResponse.<Page<EventResponse>>builder()
                 .result(eventEntityList)
                 .build();
     }

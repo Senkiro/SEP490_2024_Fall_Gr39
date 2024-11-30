@@ -345,4 +345,48 @@ public class StudentServiceImp implements StudentService {
         return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
 
     }
+
+    @Override
+    public Page<StudentResponse> getStudentByClassId(int page, int size, String classId) {
+        //check class existed
+        if (classRepository.findByClassId(classId) == null) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+
+        //find all student
+        Page<StudentEntity> studentEntityList =
+                studentRepository.findByClassEntityClassId(
+                        classId,
+                        PageRequest.of(page, size));
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = new ArrayList<>();
+
+        //for
+        for (StudentEntity student : studentEntityList) {
+            StudentResponse studentResponse = new StudentResponse();
+            //get,set rollNumber
+            studentResponse.setRollNumber(student.getRollNumber());
+            studentResponse.setStudentId(student.getStudentId());
+
+            //map user to UserInforResponse
+            UserInforResponse userInforResponse =
+                    UserMapper.INSTANCE.toUserInforResponse(student.getUser());
+            //set user
+            studentResponse.setUserInforResponse(userInforResponse);
+
+            //set batch
+            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
+
+            //set class
+            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
+
+            //add to response list
+            studentListResponse.add(studentResponse);
+        }
+
+        return new PageImpl<>(studentListResponse,
+                studentEntityList.getPageable(),
+                studentEntityList.getTotalElements());
+    }
 }

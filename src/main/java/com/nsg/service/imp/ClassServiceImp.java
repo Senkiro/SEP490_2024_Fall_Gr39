@@ -1,14 +1,18 @@
 package com.nsg.service.imp;
 
+import com.nsg.Mapper.ClassMapper;
+import com.nsg.Mapper.ClassMapperImpl;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.ClassEntity;
+import com.nsg.entity.SessionEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.repository.ClassRepository;
+import com.nsg.repository.SessionRepository;
 import com.nsg.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +32,10 @@ public class ClassServiceImp implements ClassService {
 
     @Autowired
     BatchRepository batchRepository;
+    @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
+    private ClassMapperImpl classMapperImpl;
 
     @Override
     public void createClass(ClassRequest request) {
@@ -121,5 +129,30 @@ public class ClassServiceImp implements ClassService {
     @Override
     public void deleteClass(String classId) {
         classRepository.deleteById(classId);
+    }
+
+
+    @Override
+    public List<ClassResponse> getClassByTeacherId(String teacherId) {
+        List<ClassResponse> classEntities = new ArrayList<>();
+
+        List<SessionEntity> sessionEntityList = sessionRepository.findByUserId(teacherId);
+
+        for (SessionEntity session : sessionEntityList) {
+            boolean exists = false;
+
+            // Kiểm tra danh sách classEntities
+            for (ClassResponse classResponse : classEntities) {
+                if (classResponse.getClassId().equals(session.getClassEntity().getClassId())) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                classEntities.add(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
+            }
+        }
+        return classEntities;
     }
 }

@@ -1,5 +1,6 @@
 package com.nsg.repository;
 
+import com.nsg.dto.response.event.EventResponse;
 import com.nsg.entity.EventEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

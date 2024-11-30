@@ -33,5 +33,7 @@ public interface StudentService {
     Page<StudentResponse> findStudentsByName(String name, String classId, int page, int size);
 
     Page<StudentResponse> getStudentByClass(int page, int size, String studentId);
+
+    Page<StudentResponse> getStudentByClassId(int page, int size, String classId);
 }
 

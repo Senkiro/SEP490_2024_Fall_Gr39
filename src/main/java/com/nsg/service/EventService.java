@@ -13,16 +13,16 @@ import java.util.List;
 @Service
 public interface EventService {
     //get all lesson
-    List<EventEntity> getAllEvent();
+    List<EventResponse> getAllEvent();
 
-    Page<EventEntity> getEvents(int page, int size);
+    Page<EventResponse> getEvents(int page, int size);
 
     //create new lesson
     void createEvent(EventCreateRequest request);
 
-    EventEntity getEventById(String eventId);
+    EventResponse getEventById(String eventId);
 
-    Page<EventEntity> findEventsByName(String eventName,int page, int size);
+    Page<EventResponse> findEventsByName(String eventName,int page, int size);
 
     void deleteEvent(String examId);
 

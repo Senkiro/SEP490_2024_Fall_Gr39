@@ -12,12 +12,14 @@ import com.nsg.repository.EventRepository;
 import com.nsg.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,13 +31,25 @@ public class EventServiceImp implements EventService {
     private EventMapper eventMapper;
 
     @Override
-    public List<EventEntity> getAllEvent() {
-        return eventRepository.findAll();
+    public List<EventResponse> getAllEvent() {
+        List<EventEntity> eventEntities = eventRepository.findAll();
+        List<EventResponse> eventResponses = new ArrayList<>();
+        for (EventEntity eventEntity : eventEntities) {
+            EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
+            eventResponses.add(eventResponse);
+        }
+        return eventResponses;
     }
 
     @Override
-    public Page<EventEntity> getEvents(int page, int size){
-        return eventRepository.findAll(PageRequest.of(page, size));
+    public Page<EventResponse> getEvents(int page, int size){
+        Page<EventEntity> eventEntities = eventRepository.findAll(PageRequest.of(page, size));
+        List<EventResponse> eventResponses = new ArrayList<>();
+        for (EventEntity eventEntity : eventEntities) {
+            EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
+            eventResponses.add(eventResponse);
+        }
+        return new PageImpl<>(eventResponses, eventEntities.getPageable(), eventEntities.getTotalElements());
     }
 
     @Override
@@ -49,15 +63,23 @@ public class EventServiceImp implements EventService {
     }
 
     @Override
-    public EventEntity getEventById(String eventId) {
-        return eventRepository.findByEventId(eventId).orElseThrow(
+    public EventResponse getEventById(String eventId) {
+        EventEntity eventEntity = eventRepository.findByEventId(eventId).orElseThrow(
                 () -> new AppException(ErrorCode.EVENT_NOT_EXIST)
         );
+
+        return EventMapper.INSTANCE.toEventResponse(eventEntity);
     }
 
     @Override
-    public Page<EventEntity> findEventsByName(String name, int page, int size) {
-        return eventRepository.findByEventNameContaining(name, PageRequest.of(page, size));
+    public Page<EventResponse> findEventsByName(String name, int page, int size) {
+        Page<EventEntity> eventEntities =  eventRepository.findByEventNameContaining(name, PageRequest.of(page, size));
+        List<EventResponse> eventResponses = new ArrayList<>();
+        for (EventEntity eventEntity : eventEntities) {
+            EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
+            eventResponses.add(eventResponse);
+        }
+        return new PageImpl<>(eventResponses, eventEntities.getPageable(), eventEntities.getTotalElements());
     }
 
     @Override
