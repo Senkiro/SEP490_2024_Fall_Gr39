@@ -41,4 +41,13 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     List<SessionEntity> findSessionsByClassIdAndAvailableAndStatus(
             @Param("classId") String classId);
 
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND session_available = FALSE " +
+            "AND status = FALSE " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsUnavailableByClassId(
+            @Param("classId") String classId);
+
 }

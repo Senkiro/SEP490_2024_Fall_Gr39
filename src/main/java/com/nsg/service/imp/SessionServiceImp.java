@@ -175,8 +175,8 @@ public class SessionServiceImp implements SessionService {
 
         //get 2 time_slot entity
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findAll();
-        String morning = timeSlotRepository.findByName("Morning").getTimeSLotId();
-        String afternoon = timeSlotRepository.findByName("Afternoon").getTimeSLotId();
+        String morning = timeSlotRepository.findByName("Morning").getTimeSlotId();
+        String afternoon = timeSlotRepository.findByName("Afternoon").getTimeSlotId();
 
         //get list of holiday
         List<HolidayEntity> holidays = holidayRepository.findAll();
@@ -309,7 +309,13 @@ public class SessionServiceImp implements SessionService {
     @Override
     public List<UserInforResponse> getAvailableTeachers(String sessionId) {
 
-        List<UserEntity> listTeacher = teacherRepository.findAvailableTeachers(sessionId);
+        //get date and timeSlotId
+        SessionEntity session = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        List<UserEntity> listTeacher = teacherRepository.findAvailableTeachers(session.getDate(),
+                session.getTimeSlotEntity().getTimeSlotId());
 
         List<UserInforResponse> responseList = new ArrayList<>();
 
@@ -319,6 +325,13 @@ public class SessionServiceImp implements SessionService {
         }
 
         return responseList;
+    }
+
+    @Override
+    public List<SessionResponse> getSessionUnavailable(String classId) {
+        List<SessionEntity> sessionEntities = sessionRepository.findSessionsUnavailableByClassId(classId);
+
+        return toListSessionResponse(sessionEntities);
     }
 
 

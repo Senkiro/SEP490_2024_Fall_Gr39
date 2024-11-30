@@ -783,6 +783,14 @@ public class StaffController {
                 .build();
     }
 
+    //get unavailable session
+    @GetMapping("/get-unavailable-session/{class_id}")
+    public ApiResponse<List<SessionResponse>> getUnavailableSesssion(@PathVariable("class_id") String class_id) {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result(sessionService.getSessionUnavailable(class_id))
+                .build();
+    }
+
     //update
     @PostMapping("/update-session/{session_id}")
     public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {

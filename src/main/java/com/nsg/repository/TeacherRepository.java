@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 import java.util.List;
 @Repository
 public interface TeacherRepository extends JpaRepository<UserEntity, String> {
@@ -15,18 +17,14 @@ public interface TeacherRepository extends JpaRepository<UserEntity, String> {
     //get teacher with paginate
     Page<UserEntity> findByRoles(UserRole role, Pageable pageable);
 
-    @Query(value = """
-            SELECT u 
-            FROM UserEntity u 
-            WHERE u.role = 'TEACHER' 
-              AND u.userId NOT IN (
-                  SELECT s.user.userId 
-                  FROM SessionEntity s 
-                  WHERE s.sessionId = :sessionId 
-              )
-            """)
-    List<UserEntity> findAvailableTeachers(@Param("sessionId") String sessionId);
-
-
+    //get list of available teacher for each session
+    @Query("SELECT u FROM UserEntity u WHERE u.roles = 'TEACHER' " +
+            "AND NOT EXISTS (" +
+            "   SELECT 1 FROM SessionEntity s WHERE s.user.userId = u.userId " +
+            "   AND s.date = :date " +
+            "   AND s.timeSlotEntity.timeSlotId = :timeSlotId" +
+            ")")
+    List<UserEntity> findAvailableTeachers(@Param("date") LocalDate date,
+                                           @Param("timeSlotId") String timeSlotId);
 
 }

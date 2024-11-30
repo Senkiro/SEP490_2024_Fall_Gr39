@@ -21,6 +21,9 @@ public interface SessionService {
     //get available teacher for each session
     List<UserInforResponse> getAvailableTeachers(String sessionId);
 
+    //get unavailable session to change date
+    List<SessionResponse> getSessionUnavailable(String classId);
+
     //delete schedule
     void deleteSchedule(String class_id);
 
