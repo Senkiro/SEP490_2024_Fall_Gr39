@@ -29,4 +29,6 @@ public class SessionCreattionRequest {
 
     String eventId;
     String userId;
+
+    boolean sessionAvailable;
 }

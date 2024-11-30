@@ -33,6 +33,9 @@ public class SessionEntity extends BaseEntity {
     @Column(name = "status")
     boolean status;
 
+    @Column(name = "session_available")
+    boolean sessionAvailable;
+
     @ManyToOne
     @JoinColumn(name = "class_id", referencedColumnName = "class_id")
     ClassEntity classEntity;

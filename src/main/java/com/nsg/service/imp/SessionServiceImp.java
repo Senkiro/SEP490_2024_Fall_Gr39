@@ -6,6 +6,7 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.response.session.SessionResponse;
+import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.*;
 import com.nsg.service.CurriculumnService;
@@ -66,6 +67,9 @@ public class SessionServiceImp implements SessionService {
     @Autowired
     HolidayRepository holidayRepository;
 
+    @Autowired
+    TeacherRepository teacherRepository;
+
 
     @Override
     public void createSession(SessionCreattionRequest request) {
@@ -73,6 +77,8 @@ public class SessionServiceImp implements SessionService {
 
         session.setDate(request.getDate());
         session.setStatus(false);
+        session.setSessionAvailable(request.isSessionAvailable());
+
         session.setSessionNumber(request.getSessionNumber());
         session.setSessionWeek(request.getSessionWeek());
 
@@ -82,15 +88,15 @@ public class SessionServiceImp implements SessionService {
         );
         session.setClassEntity(classEntity);
 
-        //curriculumn
-        if (request.getCurriculumnId() >= 0) {
-            CurriculumnEntity curriculumnEntity = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
-                    () -> new AppException(ErrorCode.CURRICULUMN_NOT_FOUND)
-            );
-            session.setCurriculumnEntity(curriculumnEntity);
-        } else {
-            session.setCurriculumnEntity(null);
-        }
+//        //curriculumn
+//        if (request.getCurriculumnId() >= 0) {
+//            CurriculumnEntity curriculumnEntity = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
+//                    () -> new AppException(ErrorCode.CURRICULUMN_NOT_FOUND)
+//            );
+//            session.setCurriculumnEntity(curriculumnEntity);
+//        } else {
+//            session.setCurriculumnEntity(null);
+//        }
 
         //time slot
         if (request.getTimeSlotId() != null) {
@@ -137,6 +143,9 @@ public class SessionServiceImp implements SessionService {
     @Override
     public void createSchedule(String class_id, ScheduleCreationRequest request) {
 
+        //for test
+        List<SessionCreattionRequest> testList = new ArrayList<>();
+
         //get session by className and batchName
         //check class: find class by className and batchName
         ClassEntity classEntity = classRepository.findById(class_id).orElseThrow(
@@ -164,54 +173,87 @@ public class SessionServiceImp implements SessionService {
         //get list of curriculumn inside curriculumnList entity
         List<CurriculumnEntity> curriculumnEntityList = curriculumnListEntity.getCurriculumnEntityList();
 
-        int sessionNo = 1;
-        int totalDay = 1;
-        int week = 0;
+        //get 2 time_slot entity
+        List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findAll();
+        String morning = timeSlotRepository.findByName("Morning").getTimeSLotId();
+        String afternoon = timeSlotRepository.findByName("Afternoon").getTimeSLotId();
+
+        //get list of holiday
+        List<HolidayEntity> holidays = holidayRepository.findAll();
+
+        //get timeslot would be set to all
+
+        int sessionNo = 1; //count session available by day
+        int totalDay = 1; //count days
+        int week = 0; //count week
+        int count_ts = 1; //count session by time_slot
 
         int total_session = curriculumnEntityList.size();
 
+        //create session by day and time_slot
         while (sessionNo < total_session) {
             LocalDate dateOfSession = startDate.plusDays((totalDay-1));
-
             //tao session voi date
             SessionCreattionRequest sessionCreattionRequest = new SessionCreattionRequest();
             sessionCreattionRequest.setDate(dateOfSession);
             sessionCreattionRequest.setClassId(classEntity.getClassId());
 
-            sessionCreattionRequest.setSessionNumber(totalDay);
+            sessionCreattionRequest.setSessionNumber(count_ts);
+
+            //if %count_ts = 1 -> morning
+            if (count_ts % 2 == 1) {
+                sessionCreattionRequest.setTimeSlotId(morning);
+            }
+            //else if % count_ts = 0 -> afternoon
+            else if (count_ts % 2 == 0) {
+                sessionCreattionRequest.setTimeSlotId(afternoon);
+            }
 
             DayOfWeek dow = dateOfSession.getDayOfWeek();
 
             if (dow == DayOfWeek.SATURDAY
-                    || dow == DayOfWeek.SUNDAY
-                    || checkHoliday(dateOfSession)) {
-                //set curriculumn = -1
-                sessionCreattionRequest.setCurriculumnId(-1);
+                    || dow == DayOfWeek.SUNDAY) {
+                //create blank session
+                sessionCreattionRequest.setSessionAvailable(false);
 
+
+            } else if (holidays.isEmpty() || checkHoliday(holidays, dateOfSession)) {
+                //create blank session
+                sessionCreattionRequest.setSessionAvailable(false);
             } else {
-                //tao session voi room va time_slot va ngay la: dateOfSession
-                sessionCreattionRequest.setTimeSlotId(request.getTimeSlotId());
+
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
 
-                //get, set curriculumn
-                CurriculumnEntity curriculumn = curriculumnEntityList.get( (sessionNo - 1) );
-                sessionCreattionRequest.setCurriculumnId(curriculumn.getCurriculumnId());
-
-                //session tang 1
-                sessionNo += 1;
+                //if time_slot_id = requestId -> set available is true
+                sessionCreattionRequest.setSessionAvailable(sessionCreattionRequest.getTimeSlotId().equals(request.getTimeSlotId()));
 
                 //week break
-                if (dow == DayOfWeek.MONDAY)
+                if (dow == DayOfWeek.MONDAY && count_ts % 2 == 0){
                     week += 1;
+                }
+
+                //session tang 1
+                if (count_ts % 2 == 0) {
+                    sessionNo += 1;
+                }
             }
 
             sessionCreattionRequest.setSessionWeek(week);
-            totalDay += 1;
+
+            //if %count_ts = 0 then total day increase 1
+            if (count_ts % 2 == 0) {
+                totalDay += 1;
+            }
 
             //save session
             createSession(sessionCreattionRequest);
+            testList.add(sessionCreattionRequest);
+            count_ts += 1;
         }
         System.out.println("Total days: "+totalDay);
+
+        //test
+        System.out.println("Test 001: "+testList);
 
         //update total week and end date for batch
         batchEntity.setTotalWeek(week);
@@ -220,23 +262,65 @@ public class SessionServiceImp implements SessionService {
 
         batchRepository.save(batchEntity);
 
+        //fill session
+        fillSession(class_id, curriculumnEntityList);
+
     }
 
-    //check one day is holiday or not?
-    public boolean checkHoliday(LocalDate dateOfSession) {
-        //get list of holiday
-        List<HolidayEntity> holidays = holidayRepository.findAll();
 
-        //check empty
-        if (!holidays.isEmpty()) {
-            for (HolidayEntity holiday: holidays) {
-                if (holiday.getHolidayDate() == dateOfSession) {
-                    return true;
-                }
+    //fill session: only fill available session
+    public void fillSession(String classId, List<CurriculumnEntity> curriculumnEntityList) {
+        //get all session available by classId, then sort it by day and sessionNumber
+        List<SessionEntity> availableSessions = sessionRepository.findSessionsByClassIdAndAvailableAndStatus(classId);
+
+        //if available sesssion list null
+        if (availableSessions.isEmpty()) {
+            throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
+        }
+
+        int count_curriculumn = 0;
+
+        for (SessionEntity session : availableSessions) {
+            session.setCurriculumnEntity(curriculumnEntityList.get(count_curriculumn));
+            count_curriculumn += 1;
+        }
+
+        //save all
+        sessionRepository.saveAll(availableSessions);
+
+    }
+
+    //add event -> session change to available
+
+    //check one day is holiday or not?
+    public boolean checkHoliday(List<HolidayEntity> holidays, LocalDate dateOfSession) {
+        for (HolidayEntity holiday: holidays) {
+            if (holiday.getHolidayDate().equals(dateOfSession)) {
+                return true;
             }
         }
         return false;
     }
+
+    //get session by session id and time_slot_id
+
+
+    //get available teacher for each session
+    @Override
+    public List<UserInforResponse> getAvailableTeachers(String sessionId) {
+
+        List<UserEntity> listTeacher = teacherRepository.findAvailableTeachers(sessionId);
+
+        List<UserInforResponse> responseList = new ArrayList<>();
+
+        for (UserEntity user: listTeacher) {
+            UserInforResponse temp = UserMapper.INSTANCE.toUserInforResponse(user);
+            responseList.add(temp);
+        }
+
+        return responseList;
+    }
+
 
     @Override
     public void deleteSchedule(String classId) {
@@ -305,6 +389,7 @@ public class SessionServiceImp implements SessionService {
 
             tempResponse.setDate(session.getDate());
             tempResponse.setStatus(session.isStatus());
+            tempResponse.setSessionAvailable(session.isSessionAvailable());
 
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
 

@@ -27,6 +27,7 @@ public class SessionResponse {
     LocalDate date;
 
     boolean status;
+    boolean sessionAvailable;
 
     ClassResponse classResponse;
 

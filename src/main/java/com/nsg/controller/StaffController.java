@@ -40,6 +40,7 @@ import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
+import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.BatchRepository;
 import com.nsg.service.*;
@@ -771,6 +772,14 @@ public class StaffController {
     public ApiResponse<SessionResponse> getSessionById(@PathVariable("session_id") String session_id) {
         return ApiResponse.<SessionResponse>builder()
                 .result(sessionService.getSession(session_id))
+                .build();
+    }
+
+    //get available teacher for session
+    @GetMapping("/get-available-teacher/{session_id}")
+    public ApiResponse<List<UserInforResponse>> getAvailableTeacher(@PathVariable("session_id") String session_id) {
+        return ApiResponse.<List<UserInforResponse>>builder()
+                .result(sessionService.getAvailableTeachers(session_id))
                 .build();
     }
 
