@@ -94,7 +94,10 @@ public enum ErrorCode {
     HOLIDAY_NOT_FOUND(2100, "Holiday not found"),
 
     //Excel
-    PARSE_ERROR(1230,"Failed to parse Excel file" );
+    PARSE_ERROR(1230,"Failed to parse Excel file" ),
+    NUMBER_SHEET(1231, "Excel file must have at least 2 sheets: Lessons and Exams."),
+    LESSON_SHEET_MISSING(1232, "Lesson sheet is missing"),
+    EXAM_SHEET_MISSING(1233, "Exam sheet is missing");
 
     ErrorCode(int code, String message) {
         this.code = code;

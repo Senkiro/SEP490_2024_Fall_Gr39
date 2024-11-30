@@ -1,6 +1,8 @@
 package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
+import com.nsg.common.exception.AppException;
+import com.nsg.common.exception.ErrorCode;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
@@ -966,29 +968,42 @@ public class StaffController {
     //upload curriculumn
     @PostMapping("/upload-curriculumn")
     public ResponseEntity<ApiResponse<String>> uploadFileCurriculumn(@RequestParam("file") MultipartFile file) {
-        if (excelHelper.hasExcelFormat(file)) {
-            try {
-                Map<String, List<?>> data = excelHelper.excelToLessonsAndExams(file.getInputStream());
-                List<LessonEntity> lessons = (List<LessonEntity>) data.get("lessons");
-                lessonService.saveAll(lessons);
-
-                List<ExamEntity> exams = (List<ExamEntity>) data.get("exams");
-                examService.saveAll(exams);
-
-                List<CurriculumnEntity> curriculumn = (List<CurriculumnEntity>) data.get("curriculumns");
-                curriculumnService.createCurriculumn(curriculumn);
-                return ResponseEntity.ok(ApiResponse.<String>builder().
-                        message("File uploaded and exams added successfully.")
-                        .build());
-            } catch (Exception e) {
-                return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
-                        .build());
-            }
+        if (!excelHelper.hasExcelFormat(file)) {
+            // Trả về lỗi khi định dạng file không phải Excel
+            return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                    .message(ErrorCode.PARSE_ERROR.getMessage())
+                    .build());
         }
-        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
-                .message("Please upload an Excel file.")
-                .build());
+        try {
+            Map<String, List<?>> data = excelHelper.excelToLessonsAndExams(file.getInputStream());
+
+            List<LessonEntity> lessons = (List<LessonEntity>) data.get("lessons");
+            if (lessons != null && !lessons.isEmpty()) {
+                lessonService.saveAll(lessons);
+            }
+
+            List<ExamEntity> exams = (List<ExamEntity>) data.get("exams");
+            if (exams != null && !exams.isEmpty()) {
+                examService.saveAll(exams);
+            }
+
+            List<CurriculumnEntity> curriculumns = (List<CurriculumnEntity>) data.get("curriculumns");
+            if (curriculumns != null && !curriculumns.isEmpty()) {
+                curriculumnService.createCurriculumn(curriculumns);
+            }
+
+            return ResponseEntity.ok(ApiResponse.<String>builder()
+                    .message("File uploaded and data added successfully.")
+                    .build());
+        } catch (AppException e) {
+            return ResponseEntity.status(400).body(ApiResponse.<String>builder()
+                    .message(e.getMessage())
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.<String>builder()
+                    .message("An unexpected error occurred: " + e.getMessage())
+                    .build());
+        }
     }
 
     //get all attendance
