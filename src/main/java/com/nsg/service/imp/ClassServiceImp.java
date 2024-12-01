@@ -70,6 +70,7 @@ public class ClassServiceImp implements ClassService {
         response.setClassId(classEntity.getClassId());
         response.setClassName(classEntity.getClassName());
         response.setClassColour(classEntity.getClassColour());
+        response.setTotalStudent(classEntity.getStudentEntityList().size());
 
         return response;
     }
@@ -78,16 +79,7 @@ public class ClassServiceImp implements ClassService {
     public Page<ClassResponse> getAllClass(int page, int size) {
         Page<ClassEntity> classEntityList = classRepository.findAll(PageRequest.of(page, size));
 
-        List<ClassResponse> responseList = new ArrayList<>();
-
-        for (ClassEntity classEntity : classEntityList) {
-            ClassResponse tempResponse = new ClassResponse();
-            tempResponse.setClassId(classEntity.getClassId());
-            tempResponse.setClassName(classEntity.getClassName());
-            tempResponse.setClassColour(classEntity.getClassColour());
-
-            responseList.add(tempResponse);
-        }
+        List<ClassResponse> responseList = toClassResponseList(classEntityList.getContent());
 
         return new PageImpl<>(responseList, classEntityList.getPageable(), classEntityList.getTotalElements());
     }
@@ -100,17 +92,30 @@ public class ClassServiceImp implements ClassService {
 
         Page<ClassEntity> classEntitiesList = classRepository.findByBatchEntityBatchName(batchName, PageRequest.of(page, size));
 
-        List<ClassResponse> responseList = classEntitiesList.stream()
-                .map(classEntity -> new ClassResponse(
-                        classEntity.getClassId(),
-                        classEntity.getClassName(),
-                        classEntity.getClassColour()
-                ))
-                .collect(Collectors.toList());
+        List<ClassResponse> responseList = toClassResponseList(classEntitiesList.getContent());
 
         return new PageImpl<>(responseList, classEntitiesList.getPageable(), classEntitiesList.getTotalElements());
     }
 
+    public List<ClassResponse> toClassResponseList(List<ClassEntity> classEntityList) {
+        List<ClassResponse> responseList = new ArrayList<>();
+
+        for (ClassEntity classEntity : classEntityList) {
+            ClassResponse tempResponse = new ClassResponse();
+            tempResponse.setClassId(classEntity.getClassId());
+            tempResponse.setClassName(classEntity.getClassName());
+            tempResponse.setClassColour(classEntity.getClassColour());
+
+            //get number student in class
+            int totalStudent = classEntity.getStudentEntityList().size();
+
+            tempResponse.setTotalStudent(totalStudent);
+
+            responseList.add(tempResponse);
+        }
+
+        return responseList;
+    }
 
     @Override
     public ClassResponse updateClass(String classId, ClassRequest request) {
@@ -150,7 +155,9 @@ public class ClassServiceImp implements ClassService {
             }
 
             if (!exists) {
-                classEntities.add(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
+                ClassResponse classResponse = ClassMapper.INSTANCE.toClassResponse(session.getClassEntity());
+                classResponse.setTotalStudent(session.getClassEntity().getStudentEntityList().size());
+                classEntities.add( classResponse );
             }
         }
         return classEntities;

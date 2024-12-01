@@ -376,11 +376,11 @@ public class StaffController {
      **********************************/
 
     //get teacher paginate
-    @GetMapping("/teacher")
+    @GetMapping("/get-all-teacher")
     ApiResponse<Map<String, Object>> getAllTeacher(@RequestParam int page, @RequestParam int size) {
         ApiResponse<Map<String, Object>> apiResponse = new ApiResponse<>();
-        Page<UserEntity> teacherPage = teacherService.getTeachers(page, size);
-        List<UserEntity> teacherList = teacherPage.getContent();
+        Page<UserInforResponse> teacherPage = teacherService.getTeachers(page, size);
+        List<UserInforResponse> teacherList = teacherPage.getContent();
         Map<String, Object> response = new HashMap<>();
         response.put("teachers", teacherList); // Danh sách giáo viên
         response.put("totalElements", teacherPage.getTotalElements()); // Tổng số giáo viên
