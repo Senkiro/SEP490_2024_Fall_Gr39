@@ -5,26 +5,18 @@
     </div>
 
     <div class="filters">
-      <label for="class-filter">Select Class:</label>
-      <select id="class-filter" class="filter-select" v-model="selectedClassId">
-        <option value="" disabled>Select Class</option>
-        <option v-for="classItem in uniqueClasses" :key="classItem.classId" :value="classItem.classId">
-          {{ classItem.className }}
-        </option>
-      </select>
-    </div>
-
-    <div class="filters">
       <label for="week-filter">Select Week:</label>
       <select id="week-filter" class="filter-select" v-model="selectedWeek">
         <option value="" disabled>Select Week</option>
+        <option value="all">All Week</option>
         <option v-for="(week, index) in uniqueWeeks" :key="index" :value="week.index">
           Week {{ index + 1 }} ({{ week.start }} to {{ week.end }})
         </option>
       </select>
     </div>
 
-    <div v-if="selectedClassId && filteredSessions.length > 0" class="table-container">
+
+    <div v-if="filteredSessions.length > 0" class="table-container">
       <table>
         <thead>
         <tr>
@@ -58,13 +50,9 @@
         </tbody>
       </table>
     </div>
-    <div v-else-if="selectedClassId" class="no-data">
-      <p>No attendance records available for the selected filters.</p>
+    <div v-else-if="selectedWeek" class="no-data">
+      <p>No attendance records available.</p>
     </div>
-    <div v-else class="no-data">
-      <p>Please select a class to view attendance records.</p>
-    </div>
-
   </div>
 </template>
 
@@ -74,24 +62,11 @@ import axios from "axios";
 export default {
   data() {
     return {
-      sessions: [], // Danh sách các phiên học
-      selectedClassId: "", // Lớp học được chọn
-      selectedWeek: null, // Tuần được chọn
+      sessions: [],
+      selectedWeek: "all",
     };
   },
   computed: {
-    uniqueClasses() {
-      const classMap = new Map();
-      this.sessions.forEach((item) => {
-        if (!classMap.has(item.classResponse.classId)) {
-          classMap.set(item.classResponse.classId, {
-            classId: item.classResponse.classId,
-            className: item.classResponse.className.trim(),
-          });
-        }
-      });
-      return Array.from(classMap.values());
-    },
     uniqueWeeks() {
       const weeks = [];
       const weekMap = new Map();
@@ -113,12 +88,15 @@ export default {
       return weeks;
     },
     filteredSessions() {
-      return this.sessions.filter(
-          (session) =>
-              (!this.selectedClassId || session.classResponse.classId === this.selectedClassId) &&
-              (this.selectedWeek === null || session.sessionWeek === this.selectedWeek)
-      );
-    },
+      return this.sessions.filter(session => {
+        const hasValidLesson = session.curriculumnResponse?.lessonResponse?.lessonTitle;
+        const isWeekMatched =
+            this.selectedWeek === "all" ||
+            this.selectedWeek === null ||
+            session.sessionWeek === this.selectedWeek;
+        return hasValidLesson && isWeekMatched;
+      });
+    }
   },
   methods: {
     formatDate(date) {
@@ -141,7 +119,7 @@ export default {
       const token = sessionStorage.getItem("jwtToken");
 
       if (!teacherId || !token) {
-        console.error("Teacher ID hoặc JWT token không tồn tại trong session storage");
+        console.error("Token missing");
         return;
       }
 
@@ -151,7 +129,7 @@ export default {
           })
           .then((response) => {
             if (response.data.code === 0) {
-              this.sessions = response.data.result; // Lưu toàn bộ dữ liệu
+              this.sessions = response.data.result;
             } else {
               console.error(
                   "Lỗi khi fetch dữ liệu sessions:",
@@ -181,17 +159,15 @@ export default {
       const sessionDate = new Date(item.date);
       const today = new Date();
 
-      if (!item.timeSlotResponse || item.timeSlotResponse.name === "N/A") {
+      if (!item.lessonResponse || item.lessonResponse.lessonTitle === "N/A") {
         return true;
       }
 
-      // Nếu session chưa diễn ra hoặc cách ngày hôm nay hơn 2 ngày, nút bị vô hiệu hóa
+      //Nếu session chưa diễn ra hoặc cách ngày hôm nay hơn 2 ngày, nút bị vô hiệu hóa
       if (sessionDate > today || (today - sessionDate) / (1000 * 60 * 60 * 24) > 2) {
         return true;
       }
 
-      // Nếu đã điểm danh thì nút cũng bị vô hiệu hóa
-      return item.status === true;
     },
     getActionText(item) {
       if (item.status) {
@@ -202,14 +178,19 @@ export default {
     },
     navigateToAttendance(sessionId) {
       if (!sessionId) {
-        console.error("Session ID không hợp lệ.");
         return;
       }
 
       this.$router.push({
         path: `/teacher/take-attendance/${sessionId}`,
+      }).then(() => {
+        const session = this.sessions.find(item => item.sessionId === sessionId);
+        if (session) {
+          session.status = true;
+        }
       });
-    },
+    }
+
   },
   mounted() {
     this.fetchSessions();
