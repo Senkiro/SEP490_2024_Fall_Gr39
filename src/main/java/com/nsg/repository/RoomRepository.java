@@ -16,10 +16,11 @@ public interface RoomRepository extends BaseRepository<RoomEntity, String> {
 
     //get available room in each session
     @Query("SELECT r FROM RoomEntity r WHERE NOT EXISTS (" +
-            "   SELECT 1 FROM SessionEntity s WHERE s.roomEntity.roomId = r.roomId " +
-            "   AND s.date = :date " +
-            "   AND s.timeSlotEntity.timeSlotId = :timeSlotId" +
-            ")")
+            "SELECT 1 FROM SessionEntity s " +
+            "WHERE s.roomEntity.roomId = r.roomId " +
+            "AND s.date = :date " +
+            "AND s.timeSlotEntity.timeSlotId = :timeSlotId)")
     List<RoomEntity> findAvailableRooms(@Param("date") LocalDate date,
-                                           @Param("timeSlotId") String timeSlotId);
+                                        @Param("timeSlotId") String timeSlotId);
+
 }
