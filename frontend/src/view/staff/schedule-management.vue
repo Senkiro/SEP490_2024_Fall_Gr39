@@ -61,206 +61,84 @@
         </tr>
         </thead>
         <tbody>
-        <template v-for="session in sessions" :key="session.sessionId">
-          <!-- Hàng Sáng -->
-          <tr>
-            <!-- Cột Ngày (chỉ hiển thị ở hàng đầu tiên trong ngày) -->
-            <td v-if="!session.morningProcessed" :rowspan="2">
+        <template v-for="(sessions, date) in groupedSessions" :key="date">
+          <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
+            <!-- Cột Ngày -->
+            <td :rowspan="1">
               <div class="schedule-date">
-                <h1>{{ new Date(session.date).getDate() }}</h1>
-                <p>{{ session.dayOfWeek }}</p>
-              </div>
-            </td>
-            <!-- Cột Slot -->
-            <td>Morning</td>
-            <!-- Dữ liệu nếu Slot là Morning -->
-            <td id="teacher">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.fullName || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedTeacher[session.sessionId]"
-                        @change="assignTeacher(session.sessionId, selectedTeacher[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Teacher</option>
-                  <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                    {{ teacher.name }}
-                  </option>
-                </select>
+                <h1>{{ new Date(date).getDate() }}</h1>
+                <p>{{ sessions[0].dayOfWeek }}</p>
               </div>
             </td>
 
-            <td id="room">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.roomNumber || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedRoomTable[session.sessionId]"
-                        @change="assignRoom(session.sessionId, selectedRoomTable[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Room</option>
-                  <option v-for="room in rooms" :key="room.id" :value="room.id">
-                    Room {{ room.number }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-
-            <td>{{
-                session.timeSlotResponse?.name === "Morning" ? session.lessonResponse || "N/A" :
-                    "N/A"
-              }}
-            </td>
-            <td id="exam">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.examResponse || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedExamTable[session.sessionId]"
-                    @change="assignExam(session.sessionId, selectedExamTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Exam</option>
-                  <option v-for="exam in exams" :key="exam.id" :value="exam.id">
-                    {{ exam.title }} ({{ exam.type }} - {{ exam.rate }}%)
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="event">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.eventName || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedEventTable[session.sessionId]"
-                    @change="assignEvent(session.sessionId, selectedEventTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Event</option>
-                  <option v-for="event in events" :key="event.id" :value="event.id">
-                    {{ event.title }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td>
-              <div v-if="!isEditing[session.sessionId]">
-                <div class="button-group">
-                  <VsxIcon iconName="Edit2" size="25" type="linear"
-                           @click="toggleEdit(session.sessionId)"/>
-                  <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
-                </div>
-              </div>
-              <div v-else>
-                <VsxIcon iconName="TickCircle" size="25" type="linear"
-                         @click="toggleEdit(session.sessionId)"/>
-              </div>
+            <!-- Gộp các cột khi có note -->
+            <td colspan="7" class="note-content">
+              {{ sessions.find(session => session.note)?.note }}
             </td>
           </tr>
-
-          <!-- Hàng Chiều -->
-          <tr>
-            <!-- Slot Chiều -->
-            <td>Afternoon</td>
-            <!-- Dữ liệu nếu Slot là Afternoon -->
-            <td id="teacher">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.teacherName || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedTeacher[session.sessionId]"
-                        @change="assignTeacher(session.sessionId, selectedTeacher[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Teacher</option>
-                  <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                    {{ teacher.name }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="room">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.roomName || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedRoomTable[session.sessionId]"
-                        @change="assignRoom(session.sessionId, selectedRoomTable[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Room</option>
-                  <option v-for="room in rooms" :key="room.id" :value="room.id">
-                    Room {{ room.number }}
-                  </option>
-                </select>
-              </div>
-            </td>
-            <td>{{
-                session.timeSlotResponse?.name === "Afternoon" ? session.lessonResponse || "N/A" :
-                    "N/A"
-              }}
-            </td>
-            <td id="exam">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.examResponse || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedExamTable[session.sessionId]"
-                    @change="assignExam(session.sessionId, selectedExamTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Exam</option>
-                  <option v-for="exam in exams" :key="exam.id" :value="exam.id">
-                    {{ exam.title }} ({{ exam.type }} - {{ exam.rate }}%)
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="event">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.eventName || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedEventTable[session.sessionId]"
-                    @change="assignEvent(session.sessionId, selectedEventTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Event</option>
-                  <option v-for="event in events" :key="event.id" :value="event.id">
-                    {{ event.title }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td>
-              <div v-if="!isEditing[session.sessionId]">
-                <div class="button-group">
-                  <VsxIcon
-                      iconName="Edit2"
-                      size="25"
-                      type="linear"
-                      @click="session.sessionId ? toggleEdit(session.sessionId) : console.error('Session ID is undefined')"
-                  />
-
-                  <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
+          <template v-else>
+            <tr v-for="(session, index) in sessions" :key="session.sessionId">
+              <!-- Cột Ngày -->
+              <td v-if="index === 0" :rowspan="sessions.length">
+                <div class="schedule-date">
+                  <h1>{{ new Date(session.date).getDate() }}</h1>
+                  <p>{{ session.dayOfWeek }}</p>
                 </div>
-              </div>
-              <div v-else>
-                <VsxIcon iconName="TickCircle" size="25" type="linear"
-                         @click="toggleEdit(session.sessionId)"/>
-              </div>
-            </td>
-          </tr>
+              </td>
+
+              <!-- Hiển thị các cột bình thường -->
+              <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
+              <td id="teacher">
+                <div v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</div>
+                <div v-else>
+                  <select v-model="selectedTeacher[session.sessionId]" class="filter-select">
+                    <option value="" disabled>Select Teacher</option>
+                    <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
+                      {{ teacher.name }}
+                    </option>
+                  </select>
+                </div>
+              </td>
+              <td id="room">
+                <div v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</div>
+                <div v-else>
+                  <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
+                    <option value="" disabled>Select Room</option>
+                    <option v-for="room in rooms" :key="room.id" :value="room.id">
+                      Room {{ room.number }}
+                    </option>
+                  </select>
+                </div>
+              </td>
+              <td id="lesson">
+                <div>{{ session.lessonResponse || "-" }}</div>
+              </td>
+              <td id="exam">
+                <div>{{ session.examResponse || "-" }}</div>
+              </td>
+              <td id="event">
+                <div v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</div>
+                <div v-else>
+                  <select v-model="selectedEventTable[session.sessionId]" class="filter-select">
+                    <option value="" disabled>Select Event</option>
+                    <option v-for="event in events" :key="event.id" :value="event.id">
+                      {{ event.title }}
+                    </option>
+                  </select>
+                </div>
+              </td>
+              <td>
+                <div v-if="!isEditing[session.sessionId]">
+                  <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                </div>
+                <div v-else>
+                  <VsxIcon iconName="TickCircle" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                </div>
+              </td>
+            </tr>
+          </template>
         </template>
-        <tr v-if="sessions.length === 0">
+        <tr v-if="Object.keys(groupedSessions).length === 0">
           <td colspan="8" class="center">No record.</td>
         </tr>
         </tbody>
@@ -356,13 +234,15 @@ export default {
       teachers: [],
       selectedTeacher: {},
       selectedRoomTable: {},
-      isEditing: {},
       curriculums: [],
       selectedCurriculumId: '',
       isLoadingCurriculums: false,
       selectedEventId: "",
       selectedEventTable: {},
       selectedExamTable: {},
+      isEditing: {},
+      selectedLessonTable: {},
+      lessons: [],
     };
   },
   methods: {
@@ -443,12 +323,12 @@ export default {
         this.isLoadingClasses = false;
       }
     },
-    async fetchRooms() {
+    async fetchAvailableRooms(sessionId) {
       this.isLoadingRooms = true;
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-all-room`, {
+            `http://localhost:8088/fja-fap/staff/get-available-room/${sessionId}`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
@@ -585,67 +465,57 @@ export default {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get("http://localhost:8088/fja-fap/staff/get-session-week", {
           params: {
-            week: this.selectedWeekIndex, // Chỉ số tuần
-            class_id: this.selectedClassId, // ID lớp
+            week: this.selectedWeekIndex,
+            class_id: this.selectedClassId,
           },
           headers: {Authorization: `Bearer ${token}`},
         });
-        this.sessions = response.data.result.map((session) => ({
-          date: session.date,
-          dayOfWeek: session.dayOfWeek,
-          timeSlotResponse: session.timeSlotResponse,
-          fullName: session.fullName,
-          roomNumber: session.roomNumber,
-          lessonResponse: session.curriculumnResponse?.lessonResponse?.lessonTitle,
-          examResponse: session.curriculumnResponse?.examResponse?.examTitle,
-          eventName: session.eventName,
-        }));
-        console.log("Fetched Sessions:", this.sessions);
+        this.sessions = response.data.result.map((session) => {
+          //console.log("Fetched session:", session);
+          return {
+            curriculumnResponse: session.curriculumnResponse,
+            sessionId: session.sessionId,
+            date: session.date,
+            dayOfWeek: session.dayOfWeek,
+            timeSlotResponse: session.timeSlotResponse,
+            fullName: session.fullName,
+            roomNumber: session.roomNumber,
+            lessonResponse: session.curriculumnResponse?.lessonResponse?.lessonTitle,
+            examResponse: session.curriculumnResponse?.examResponse?.examTitle,
+            eventName: session.eventName,
+            note: session.note,
+          };
+        });
       } catch (error) {
         console.error("Error fetching sessions:", error);
       }
     },
-    async fetchTeachers() {
-      try {
-        const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get("http://localhost:8088/fja-fap/staff/teacher", {
-          params: {page: 0, size: 100},
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        this.teachers = response.data.result.teachers.map((teacher) => ({
-          id: teacher.id,
-          name: teacher.fullName,
-        }));
-      } catch (error) {
-        console.error("Error fetching teachers:", error);
-        //alert("Failed to fetch teacher data. Please try again.");
+    async fetchAvailableTeachers(sessionId) {
+      if (!sessionId) {
+        console.error("sessionId không hợp lệ");
+        return;
       }
-    },
-    async fetchExams() {
+
       try {
         const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get("http://localhost:8088/fja-fap/staff/get-all-exam", {
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-available-teacher/${sessionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.data && response.data.result) {
-          this.exams = response.data.result.map(exam => ({
-            id: exam.examId,
-            title: exam.examTitle,
-            type: exam.examTypeRate.examName,
-            rate: exam.examTypeRate.examRate,
+          this.teachers = response.data.result.map((teacher) => ({
+            id: teacher.id,
+            name: teacher.fullName,
           }));
         } else {
           console.error("Unexpected response structure:", response.data);
-          this.exams = [];
+          this.teachers = [];
         }
       } catch (error) {
-        console.error("Error fetching exams:", error);
+        console.error("Error fetching available teachers:", error);
+        this.teachers = [];
       }
     },
     async fetchEvents() {
@@ -676,33 +546,43 @@ export default {
       }
     },
     toggleEdit(sessionId) {
-      if (!Object.hasOwn(this.isEditing, sessionId)) {
-        this.isEditing = {
-          ...this.isEditing,
-          [sessionId]: false,
-        };
+      if (!sessionId) {
+        console.error("sessionId không hợp lệ");
+        return;
       }
 
+      // Nếu vào chế độ chỉnh sửa, gọi API để lấy danh sách giáo viên
+      if (!this.isEditing[sessionId]) {
+        this.fetchAvailableTeachers(sessionId);
+        this.editSession(sessionId);
+        this.fetchAvailableRooms(sessionId);
+      }
+
+      // Chuyển đổi trạng thái chỉnh sửa
       this.isEditing[sessionId] = !this.isEditing[sessionId];
     },
-    assignTeacher(sessionId, teacherId) {
-      console.log(`Assign teacher ${teacherId} to session ${sessionId}`);
-      this.toggleEdit(sessionId);
-    },
-    assignRoom(sessionId, roomId) {
-      console.log(`Assign room ${roomId} to session ${sessionId}`);
-      this.toggleEdit(sessionId);
-    },
-    async assignEvent(sessionId, eventId) {
-      console.log(`Assign event ${eventId} to session ${sessionId}`);
+    async editSession(sessionId) {
+      if (!sessionId) {
+        console.error("sessionId không hợp lệ");
+        return;
+      }
+
+      // Lấy các giá trị từ dropdown
+      const updatedData = {
+        teacherId: this.selectedTeacher[sessionId] || null,
+        roomId: this.selectedRoomTable[sessionId] || null,
+        lessonId: this.selectedLessonTable[sessionId] || null,
+        examId: this.selectedExamTable[sessionId] || null,
+        eventId: this.selectedEventTable[sessionId] || null,
+      };
+
+      console.log("Dữ liệu chỉnh sửa:", updatedData);
+
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/assign-event`,
-            {
-              sessionId: sessionId,
-              eventId: eventId,
-            },
+            `http://localhost:8088/fja-fap/staff/edit-session/${sessionId}`,
+            updatedData,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -711,50 +591,36 @@ export default {
         );
 
         if (response.data && response.data.code === 0) {
-          console.log("Event assigned successfully!");
+          console.log("Cập nhật session thành công!");
           this.isEditing[sessionId] = false;
         } else {
-          console.error("Failed to assign event:", response.data);
+          console.error("Lỗi khi cập nhật session:", response.data);
         }
       } catch (error) {
-        console.error("Error assigning event:", error);
+        console.error("Lỗi khi gọi API editSession:", error);
       }
-    },
-    async assignExam(sessionId, examId) {
-      console.log(`Assign exam ${examId} to session ${sessionId}`);
-      try {
-        const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/assign-exam`,
-            {
-              sessionId: sessionId,
-              examId: examId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-        );
-
-        if (response.data && response.data.code === 0) {
-          console.log("Exam assigned successfully!");
-          this.isEditing[sessionId] = false; // Thoát chế độ chỉnh sửa
+    }
+  },
+  computed: {
+    groupedSessions() {
+      const grouped = {};
+      this.sessions.forEach((session) => {
+        if (session && session.date) {
+          if (!grouped[session.date]) {
+            grouped[session.date] = [];
+          }
+          grouped[session.date].push(session);
         } else {
-          console.error("Failed to assign exam:", response.data);
+          console.warn("Invalid session data:", session);
         }
-      } catch (error) {
-        console.error("Error assigning exam:", error);
-      }
-    },
+      });
+      return grouped;
+    }
   },
   mounted() {
     this.fetchBatches();
-    this.fetchRooms();
     this.fetchTimeSlots();
-    this.fetchTeachers();
     this.fetchCurriculums();
-    this.fetchExams();
     this.fetchEvents();
   },
 };
