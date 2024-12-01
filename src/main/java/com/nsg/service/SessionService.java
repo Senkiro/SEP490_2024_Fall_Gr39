@@ -38,6 +38,9 @@ public interface SessionService {
     //get a session
     SessionResponse getSession(String sessionId);
 
+    //update only session status
+    void updateOnlySessionStatus(String sessionId);
+
     //update a session
     SessionResponse updateSession(String sessionId, SessionCreattionRequest request);
 

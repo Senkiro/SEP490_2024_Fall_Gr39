@@ -466,6 +466,14 @@ public class StaffController {
                 .build();
     }
 
+    //get available room for session
+    @GetMapping("/get-available-room/{session_id}")
+    public ApiResponse<List<RoomResponse>> getAvailableRoom(@PathVariable("session_id") String session_id) {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .result(roomService.getAvailableRoomForSession(session_id))
+                .build();
+    }
+
     //get a room by id
     @GetMapping("/get-room/{roomId}")
     public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId) {
@@ -791,6 +799,15 @@ public class StaffController {
                 .build();
     }
 
+    //update session status only
+    @PostMapping("/update-session-status/{session_id}")
+    public ApiResponse<?> updateSessionStatus(@PathVariable("session_id") String session_id) {
+        sessionService.updateOnlySessionStatus(session_id);
+        return ApiResponse.builder()
+                .message("Session status updated!")
+                .build();
+    }
+
     //update
     @PostMapping("/update-session/{session_id}")
     public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
@@ -913,7 +930,7 @@ public class StaffController {
                 .build();
     }
 
-    //delete room
+    //delete news
     @DeleteMapping("/delete-news/{newsId}")
     public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
         newsService.deleteNews(newsId);

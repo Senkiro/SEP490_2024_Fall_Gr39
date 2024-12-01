@@ -493,6 +493,15 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
+    public void updateOnlySessionStatus(String sessionId) {
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+        sessionEntity.setStatus(!sessionEntity.isStatus());
+        sessionRepository.save(sessionEntity);
+    }
+
+    @Override
     public SessionResponse updateSession(String sessionId, SessionCreattionRequest request) {
         SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
                 () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
