@@ -142,6 +142,10 @@ public class SessionServiceImp implements SessionService {
 
     @Override
     public void createSchedule(String class_id, ScheduleCreationRequest request) {
+
+        //test list
+//        List<SessionCreattionRequest> testList = new ArrayList<>();
+
         //get session by className and batchName
         //check class: find class by className and batchName
         ClassEntity classEntity = classRepository.findById(class_id).orElseThrow(
@@ -211,12 +215,17 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setTimeSlotId(afternoon);
             }
 
+            sessionCreattionRequest.setSessionWeek(week);
+
 
             if (dow == DayOfWeek.SATURDAY
                     || dow == DayOfWeek.SUNDAY) {
                 //create blank session
                 sessionCreattionRequest.setSessionAvailable(false);
-
+                //week break
+                if (dow == DayOfWeek.SUNDAY && count_ts % 2 == 0){
+                    week += 1;
+                }
 
             } else if (checkHoliday(holidays, dateOfSession)) {
                 //create blank session
@@ -232,18 +241,13 @@ public class SessionServiceImp implements SessionService {
                     sessionCreattionRequest.setSessionAvailable(false);
                 }
 
-                //week break
-                if (dow == DayOfWeek.MONDAY && count_ts % 2 == 0){
-                    week += 1;
-                }
-
                 //session tang 1
                 if (count_ts % 2 == 0) {
                     sessionNo++;
                 }
             }
 
-            sessionCreattionRequest.setSessionWeek(week);
+
 
             //if %count_ts = 0 then total day increase 1
             if (count_ts % 2 == 0) {
@@ -252,9 +256,12 @@ public class SessionServiceImp implements SessionService {
 
             //save session
             createSession(sessionCreattionRequest);
+//            testList.add(sessionCreattionRequest);
             count_ts++;
         }
         System.out.println("Total days: "+totalDay);
+
+//        System.out.println("TEST LIST: "+testList);
 
         //update total week and end date for batch
         batchEntity.setTotalWeek(week);
