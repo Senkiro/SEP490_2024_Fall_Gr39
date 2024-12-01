@@ -399,6 +399,7 @@ public class SessionServiceImp implements SessionService {
         for (SessionEntity session : sessionEntities) {
             SessionResponse tempResponse = new SessionResponse();
             tempResponse.setSessionId(session.getSessionId());
+            tempResponse.setNote(session.getNote());
             tempResponse.setSessionNumber(session.getSessionNumber());
             tempResponse.setSessionWeek(session.getSessionWeek());
 
