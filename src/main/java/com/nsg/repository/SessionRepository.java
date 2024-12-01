@@ -30,4 +30,24 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     @Transactional
     @Query(value = "DELETE FROM Session WHERE session_id = :sessionId", nativeQuery = true)
     void deleteSessionBySessionId(@Param("sessionId") String sessionId);
+
+    //get session by: classId, session_available = true, status = false; sort by date and sessionNumber
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND session_available = TRUE " +
+            "AND status = FALSE " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsByClassIdAndAvailableAndStatus(
+            @Param("classId") String classId);
+
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND session_available = FALSE " +
+            "AND status = FALSE " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsUnavailableByClassId(
+            @Param("classId") String classId);
+
 }

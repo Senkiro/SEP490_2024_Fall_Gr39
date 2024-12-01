@@ -3,6 +3,7 @@ package com.nsg.service;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.response.session.SessionResponse;
+import com.nsg.dto.response.user.UserInforResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,12 @@ public interface SessionService {
     //create schedule
     void createSchedule(String class_id, ScheduleCreationRequest request);
 
+    //get available teacher for each session
+    List<UserInforResponse> getAvailableTeachers(String sessionId);
+
+    //get unavailable session to change date
+    List<SessionResponse> getSessionUnavailable(String classId);
+
     //delete schedule
     void deleteSchedule(String class_id);
 
@@ -30,6 +37,9 @@ public interface SessionService {
 
     //get a session
     SessionResponse getSession(String sessionId);
+
+    //update only session status
+    void updateOnlySessionStatus(String sessionId);
 
     //update a session
     SessionResponse updateSession(String sessionId, SessionCreattionRequest request);

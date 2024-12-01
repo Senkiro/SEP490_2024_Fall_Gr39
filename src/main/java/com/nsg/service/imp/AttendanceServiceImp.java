@@ -87,27 +87,28 @@ public class AttendanceServiceImp implements AttendanceService {
         }
 
         // get session by classId
-        List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classId);
+        //get all session available by classId, then sort it by day and sessionNumber
+        List<SessionEntity> availableSessions = sessionRepository.findSessionsByClassIdAndAvailableAndStatus(classId);
 
         //check session
-        if (sessionEntityList.isEmpty()) {
+        if (availableSessions.isEmpty()) {
             //There are no session for this class
             throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
         }
 
-        // filter which session has CurriculumnEntity not null
-        List<SessionEntity> validSessions = new ArrayList<>();
-        for (SessionEntity session : sessionEntityList) {
-            if (session.getCurriculumnEntity() != null) {
-                validSessions.add(session);
-            }
-        }
+//        // filter which session has CurriculumnEntity not null
+//        List<SessionEntity> validSessions = new ArrayList<>();
+//        for (SessionEntity session : sessionEntityList) {
+//            if (session.getCurriculumnEntity() != null) {
+//                validSessions.add(session);
+//            }
+//        }
 
         // list AttendanceRequest
         List<AttendanceRequest> createRequest = new ArrayList<>();
         String defaultStatus = "incoming";
 
-        for (SessionEntity session : validSessions) {
+        for (SessionEntity session : availableSessions) {
             for (StudentEntity student : studentEntityList) {
                 AttendanceRequest attendanceRequest = new AttendanceRequest();
 

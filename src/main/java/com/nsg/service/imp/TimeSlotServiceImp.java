@@ -54,7 +54,7 @@ public class TimeSlotServiceImp implements TimeSlotService {
              timeSlotEntityList) {
             TimeSlotResponse timeSlotResponse = new TimeSlotResponse();
 
-            timeSlotResponse.setTimeSLotId(timeSlot.getTimeSLotId());
+            timeSlotResponse.setTimeSLotId(timeSlot.getTimeSlotId());
             timeSlotResponse.setName(timeSlot.getName());
             timeSlotResponse.setStartTime(timeSlot.getStartTime());
             timeSlotResponse.setEndTime(timeSlot.getEndTime());
@@ -66,6 +66,7 @@ public class TimeSlotServiceImp implements TimeSlotService {
 
     @Override
     public Page<TimeSlotEntity> getTimeSlots(int page, int size) {
+
         return null;
     }
 
