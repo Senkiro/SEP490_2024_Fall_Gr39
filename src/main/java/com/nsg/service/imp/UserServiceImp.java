@@ -6,6 +6,7 @@ import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
+import com.nsg.dto.request.user.ResetPasswordRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
@@ -185,6 +186,28 @@ public class UserServiceImp implements UserService {
         response.setImg(updatedUser.getImg());
 
         return response;
+    }
+
+    @Override
+    public UserInforResponse updateUserPassword (ResetPasswordRequest request) {
+        String userId = request.getUserId();
+        String oldPassword = request.getOldPassword();
+        String newPassword = request.getNewPassword();
+
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCHED);
+        }
+
+        String encryptedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encryptedPassword);
+
+        userRepository.save(user);
+
+        return UserMapper.INSTANCE.toUserInforResponse(user);
     };
 
     private String saveImageToAssetsFolder(MultipartFile image) {
