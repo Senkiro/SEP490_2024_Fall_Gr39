@@ -54,9 +54,10 @@ export default {
   methods: {
     async fetchClasses() {
       try {
+        const userid = sessionStorage.getItem("userId");
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            "http://localhost:8088/fja-fap/teacher/get-class-teacher/617f8a27-7503-4a17-87c3-83359d2065e7",
+            `http://localhost:8088/fja-fap/teacher/get-class-teacher/${userid}`,
             {
               headers: {Authorization: `Bearer ${token}`},
             }
