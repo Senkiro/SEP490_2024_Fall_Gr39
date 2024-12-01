@@ -142,10 +142,6 @@ public class SessionServiceImp implements SessionService {
 
     @Override
     public void createSchedule(String class_id, ScheduleCreationRequest request) {
-
-        //for test
-        List<SessionCreattionRequest> testList = new ArrayList<>();
-
         //get session by className and batchName
         //check class: find class by className and batchName
         ClassEntity classEntity = classRepository.findById(class_id).orElseThrow(
@@ -178,6 +174,11 @@ public class SessionServiceImp implements SessionService {
         String morning = timeSlotRepository.findByName("Morning").getTimeSlotId();
         String afternoon = timeSlotRepository.findByName("Afternoon").getTimeSlotId();
 
+        //check time_slot
+        TimeSlotEntity check = timeSlotRepository.findById(request.getTimeSlotId()).orElseThrow(
+                () -> new AppException(ErrorCode.TIME_SLOT_NOT_FOUND)
+        );
+
         //get list of holiday
         List<HolidayEntity> holidays = holidayRepository.findAll();
 
@@ -191,12 +192,13 @@ public class SessionServiceImp implements SessionService {
         int total_session = curriculumnEntityList.size();
 
         //create session by day and time_slot
-        while (sessionNo < total_session) {
+        while (sessionNo <= total_session) {
             LocalDate dateOfSession = startDate.plusDays((totalDay-1));
-            //tao session voi date
+            //create session
             SessionCreattionRequest sessionCreattionRequest = new SessionCreattionRequest();
             sessionCreattionRequest.setDate(dateOfSession);
             sessionCreattionRequest.setClassId(classEntity.getClassId());
+            DayOfWeek dow = dateOfSession.getDayOfWeek();
 
             sessionCreattionRequest.setSessionNumber(count_ts);
 
@@ -209,7 +211,6 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setTimeSlotId(afternoon);
             }
 
-            DayOfWeek dow = dateOfSession.getDayOfWeek();
 
             if (dow == DayOfWeek.SATURDAY
                     || dow == DayOfWeek.SUNDAY) {
@@ -217,7 +218,7 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setSessionAvailable(false);
 
 
-            } else if (holidays.isEmpty() || checkHoliday(holidays, dateOfSession)) {
+            } else if (checkHoliday(holidays, dateOfSession)) {
                 //create blank session
                 sessionCreattionRequest.setSessionAvailable(false);
             } else {
@@ -225,7 +226,11 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
 
                 //if time_slot_id = requestId -> set available is true
-                sessionCreattionRequest.setSessionAvailable(sessionCreattionRequest.getTimeSlotId().equals(request.getTimeSlotId()));
+                if (request.getTimeSlotId().equals(sessionCreattionRequest.getTimeSlotId())){
+                    sessionCreattionRequest.setSessionAvailable(true);
+                } else {
+                    sessionCreattionRequest.setSessionAvailable(false);
+                }
 
                 //week break
                 if (dow == DayOfWeek.MONDAY && count_ts % 2 == 0){
@@ -234,7 +239,7 @@ public class SessionServiceImp implements SessionService {
 
                 //session tang 1
                 if (count_ts % 2 == 0) {
-                    sessionNo += 1;
+                    sessionNo++;
                 }
             }
 
@@ -242,18 +247,14 @@ public class SessionServiceImp implements SessionService {
 
             //if %count_ts = 0 then total day increase 1
             if (count_ts % 2 == 0) {
-                totalDay += 1;
+                totalDay++;
             }
 
             //save session
             createSession(sessionCreattionRequest);
-            testList.add(sessionCreattionRequest);
-            count_ts += 1;
+            count_ts++;
         }
         System.out.println("Total days: "+totalDay);
-
-        //test
-        System.out.println("Test 001: "+testList);
 
         //update total week and end date for batch
         batchEntity.setTotalWeek(week);
@@ -264,7 +265,6 @@ public class SessionServiceImp implements SessionService {
 
         //fill session
         fillSession(class_id, curriculumnEntityList);
-
     }
 
 
