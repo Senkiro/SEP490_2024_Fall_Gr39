@@ -27,4 +27,6 @@ public interface ClassService {
 
     //delete a class
     void deleteClass(String classId);
+
+    List<ClassResponse> getClassByTeacherId(String teacherId);
 }

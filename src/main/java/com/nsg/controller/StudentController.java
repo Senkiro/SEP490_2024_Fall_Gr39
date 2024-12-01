@@ -1,15 +1,14 @@
 package com.nsg.controller;
 
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.curriculumn.CurriculumnResponse;
+import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.holiday.HolidayResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.entity.EventEntity;
 import com.nsg.entity.NewEntity;
-import com.nsg.service.EventService;
-import com.nsg.service.HolidayService;
-import com.nsg.service.NewsService;
-import com.nsg.service.StudentService;
+import com.nsg.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,9 @@ public class StudentController {
 
     @Autowired
     EventService eventService;
+
+    @Autowired
+    CurriculumnService curriculumnService;
 
     //Xem học sinh lớp mình
     @GetMapping("/get-student-class")
@@ -75,18 +77,18 @@ public class StudentController {
 
     //get all event theo schedule => chu lamf
     @GetMapping("/event")
-    public ApiResponse<Page<EventEntity>> getAllEvent(@RequestParam int page, @RequestParam int size) {
-        Page<EventEntity> eventEntityList = eventService.getEvents(page, size);
-        return ApiResponse.<Page<EventEntity>>builder()
+    public ApiResponse<Page<EventResponse>> getAllEvent(@RequestParam int page, @RequestParam int size) {
+        Page<EventResponse> eventEntityList = eventService.getEvents(page, size);
+        return ApiResponse.<Page<EventResponse>>builder()
                 .result(eventEntityList)
                 .build();
     }
 
     // getEventById
     @GetMapping("/get-event")
-    public ApiResponse<EventEntity> getEventById(@RequestParam String eventId) {
-        EventEntity eventEntity = eventService.getEventById(eventId);
-        return ApiResponse.<EventEntity>builder()
+    public ApiResponse<EventResponse> getEventById(@RequestParam String eventId) {
+        EventResponse eventEntity = eventService.getEventById(eventId);
+        return ApiResponse.<EventResponse>builder()
                 .result(eventEntity)
                 .build();
     }

@@ -6,7 +6,7 @@
     </div>
 
     <div class="image-container">
-      <img :src="`/${eventDetail.imagePath}`" alt="Event Image"/>
+      <img :src="`/${eventDetail.imagePath}` " alt="Event Image" />
     </div>
 
     <div v-html="eventDetail.description" class="description-display"></div>

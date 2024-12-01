@@ -24,6 +24,9 @@ public class MarkEntity extends BaseEntity {
     @Column(name = "comment")
     String comment;
 
+    @Column(name = "status")
+    boolean status;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     StudentEntity studentEntity;

@@ -1,6 +1,7 @@
 package com.nsg.dto.response.attendance;
 
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +25,8 @@ public class AttendanceResponse {
     LocalDate date;
 
     StudentResponse studentResponse;
+
+    SessionResponse sessionResponse;
 
     String teacher;
 }

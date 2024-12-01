@@ -21,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create-user")
-    public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request){
+    public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.ok(userService.createUser(request, null));
     }
 
@@ -33,7 +33,7 @@ public class UserController {
 
     //get user by userId
     @GetMapping("/{userId}")
-   public ApiResponse<?> getUser(@PathVariable("userId") String userId){
+    public ApiResponse<?> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.ok(userService.getUserById(userId));
     }
 

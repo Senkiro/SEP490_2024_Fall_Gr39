@@ -1,57 +1,238 @@
 <template>
-    <div class="container">
-        <div class="headContent">
-            <h1>Take attendance</h1>
-        </div>
-
-        <div class="table-container">
-            <form>
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="center">No</th>
-                            <th>Japanese name</th>
-                            <th>Roll number</th>
-                            <th class="center">Image</th>
-                            <th class="center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="center">1</td>
-                            <td>ファム・テ・ミン</td>
-                            <td>FA171392</td>
-                            <td class="center"><img src="@/assets/smiling-young-man-illustration_1308-174669.avif"></td>
-                            <td class="center">
-                                <div class="radio-group">
-                                    <div class="radio">
-                                        <input type="radio" id="attended" value="Attended" name="status" />
-                                        <label for="attended">Attended</label>
-                                    </div>
-                                    <div class="radio">
-                                        <input type="radio" id="absent" value="Absent" name="status" />
-                                        <label for="absent">Absent</label>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="actions">
-                    <button>
-                        <VsxIcon iconName="Save2" size="20" type="bold" />
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
+  <div class="container">
+    <div class="headContent">
+      <h1>Take attendance</h1>
     </div>
+
+    <!-- Thông Báo -->
+    <div v-if="notification" class="notification" :class="notificationType">
+      {{ notification }}
+    </div>
+
+    <div v-if="students.length > 0" class="table-container">
+      <form @submit.prevent="saveAllAttendances">
+        <table>
+          <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Japanese name</th>
+            <th>Roll number</th>
+            <th class="center">Image</th>
+            <th class="center">Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(student, index) in students" :key="student.attendanceId">
+            <td class="center">{{ index + 1 }}</td>
+            <td>{{ student.studentName }}</td>
+            <td>{{ student.rollNumber }}</td>
+            <td class="center">
+              <img :src="student.image || defaultAvatar" alt="Student Image" />
+            </td>
+            <td class="center">
+              <div class="radio-group">
+                <div class="radio">
+                  <input
+                      type="radio"
+                      :id="'attended-' + student.attendanceId"
+                      :value="'Attended'"
+                      v-model="student.status"
+                  />
+                  <label :for="'attended-' + student.attendanceId">Attended</label>
+                </div>
+                <div class="radio">
+                  <input
+                      type="radio"
+                      :id="'absent-' + student.attendanceId"
+                      :value="'Absent'"
+                      v-model="student.status"
+                  />
+                  <label :for="'absent-' + student.attendanceId">Absent</label>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="actions">
+          <button type="submit" class="table-button">
+            Save Attendance
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div v-else>
+      <p>No students found for this session.</p>
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
 
-}
+<script>
+import axios from "axios";
+import defaultAvatar from "@/assets/smiling-young-man-illustration_1308-174669.avif";
+
+export default {
+  data() {
+    return {
+      students: [],
+      sessionId: this.$route.params.sessionId,
+      notification: null, // Thông báo
+    };
+  },
+  computed: {
+    defaultAvatar() {
+      return defaultAvatar;
+    },
+  },
+  methods: {
+    fetchAttendanceData() {
+      const token = sessionStorage.getItem("jwtToken");
+
+      if (!this.sessionId || !token) {
+        console.error("Session ID hoặc JWT token không tồn tại");
+        return;
+      }
+
+      axios
+          .get(
+              `http://localhost:8088/fja-fap/staff/get-attendance-session/${this.sessionId}?page=0&size=16`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+          )
+          .then((response) => {
+            if (response.data.code === 0) {
+              const results = response.data.result.content;
+              this.students = results.map((student) => ({
+                attendanceId: student.attendanceId,
+                studentName: student.studentResponse?.userInforResponse?.fullName || "N/A",
+                rollNumber: student.studentResponse?.rollNumber || "N/A",
+                image: student.studentResponse?.userInforResponse?.profilePicture || defaultAvatar,
+                status: student.status || "",
+                classId: student.studentResponse?.classResponse?.classId || null,
+              }));
+            } else {
+              console.error(
+                  "Error fetching students:",
+                  response.data.message || "Unknown error"
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching students API:", error);
+          });
+    },
+
+    // Lưu điểm danh cho tất cả
+    saveAllAttendances() {
+      const token = sessionStorage.getItem("jwtToken");
+      if (!token) {
+        console.error("JWT token không tồn tại trong session storage");
+        return;
+      }
+
+      // Kiểm tra học sinh chưa được điểm danh
+      const unmarkedStudents = this.students.filter(
+          (student) => student.status === "incoming"
+      );
+
+      if (unmarkedStudents.length > 0) {
+        this.showNotification(
+            `There are ${unmarkedStudents.length} student(s) not marked attendance. Please check again.`,
+            "error"
+        );
+        return;
+      }
+
+      const savePromises = this.students.map((student) => {
+        const payload = {
+          status: student.status,
+          note: "",
+          sessionId: this.sessionId,
+          studentId: student.studentId,
+        };
+
+        return axios
+            .post(
+                `http://localhost:8088/fja-fap/staff/update-attendance/${student.attendanceId}`,
+                payload,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+            )
+            .then((response) => {
+              if (response.data.code === 0) {
+                return true;
+              } else {
+                console.error(
+                    `Error updating attendance for ${student.studentName}:`,
+                    response.data.message || "Unknown error"
+                );
+                return false;
+              }
+            })
+            .catch((error) => {
+              console.error(`Error updating attendance for ${student.studentName}:`, error);
+              return false;
+            });
+      });
+
+      // Chờ tất cả Promise hoàn thành
+      Promise.all(savePromises).then((results) => {
+        const successCount = results.filter((result) => result).length;
+
+        if (successCount === this.students.length) {
+          this.updateSessionStatus();
+          this.showNotification("All attendances saved successfully!", "success");
+
+        } else {
+          this.showNotification(
+              `${successCount}/${this.students.length} attendances saved successfully.`
+          );
+        }
+      });
+    },
+
+    updateSessionStatus() {
+      const token = sessionStorage.getItem("jwtToken");
+      const classId = this.students[0]?.classId;
+      const payload = {
+        status: true,
+        classId: classId,
+      };
+      axios
+          .post(`http://localhost:8088/fja-fap/staff/update-session/${this.sessionId}`, payload, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            if (response.data.code === 0) {
+              console.log("Session status updated successfully.");
+              this.showNotification("Session marked as complete.", "success");
+            } else {
+              console.error("Failed to update session status:", response.data.message);
+              this.showNotification("Failed to update session status.", "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating session status:", error);
+            this.showNotification("An error occurred while updating the session.", "error");
+          });
+    },
+
+    showNotification(message) {
+      this.notification = message;
+
+      setTimeout(() => {
+        this.notification = null;
+      }, 3000);
+    },
+  },
+  mounted() {
+    this.fetchAttendanceData();
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -78,4 +259,16 @@ td:last-child {
         gap: 10px;
     }
 }
+
+.notification {
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
 </style>

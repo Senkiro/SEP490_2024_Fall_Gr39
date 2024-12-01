@@ -22,6 +22,8 @@ public interface ClassRepository extends BaseRepository<ClassEntity, String> {
     List<ClassEntity> findByClassName(String className);
 
     ClassEntity findByClassId(String classId);
+
+//    List<ClassEntity> findByTeacherId(String teacherId);
 }
 
 
