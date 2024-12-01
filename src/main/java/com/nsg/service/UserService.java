@@ -2,6 +2,7 @@ package com.nsg.service;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.student.StudentCreattionRequest;
+import com.nsg.dto.request.user.ResetPasswordRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
@@ -30,6 +31,8 @@ public interface UserService extends BaseService<UserEntity, String>  {
     UserInforResponse getUserInforById(String userId);
 
     UserInforResponse updateUserInfor(String userId, UserInforUpdateRequest request, MultipartFile avatar);
+
+    UserInforResponse updateUserPassword(ResetPasswordRequest request);
 
     String resetPassword(UserEntity user, String newpass);
 
