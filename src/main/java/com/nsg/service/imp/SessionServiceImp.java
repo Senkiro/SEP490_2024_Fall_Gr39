@@ -472,7 +472,9 @@ public class SessionServiceImp implements SessionService {
 
         response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(sessionEntity.getClassEntity()));
 
-        response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
+        if (sessionEntity.getCurriculumnEntity() != null) {
+            response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
+        }
 
         response.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(sessionEntity.getTimeSlotEntity()));
 
