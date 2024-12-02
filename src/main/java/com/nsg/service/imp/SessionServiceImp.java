@@ -11,6 +11,7 @@ import com.nsg.entity.*;
 import com.nsg.repository.*;
 import com.nsg.service.CurriculumnService;
 import com.nsg.service.SessionService;
+import com.nsg.service.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,6 +70,9 @@ public class SessionServiceImp implements SessionService {
 
     @Autowired
     TeacherRepository teacherRepository;
+
+    @Autowired
+    TimeSlotService timeSlotService;
 
 
     @Override
@@ -419,7 +423,7 @@ public class SessionServiceImp implements SessionService {
                 tempResponse.setCurriculumnResponse(curriculumnService.toCurriculumnResponse( session.getCurriculumnEntity() ));
             }
 
-            tempResponse.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(session.getTimeSlotEntity()));
+            tempResponse.setTimeSlotResponse(timeSlotService.toTimeSlotResponse( session.getTimeSlotEntity() ));
 
             if (session.getRoomEntity() != null) {
                 tempResponse.setRoomNumber(session.getRoomEntity().getRoomNumber());

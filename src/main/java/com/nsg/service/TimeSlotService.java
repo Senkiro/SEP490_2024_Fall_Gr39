@@ -31,4 +31,6 @@ public interface TimeSlotService {
     //delete time slot
     void deleteTimeSlot(String timeSlotId);
 
+    TimeSlotResponse toTimeSlotResponse(TimeSlotEntity timeSlot);
+
 }
