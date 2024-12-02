@@ -19,7 +19,7 @@ public class SessionCreattionRequest {
     int sessionNumber;
     int sessionWeek;
 
-    int curriculumnId;
+    Integer curriculumnId;
 
     String timeSlotId;
 

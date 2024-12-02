@@ -473,7 +473,9 @@ public class SessionServiceImp implements SessionService {
 
         response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(sessionEntity.getClassEntity()));
 
-        response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
+        if (sessionEntity.getCurriculumnEntity() != null) {
+            response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
+        }
 
         response.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(sessionEntity.getTimeSlotEntity()));
 
@@ -516,20 +518,15 @@ public class SessionServiceImp implements SessionService {
         );
 
         //convert
-        sessionEntity.setSessionNumber(request.getSessionNumber());
-        sessionEntity.setSessionWeek(request.getSessionWeek());
-
         sessionEntity.setDate(request.getDate());
         sessionEntity.setStatus(request.isStatus());
+        sessionEntity.setSessionNumber(request.getSessionNumber());
+        sessionEntity.setSessionWeek(request.getSessionWeek());
+        sessionEntity.setSessionAvailable(request.isSessionAvailable());
 
-        //class
-        ClassEntity classEntity = classRepository.findById(request.getClassId()).orElseThrow(
-                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
-        );
-        sessionEntity.setClassEntity(classEntity);
 
         //curriculumn
-        if (!Objects.equals(request.getCurriculumnId(), "")) {
+        if (request.getCurriculumnId() != null) {
             CurriculumnEntity curriculumn = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
                     () -> new AppException(ErrorCode.CURRICULUMN_NOT_FOUND)
             );
