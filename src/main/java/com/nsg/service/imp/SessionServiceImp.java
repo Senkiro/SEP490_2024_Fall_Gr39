@@ -11,6 +11,7 @@ import com.nsg.entity.*;
 import com.nsg.repository.*;
 import com.nsg.service.CurriculumnService;
 import com.nsg.service.SessionService;
+import com.nsg.service.StudentService;
 import com.nsg.service.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -73,6 +74,9 @@ public class SessionServiceImp implements SessionService {
 
     @Autowired
     TimeSlotService timeSlotService;
+
+    @Autowired
+    StudentRepository studentRepository;
 
 
     @Override
@@ -454,12 +458,30 @@ public class SessionServiceImp implements SessionService {
 
     @Override
     public SessionResponse getSession(String sessionId) {
-
         //get session
         SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
                 () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
         );
+        return toSessionResponse(sessionEntity);
+    }
 
+    //get session by studentId
+    @Override
+    public List<SessionResponse> getSessionByStudentId(String studentId) {
+        //get student entity
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+        //get class entity in student entity
+        ClassEntity classEntity = student.getClassEntity();
+
+        //find session by classId
+        List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classEntity.getClassId());
+
+        return toListSessionResponse(sessionEntityList);
+    }
+
+    public SessionResponse toSessionResponse(SessionEntity sessionEntity) {
         //mapping
         SessionResponse response = new SessionResponse();
         response.setSessionId(sessionEntity.getSessionId());
@@ -481,7 +503,7 @@ public class SessionServiceImp implements SessionService {
             response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
         }
 
-        response.setTimeSlotResponse(TimeSlotMapper.INSTANCE.toTimeSlotResponse(sessionEntity.getTimeSlotEntity()));
+        response.setTimeSlotResponse( timeSlotService.toTimeSlotResponse( sessionEntity.getTimeSlotEntity() ));
 
         if (sessionEntity.getRoomEntity() != null) {
             response.setRoomNumber(sessionEntity.getRoomEntity().getRoomNumber());
@@ -524,7 +546,7 @@ public class SessionServiceImp implements SessionService {
         //convert
         sessionEntity.setDate(request.getDate());
         sessionEntity.setStatus(request.isStatus());
-        sessionEntity.setSessionNumber(request.getSessionNumber());
+        sessionEntity.setSessionNumber( request.getSessionNumber() );
         sessionEntity.setSessionWeek(request.getSessionWeek());
         sessionEntity.setSessionAvailable(request.isSessionAvailable());
 
