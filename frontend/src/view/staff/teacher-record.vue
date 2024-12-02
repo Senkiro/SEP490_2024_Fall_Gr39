@@ -164,7 +164,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/teacher?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+          `http://localhost:8088/fja-fap/staff/get-all-teacher?page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (response.data.code === 1000) {
