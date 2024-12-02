@@ -91,6 +91,14 @@ public enum ErrorCode {
     CURRICULUMN_LIST_NOT_FOUND(1340, "Curriculumn list not found!"),
     CURRICULUMN_LIST_TITLE_EXISTED(1341, "Curriculumn list title already existed!"),
 
+    //mark
+    MARK_NOT_FOUND(1360, "Mark not found!"),
+    MARK_LIST_EMPTY(1361, "There are no mark!"),
+    MIN_VALUE_MARK(1362, "Mark must be at least 0.0"),
+    MAX_VALUE_MARK(1363, "Mark must not exceed 10.0"),
+    MARK_NOT_NULL(1364, "Mark must not be null"),
+
+
     //holiday
     HOLIDAY_NOT_FOUND(2100, "Holiday not found"),
 

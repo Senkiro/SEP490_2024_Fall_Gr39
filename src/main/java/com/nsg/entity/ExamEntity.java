@@ -28,7 +28,7 @@ public class ExamEntity extends BaseEntity {
     @Column(name = "exam_content", columnDefinition = "LONGTEXT")
     String examContent;
 
-    @OneToMany(mappedBy = "examEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "examEntity", fetch = FetchType.EAGER)
     List<MarkEntity> markEntityList;
 
     @ManyToOne

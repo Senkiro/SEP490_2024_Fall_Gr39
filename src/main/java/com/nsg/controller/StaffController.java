@@ -16,6 +16,8 @@ import com.nsg.dto.request.exam.ExamTypeRequest;
 import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.request.holiday.HolidayRequest;
 import com.nsg.dto.request.lesson.LessonCreateRequest;
+import com.nsg.dto.request.mark.MarkCreationRequest;
+import com.nsg.dto.request.mark.MarkUpdateRequest;
 import com.nsg.dto.request.news.NewsRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
@@ -37,6 +39,7 @@ import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.dto.response.exam.ExamTypeResponse;
 import com.nsg.dto.response.holiday.HolidayResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
+import com.nsg.dto.response.mark.MarkResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.session.SessionResponse;
@@ -128,6 +131,9 @@ public class StaffController {
 
     @Autowired
     CurriculumnListService curriculumnListService;
+
+    @Autowired
+    MarkService markService;
 
 
     /**********************************
@@ -1129,8 +1135,7 @@ public class StaffController {
                 .build();
     }
 
-
-
+    //get exam by studentId
     @GetMapping("/student/{studentId}")
     public ResponseEntity<Page<ExamResponseForMark>> getExamsByStudent(
             @PathVariable String studentId,
@@ -1139,5 +1144,60 @@ public class StaffController {
         Page<ExamResponseForMark> exams = examService.getExamsByStudent(studentId, page, size);
         return ResponseEntity.ok(exams);
     }
+
+    /**********************************
+     * Manage Mark
+     **********************************/
+    //create mark
+    @PostMapping("/create-mark")
+    public ApiResponse<?> createMark(@RequestBody @Valid MarkCreationRequest request) {
+        markService.createMark(request);
+        return ApiResponse.builder()
+                .message("Create new mark successfully!")
+                .build();
+    }
+
+    //get all mark
+    @GetMapping("/get-all-mark")
+    public ApiResponse<Page<MarkResponse>> getAllMark(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<MarkResponse>>builder()
+                .result(markService.getAllMark(page, size))
+                .build();
+    }
+
+    //get a mark by id
+    @GetMapping("/get-mark/{mark_id}")
+    public ApiResponse<MarkResponse> getMark(@PathVariable("mark_id") String mark_id) {
+        return ApiResponse.<MarkResponse>builder()
+                .result(markService.getMark(mark_id))
+                .build();
+    }
+
+    //get mark list of a student
+    @GetMapping("/get-student-mark/{student_id}")
+    public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
+        return ApiResponse.<List<MarkResponse>>builder()
+                .result(markService.getMarkByStudent(student_id))
+                .build();
+    }
+
+    //update mark
+    @PostMapping("/update-mark/{mark_id}")
+    public ApiResponse<MarkResponse> updateMark(@PathVariable("mark_id") String mark_id, @RequestBody @Valid MarkUpdateRequest request) {
+        return ApiResponse.<MarkResponse>builder()
+                .result(markService.updateMark(mark_id, request))
+                .message("Mark update successfully!")
+                .build();
+    }
+
+    //deleteMark
+    @DeleteMapping("/delete-mark/{mark_id}")
+    public ApiResponse<?> deleteMark(@PathVariable("mark_id") String mark_id) {
+        markService.deleteMark(mark_id);
+        return ApiResponse.builder()
+                .message("Delete mark successfully!")
+                .build();
+    }
+
 
 }
