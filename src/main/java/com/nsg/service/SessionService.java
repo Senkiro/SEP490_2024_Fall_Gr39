@@ -38,6 +38,9 @@ public interface SessionService {
     //get a session
     SessionResponse getSession(String sessionId);
 
+    //get session by studentId
+    public List<SessionResponse> getSessionByStudentId(String studentId);
+
     //update only session status
     void updateOnlySessionStatus(String sessionId);
 

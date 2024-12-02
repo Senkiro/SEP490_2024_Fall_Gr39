@@ -18,10 +18,6 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     @Query("SELECT s FROM SessionEntity s WHERE s.user.id = :userId")
     List<SessionEntity> findByUserId(@Param("userId") String userId);
 
-//    @Query("SELECT s FROM SessionEntity s WHERE s.classEntity.classId = :classId AND s.user.id = :userId")
-//    List<SessionEntity> findByClassIdAndUserId(@Param("classId") String classId, @Param("userId") String userId);
-
-
     boolean existsByClassEntityClassId(String classId);
 
     List<SessionEntity> findByClassEntityClassId(String classId);
