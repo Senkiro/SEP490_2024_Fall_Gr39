@@ -84,6 +84,7 @@ public enum ErrorCode {
 
     //attendance
     ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
+    NO_DATA_ATTENDANCE(1301, "No data attendance found for student"),
 
     //curriculumn
     CURRICULUMN_NOT_FOUND(1320, "Curriculumn not found!"),
