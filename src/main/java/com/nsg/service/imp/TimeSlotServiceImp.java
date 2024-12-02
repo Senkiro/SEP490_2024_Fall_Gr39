@@ -95,4 +95,16 @@ public class TimeSlotServiceImp implements TimeSlotService {
     public void deleteTimeSlot(String timeSlotId) {
         timeSlotRepository.deleteById(timeSlotId);
     }
+
+    @Override
+    public TimeSlotResponse toTimeSlotResponse(TimeSlotEntity timeSlot) {
+        TimeSlotResponse timeSlotResponse = new TimeSlotResponse();
+
+        timeSlotResponse.setTimeSLotId(timeSlot.getTimeSlotId());
+        timeSlotResponse.setName(timeSlot.getName());
+        timeSlotResponse.setStartTime(timeSlot.getStartTime());
+        timeSlotResponse.setEndTime(timeSlot.getEndTime());
+
+        return timeSlotResponse;
+    }
 }

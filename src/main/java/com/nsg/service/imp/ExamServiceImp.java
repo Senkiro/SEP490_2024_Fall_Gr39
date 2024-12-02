@@ -9,6 +9,7 @@ import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.dto.response.exam.ExamTypeResponse;
+import com.nsg.dto.response.timeSlot.TimeSlotResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.AttendanceRepository;
 import com.nsg.repository.ExamRepository;
