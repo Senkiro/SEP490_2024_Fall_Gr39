@@ -4,6 +4,7 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.response.attendance.AttendanceResponse;
+import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.entity.AttendanceEntity;
@@ -241,5 +242,27 @@ public class AttendanceServiceImp implements AttendanceService {
     @Override
     public void deleteAttendance(String attendanceId) {
         attendanceRepository.deleteById(attendanceId);
+    }
+
+    //convert attendance statistic data
+    @Override
+    public AttendanceStatisticsResponse getDataAttendanceStatisticsResponse(String studentId) {
+        List<Object[]> result = attendanceRepository.getAttendanceStatistics(studentId);
+
+        AttendanceStatisticsResponse attendanceStatisticsResponse = new AttendanceStatisticsResponse();
+
+        if (result.isEmpty()) {
+            throw new AppException(ErrorCode.NO_DATA_ATTENDANCE);
+        }
+
+        Object[] row = result.get(0);
+        long attendCount = ((Number) row[0]).longValue();
+        long totalCount = ((Number) row[1]).longValue();
+        double attendPercentage = ((Number) row[2]).doubleValue();
+
+        attendanceStatisticsResponse.setAttendCount(attendCount);
+        attendanceStatisticsResponse.setTotalCount(totalCount);
+        attendanceStatisticsResponse.setAttendPercentage(attendPercentage);
+        return attendanceStatisticsResponse;
     }
 }
