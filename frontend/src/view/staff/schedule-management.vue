@@ -108,7 +108,7 @@
                 <div v-else>
                   <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
                     <option value="" disabled>Select Room</option>
-                    <option v-for="room in rooms" :key="room.id" :value="room.id">
+                    <option v-for="room in rooms" :key="room.number" :value="room.number">
                       {{ room.number }}
                     </option>
                   </select>
@@ -136,7 +136,7 @@
                   <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
                 </div>
                 <div v-else>
-                  <VsxIcon iconName="TickCircle" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
+                  <VsxIcon iconName="TickCircle" size="25" type="linear" @click="editSession(session.sessionId)" />
                   <!-- Cancel Button -->
                   <VsxIcon iconName="CloseCircle" size="25" type="linear" @click="cancelEdit(session.sessionId)"/>
                 </div>
@@ -512,6 +512,7 @@ export default {
           return {
             curriculumnResponse: session.curriculumnResponse,
             sessionId: session.sessionId,
+            sessionNumber: session.sessionNumber,
             date: session.date,
             dayOfWeek: session.dayOfWeek,
             timeSlotResponse: session.timeSlotResponse,
@@ -543,7 +544,7 @@ export default {
 
         if (response.data && response.data.result) {
           this.teachers = response.data.result.map((teacher) => ({
-            id: teacher.id,
+            id: teacher.userId,
             name: teacher.fullName,
           }));
         } else {
@@ -609,23 +610,37 @@ export default {
     },
     async editSession(sessionId) {
       if (!sessionId) {
-        console.error("sessionId không hợp lệ");
+        console.error("Invalid session ID");
         return;
       }
 
-      // Lấy các giá trị từ dropdown
+      const sessionData = this.sessions.find((session) => session.sessionId === sessionId);
+      if (!sessionData) {
+        console.error("Session data not found for sessionId:", sessionId);
+        return;
+      }
+
+      console.log("Selected Room for sessionId:", this.selectedTeacher[sessionId]);
+
       const updatedData = {
-        teacherId: this.selectedTeacher[sessionId] || null,
-        roomId: this.selectedRoomTable[sessionId] || null,
-        eventId: this.selectedEventTable[sessionId] || null,
+        date: sessionData.date,
+        status: 0,
+        sessionNumber: sessionData.sessionNumber,
+        sessionWeek: this.selectedWeekIndex,
+        sessionAvailable: sessionData.sessionAvailable,
+        curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
+        timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
+        roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
+        eventId: this.selectedEventTable[sessionId] || sessionData.eventId || "",
+        userId: this.selectedTeacher[sessionId] || sessionData.userId || "",
       };
 
-      console.log("Dữ liệu chỉnh sửa:", updatedData);
+      console.log("Updated Data:", updatedData);
 
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/edit-session/${sessionId}`,
+            `http://localhost:8088/fja-fap/staff/update-session/${sessionId}`,
             updatedData,
             {
               headers: {
@@ -635,13 +650,15 @@ export default {
         );
 
         if (response.data && response.data.code === 0) {
-          console.log("Cập nhật session thành công!");
+          this.showNotification("Session updated successfully!", "success");
           this.isEditing[sessionId] = false;
+          this.fetchSessions();
         } else {
-          console.error("Lỗi khi cập nhật session:", response.data);
+          this.showNotification("Failed to update session. Please try again.", "error");
         }
       } catch (error) {
-        console.error("Lỗi khi gọi API editSession:", error);
+        console.error("Error updating session:", error);
+        this.showNotification("An error occurred. Please try again.", "error");
       }
     },
     cancelEdit(sessionId) {
