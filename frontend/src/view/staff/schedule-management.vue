@@ -4,6 +4,10 @@
       <h1>Schedule Management</h1>
     </div>
 
+    <div v-if="notification.message" class="notification" :class="notification.type">
+      {{ notification.message }}
+    </div>
+
     <div class="filters-actions">
       <div class="filters">
         <select v-model="selectedBatch" id="batch-filter" class="filter-select"
@@ -105,7 +109,7 @@
                   <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
                     <option value="" disabled>Select Room</option>
                     <option v-for="room in rooms" :key="room.id" :value="room.id">
-                      Room {{ room.number }}
+                      {{ room.number }}
                     </option>
                   </select>
                 </div>
@@ -129,10 +133,12 @@
               </td>
               <td>
                 <div v-if="!isEditing[session.sessionId]">
-                  <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                  <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
                 </div>
                 <div v-else>
-                  <VsxIcon iconName="TickCircle" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                  <VsxIcon iconName="TickCircle" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
+                  <!-- Cancel Button -->
+                  <VsxIcon iconName="CloseCircle" size="25" type="linear" @click="cancelEdit(session.sessionId)"/>
                 </div>
               </td>
             </tr>
@@ -149,7 +155,7 @@
     <div v-if="showAddSchedulePopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddSchedulePopup = false" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddSchedulePopup = false"/>
         </div>
         <div class="popup-title">
           <h2>Add Schedule</h2>
@@ -217,32 +223,35 @@ export default {
     return {
       batches: [],
       classes: [],
-      selectedBatch: '',
-      showEventListPopup: false,
-      showAddSchedulePopup: false,
-      isLoadingClasses: false,
       rooms: [],
-      selectedRoom: '',
-      isLoadingRooms: false,
+      sessions: [],
+      teachers: [],
+      curriculums: [],
       timeSlots: [],
+
+      selectedBatch: '',
       selectedTimeSlot: '',
-      isLoadingTimeSlots: false,
       selectedClassId: '',
       selectedRoomId: '',
       selectedTimeSlotId: '',
-      sessions: [],
-      teachers: [],
+      selectedCurriculumId: '',
+      selectedEventId: '',
+
+      showEventListPopup: false,
+      showAddSchedulePopup: false,
+      isLoadingClasses: false,
+      isLoadingRooms: false,
+      isLoadingCurriculums: false,
+
       selectedTeacher: {},
       selectedRoomTable: {},
-      curriculums: [],
-      selectedCurriculumId: '',
-      isLoadingCurriculums: false,
-      selectedEventId: "",
       selectedEventTable: {},
-      selectedExamTable: {},
       isEditing: {},
-      selectedLessonTable: {},
-      lessons: [],
+
+      notification: {
+        message: "",
+        type: "" // "success" or "error"
+      },
     };
   },
   methods: {
@@ -352,6 +361,34 @@ export default {
         this.isLoadingRooms = false;
       }
     },
+    async fetchRooms() {
+      this.isLoadingRooms = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-all-room`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        if (response.data && response.data.result) {
+          this.rooms = response.data.result.map((room) => ({
+            id: room.roomId,
+            number: room.roomNumber,
+          }));
+        } else {
+          console.error('Unexpected response structure:', response.data);
+          this.rooms = [];
+        }
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+        this.rooms = [];
+      } finally {
+        this.isLoadingRooms = false;
+      }
+    },
     async fetchTimeSlots() {
       this.isLoadingTimeSlots = true; // Bắt đầu loading
       try {
@@ -423,7 +460,7 @@ export default {
       console.log('Room ID:', this.selectedRoomId);
       console.log('Time Slot ID:', this.selectedTimeSlotId);
       if (!this.selectedClassId || !this.selectedRoomId || !this.selectedTimeSlotId || !this.selectedCurriculumId) {
-        //alert('Please select a class, room, and time slot before submitting.');
+        alert('Please select batch, class, room, time slot and curiculumn before submitting.');
         return;
       }
 
@@ -444,16 +481,16 @@ export default {
         );
 
         if (response.data && response.data.code === 0) {
-          //alert('Schedule created successfully!');
+          this.showNotification('Schedule created successfully!', 'success');
           this.selectedRoomId = '';
           this.selectedTimeSlotId = '';
           this.selectedCurriculumId = '';
         } else {
-          //alert('Failed to create the schedule. Please try again.');
+          this.showNotification('Failed to create the schedule. Please try again.', 'error');
         }
       } catch (error) {
         console.error('Error creating schedule:', error);
-        //alert('An error occurred while creating the schedule.');
+        this.showNotification(error.response?.data?.message, 'error');
       }
     },
     async fetchSessions() {
@@ -547,18 +584,27 @@ export default {
     },
     toggleEdit(sessionId) {
       if (!sessionId) {
-        console.error("sessionId không hợp lệ");
+        console.error("Invalid sessionId");
         return;
       }
 
-      // Nếu vào chế độ chỉnh sửa, gọi API để lấy danh sách giáo viên
       if (!this.isEditing[sessionId]) {
+        // Enter edit mode: Initialize temporary data
+        this.selectedTeacher[sessionId] = this.sessions.find(
+            (session) => session.sessionId === sessionId
+        )?.teacherId || null;
+        this.selectedRoomTable[sessionId] = this.sessions.find(
+            (session) => session.sessionId === sessionId
+        )?.roomId || null;
+        this.selectedEventTable[sessionId] = this.sessions.find(
+            (session) => session.sessionId === sessionId
+        )?.eventId || null;
+
         this.fetchAvailableTeachers(sessionId);
-        this.editSession(sessionId);
         this.fetchAvailableRooms(sessionId);
       }
 
-      // Chuyển đổi trạng thái chỉnh sửa
+      // Toggle edit mode
       this.isEditing[sessionId] = !this.isEditing[sessionId];
     },
     async editSession(sessionId) {
@@ -571,8 +617,6 @@ export default {
       const updatedData = {
         teacherId: this.selectedTeacher[sessionId] || null,
         roomId: this.selectedRoomTable[sessionId] || null,
-        lessonId: this.selectedLessonTable[sessionId] || null,
-        examId: this.selectedExamTable[sessionId] || null,
         eventId: this.selectedEventTable[sessionId] || null,
       };
 
@@ -599,7 +643,28 @@ export default {
       } catch (error) {
         console.error("Lỗi khi gọi API editSession:", error);
       }
-    }
+    },
+    cancelEdit(sessionId) {
+      if (!sessionId) {
+        console.error("Invalid sessionId");
+        return;
+      }
+
+      // Reset temporary changes
+      this.selectedTeacher[sessionId] = null;
+      this.selectedRoomTable[sessionId] = null;
+      this.selectedEventTable[sessionId] = null;
+
+      // Exit edit mode
+      this.isEditing[sessionId] = false;
+    },
+    showNotification(message, type) {
+      this.notification = {message, type};
+      setTimeout(() => {
+        this.notification.message = "";
+      }, 3000);
+    },
+
   },
   computed: {
     groupedSessions() {
@@ -618,6 +683,7 @@ export default {
     }
   },
   mounted() {
+    this.fetchRooms();
     this.fetchBatches();
     this.fetchTimeSlots();
     this.fetchCurriculums();
