@@ -107,7 +107,7 @@ public class AttendanceServiceImp implements AttendanceService {
 
         // list AttendanceRequest
         List<AttendanceRequest> createRequest = new ArrayList<>();
-        String defaultStatus = "incoming";
+        String defaultStatus = "Not happen";
 
         for (SessionEntity session : availableSessions) {
             for (StudentEntity student : studentEntityList) {
