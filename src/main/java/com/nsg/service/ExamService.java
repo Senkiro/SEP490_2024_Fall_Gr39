@@ -33,4 +33,6 @@ public interface ExamService {
     void saveAll(List<ExamEntity> exams);
 
     Page<ExamResponseForMark> getExamsByStudent(String studentId, int page, int size);
+
+    List<ExamEntity> getExamByClassId(String classId);
 }

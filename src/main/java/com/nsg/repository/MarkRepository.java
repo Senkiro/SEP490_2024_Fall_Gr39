@@ -16,4 +16,6 @@ import java.util.List;
 @Repository
 public interface MarkRepository extends BaseRepository<MarkEntity, String> {
     List<MarkEntity> findByStudentEntityStudentId(String studentId);
+    boolean existsByStudentEntityStudentIdAndExamEntityExamId(String studentId, int examId);
+
 }

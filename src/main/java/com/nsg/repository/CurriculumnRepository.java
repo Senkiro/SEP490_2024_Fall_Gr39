@@ -13,6 +13,8 @@ import java.util.List;
 public interface CurriculumnRepository extends BaseRepository<CurriculumnEntity, String> {
 //    void saveAll(List<CurriculumnEntity> curriculumnEntityList);
     Page<CurriculumnEntity> findByCurriculumnListEntityCurriculumnListId(int curriculumnListId, PageRequest of);
+
+    List<CurriculumnEntity> findByCurriculumnListEntityCurriculumnListId(int curriculumnListId);
 }
 
 

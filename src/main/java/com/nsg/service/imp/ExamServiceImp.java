@@ -145,4 +145,17 @@ public class ExamServiceImp implements ExamService {
         return new PageImpl<>(responseList, listExam.getPageable(), listExam.getTotalElements());
     }
 
+    //get exam by class
+    @Override
+    public List<ExamEntity> getExamByClassId(String classId) {
+        List<ExamEntity> examEntityList = examRepository.findExamsByClassId(classId);
+        //check null
+        if (!examEntityList.isEmpty()) {
+            return examEntityList;
+        } else {
+            throw new AppException(ErrorCode.EXAM_LIST_IS_EMPTY);
+        }
+
+    }
+
 }

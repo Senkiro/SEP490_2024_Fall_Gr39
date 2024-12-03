@@ -6,12 +6,9 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.mark.MarkCreationRequest;
 import com.nsg.dto.request.mark.MarkUpdateRequest;
 import com.nsg.dto.response.mark.MarkResponse;
-import com.nsg.entity.ExamEntity;
-import com.nsg.entity.MarkEntity;
-import com.nsg.entity.StudentEntity;
-import com.nsg.repository.ExamRepository;
-import com.nsg.repository.MarkRepository;
-import com.nsg.repository.StudentRepository;
+import com.nsg.entity.*;
+import com.nsg.repository.*;
+import com.nsg.service.ExamService;
 import com.nsg.service.MarkService;
 import com.nsg.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,15 @@ public class MarkServiceImp implements MarkService {
 
     @Autowired
     ExamRepository examRepository;
+
+    @Autowired
+    CurriculumnRepository curriculumnRepository;
+
+    @Autowired
+    ExamService examService;
+
+    @Autowired
+    ClassRepository classRepository;
 
     @Override
     public void createMark(MarkCreationRequest request) {
@@ -135,6 +141,10 @@ public class MarkServiceImp implements MarkService {
         markEntity.setStatus(request.isStatus());
         markEntity.setComment(request.getComment());
 
+        if (request.getUpdatedBy() != null) {
+            markEntity.setUpdatedBy(request.getUpdatedBy());
+        }
+
         markRepository.save(markEntity);
 
         return getMark(markId);
@@ -144,4 +154,57 @@ public class MarkServiceImp implements MarkService {
     public void deleteMark(String markId) {
         markRepository.deleteById(markId);
     }
+
+    //generate mark for each student in class equal to number of exam in curriculum
+    public void generateMarkForAllStudentInClass(String classId) {
+        //get class
+        ClassEntity classEntity = classRepository.findById(classId).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        //get all exam of student in class
+        List<ExamEntity> examEntityList = examRepository.findExamsByClassId(classId);
+
+        //get student list
+        List<StudentEntity> studentEntityList = classEntity.getStudentEntityList();
+
+        //check null
+        if (studentEntityList.isEmpty()) {
+            throw new AppException(ErrorCode.STUDENT_LIST_IS_EMPTY);
+        }
+
+        //generate mark for each student
+        for (StudentEntity student : studentEntityList) {
+            generateMarkEntityForOneStudent(student, examEntityList);
+        }
+    }
+
+    //generate mark for one student
+    public void generateMarkEntityForOneStudent(StudentEntity student, List<ExamEntity> examEntityList) {
+        for (ExamEntity exam : examEntityList) {
+            //create new mark for each exam
+            addNewDefaultMarkEntity(student, exam);
+        }
+    }
+
+    public void addNewDefaultMarkEntity(StudentEntity student, ExamEntity exam) {
+        //check exist
+        if (markRepository.existsByStudentEntityStudentIdAndExamEntityExamId(student.getStudentId(), exam.getExamId() )) {
+            throw new AppException(ErrorCode.MARK_EXISTED);
+        }
+
+        MarkEntity markEntity = new MarkEntity();
+
+        //set default mark and status
+        float defaultMark = 0.0F;
+        markEntity.setMark(defaultMark);
+        markEntity.setStatus(false);
+
+        //set student and exam
+        markEntity.setStudentEntity(student);
+        markEntity.setExamEntity(exam);
+
+        markRepository.save(markEntity);
+    }
+
 }

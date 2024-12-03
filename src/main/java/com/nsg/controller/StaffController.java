@@ -756,6 +756,7 @@ public class StaffController {
     public ApiResponse<?> createSchedule(@PathVariable("class_id") String class_id, @RequestBody ScheduleCreationRequest request) {
         sessionService.createSchedule(class_id, request);
         attendanceService.createAttendancesForSession(class_id);
+        markService.generateMarkForAllStudentInClass(class_id);
         return ApiResponse.builder()
                 .message("Create new schedule successfully!")
                 .build();
