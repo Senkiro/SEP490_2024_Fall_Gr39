@@ -887,6 +887,18 @@ public class StaffController {
     /**********************************
      * Manage Attendance
      **********************************/
+    //get student by class Id
+    @GetMapping("/get-students-class")
+    public ApiResponse<Page<StudentResponse>> viewStudentByBatchNameAndClassName(@RequestParam int page,
+                                                                                 @RequestParam int size,
+                                                                                 @RequestParam String classId) {
+
+        Page<StudentResponse> studentList = studentService.getStudentByClassId(page, size, classId);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentList)
+                .build();
+    }
+
     //create new attendance
     @PostMapping("/create-attendance")
     public ApiResponse<?> createAttendance(@RequestBody AttendanceRequest request) {

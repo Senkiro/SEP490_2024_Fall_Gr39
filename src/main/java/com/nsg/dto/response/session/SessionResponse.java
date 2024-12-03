@@ -51,4 +51,8 @@ public class SessionResponse {
     String markStatus;
 
     String attendanceStatus;
+  
+    String userId;
+
+    String eventId;
 }

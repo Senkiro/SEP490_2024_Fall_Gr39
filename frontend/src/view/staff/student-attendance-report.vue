@@ -23,7 +23,7 @@
         </thead>
         <tbody>
         <tr v-for="(session, index) in student.attendance" :key="index">
-          <td class="center">{{ session.number }}</td>
+          <td class="center">{{ index + 1 }}</td>
           <td>{{ session.date }}</td>
           <td>{{ session.slot }}</td>
           <td>{{ session.teacher }}</td>
@@ -32,6 +32,9 @@
             {{ session.status }}
           </td>
         </tr>
+        <tr v-if="student.attendance.length === 0">
+          <td colspan="6" class="center">No data available</td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -39,16 +42,14 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
       student: {
         name: 'Pham The Minh',
         id: 'FA171392',
-        attendance: [
-          { number: 1, date: 'dd/mm/yyyy', slot: 'Morning (8:30 - 12:30)', teacher: 'Ikeda Yuri', lesson: 'Chapter 1 - Lesson 1', event: '', status: 'Attend' },
-          { number: 2, date: 'dd/mm/yyyy', slot: 'Morning (8:30 - 12:30)', teacher: 'Hiroto', lesson: '', event: 'Trip to Tokyo Tower', status: 'Not happen' },
-        ]
+        attendance: []
       }
     };
   },
@@ -60,6 +61,42 @@ export default {
     }
   },
   methods: {
+    async fetchAttendanceData(studentId) {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-attendance-student/${studentId}`, {
+              params: {
+                page: 0,
+                size: 10
+              },
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+        );
+        const result = response.data.result;
+        if (result && result.content) {
+          this.student = {
+            name: result.content[0].studentResponse.userInforResponse.fullName,
+            id: result.content[0].studentResponse.rollNumber,
+            attendance: result.content.map(session => ({
+              number: session.attendanceId,
+              date: session.date,
+              slot: session.sessionResponse ? session.sessionResponse.slot : 'N/A',
+              teacher: session.teacher || 'N/A',
+              lesson: session.sessionResponse ? session.sessionResponse.lesson : '',
+              event: session.sessionResponse ? session.sessionResponse.event : '',
+              status: session.status
+            }))
+          };
+        } else {
+          console.error('No data returned');
+        }
+      } catch (error) {
+        console.error('Error fetching attendance data:', error);
+      }
+    },
     getAttendanceClass(status) {
       switch (status) {
         case 'Attend':
@@ -73,6 +110,10 @@ export default {
       }
     }
   },
+  mounted() {
+    const studentId = this.$route.params.id;
+    this.fetchAttendanceData(studentId);
+  }
 };
 </script>
 

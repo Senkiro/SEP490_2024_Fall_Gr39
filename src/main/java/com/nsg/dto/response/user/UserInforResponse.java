@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserInforResponse {
+    String userId;
     String fullName;
     String japaneseName;
     LocalDate dob;

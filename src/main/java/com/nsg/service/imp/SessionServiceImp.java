@@ -442,6 +442,7 @@ public class SessionServiceImp implements SessionService {
 
             if (session.getEventEntity() != null) {
                 tempResponse.setEventName(session.getEventEntity().getEventName());
+                tempResponse.setEventId(session.getEventEntity().getEventId());
             }else {
                 tempResponse.setEventName(null);
             }
@@ -449,6 +450,7 @@ public class SessionServiceImp implements SessionService {
             if (session.getUser() != null) {
                 tempResponse.setFullName(session.getUser().getFullName());
                 tempResponse.setEmail(session.getUser().getEmail());
+                tempResponse.setUserId(session.getUser().getUserId());
             } else {
                 tempResponse.setFullName(null);
                 tempResponse.setEmail(null);
