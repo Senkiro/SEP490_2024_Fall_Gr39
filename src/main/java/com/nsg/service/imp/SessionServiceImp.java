@@ -547,6 +547,8 @@ public class SessionServiceImp implements SessionService {
 
         response.setDayOfWeek(dayOfWeek);
 
+        response.setMarkStatus(sessionEntity.getMarkStatus());
+        response.setAttendanceStatus(sessionEntity.getAttendanceStatus());
 
         response.setDate(sessionEntity.getDate());
         response.setStatus(sessionEntity.isStatus());
