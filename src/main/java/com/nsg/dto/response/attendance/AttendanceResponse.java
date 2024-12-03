@@ -28,5 +28,5 @@ public class AttendanceResponse {
 
     SessionResponse sessionResponse;
 
-    String teacher;
+    String TeacherName;
 }

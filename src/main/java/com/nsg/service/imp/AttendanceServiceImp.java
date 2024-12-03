@@ -16,6 +16,7 @@ import com.nsg.repository.ClassRepository;
 import com.nsg.repository.SessionRepository;
 import com.nsg.repository.StudentRepository;
 import com.nsg.service.AttendanceService;
+import com.nsg.service.SessionService;
 import com.nsg.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,9 @@ public class AttendanceServiceImp implements AttendanceService {
 
     @Autowired
     ClassRepository classRepository;
+
+    @Autowired
+    SessionService sessionService;
 
     @Override
     public void createAttendance(AttendanceRequest request) {
@@ -179,10 +183,11 @@ public class AttendanceServiceImp implements AttendanceService {
             SessionEntity session = attendance.getSessionEntity();
 
             if (session.getUser() != null) {
-                attendanceResponse.setTeacher(session.getUser().getUsername());
+                attendanceResponse.setTeacherName(session.getUser().getFullName());
             }
 
             attendanceResponse.setStudentResponse(studentResponse);
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
 
             responseList.add(attendanceResponse);
         }

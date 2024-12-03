@@ -535,6 +535,7 @@ public class SessionServiceImp implements SessionService {
         return toListSessionResponse(sessionEntityList);
     }
 
+    @Override
     public SessionResponse toSessionResponse(SessionEntity sessionEntity) {
         //mapping
         SessionResponse response = new SessionResponse();

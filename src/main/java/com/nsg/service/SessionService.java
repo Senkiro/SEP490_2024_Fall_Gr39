@@ -4,6 +4,7 @@ import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.user.UserInforResponse;
+import com.nsg.entity.SessionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -60,4 +61,5 @@ public interface SessionService {
 
     void updateSessionMarkStatus(String sessionId, String newStatus);
 
+    SessionResponse toSessionResponse(SessionEntity sessionEntity);
 }

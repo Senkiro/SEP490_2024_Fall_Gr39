@@ -135,7 +135,7 @@ export default {
 
       // Kiểm tra học sinh chưa được điểm danh
       const unmarkedStudents = this.students.filter(
-          (student) => student.status === "incoming"
+          (student) => student.status === "Not happen"
       );
 
       if (unmarkedStudents.length > 0) {
@@ -203,7 +203,7 @@ export default {
         classId: classId,
       };
       axios
-          .post(`http://localhost:8088/fja-fap/staff/update-session-status/${this.sessionId}`, payload, {
+          .post(`http://localhost:8088/fja-fap/staff/update-session-attendance-status/${this.sessionId}?new_status=Attended`, payload, {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((response) => {
