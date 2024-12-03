@@ -22,7 +22,6 @@ public class MarkCreationRequest {
     //can be null
     String comment;
 
-    //can
     boolean status;
 
     //not null

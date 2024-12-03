@@ -21,4 +21,5 @@ public class MarkUpdateRequest {
     //can
     boolean status;
 
+    String updatedBy;
 }

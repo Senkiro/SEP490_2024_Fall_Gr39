@@ -49,13 +49,14 @@ public enum ErrorCode {
     EXAM_TYPE_EXISTED(1161, "Exam type already existed!"),
     EXAM_NOT_FOUND(1162, "Exam not found!"),
     EXAM_TITLE_EXISTED(1163, "Exam title already existed!"),
+    EXAM_LIST_IS_EMPTY(1164, "Exam list is empty"),
 
     //Class
     CLASS_NAME_IS_NULL(1180, "Class name can not be null!"),
     CLASS_COLOUR_IS_NULL(1181, "Class colour can not be null!"),
     CLASS_NOT_FOUND(1182, "Class not found!"),
     CLASS_NAME_EXISTED(1183, "Class name already existed!"),
-    STUDENT_LIST_IS_EMPTY(1184, "Student list is empty!"),
+    STUDENT_LIST_IS_EMPTY(1184, "Student in class is empty!"),
 
 
     //Lesson
@@ -98,6 +99,7 @@ public enum ErrorCode {
     MIN_VALUE_MARK(1362, "Mark must be at least 0.0"),
     MAX_VALUE_MARK(1363, "Mark must not exceed 10.0"),
     MARK_NOT_NULL(1364, "Mark must not be null"),
+    MARK_EXISTED(1365, "Mark already exists for this student and exam."),
 
 
     //holiday

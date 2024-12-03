@@ -32,4 +32,6 @@ public interface MarkService {
     //delete mark
     void deleteMark(String markId);
 
+    void generateMarkForAllStudentInClass(String classId);
+
 }
