@@ -47,4 +47,8 @@ public class SessionResponse {
     String email;
 
     String note;
+
+    String markStatus;
+
+    String attendanceStatus;
 }

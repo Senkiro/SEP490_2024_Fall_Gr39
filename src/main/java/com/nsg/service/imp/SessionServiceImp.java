@@ -210,6 +210,11 @@ public class SessionServiceImp implements SessionService {
             SessionCreattionRequest sessionCreattionRequest = new SessionCreattionRequest();
             sessionCreattionRequest.setDate(dateOfSession);
             sessionCreattionRequest.setClassId(classEntity.getClassId());
+
+            //set default status
+            sessionCreattionRequest.setAttendanceStatus("Not happen");
+            sessionCreattionRequest.setMarkStatus("Not happen");
+
             DayOfWeek dow = dateOfSession.getDayOfWeek();
 
             sessionCreattionRequest.setSessionNumber(count_ts);
@@ -273,7 +278,7 @@ public class SessionServiceImp implements SessionService {
 
         //update total week and end date for batch
         batchEntity.setTotalWeek(week);
-        LocalDate endDate = startDate.plusDays((totalDay-1));
+        LocalDate endDate = startDate.plusDays( (totalDay-1) );
         batchEntity.setEndTime(endDate);
 
         batchRepository.save(batchEntity);
@@ -527,6 +532,14 @@ public class SessionServiceImp implements SessionService {
 
         response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(sessionEntity.getClassEntity()));
 
+        if (sessionEntity.getMarkStatus() != null) {
+            response.setMarkStatus(sessionEntity.getMarkStatus());
+        }
+
+        if (sessionEntity.getAttendanceStatus() != null) {
+            response.setAttendanceStatus(sessionEntity.getAttendanceStatus());
+        }
+
         if (sessionEntity.getCurriculumnEntity() != null) {
             response.setCurriculumnResponse( curriculumnService.toCurriculumnResponse( sessionEntity.getCurriculumnEntity() ) );
         }
@@ -566,6 +579,24 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
+    public void updateSessionAttendanceStatus(String sessionId, String newStatus) {
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+        sessionEntity.setAttendanceStatus(newStatus);
+        sessionRepository.save(sessionEntity);
+    }
+
+    @Override
+    public void updateSessionMarkStatus(String sessionId, String newStatus) {
+        SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+        sessionEntity.setMarkStatus(newStatus);
+        sessionRepository.save(sessionEntity);
+    }
+
+    @Override
     public SessionResponse updateSession(String sessionId, SessionCreattionRequest request) {
         SessionEntity sessionEntity = sessionRepository.findById(sessionId).orElseThrow(
                 () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
@@ -578,6 +609,13 @@ public class SessionServiceImp implements SessionService {
         sessionEntity.setSessionWeek(request.getSessionWeek());
         sessionEntity.setSessionAvailable(request.isSessionAvailable());
 
+        if (request.getAttendanceStatus() != null) {
+            sessionEntity.setAttendanceStatus(request.getAttendanceStatus());
+        }
+
+        if (request.getMarkStatus() != null) {
+            sessionEntity.setMarkStatus(request.getMarkStatus() );
+        }
 
         //curriculumn
         if (request.getCurriculumnId() != null) {

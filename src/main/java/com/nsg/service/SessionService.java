@@ -54,4 +54,8 @@ public interface SessionService {
 
     List<SessionResponse> getSessionByExamNotNullAndTeacherId(String classId, String teacherId);
 
+    void updateSessionAttendanceStatus(String sessionId, String newStatus);
+
+    void updateSessionMarkStatus(String sessionId, String newStatus);
+
 }

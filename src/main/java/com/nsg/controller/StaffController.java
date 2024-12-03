@@ -842,6 +842,22 @@ public class StaffController {
                 .build();
     }
 
+    @PostMapping("/update-session-attendance-status/{session_id}")
+    public ApiResponse<?> updateSessionAttendanceStatus(@PathVariable("session_id") String session_id, @RequestParam String new_status) {
+        sessionService.updateSessionAttendanceStatus(session_id, new_status);
+        return ApiResponse.builder()
+                .message("Session attendance status updated!")
+                .build();
+    }
+
+    @PostMapping("/update-session-mark-status/{session_id}")
+    public ApiResponse<?> updateSessionMarkStatus(@PathVariable("session_id") String session_id, @RequestParam String new_status) {
+        sessionService.updateSessionMarkStatus(session_id, new_status);
+        return ApiResponse.builder()
+                .message("Session mark status updated!")
+                .build();
+    }
+
     //update
     @PostMapping("/update-session/{session_id}")
     public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
