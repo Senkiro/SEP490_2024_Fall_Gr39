@@ -482,6 +482,14 @@ public class StaffController {
                 .build();
     }
 
+    //get available room for schedule creatation
+    @GetMapping("/get-available-room-for-schedule")
+    public ApiResponse<List<RoomResponse>> getAvailableRoomForSchedule(@RequestParam String time_slot_id) {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .result(roomService.getAvailableRoomForSchedule(time_slot_id))
+                .build();
+    }
+
     //get a room by id
     @GetMapping("/get-room/{roomId}")
     public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId) {

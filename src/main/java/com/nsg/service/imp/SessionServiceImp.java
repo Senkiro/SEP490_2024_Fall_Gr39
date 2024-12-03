@@ -246,7 +246,7 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setNote(checkHoliday(holidays, dateOfSession));
 
             } else {
-
+                //validate room
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
 
                 //if time_slot_id = requestId -> set available is true
@@ -286,6 +286,9 @@ public class SessionServiceImp implements SessionService {
         //fill session
         fillSession(class_id, curriculumnEntityList);
     }
+
+    //validate room
+
 
 
     //fill session: only fill available session
@@ -535,6 +538,7 @@ public class SessionServiceImp implements SessionService {
         return toListSessionResponse(sessionEntityList);
     }
 
+    @Override
     public SessionResponse toSessionResponse(SessionEntity sessionEntity) {
         //mapping
         SessionResponse response = new SessionResponse();

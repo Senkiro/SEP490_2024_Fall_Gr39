@@ -23,4 +23,14 @@ public interface RoomRepository extends BaseRepository<RoomEntity, String> {
     List<RoomEntity> findAvailableRooms(@Param("date") LocalDate date,
                                         @Param("timeSlotId") String timeSlotId);
 
+    //get available room for each time create schedule
+    @Query(value = "SELECT r.* " +
+            "FROM room r " +
+            "LEFT JOIN session s " +
+            "ON r.room_id = s.room_id " +
+            "AND s.time_slot_id = :timeSlotId " +
+            "WHERE s.room_id IS NULL",
+            nativeQuery = true)
+    List<RoomEntity> findAvailableRooms(@Param("timeSlotId") String timeSlotId);
+
 }
