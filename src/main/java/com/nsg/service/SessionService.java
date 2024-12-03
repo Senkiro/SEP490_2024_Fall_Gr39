@@ -50,4 +50,8 @@ public interface SessionService {
     //delete session
     void deleteSession(String sessionId);
 
+    List<SessionResponse> getSessionByExamNotNull(String classId);
+
+    List<SessionResponse> getSessionByExamNotNullAndTeacherId(String classId, String teacherId);
+
 }

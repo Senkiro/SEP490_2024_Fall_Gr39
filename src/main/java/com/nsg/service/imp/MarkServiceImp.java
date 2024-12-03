@@ -207,4 +207,20 @@ public class MarkServiceImp implements MarkService {
         markRepository.save(markEntity);
     }
 
+    //get all mark by examId and classId
+    @Override
+    public List<MarkResponse> getMarkByExamAndSessionClass(int examId, String classId) {
+        //check exam
+        if (!examRepository.existsById(String.valueOf(examId))) {
+            throw new AppException(ErrorCode.EXAM_NOT_EXIST);
+        }
+
+        List<MarkEntity> markEntityList = markRepository.findMarksByExamIdAndClassId((long) examId, classId );
+        if (!markEntityList.isEmpty()) {
+            return toMarkResponseList(markEntityList);
+        } else {
+            throw new AppException(ErrorCode.MARK_LIST_EMPTY);
+        }
+    }
+
 }

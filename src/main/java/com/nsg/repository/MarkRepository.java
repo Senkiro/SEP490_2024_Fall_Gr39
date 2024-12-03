@@ -18,4 +18,13 @@ public interface MarkRepository extends BaseRepository<MarkEntity, String> {
     List<MarkEntity> findByStudentEntityStudentId(String studentId);
     boolean existsByStudentEntityStudentIdAndExamEntityExamId(String studentId, int examId);
 
+    List<MarkEntity> findByExamEntityExamId(int examId);
+
+    @Query(value = "SELECT m.* FROM mark m " +
+            "JOIN student s ON m.student_id = s.user_id " +
+            "WHERE m.exam_id = :examId " +
+            "AND s.class_id = :classId", nativeQuery = true)
+    List<MarkEntity> findMarksByExamIdAndClassId(@Param("examId") Long examId,
+                                                 @Param("classId") String classId);
+
 }

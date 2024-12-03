@@ -391,7 +391,7 @@ public class SessionServiceImp implements SessionService {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
 
-        //get list of session by week and classId
+        //get list of session by teacher
         List<SessionEntity> sessionEntities = sessionRepository.findByUserId(teacherId);
         if (!sessionEntities.isEmpty()) {
             return toListSessionResponse(sessionEntities);
@@ -477,6 +477,34 @@ public class SessionServiceImp implements SessionService {
 
         //find session by classId
         List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classEntity.getClassId());
+
+        return toListSessionResponse(sessionEntityList);
+    }
+
+    //get session by exam of a class
+    @Override
+    public List<SessionResponse> getSessionByExamNotNull(String classId) {
+        //get class entity in student entity
+        ClassEntity classEntity = classRepository.findById(classId).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        //find session by classId and exam
+        List<SessionEntity> sessionEntityList = sessionRepository.findSessionsByClassIdAndExamExists(classId);
+
+        return toListSessionResponse(sessionEntityList);
+    }
+
+    //get session have exam by class and teacher
+    @Override
+    public List<SessionResponse> getSessionByExamNotNullAndTeacherId(String classId, String teacherId) {
+        //get class entity in student entity
+        ClassEntity classEntity = classRepository.findById(classId).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        //find session by classId and exam
+        List<SessionEntity> sessionEntityList = sessionRepository.findSessionsByClassIdAndTeacherIdAndExamExists(classId, teacherId);
 
         return toListSessionResponse(sessionEntityList);
     }
