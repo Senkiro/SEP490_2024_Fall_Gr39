@@ -441,6 +441,9 @@ public class SessionServiceImp implements SessionService {
             tempResponse.setStatus(session.isStatus());
             tempResponse.setSessionAvailable(session.isSessionAvailable());
 
+            tempResponse.setAttendanceStatus(session.getAttendanceStatus());
+            tempResponse.setMarkStatus(session.getMarkStatus());
+
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
 
             //check null
