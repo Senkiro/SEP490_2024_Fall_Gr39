@@ -522,6 +522,9 @@ export default {
             examResponse: session.curriculumnResponse?.examResponse?.examTitle,
             eventName: session.eventName,
             note: session.note,
+            eventId: session.eventId,
+            userId: session.userId,
+
           };
         });
       } catch (error) {
@@ -620,14 +623,14 @@ export default {
         return;
       }
 
-      console.log("Selected Room for sessionId:", this.selectedTeacher[sessionId]);
+      console.log(sessionData);
 
       const updatedData = {
         date: sessionData.date,
         status: 0,
         sessionNumber: sessionData.sessionNumber,
         sessionWeek: this.selectedWeekIndex,
-        sessionAvailable: sessionData.sessionAvailable,
+        sessionAvailable: sessionData.sessionAvailable || 1,
         curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
         timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
         roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
