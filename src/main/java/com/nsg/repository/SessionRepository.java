@@ -64,4 +64,20 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     List<SessionEntity> findSessionsByClassIdAndTeacherIdAndExamExists(@Param("classId") String classId,
                                                                        @Param("teacherId") String teacherId);
 
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND attendance_status is not null " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsAttendanceStatus(@Param("classId") String classId);
+
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND attendance_status is not null " +
+            "AND s.user_id = :teacherId " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsAttendanceStatusAndTeacher(@Param("classId") String classId,
+                                                               @Param("teacherId") String teacherId);
+
 }

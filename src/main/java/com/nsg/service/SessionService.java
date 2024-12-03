@@ -35,6 +35,8 @@ public interface SessionService {
 
     List<SessionResponse> getSessionByClassAndTeacher(String teacherId);
 
+    List<SessionResponse> getSessionByAttendanceStatus(String classId);
+
     //get a session
     SessionResponse getSession(String sessionId);
 
