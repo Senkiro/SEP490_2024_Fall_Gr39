@@ -121,7 +121,6 @@ public class AttendanceServiceImp implements AttendanceService {
                 } else {
 
                 }
-
                 createRequest.add(attendanceRequest);
             }
         }

@@ -32,6 +32,8 @@ public class SessionCreattionRequest {
 
     boolean sessionAvailable;
 
+    String note;
+
     String markStatus;
 
     String attendanceStatus;

@@ -809,6 +809,14 @@ public class StaffController {
                 .build();
     }
 
+    //get session by attendance status
+    @GetMapping("/get-session-by-attendance-status")
+    public ApiResponse<List<SessionResponse>> getSessionByAttendanceStatus(@RequestParam String class_id) {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result( sessionService.getSessionByAttendanceStatus( class_id ) )
+                .build();
+    }
+
     //get session by id
     @GetMapping("/get-session/{session_id}")
     public ApiResponse<SessionResponse> getSessionById(@PathVariable("session_id") String session_id) {
@@ -926,7 +934,9 @@ public class StaffController {
 
     //get attendance by session
     @GetMapping("/get-attendance-session/{session_id}")
-    public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id, @RequestParam int page, @RequestParam int size) {
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id,
+                                                                        @RequestParam int page,
+                                                                        @RequestParam int size) {
         return ApiResponse.<Page<AttendanceResponse>>builder()
                 .result(attendanceService.getAttendanceBySession(session_id, page, size))
                 .build();
@@ -934,7 +944,9 @@ public class StaffController {
 
     //get attendance by student
     @GetMapping("/get-attendance-student/{student_id}")
-    public ApiResponse<Page<AttendanceResponse>> getAttendanceByStudent(@PathVariable("student_id") String student_id, @RequestParam int page, @RequestParam int size) {
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceByStudent(@PathVariable("student_id") String student_id,
+                                                                        @RequestParam int page,
+                                                                        @RequestParam int size) {
         return ApiResponse.<Page<AttendanceResponse>>builder()
                 .result(attendanceService.getAttendanceByStudent(student_id, page, size))
                 .build();

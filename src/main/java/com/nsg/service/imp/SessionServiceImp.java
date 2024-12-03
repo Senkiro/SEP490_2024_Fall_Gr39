@@ -96,6 +96,10 @@ public class SessionServiceImp implements SessionService {
         );
         session.setClassEntity(classEntity);
 
+        if (request.getNote() != null) {
+            session.setNote(request.getNote());
+        }
+
 //        //curriculumn
 //        if (request.getCurriculumnId() >= 0) {
 //            CurriculumnEntity curriculumnEntity = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
@@ -211,10 +215,6 @@ public class SessionServiceImp implements SessionService {
             sessionCreattionRequest.setDate(dateOfSession);
             sessionCreattionRequest.setClassId(classEntity.getClassId());
 
-            //set default status
-            sessionCreattionRequest.setAttendanceStatus("Not happen");
-            sessionCreattionRequest.setMarkStatus("Not happen");
-
             DayOfWeek dow = dateOfSession.getDayOfWeek();
 
             sessionCreattionRequest.setSessionNumber(count_ts);
@@ -240,9 +240,11 @@ public class SessionServiceImp implements SessionService {
                     week += 1;
                 }
 
-            } else if (checkHoliday(holidays, dateOfSession)) {
+            } else if (checkHoliday(holidays, dateOfSession) != null) {
                 //create blank session
                 sessionCreattionRequest.setSessionAvailable(false);
+                sessionCreattionRequest.setNote(checkHoliday(holidays, dateOfSession));
+
             } else {
 
                 sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
@@ -259,8 +261,6 @@ public class SessionServiceImp implements SessionService {
                     sessionNo++;
                 }
             }
-
-
 
             //if %count_ts = 0 then total day increase 1
             if (count_ts % 2 == 0) {
@@ -302,6 +302,11 @@ public class SessionServiceImp implements SessionService {
 
         for (SessionEntity session : availableSessions) {
             session.setCurriculumnEntity(curriculumnEntityList.get(count_curriculumn));
+
+            //set default status
+            session.setAttendanceStatus("Not happen");
+            session.setMarkStatus("Not happen");
+
             count_curriculumn += 1;
         }
 
@@ -313,13 +318,13 @@ public class SessionServiceImp implements SessionService {
     //add event -> session change to available
 
     //check one day is holiday or not?
-    public boolean checkHoliday(List<HolidayEntity> holidays, LocalDate dateOfSession) {
+    public String checkHoliday(List<HolidayEntity> holidays, LocalDate dateOfSession) {
         for (HolidayEntity holiday: holidays) {
             if (holiday.getHolidayDate().equals(dateOfSession)) {
-                return true;
+                return holiday.getTitle();
             }
         }
-        return false;
+        return null;
     }
 
     //get session by session id and time_slot_id
@@ -398,6 +403,17 @@ public class SessionServiceImp implements SessionService {
 
         //get list of session by teacher
         List<SessionEntity> sessionEntities = sessionRepository.findByUserId(teacherId);
+        if (!sessionEntities.isEmpty()) {
+            return toListSessionResponse(sessionEntities);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<SessionResponse> getSessionByAttendanceStatus(String classId) {
+        //get list of session by class
+        List<SessionEntity> sessionEntities = sessionRepository.findSessionsAttendanceStatus(classId);
         if (!sessionEntities.isEmpty()) {
             return toListSessionResponse(sessionEntities);
         } else {
