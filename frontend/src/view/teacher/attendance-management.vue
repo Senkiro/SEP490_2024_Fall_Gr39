@@ -6,13 +6,14 @@
 
     <div class="filters">
       <label for="week-filter">Select Week:</label>
-      <select id="week-filter" class="filter-select" v-model="selectedWeek">
+      <select id="week-filter" class="filter-select" v-model="selectedWeek" v-if="uniqueWeeks.length > 0">
         <option value="" disabled>Select Week</option>
         <option value="all">All Week</option>
         <option v-for="(week, index) in uniqueWeeks" :key="index" :value="week.index">
           Week {{ index + 1 }} ({{ week.start }} to {{ week.end }})
         </option>
       </select>
+      <p v-else>No weeks available</p>
     </div>
 
 
@@ -68,6 +69,7 @@ export default {
   },
   computed: {
     uniqueWeeks() {
+      if (!Array.isArray(this.sessions)) return [];
       const weeks = [];
       const weekMap = new Map();
 
@@ -128,17 +130,19 @@ export default {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((response) => {
-            if (response.data.code === 0) {
+            if (response.data.code === 0 && Array.isArray(response.data.result)) {
               this.sessions = response.data.result;
             } else {
               console.error(
                   "Lỗi khi fetch dữ liệu sessions:",
                   response.data.message || "Lỗi không xác định"
               );
+              this.sessions = []; // Đảm bảo luôn là mảng
             }
           })
           .catch((error) => {
             console.error("Lỗi khi gọi API:", error);
+            this.sessions = []; // Đảm bảo luôn là mảng
           });
     },
     getStatusClass(item) {
