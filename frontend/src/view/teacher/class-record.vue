@@ -18,7 +18,7 @@
         <tr v-for="(classItem, index) in classes" :key="classItem.classId">
           <td class="center">{{ index + 1 }}</td>
           <td :style="{ color: classItem.classColour }">{{ classItem.className }}</td>
-          <td class="center">{{ classItem.studentCount || "N/A" }}</td>
+          <td class="center">{{ classItem.totalStudent || "N/A" }}</td>
           <td class="center">
             <VsxIcon
                 iconName="Eye"
