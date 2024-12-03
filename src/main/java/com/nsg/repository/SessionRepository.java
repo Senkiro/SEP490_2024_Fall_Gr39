@@ -46,4 +46,22 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     List<SessionEntity> findSessionsUnavailableByClassId(
             @Param("classId") String classId);
 
+    @Query(value = "SELECT DISTINCT s.* " +
+            "FROM session s " +
+            "JOIN curriculumn c ON s.curriculumn_id = c.curriculumn_id " +
+            "WHERE s.class_id = :classId " +
+            "AND c.exam_id IS NOT NULL",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsByClassIdAndExamExists(@Param("classId") String classId);
+
+    @Query(value = "SELECT DISTINCT s.* " +
+            "FROM session s " +
+            "JOIN curriculumn c ON s.curriculumn_id = c.curriculumn_id " +
+            "WHERE s.class_id = :classId " +
+            "AND s.user_id = :teacherId " +
+            "AND c.exam_id IS NOT NULL",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsByClassIdAndTeacherIdAndExamExists(@Param("classId") String classId,
+                                                                       @Param("teacherId") String teacherId);
+
 }

@@ -792,6 +792,23 @@ public class StaffController {
                 .build();
     }
 
+    //get session which have exam in a class
+    @GetMapping("/get-session-have-exam")
+    public ApiResponse<List<SessionResponse>> getSessionHaveExam(@RequestParam String class_id) {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result( sessionService.getSessionByExamNotNull(class_id) )
+                .build();
+    }
+
+    //get session which have exam in a class by teacher
+    @GetMapping("/get-session-have-exam-and-teacher")
+    public ApiResponse<List<SessionResponse>> getSessionHaveExamAndTeacher(@RequestParam String class_id,
+                                                                           @RequestParam String teacher_id) {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result( sessionService.getSessionByExamNotNullAndTeacherId( class_id, teacher_id ) )
+                .build();
+    }
+
     //get session by id
     @GetMapping("/get-session/{session_id}")
     public ApiResponse<SessionResponse> getSessionById(@PathVariable("session_id") String session_id) {
@@ -822,6 +839,22 @@ public class StaffController {
         sessionService.updateOnlySessionStatus(session_id);
         return ApiResponse.builder()
                 .message("Session status updated!")
+                .build();
+    }
+
+    @PostMapping("/update-session-attendance-status/{session_id}")
+    public ApiResponse<?> updateSessionAttendanceStatus(@PathVariable("session_id") String session_id, @RequestParam String new_status) {
+        sessionService.updateSessionAttendanceStatus(session_id, new_status);
+        return ApiResponse.builder()
+                .message("Session attendance status updated!")
+                .build();
+    }
+
+    @PostMapping("/update-session-mark-status/{session_id}")
+    public ApiResponse<?> updateSessionMarkStatus(@PathVariable("session_id") String session_id, @RequestParam String new_status) {
+        sessionService.updateSessionMarkStatus(session_id, new_status);
+        return ApiResponse.builder()
+                .message("Session mark status updated!")
                 .build();
     }
 
@@ -1220,5 +1253,12 @@ public class StaffController {
                 .build();
     }
 
+    //get mark by exam and class
+    @GetMapping("/get-mark-by-session-exam")
+    public ApiResponse<List<MarkResponse>> getMarkByExamAndClass(@RequestParam int exam_id, @RequestParam String class_id) {
+        return ApiResponse.<List<MarkResponse>>builder()
+                .result(markService.getMarkByExamAndSessionClass(exam_id, class_id) )
+                .build();
+    }
 
 }

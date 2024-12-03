@@ -48,6 +48,10 @@ public class SessionResponse {
 
     String note;
 
+    String markStatus;
+
+    String attendanceStatus;
+  
     String userId;
 
     String eventId;

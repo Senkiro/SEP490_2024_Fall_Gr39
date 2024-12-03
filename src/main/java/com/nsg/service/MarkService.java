@@ -34,4 +34,6 @@ public interface MarkService {
 
     void generateMarkForAllStudentInClass(String classId);
 
+    List<MarkResponse> getMarkByExamAndSessionClass(int examId, String classId);
+
 }

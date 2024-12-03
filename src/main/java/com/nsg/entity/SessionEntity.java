@@ -39,6 +39,14 @@ public class SessionEntity extends BaseEntity {
     @Column(name = "note")
     String note;
 
+    //Added, Not added, Not happen
+    @Column(name = "mark_status")
+    String markStatus;
+
+    //Taken, Not taken, Not happen
+    @Column(name = "attendance_status")
+    String attendanceStatus;
+
     @ManyToOne
     @JoinColumn(name = "class_id", referencedColumnName = "class_id")
     ClassEntity classEntity;
