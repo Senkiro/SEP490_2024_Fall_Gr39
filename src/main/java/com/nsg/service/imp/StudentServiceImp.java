@@ -127,22 +127,22 @@ public class StudentServiceImp implements StudentService {
     @Override
     public Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size,
                                                                    String batchName,
-                                                                   String className) {
+                                                                   String classId) {
         //check batch existed
         if (batchRepository.findByBatchName(batchName).isEmpty()) {
             throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
         }
 
         //check class existed
-        if (classRepository.findByClassName(className) == null) {
+        if (classRepository.findByClassId(classId) == null) {
             throw new AppException(ErrorCode.CLASS_NOT_FOUND);
         }
 
         //find all student
         Page<StudentEntity> studentEntityList =
-                studentRepository.findByBatchEntityBatchNameAndClassEntityClassName(
+                studentRepository.findByBatchEntityBatchNameAndClassEntityClassId(
                         batchName,
-                        className,
+                        classId,
                         PageRequest.of(page, size));
 
         //generate list for response

@@ -173,8 +173,8 @@ public class StaffController {
     public ApiResponse<Page<StudentResponse>> viewStudentByBatchNameAndClassName(@RequestParam int page,
                                                                                  @RequestParam int size,
                                                                                  @RequestParam String batch_name,
-                                                                                 @RequestParam String class_name) {
-        Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_name);
+                                                                                 @RequestParam String class_id) {
+        Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_id);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();

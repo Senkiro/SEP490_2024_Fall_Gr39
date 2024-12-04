@@ -1,6 +1,5 @@
 package com.nsg.controller;
 
-import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.user.*;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.user.AuthResponse;
@@ -16,11 +15,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -76,6 +73,20 @@ public class AuthenticationController {
         return ApiResponse.<UserInforResponse>builder()
                 .result(updatedUser)
                 .message("Reset password successfully!")
+                .build();
+    }
+
+    @PutMapping(value = "/update-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<?> updateProfiler(
+            @PathVariable("userId") String userId,
+            @RequestPart("userDetail") @Valid UserInforUpdateRequest request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+
+        var updatedUser = userService.updateUserInfor(userId, request, avatar);
+
+        return ApiResponse.builder()
+                .result(updatedUser)
+                .message("User updated successfully!")
                 .build();
     }
 
