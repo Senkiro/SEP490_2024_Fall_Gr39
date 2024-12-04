@@ -18,7 +18,7 @@
           </option>
         </select>
 
-        <select id="class-filter" class="filter-select" v-model="selectedClassId">
+        <select id="class-filter" class="filter-select" v-model="selectedClassId" @change="fetchSessions">
           <option value="" disabled>Select Class</option>
           <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
             {{ classItem.name }}
