@@ -2,6 +2,7 @@ package com.nsg.service;
 
 import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
+import com.nsg.dto.request.session.SessionUpdateRequest;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.SessionEntity;
@@ -48,7 +49,7 @@ public interface SessionService {
     void updateOnlySessionStatus(String sessionId);
 
     //update a session
-    SessionResponse updateSession(String sessionId, SessionCreattionRequest request);
+    SessionResponse updateSession(String sessionId, SessionUpdateRequest request);
 
     //delete session
     void deleteSession(String sessionId);
@@ -62,5 +63,7 @@ public interface SessionService {
     void updateSessionMarkStatus(String sessionId, String newStatus);
 
     SessionResponse toSessionResponse(SessionEntity sessionEntity);
+
+    void swapToUnavailableSession(String currentSessionId, String toSessionId);
 
 }

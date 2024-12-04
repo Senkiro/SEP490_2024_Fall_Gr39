@@ -22,6 +22,7 @@ import com.nsg.dto.request.news.NewsRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
+import com.nsg.dto.request.session.SessionUpdateRequest;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
@@ -877,7 +878,7 @@ public class StaffController {
 
     //update
     @PostMapping("/update-session/{session_id}")
-    public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionCreattionRequest request) {
+    public ApiResponse<SessionResponse> updateSessionById(@PathVariable("session_id") String session_id, @RequestBody SessionUpdateRequest request) {
         return ApiResponse.<SessionResponse>builder()
                 .result(sessionService.updateSession(session_id, request))
                 .build();
@@ -898,6 +899,16 @@ public class StaffController {
         sessionService.deleteSession(session_id);
         return ApiResponse.<SessionResponse>builder()
                 .message("Delete session successfully!")
+                .build();
+    }
+
+    //swap session
+    @GetMapping("/swap-to-unavailable-session")
+    public ApiResponse<?> swapToUnavailableSesssion(@RequestParam String currentSessionId,
+                                                    @RequestParam String toSessionId) {
+        sessionService.swapToUnavailableSession(currentSessionId, toSessionId);
+        return ApiResponse.builder()
+                .message("Change session successfully!")
                 .build();
     }
 
