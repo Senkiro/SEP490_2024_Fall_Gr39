@@ -646,15 +646,19 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/mark-management',
+        path: '/teacher/mark-management/:classId/:examId/:sessionId',
         name: 'TeacherMarkManagement',
         component: () => import('../view/teacher/mark-management.vue'),
-        meta: { layout: 'teacher', requiresAuth: false, 
+        props: true,
+        meta: {
+            layout: 'teacher',
+            requiresAuth: false,
             breadcrumbs: [
-                {name: "Homepage", link:"/teacher"},
-                {name: "Mark entry management", link:"/teacher/mark"},
-                {name: "Mark management", link: ""}
-            ]},
+                { name: "Homepage", link: "/teacher" },
+                { name: "Mark entry management", link: "/teacher/mark" },
+                { name: "Mark management", link: "" }
+            ]
+        }
     },
     {
         path: '/teacher/event',

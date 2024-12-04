@@ -132,7 +132,13 @@
                   <template v-if="session.eventName || session.lessonResponse">
                     <div v-if="!isEditing[session.sessionId]" class="icon-group">
                       <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
-                      <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="changeDate(session.sessionId)" />
+                      <VsxIcon
+                          iconName="ArrowSwapVertical"
+                          size="25"
+                          type="linear"
+                          @click="openChangeDatePopup(session.sessionId)"
+                      />
+
                     </div>
                     <div v-else class="icon-group">
                       <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8"
@@ -310,7 +316,7 @@ export default {
       selectedCurriculumId: '',
       selectedEventId: '',
 
-      showChangeDatePopup: true,
+      showChangeDatePopup: false,
       showEventListPopup: false,
       showAddSchedulePopup: false,
       isLoadingClasses: false,
@@ -758,7 +764,15 @@ export default {
         this.notification.message = "";
       }, 3000);
     },
+    openChangeDatePopup(sessionId) {
+      if (!sessionId) {
+        console.error("Session ID is invalid.");
+        return;
+      }
 
+      this.currentSessionId = sessionId; // Lưu lại sessionId hiện tại
+      this.showChangeDatePopup = true; // Hiển thị popup đổi ngày
+    },
   },
   computed: {
     groupedSessions() {
