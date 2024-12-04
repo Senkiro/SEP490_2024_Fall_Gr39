@@ -482,6 +482,14 @@ public class StaffController {
                 .build();
     }
 
+    //get available room for schedule creatation
+    @GetMapping("/get-available-room-for-schedule")
+    public ApiResponse<List<RoomResponse>> getAvailableRoomForSchedule(@RequestParam String time_slot_id) {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .result(roomService.getAvailableRoomForSchedule(time_slot_id))
+                .build();
+    }
+
     //get a room by id
     @GetMapping("/get-room/{roomId}")
     public ApiResponse<RoomResponse> getRoom(@PathVariable("roomId") String roomId) {
@@ -834,10 +842,11 @@ public class StaffController {
     }
 
     //get unavailable session
-    @GetMapping("/get-unavailable-session/{class_id}")
-    public ApiResponse<List<SessionResponse>> getUnavailableSesssion(@PathVariable("class_id") String class_id) {
+    @GetMapping("/get-unavailable-session")
+    public ApiResponse<List<SessionResponse>> getUnavailableSesssion(@RequestParam String class_id,
+                                                                     @RequestParam int sessionWeek) {
         return ApiResponse.<List<SessionResponse>>builder()
-                .result(sessionService.getSessionUnavailable(class_id))
+                .result(sessionService.getSessionUnavailable(class_id, sessionWeek))
                 .build();
     }
 
@@ -1242,6 +1251,7 @@ public class StaffController {
     //get mark list of a student
     @GetMapping("/get-student-mark/{student_id}")
     public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
+        markService.countAverageMark(student_id);
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByStudent(student_id))
                 .build();

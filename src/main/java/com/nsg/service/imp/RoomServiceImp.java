@@ -69,6 +69,22 @@ public class RoomServiceImp implements RoomService {
         return responseList;
     }
 
+    //get available room for each schedule
+    @Override
+    public List<RoomResponse> getAvailableRoomForSchedule(String timeSlotId) {
+        List<RoomEntity> roomEntityList = roomRepository.findAvailableRooms(timeSlotId);
+        List<RoomResponse> responseList = new ArrayList<>();
+
+        for (RoomEntity room: roomEntityList) {
+            RoomResponse tempRoom = new RoomResponse();
+            tempRoom.setRoomId(room.getRoomId());
+            tempRoom.setRoomNumber(room.getRoomNumber());
+
+            responseList.add(tempRoom);
+        }
+        return responseList;
+    }
+
     @Override
     public RoomResponse getRoom(String roomId) {
         RoomEntity room = roomRepository.findById(roomId).orElseThrow(

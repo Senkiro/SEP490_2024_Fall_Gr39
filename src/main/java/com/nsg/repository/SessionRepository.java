@@ -41,10 +41,12 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
             "WHERE class_id = :classId " +
             "AND session_available = FALSE " +
             "AND status = FALSE " +
+            "AND session_week = :sessionWeek " +
             "ORDER BY date ASC, session_number ASC",
             nativeQuery = true)
     List<SessionEntity> findSessionsUnavailableByClassId(
-            @Param("classId") String classId);
+            @Param("classId") String classId,
+            @Param("sessionWeek") int sessionWeek );
 
     @Query(value = "SELECT DISTINCT s.* " +
             "FROM session s " +

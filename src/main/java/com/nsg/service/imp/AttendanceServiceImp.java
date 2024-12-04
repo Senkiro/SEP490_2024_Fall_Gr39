@@ -189,6 +189,8 @@ public class AttendanceServiceImp implements AttendanceService {
             attendanceResponse.setStudentResponse(studentResponse);
             attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
 
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
+
             responseList.add(attendanceResponse);
         }
 

@@ -247,11 +247,10 @@ public class SessionServiceImp implements SessionService {
 
             } else {
 
-                sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
-
                 //if time_slot_id = requestId -> set available is true
                 if (request.getTimeSlotId().equals(sessionCreattionRequest.getTimeSlotId())){
                     sessionCreattionRequest.setSessionAvailable(true);
+                    sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
                 } else {
                     sessionCreattionRequest.setSessionAvailable(false);
                 }
@@ -261,7 +260,6 @@ public class SessionServiceImp implements SessionService {
                     sessionNo++;
                 }
             }
-
             //if %count_ts = 0 then total day increase 1
             if (count_ts % 2 == 0) {
                 totalDay++;
@@ -286,6 +284,9 @@ public class SessionServiceImp implements SessionService {
         //fill session
         fillSession(class_id, curriculumnEntityList);
     }
+
+    //validate room
+
 
 
     //fill session: only fill available session
@@ -353,8 +354,8 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
-    public List<SessionResponse> getSessionUnavailable(String classId) {
-        List<SessionEntity> sessionEntities = sessionRepository.findSessionsUnavailableByClassId(classId);
+    public List<SessionResponse> getSessionUnavailable(String classId, int sessionWeek) {
+        List<SessionEntity> sessionEntities = sessionRepository.findSessionsUnavailableByClassId(classId, sessionWeek);
 
         return toListSessionResponse(sessionEntities);
     }
