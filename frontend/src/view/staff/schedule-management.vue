@@ -87,28 +87,31 @@
                   </div>
                 </td>
 
-                <!-- Hiển thị các cột bình thường -->
                 <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
                 <td id="teacher">
                   <template v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</template>
                   <template v-else>
-                    <select v-model="selectedTeacher[session.sessionId]" class="filter-select">
+                    <select v-model="selectedTeacher[session.sessionId]" class="filter-select"
+                            v-if="session.lessonResponse || session.eventName">
                       <option value="" disabled>Select Teacher</option>
                       <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
                         {{ teacher.name }}
                       </option>
                     </select>
+                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.fullName || "-" }}</template>
                   </template>
                 </td>
                 <td id="room">
                   <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</template>
                   <template v-else>
-                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
+                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select"
+                            v-if="session.lessonResponse || session.eventName">
                       <option value="" disabled>Select Room</option>
                       <option v-for="room in rooms" :key="room.number" :value="room.number">
                         {{ room.number }}
                       </option>
                     </select>
+                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.roomNumber || "-" }}</template>
                   </template>
                 </td>
                 <td id="lesson">
@@ -120,34 +123,26 @@
                 <td id="event">
                   <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</template>
                   <template v-else>
-                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select">
+                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
+                            v-if="!session.lessonResponse">
                       <option value="" disabled>Select Event</option>
                       <option v-for="event in events" :key="event.id" :value="event.id">
                         {{ event.title }}
                       </option>
                     </select>
+                    <template v-if="session.lessonResponse">{{ session.eventName || "-" }}</template>
                   </template>
                 </td>
                 <td>
-                  <template v-if="session.eventName || session.lessonResponse">
-                    <div v-if="!isEditing[session.sessionId]" class="icon-group">
-                      <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
-                      <VsxIcon
-                          iconName="ArrowSwapVertical"
-                          size="25"
-                          type="linear"
-                          @click="openChangeDatePopup(session.sessionId)"
-                      />
-
-                    </div>
-                    <div v-else class="icon-group">
-                      <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8"
-                        @click="editSession(session.sessionId)" />
-                      <!-- Cancel Button -->
-                      <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F"
-                        @click="cancelEdit(session.sessionId)" />
-                    </div>
-                  </template>
+                  <div v-if="!isEditing[session.sessionId]" class="icon-group">
+                    <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
+                  </div>
+                  <div v-else class="icon-group">
+                    <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8" @click="editSession(session.sessionId)" />
+                    <!-- Cancel Button -->
+                    <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F" @click="cancelEdit(session.sessionId)" />
+                  </div>
                 </td>
               </tr>
             </template>
