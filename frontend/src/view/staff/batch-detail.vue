@@ -19,7 +19,7 @@
       <div class="filters">
         <select id="class-filter" class="filter-select" v-model="selectedClass" @change="filterStudentsByClass">
           <option value="">All Class</option>
-          <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
+          <option v-for="classItem in classList" :key="classItem.id" :value="classItem.id">
             {{ classItem.name }}
           </option>
         </select>
@@ -485,20 +485,26 @@ export default {
 
     async searchStudent() {
       if (!this.searchQuery.trim()) {
-        await this.fetchStudent();
+        // Nếu không có từ khóa tìm kiếm, chỉ cần tải lại danh sách sinh viên dựa vào lớp được chọn (nếu có)
+        if (this.selectedClass) {
+          await this.filterStudentsByClass({ target: { value: this.selectedClass } });
+        } else {
+          await this.fetchStudent();
+        }
         return;
       }
+
       try {
         const token = sessionStorage.getItem('jwtToken');
+        const apiEndpoint = this.selectedClass
+            ? `http://localhost:8088/fja-fap/staff/search-student?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&class_id=${this.selectedClass}`
+            : `http://localhost:8088/fja-fap/staff/search-student?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}`;
 
-        const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/search-student?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+        const response = await axios.get(apiEndpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        });
 
         if (response.status === 200 && response.data.result) {
           this.students = response.data.result.content.map((item) => ({
@@ -514,11 +520,11 @@ export default {
             classResponse: item.classResponse || {},
           }));
 
-          // Cập nhật thông tin phân trang
+          // Cập nhật phân trang
           this.studentPagination.totalElements = response.data.result.totalElements;
           this.studentPagination.totalPages = Math.ceil(
-            this.studentPagination.totalElements /
-            this.studentPagination.itemsPerPage
+              this.studentPagination.totalElements /
+              this.studentPagination.itemsPerPage
           );
 
           this.updateStudentDisplayedPages();
@@ -545,7 +551,7 @@ export default {
           this.classes = await Promise.all(
             response.data.result.content.map(async (classItem) => {
               // Gọi API lấy số lượng sinh viên cho từng lớp
-              const studentCount = await this.fetchStudentCountByClass(classItem.className);
+              const studentCount = await this.fetchStudentCountByClass(classItem.classId);
               return {
                 id: classItem.classId || "Unknown ID",
                 name: classItem.className || "Unknown Name",
@@ -695,7 +701,7 @@ export default {
               page: this.studentPagination.currentPage - 1, // Phân trang
               size: this.studentPagination.itemsPerPage,
               batch_name: this.batchName, // Tên batch
-              class_name: selectedClass // Lớp được chọn
+              class_id: selectedClass // Lớp được chọn
             },
             headers: {
               Authorization: `Bearer ${token}`,
@@ -735,7 +741,7 @@ export default {
         const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-student-by-batch-class`, {
           params: {
             batch_name: this.batchName,
-            class_name: className,
+            class_id: className,
             page: 0, // Không cần phân trang khi đếm số lượng
             size: 1000
           },

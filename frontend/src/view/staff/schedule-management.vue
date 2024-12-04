@@ -226,27 +226,36 @@
           <b>From:</b>
           <div class="form-group">
             <label>Week: </label>
-            <div class="information"> Week 2 (dd/mm/yyyy - dd/mm/yyyy)</div>
+            <div class="information">
+              Week {{ selectedBatch.weeks.indexOf(selectedWeekFromSession) + 1 || "N/A" }}
+              ({{ selectedWeekFromSession?.start || "dd/mm/yyyy" }} - {{ selectedWeekFromSession?.end || "dd/mm/yyyy" }})
+            </div>
           </div>
           <div class="form-group">
             <label>Date: </label>
-            <div class="information"> Friday (dd/mm/yyyy)</div>
+            <div class="information">
+              {{ currentSession?.dayOfWeek || "dd/mm/yyyy" }} ({{ currentSession?.date || "dd/mm/yyyy" }})
+            </div>
           </div>
           <div class="form-group">
             <label>Slot: </label>
-            <div class="information"> Morning (8:30 - 12:30)</div>
+            <div class="information">
+              {{ currentSession?.timeSlotResponse?.name || "N/A" }} ({{ currentSession?.timeSlotResponse?.startTime || "hh:mm" }} - {{ currentSession?.timeSlotResponse?.endTime || "hh:mm" }})
+            </div>
           </div>
           <b>To:</b>
           <div class="form-group">
             <label for="Week">Week <span class="required">*</span></label>
             <div class="filters">
-              <select id="week-filter" class="filter-select">
-                <!-- Tuần đã qua bị disabled -->
-                <option disabled>
-                  Week 1 (2/9/2024 - 8/9/2024)
-                </option>
-                <option>
-                  Week 2 (9/9/2024 - 15/9/2024)
+              <select
+                  id="week-filter"
+                  class="filter-select"
+                  v-model="popupSelectedWeekIndex"
+                  @change="fetchUnavailableSessions"
+              >
+                <option value="" disabled>Select Week</option>
+                <option v-for="(week, index) in selectedBatch?.weeks" :key="index" :value="index">
+                  Week {{ index + 1 }} ({{ week.start }} to {{ week.end }})
                 </option>
               </select>
             </div>
@@ -255,13 +264,14 @@
           <div class="form-group">
             <label for="date">Date <span class="required">*</span></label>
             <div class="filters">
-              <select id="date-filter" class="filter-select">
-                <!-- Ngày từ hôm nay trở về trước bị disabled -->
-                <option disabled>
-                  Tuesday, 3/9/2024
-                </option>
-                <option>
-                  Wednesday, 4/9/2024
+              <select id="date-filter" class="filter-select" v-model="selectedDate">
+                <option value="" disabled>Select Date</option>
+                <option
+                    v-for="item in groupedUnavailableSessions"
+                    :key="item.date"
+                    :value="item.date"
+                >
+                  {{ new Date(item.date).toLocaleDateString("en-US", { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) }}
                 </option>
               </select>
             </div>
@@ -270,9 +280,13 @@
           <div class="form-group">
             <label for="time-slot">Slot <span class="required">*</span></label>
             <div class="filters">
-              <select id="time-slot-filter" class="filter-select" v-model="selectedTimeSlotId">
-                <!-- Time slot đã có lịch bị disabled -->
-                <option v-for="slot in timeSlots" :key="slot.id" :value="slot.id">
+              <select id="time-slot-filter" class="filter-select" v-model="selectedChangeDateTimeSlotId">
+                <option value="" disabled>Select Slot</option>
+                <option
+                    v-for="slot in groupedUnavailableSessions.find(item => item.date === selectedDate)?.slots || []"
+                    :key="slot.id"
+                    :value="slot.id"
+                >
                   {{ slot.name }} ({{ slot.start }} - {{ slot.end }})
                 </option>
               </select>
@@ -280,7 +294,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn-submit" type="submit"> Change</button>
+            <button class="btn-submit" type="button" @click="changeDate">Change</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error"></p>
@@ -332,6 +346,12 @@ export default {
         message: "",
         type: "" // "success" or "error"
       },
+      currentSession: null,
+      popupSelectedWeekIndex: null,
+      unavailableSessions: [],
+      selectedDate: null,
+      selectedChangeDateTimeSlotId: null,
+      groupedUnavailableSessions: [],
     };
   },
   methods: {
@@ -592,6 +612,7 @@ export default {
           return {
             curriculumnResponse: session.curriculumnResponse,
             sessionId: session.sessionId,
+            sessionWeek: session.sessionWeek,
             sessionNumber: session.sessionNumber,
             date: session.date,
             dayOfWeek: session.dayOfWeek,
@@ -770,8 +791,55 @@ export default {
         return;
       }
 
-      this.currentSessionId = sessionId; // Lưu lại sessionId hiện tại
+      this.currentSession = this.sessions.find((session) => session.sessionId === sessionId);
+
+      if (!this.currentSession) {
+        console.error("Session not found for the given ID:", sessionId);
+        return;
+      }
+
+      this.selectedWeekFromSession = this.selectedBatch?.weeks[this.selectedWeekIndex] || null;
+
       this.showChangeDatePopup = true; // Hiển thị popup đổi ngày
+    },
+    async fetchUnavailableSessions() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get("http://localhost:8088/fja-fap/staff/get-unavailable-session", {
+          params: {
+            class_id: this.selectedClassId,
+            sessionWeek: this.popupSelectedWeekIndex,
+          },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data && response.data.result) {
+          this.unavailableSessions = response.data.result;
+          this.processUnavailableSessions();
+        }
+      } catch (error) {
+        console.error("Error fetching unavailable sessions:", error);
+      }
+    },
+    processUnavailableSessions() {
+      const groupedByDate = this.unavailableSessions.reduce((acc, session) => {
+        const date = session.date;
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(session);
+        return acc;
+      }, {});
+
+      this.groupedUnavailableSessions = Object.entries(groupedByDate).map(([date, sessions]) => {
+        return {
+          date,
+          slots: sessions.map((session) => ({
+            id: session.timeSlotResponse.timeSLotId,
+            name: session.timeSlotResponse.name,
+            start: session.timeSlotResponse.startTime,
+            end: session.timeSlotResponse.endTime,
+          })),
+        };
+      });
     },
   },
   computed: {
@@ -788,7 +856,7 @@ export default {
         }
       });
       return grouped;
-    }
+    },
   },
   mounted() {
     this.fetchRooms();

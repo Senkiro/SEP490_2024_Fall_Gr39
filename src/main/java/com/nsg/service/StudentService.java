@@ -24,7 +24,7 @@ public interface StudentService {
     Page<StudentResponse> getStudentByBatchName(int page, int size, String batchName);
 
     //get student by batchName and className
-    Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size, String batchName, String className);
+    Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size, String batchName, String classId);
 
     StudentResponse convertToStudentResponse(StudentEntity studentEntity);
 
