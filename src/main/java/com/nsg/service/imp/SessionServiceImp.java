@@ -339,14 +339,25 @@ public class SessionServiceImp implements SessionService {
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
 
-        //get session by week
-
-        //get list of session by week and classId
         LocalDate startDate = LocalDate.parse(date);
 
-        //get session by classId
+        weekStart = 1;
+        int dateIncrease = 7;
+        weekEnd = 7;
 
-        //find session by: date, time_slot_id
+        //get session by week
+        while (weekStart < weekEnd) {
+
+            LocalDate dateOfSession = startDate.plusDays(dateIncrease);
+            //find session by: classId, date, time_slot_id
+            //get session: classId, date, timeSlotId
+            SessionEntity session = sessionRepository.findSessionsByDateTimeSlotClass(classId, String.valueOf(dateOfSession), timeSlotId);
+
+
+            weekStart++;
+            dateIncrease += 7;
+        }
+
 
     }
 
@@ -671,31 +682,31 @@ public class SessionServiceImp implements SessionService {
         }
 
         //room
-        if (request.getRoomNumber() != null) {
+        if (request.getRoomNumber() == null || request.getRoomNumber().isEmpty()) {
+            sessionEntity.setRoomEntity(null);
+        } else {
             RoomEntity room = roomRepository.findByRoomNumber(request.getRoomNumber()).orElseThrow(
                     () -> new AppException(ErrorCode.ROOM_NOT_FOUND)
             );
             sessionEntity.setRoomEntity(room);
-        } else {
-            sessionEntity.setRoomEntity(null);
         }
 
         //event
-        if (request.getEventId() != null) {
+        if (request.getEventId() == null || request.getEventId().isEmpty()) {
+            sessionEntity.setEventEntity(null);
+        } else {
             sessionEntity.setEventEntity(eventRepository.findByEventId(request.getEventId()).orElseThrow(
                     () -> new AppException(ErrorCode.EVENT_NOT_FOUND))
             );
-        } else {
-            sessionEntity.setEventEntity(null);
         }
 
         //teacher
-        if (request.getUserId() != null) {
+        if (request.getUserId() == null || request.getUserId().isEmpty()) {
+            sessionEntity.setUser(null);
+        } else {
             sessionEntity.setUser(userRepository.findById(request.getUserId()).orElseThrow(
                     () -> new AppException(ErrorCode.USER_NOT_FOUND)
             ));
-        } else {
-            sessionEntity.setUser(null);
         }
 
         //save
