@@ -173,11 +173,11 @@ export default {
           this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
           this.updateDisplayedPages();
         } else {
-          this.showNotification('Không thể tải danh sách giáo viên: ' + response.data.message, 'error');
+          this.showNotification('Can not get student list ' + response.data.message, 'error');
         }
       } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu giáo viên:', error);
-        this.showNotification('Đã xảy ra lỗi khi tải danh sách giáo viên.', 'error');
+        console.error('Can not get student list', error);
+        this.showNotification('Can not get student list.', 'error');
       }
     },
     viewTeacherDetail(teacher) {
@@ -212,7 +212,7 @@ export default {
         };
 
         this.fetchTeachers();
-        this.showNotification("Thêm giáo viên thành công!", "success");
+        this.showNotification("Add teacher success!", "success");
       } catch (error) {
         console.error('Lỗi khi thêm giáo viên:', error);
         const errorMessage = error.response && error.response.data && error.response.data.message

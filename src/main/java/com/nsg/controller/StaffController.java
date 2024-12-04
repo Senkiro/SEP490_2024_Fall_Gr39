@@ -903,7 +903,7 @@ public class StaffController {
     }
 
     //swap session
-    @GetMapping("/swap-to-unavailable-session")
+    @PostMapping("/swap-to-unavailable-session")
     public ApiResponse<?> swapToUnavailableSesssion(@RequestParam String currentSessionId,
                                                     @RequestParam String toSessionId) {
         sessionService.swapToUnavailableSession(currentSessionId, toSessionId);

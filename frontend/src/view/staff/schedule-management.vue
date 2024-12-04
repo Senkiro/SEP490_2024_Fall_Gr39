@@ -221,7 +221,7 @@
         <div class="popup-title">
           <h2>Change date</h2>
         </div>
-        <form @submit.prevent="changeDate">
+        <form>
           <!-- Thông tin hiện tại -->
           <b>From:</b>
           <div class="form-group">
@@ -294,7 +294,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn-submit" type="button" @click="changeDate">Change</button>
+            <button class="btn-submit" type="button" @click="swapSessions">Change</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error"></p>
@@ -735,7 +735,7 @@ export default {
         curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
         timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
         roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
-        eventId: this.selectedEventTable[sessionId] || sessionData.eventId || "",
+        eventId: this.selectedEventTable[sessionId] || sessionData.eventId  ||"",
         userId: this.selectedTeacher[sessionId] || sessionData.userId || "",
       };
 
@@ -841,6 +841,55 @@ export default {
         };
       });
     },
+    getSelectedToSessionId() {
+      // Tìm session không khả dụng dựa trên ngày và timeSlot
+      const selectedSession = this.unavailableSessions.find((session) => {
+        return (
+            session.date === this.selectedDate &&
+            session.timeSlotResponse.timeSLotId === this.selectedChangeDateTimeSlotId
+        );
+      });
+
+      return selectedSession ? selectedSession.sessionId : null; // Lấy sessionId nếu tìm thấy
+    },
+    async swapSessions() {
+      const currentSessionId = this.currentSession?.sessionId; // Lấy ID session hiện tại
+      const toSessionId = this.getSelectedToSessionId(); // Lấy ID session muốn chuyển đến
+
+      if (!currentSessionId || !toSessionId) {
+        console.error("Invalid session IDs for swapping.");
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.post(
+            `http://localhost:8088/fja-fap/staff/swap-to-unavailable-session`,
+            null,
+            {
+              params: { currentSessionId, toSessionId },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+
+        if (response.status === 200) {
+          console.log("Session swap successful:", response.data);
+          this.showChangeDatePopup = false;
+          this.selectedChangeDateTimeSlotId = null;
+          this.selectedDate = null;
+          this.popupSelectedWeekIndex = null;
+
+          this.showNotification("Session swap successfully!", "success");
+          this.fetchSessions();
+          // Có thể cập nhật lại danh sách sessions nếu cần
+        } else {
+          console.error("Failed to swap sessions:", response);
+        }
+      } catch (error) {
+        console.error("Error swapping sessions:", error);
+      }
+    },
+
   },
   computed: {
     groupedSessions() {
