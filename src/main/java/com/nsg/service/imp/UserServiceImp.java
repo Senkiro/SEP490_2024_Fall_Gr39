@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,9 @@ public class UserServiceImp implements UserService {
         user.setPassword(passwordEncoder.encode(defaultPassword));
         user.setRoles(role);
         user.setActive(true);
+
+        //set full name
+        user.setUsername(generateUsername(request.getFullName()));
 
         return userRepository.save(user);
     }
@@ -328,5 +332,29 @@ public class UserServiceImp implements UserService {
     @Override
     public Object search(Object request) {
         return null;
+    }
+
+    //create userName base on fullName
+    public static String generateUsername(String fullName) {
+        if (fullName == null || fullName.isEmpty()) {
+            throw new IllegalArgumentException("Full name cannot be null or empty");
+        }
+
+        // Loại bỏ dấu tiếng Việt
+        String normalized = Normalizer.normalize(fullName, Normalizer.Form.NFD);
+        String noAccent = normalized.replaceAll("\\p{M}", "");
+
+        // Loại bỏ các ký tự không phải chữ cái hoặc dấu cách
+        noAccent = noAccent.replaceAll("[^a-zA-Z\\s]", "");
+
+        // Loại bỏ khoảng trắng thừa và viết hoa chữ cái đầu mỗi từ
+        String[] words = noAccent.trim().split("\\s+");
+        StringBuilder username = new StringBuilder();
+        for (String word : words) {
+            username.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1).toLowerCase());
+        }
+
+        return username.toString();
     }
 }

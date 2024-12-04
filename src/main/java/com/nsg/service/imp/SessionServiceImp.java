@@ -327,16 +327,28 @@ public class SessionServiceImp implements SessionService {
     }
 
     //get session by session id and time_slot_id
+    //autofill teacher on session when update
+    public void autoFillTeacherToSession(String teacherId,
+                                         String classId,
+                                         String date,
+                                         String timeSlotId,
+                                         int weekStart,
+                                         int weekEnd) {
+        //get teacher
+        UserEntity teacher = userRepository.findById(teacherId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
 
+        //get session by week
 
-    //get available teacher for each session
+        //get list of session by week and classId
+        LocalDate startDate = LocalDate.parse(date);
 
-    //get all available session
+        //get session by classId
 
-    //get teacher list to add
+        //find session by: date, time_slot_id
 
-    //filter by week
-
+    }
 
     @Override
     public List<UserInforResponse> getAvailableTeachers(String sessionId) {
