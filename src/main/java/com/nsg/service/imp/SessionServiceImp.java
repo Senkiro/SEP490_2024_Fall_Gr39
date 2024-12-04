@@ -246,12 +246,11 @@ public class SessionServiceImp implements SessionService {
                 sessionCreattionRequest.setNote(checkHoliday(holidays, dateOfSession));
 
             } else {
-                //validate room
-                sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
 
                 //if time_slot_id = requestId -> set available is true
                 if (request.getTimeSlotId().equals(sessionCreattionRequest.getTimeSlotId())){
                     sessionCreattionRequest.setSessionAvailable(true);
+                    sessionCreattionRequest.setRoomNumber(request.getRoomNumber());
                 } else {
                     sessionCreattionRequest.setSessionAvailable(false);
                 }
@@ -261,7 +260,6 @@ public class SessionServiceImp implements SessionService {
                     sessionNo++;
                 }
             }
-
             //if %count_ts = 0 then total day increase 1
             if (count_ts % 2 == 0) {
                 totalDay++;
