@@ -652,14 +652,14 @@ public class SessionServiceImp implements SessionService {
             sessionEntity.setCurriculumnEntity(null);
         }
 
-        //time slot
-        if (!Objects.equals(request.getTimeSlotId(), "")) {
-            sessionEntity.setTimeSlotEntity(timeSlotRepository.findById(request.getTimeSlotId()).orElseThrow(
-                    () -> new AppException(ErrorCode.TIME_SLOT_NOT_FOUND))
-            );
-        } else {
-            sessionEntity.setTimeSlotEntity(null);
-        }
+//        //time slot
+//        if (!Objects.equals(request.getTimeSlotId(), "")) {
+//            sessionEntity.setTimeSlotEntity(timeSlotRepository.findById(request.getTimeSlotId()).orElseThrow(
+//                    () -> new AppException(ErrorCode.TIME_SLOT_NOT_FOUND))
+//            );
+//        } else {
+//            sessionEntity.setTimeSlotEntity(null);
+//        }
 
         //room
         if (!Objects.equals(request.getRoomNumber(), "")) {
