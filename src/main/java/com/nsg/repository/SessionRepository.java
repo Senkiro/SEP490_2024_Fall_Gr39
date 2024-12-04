@@ -90,7 +90,7 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
             "AND time_slot_id = :time_slot_id ",
             nativeQuery = true)
     SessionEntity findSessionsByDateTimeSlotClass(@Param("classId") String classId,
-                                                        @Param("date") Date date,
+                                                        @Param("date") String date,
                                                         @Param("time_slot_id") String time_slot_id);
 
 }
