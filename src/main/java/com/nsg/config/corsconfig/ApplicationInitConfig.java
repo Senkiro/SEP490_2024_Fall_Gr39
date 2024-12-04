@@ -27,6 +27,7 @@ public class ApplicationInitConfig {
                 UserEntity user = UserEntity.builder()
                         .username("adminEntity")
                         .password(passwordEncoder.encode("admin1"))
+                        .email("admin01@gmail.com")
                         .roles(UserRole.STAFF)
                         .isActive(true)
                         .build();

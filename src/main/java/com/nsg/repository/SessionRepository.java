@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -81,5 +82,15 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
             nativeQuery = true)
     List<SessionEntity> findSessionsAttendanceStatusAndTeacher(@Param("classId") String classId,
                                                                @Param("teacherId") String teacherId);
+
+    //find by date, time_slot_id, class_id
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND date = :date " +
+            "AND time_slot_id = :time_slot_id ",
+            nativeQuery = true)
+    SessionEntity findSessionsByDateTimeSlotClass(@Param("classId") String classId,
+                                                        @Param("date") Date date,
+                                                        @Param("time_slot_id") String time_slot_id);
 
 }

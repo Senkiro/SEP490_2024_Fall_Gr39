@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -88,13 +89,15 @@ public class ExcelHelper {
                 }
 
                 UserEntity user = new UserEntity();
-                user.setFullName(getStringCellValue(currentRow.getCell(1)));
+                String fullName = getStringCellValue(currentRow.getCell(1));
+                user.setFullName(fullName);
                 user.setJapaneseName(getStringCellValue(currentRow.getCell(2)));
                 user.setEmail(getStringCellValue(currentRow.getCell(3)));
                 user.setRole("STUDENT");
                 String defaultPassword = "12341234";
                 user.setPassword(passwordEncoder.encode(defaultPassword));
                 user.setActive(true);
+                user.setUsername(generateUsername(fullName));
 
                 Cell dobCell = currentRow.getCell(4);
                 if (dobCell != null && dobCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dobCell)) {
@@ -308,6 +311,29 @@ public class ExcelHelper {
         return exams.stream()
                 .filter(exam -> examTitle.equalsIgnoreCase(exam.getExamTitle()))
                 .findFirst();
+    }
+
+    public static String generateUsername(String fullName) {
+        if (fullName == null || fullName.isEmpty()) {
+            throw new IllegalArgumentException("Full name cannot be null or empty");
+        }
+
+        // Loại bỏ dấu tiếng Việt
+        String normalized = Normalizer.normalize(fullName, Normalizer.Form.NFD);
+        String noAccent = normalized.replaceAll("\\p{M}", "");
+
+        // Loại bỏ các ký tự không phải chữ cái hoặc dấu cách
+        noAccent = noAccent.replaceAll("[^a-zA-Z\\s]", "");
+
+        // Loại bỏ khoảng trắng thừa và viết hoa chữ cái đầu mỗi từ
+        String[] words = noAccent.trim().split("\\s+");
+        StringBuilder username = new StringBuilder();
+        for (String word : words) {
+            username.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1).toLowerCase());
+        }
+
+        return username.toString();
     }
 }
 
