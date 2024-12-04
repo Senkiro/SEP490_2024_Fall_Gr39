@@ -356,8 +356,8 @@ public class SessionServiceImp implements SessionService {
     }
 
     @Override
-    public List<SessionResponse> getSessionUnavailable(String classId) {
-        List<SessionEntity> sessionEntities = sessionRepository.findSessionsUnavailableByClassId(classId);
+    public List<SessionResponse> getSessionUnavailable(String classId, int sessionWeek) {
+        List<SessionEntity> sessionEntities = sessionRepository.findSessionsUnavailableByClassId(classId, sessionWeek);
 
         return toListSessionResponse(sessionEntities);
     }

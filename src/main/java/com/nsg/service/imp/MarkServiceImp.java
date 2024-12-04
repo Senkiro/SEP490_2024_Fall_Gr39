@@ -127,7 +127,16 @@ public class MarkServiceImp implements MarkService {
 
     @Override
     public void countAverageMark(String studentId) {
+        List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
 
+        Float totalMark = 0.0F;
+
+        for (MarkEntity mark : markEntityList) {
+            int rate = Integer.parseInt( mark.getExamEntity().getExamTypeRateEntity().getExamRate() );
+            totalMark = totalMark + ( mark.getMark() * rate / 100 );
+        }
+
+        System.out.println("Total mark: "+totalMark);
     }
 
     @Override

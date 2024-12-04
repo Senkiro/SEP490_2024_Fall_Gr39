@@ -23,7 +23,7 @@ public interface SessionService {
     List<UserInforResponse> getAvailableTeachers(String sessionId);
 
     //get unavailable session to change date
-    List<SessionResponse> getSessionUnavailable(String classId);
+    List<SessionResponse> getSessionUnavailable(String classId, int sessionWeek);
 
     //delete schedule
     void deleteSchedule(String class_id);
