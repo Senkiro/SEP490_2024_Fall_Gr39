@@ -183,10 +183,11 @@ public class AttendanceServiceImp implements AttendanceService {
             SessionEntity session = attendance.getSessionEntity();
 
             if (session.getUser() != null) {
-                attendanceResponse.setTeacher(session.getUser().getUsername());
+                attendanceResponse.setTeacherName(session.getUser().getFullName());
             }
 
             attendanceResponse.setStudentResponse(studentResponse);
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
 
             attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
 

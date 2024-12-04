@@ -11,7 +11,7 @@
     <div class="filters-actions">
       <div class="filters">
         <select v-model="selectedBatch" id="batch-filter" class="filter-select"
-                @change="fetchClassesByBatch(selectedBatch.batchName)">
+          @change="fetchClassesByBatch(selectedBatch.batchName)">
           <option value="" disabled>Select Batch</option>
           <option v-for="batch in batches" :key="batch.id" :value="batch">
             {{ batch.batchName }}
@@ -24,18 +24,15 @@
             {{ classItem.name }}
           </option>
         </select>
-
-        <div v-if="isLoadingClasses" class="loading-indicator">Loading classes...</div>
-
       </div>
 
       <div class="actions">
         <button @click="showAddSchedulePopup = true">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
           Create new schedule
         </button>
         <button>
-          <VsxIcon iconName="Trash" size="20" type="bold"/>
+          <VsxIcon iconName="Trash" size="20" type="bold" />
           Delete schedule
         </button>
       </div>
@@ -53,100 +50,111 @@
     <div class="table-container">
       <table>
         <thead>
-        <tr>
-          <th>Date</th>
-          <th>Slot</th>
-          <th>Teacher</th>
-          <th>Room</th>
-          <th>Lesson</th>
-          <th>Exam</th>
-          <th>Event</th>
-          <th>Action</th>
-        </tr>
+          <tr>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Teacher</th>
+            <th>Room</th>
+            <th>Lesson</th>
+            <th>Exam</th>
+            <th>Event</th>
+            <th>Action</th>
+          </tr>
         </thead>
         <tbody>
-        <template v-for="(sessions, date) in groupedSessions" :key="date">
-          <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
-            <!-- Cột Ngày -->
-            <td :rowspan="1">
-              <div class="schedule-date">
-                <h1>{{ new Date(date).getDate() }}</h1>
-                <p>{{ sessions[0].dayOfWeek }}</p>
-              </div>
-            </td>
-
-            <!-- Gộp các cột khi có note -->
-            <td colspan="7" class="note-content">
-              {{ sessions.find(session => session.note)?.note }}
-            </td>
-          </tr>
-          <template v-else>
-            <tr v-for="(session, index) in sessions" :key="session.sessionId">
+          <template v-for="(sessions, date) in groupedSessions" :key="date">
+            <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
               <!-- Cột Ngày -->
-              <td v-if="index === 0" :rowspan="sessions.length">
+              <td :rowspan="1">
                 <div class="schedule-date">
-                  <h1>{{ new Date(session.date).getDate() }}</h1>
-                  <p>{{ session.dayOfWeek }}</p>
+                  <h1>{{ new Date(date).getDate() }}</h1>
+                  <p>{{ sessions[0].dayOfWeek }}</p>
                 </div>
               </td>
 
-              <!-- Hiển thị các cột bình thường -->
-              <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
-              <td id="teacher">
-                <div v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</div>
-                <div v-else>
-                  <select v-model="selectedTeacher[session.sessionId]" class="filter-select">
-                    <option value="" disabled>Select Teacher</option>
-                    <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                      {{ teacher.name }}
-                    </option>
-                  </select>
-                </div>
-              </td>
-              <td id="room">
-                <div v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</div>
-                <div v-else>
-                  <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
-                    <option value="" disabled>Select Room</option>
-                    <option v-for="room in rooms" :key="room.number" :value="room.number">
-                      {{ room.number }}
-                    </option>
-                  </select>
-                </div>
-              </td>
-              <td id="lesson">
-                <div>{{ session.lessonResponse || "-" }}</div>
-              </td>
-              <td id="exam">
-                <div>{{ session.examResponse || "-" }}</div>
-              </td>
-              <td id="event">
-                <div v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</div>
-                <div v-else>
-                  <select v-model="selectedEventTable[session.sessionId]" class="filter-select">
-                    <option value="" disabled>Select Event</option>
-                    <option v-for="event in events" :key="event.id" :value="event.id">
-                      {{ event.title }}
-                    </option>
-                  </select>
-                </div>
-              </td>
-              <td>
-                <div v-if="!isEditing[session.sessionId]">
-                  <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
-                </div>
-                <div v-else>
-                  <VsxIcon iconName="TickCircle" size="25" type="linear" @click="editSession(session.sessionId)" />
-                  <!-- Cancel Button -->
-                  <VsxIcon iconName="CloseCircle" size="25" type="linear" @click="cancelEdit(session.sessionId)"/>
-                </div>
+              <!-- Gộp các cột khi có note -->
+              <td colspan="7" class="note-content">
+                {{ sessions.find(session => session.note)?.note }}
               </td>
             </tr>
+            <template v-else>
+              <tr v-for="(session, index) in sessions" :key="session.sessionId">
+                <!-- Cột Ngày -->
+                <td v-if="index === 0" :rowspan="sessions.length">
+                  <div class="schedule-date">
+                    <h1>{{ new Date(session.date).getDate() }}</h1>
+                    <p>{{ session.dayOfWeek }}</p>
+                  </div>
+                </td>
+
+                <!-- Hiển thị các cột bình thường -->
+                <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
+                <td id="teacher">
+                  <template v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</template>
+                  <template v-else>
+                    <select v-model="selectedTeacher[session.sessionId]" class="filter-select">
+                      <option value="" disabled>Select Teacher</option>
+                      <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
+                        {{ teacher.name }}
+                      </option>
+                    </select>
+                  </template>
+                </td>
+                <td id="room">
+                  <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</template>
+                  <template v-else>
+                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
+                      <option value="" disabled>Select Room</option>
+                      <option v-for="room in rooms" :key="room.number" :value="room.number">
+                        {{ room.number }}
+                      </option>
+                    </select>
+                  </template>
+                </td>
+                <td id="lesson">
+                  <div>{{ session.lessonResponse || "-" }}</div>
+                </td>
+                <td id="exam">
+                  <div>{{ session.examResponse || "-" }}</div>
+                </td>
+                <td id="event">
+                  <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</template>
+                  <template v-else>
+                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select">
+                      <option value="" disabled>Select Event</option>
+                      <option v-for="event in events" :key="event.id" :value="event.id">
+                        {{ event.title }}
+                      </option>
+                    </select>
+                  </template>
+                </td>
+                <td>
+                  <template v-if="session.eventName || session.lessonResponse">
+                    <div v-if="!isEditing[session.sessionId]" class="icon-group">
+                      <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                      <VsxIcon
+                          iconName="ArrowSwapVertical"
+                          size="25"
+                          type="linear"
+                          @click="openChangeDatePopup(session.sessionId)"
+                      />
+
+                    </div>
+                    <div v-else class="icon-group">
+                      <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8"
+                        @click="editSession(session.sessionId)" />
+                      <!-- Cancel Button -->
+                      <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F"
+                        @click="cancelEdit(session.sessionId)" />
+                    </div>
+                  </template>
+                </td>
+              </tr>
+            </template>
           </template>
-        </template>
-        <tr v-if="Object.keys(groupedSessions).length === 0">
-          <td colspan="8" class="center">No record.</td>
-        </tr>
+          <tr v-if="Object.keys(groupedSessions).length === 0">
+            <td colspan="8" class="center">No record.</td>
+          </tr>
         </tbody>
 
       </table>
@@ -155,7 +163,8 @@
     <div v-if="showAddSchedulePopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddSchedulePopup = false"/>
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold"
+            @click="showAddSchedulePopup = false" />
         </div>
         <div class="popup-title">
           <h2>Add Schedule</h2>
@@ -170,8 +179,6 @@
                   Room {{ room.number }}
                 </option>
               </select>
-
-              <div v-if="isLoadingRooms" class="loading-indicator">Loading rooms...</div>
             </div>
           </div>
           <div class="form-group">
@@ -183,7 +190,6 @@
                   {{ slot.name }} ({{ slot.start }} - {{ slot.end }})
                 </option>
               </select>
-              <div v-if="isLoadingTimeSlots" class="loading-indicator">Loading time slots...</div>
             </div>
           </div>
           <div class="form-group">
@@ -192,11 +198,10 @@
               <select id="curriculum-filter" class="filter-select" v-model="selectedCurriculumId">
                 <option value="" disabled>Select Curriculum</option>
                 <option v-for="curriculum in curriculums" :key="curriculum.curriculumListId"
-                        :value="curriculum.curriculumListId">
+                  :value="curriculum.curriculumListId">
                   {{ curriculum.curriculumTitle }}
                 </option>
               </select>
-              <div v-if="isLoadingCurriculums" class="loading-indicator">Loading curriculums...</div>
             </div>
           </div>
 
@@ -207,11 +212,85 @@
         <p v-if="errorMessage" class="error"></p>
       </div>
     </div>
+
+    <div v-if="showChangeDatePopup" class="popup-overlay">
+      <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showChangeDatePopup = false" />
+        </div>
+        <div class="popup-title">
+          <h2>Change date</h2>
+        </div>
+        <form @submit.prevent="changeDate">
+          <!-- Thông tin hiện tại -->
+          <b>From:</b>
+          <div class="form-group">
+            <label>Week: </label>
+            <div class="information"> Week 2 (dd/mm/yyyy - dd/mm/yyyy)</div>
+          </div>
+          <div class="form-group">
+            <label>Date: </label>
+            <div class="information"> Friday (dd/mm/yyyy)</div>
+          </div>
+          <div class="form-group">
+            <label>Slot: </label>
+            <div class="information"> Morning (8:30 - 12:30)</div>
+          </div>
+          <b>To:</b>
+          <div class="form-group">
+            <label for="Week">Week <span class="required">*</span></label>
+            <div class="filters">
+              <select id="week-filter" class="filter-select">
+                <!-- Tuần đã qua bị disabled -->
+                <option disabled>
+                  Week 1 (2/9/2024 - 8/9/2024)
+                </option>
+                <option>
+                  Week 2 (9/9/2024 - 15/9/2024)
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="date">Date <span class="required">*</span></label>
+            <div class="filters">
+              <select id="date-filter" class="filter-select">
+                <!-- Ngày từ hôm nay trở về trước bị disabled -->
+                <option disabled>
+                  Tuesday, 3/9/2024
+                </option>
+                <option>
+                  Wednesday, 4/9/2024
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="time-slot">Slot <span class="required">*</span></label>
+            <div class="filters">
+              <select id="time-slot-filter" class="filter-select" v-model="selectedTimeSlotId">
+                <!-- Time slot đã có lịch bị disabled -->
+                <option v-for="slot in timeSlots" :key="slot.id" :value="slot.id">
+                  {{ slot.name }} ({{ slot.start }} - {{ slot.end }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-submit" type="submit"> Change</button>
+          </div>
+        </form>
+        <p v-if="errorMessage" class="error"></p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 import axios from 'axios';
 
 export default {
@@ -237,6 +316,7 @@ export default {
       selectedCurriculumId: '',
       selectedEventId: '',
 
+      showChangeDatePopup: false,
       showEventListPopup: false,
       showAddSchedulePopup: false,
       isLoadingClasses: false,
@@ -259,15 +339,15 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/batch`, {
-              params: {
-                page: 0,
-                size: 1000
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/batch`, {
+          params: {
+            page: 0,
+            size: 1000
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
         this.batches = response.data.result.content.map(batch => {
           const start = new Date(batch.startTime);
@@ -304,16 +384,16 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
-              params: {
-                batch_name: batchName,
-                page: 0,
-                size: 100,
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
+          params: {
+            batch_name: batchName,
+            page: 0,
+            size: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
         if (response.data && response.data.result && response.data.result.content) {
           this.classes = response.data.result.content.map((classItem) => ({
@@ -337,11 +417,11 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-available-room/${sessionId}`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-available-room/${sessionId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
 
         // Map the API response to the rooms array
@@ -366,11 +446,11 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-all-room`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-all-room`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
 
         if (response.data && response.data.result) {
@@ -394,12 +474,12 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/time-slot-list`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/time-slot-list`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         // Ánh xạ chính xác từ `timeSLotId` sang `id`
@@ -427,15 +507,15 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken'); // Lấy token từ sessionStorage
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list`, {
-              params: {
-                page: 0,
-                size: 100,
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list`, {
+          params: {
+            page: 0,
+            size: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
 
         if (response.data && response.data) {
@@ -467,17 +547,17 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/create-schedule/${this.selectedClassId}`,
-            {
-              timeSlotId: this.selectedTimeSlotId,
-              roomNumber: this.selectedRoomId,
-              curriculumnListId: this.selectedCurriculumId
+          `http://localhost:8088/fja-fap/staff/create-schedule/${this.selectedClassId}`,
+          {
+            timeSlotId: this.selectedTimeSlotId,
+            roomNumber: this.selectedRoomId,
+            curriculumnListId: this.selectedCurriculumId
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          }
         );
 
         if (response.data && response.data.code === 0) {
@@ -505,7 +585,7 @@ export default {
             week: this.selectedWeekIndex,
             class_id: this.selectedClassId,
           },
-          headers: {Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
         });
         this.sessions = response.data.result.map((session) => {
           //console.log("Fetched session:", session);
@@ -563,7 +643,7 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get("http://localhost:8088/fja-fap/staff/event", {
-          params: {page: 0, size: 100},
+          params: { page: 0, size: 100 },
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -595,13 +675,13 @@ export default {
       if (!this.isEditing[sessionId]) {
         // Enter edit mode: Initialize temporary data
         this.selectedTeacher[sessionId] = this.sessions.find(
-            (session) => session.sessionId === sessionId
+          (session) => session.sessionId === sessionId
         )?.teacherId || null;
         this.selectedRoomTable[sessionId] = this.sessions.find(
-            (session) => session.sessionId === sessionId
+          (session) => session.sessionId === sessionId
         )?.roomId || null;
         this.selectedEventTable[sessionId] = this.sessions.find(
-            (session) => session.sessionId === sessionId
+          (session) => session.sessionId === sessionId
         )?.eventId || null;
 
         this.fetchAvailableTeachers(sessionId);
@@ -643,13 +723,13 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/update-session/${sessionId}`,
-            updatedData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/update-session/${sessionId}`,
+          updatedData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.data && response.data.code === 0) {
@@ -679,12 +759,20 @@ export default {
       this.isEditing[sessionId] = false;
     },
     showNotification(message, type) {
-      this.notification = {message, type};
+      this.notification = { message, type };
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
     },
+    openChangeDatePopup(sessionId) {
+      if (!sessionId) {
+        console.error("Session ID is invalid.");
+        return;
+      }
 
+      this.currentSessionId = sessionId; // Lưu lại sessionId hiện tại
+      this.showChangeDatePopup = true; // Hiển thị popup đổi ngày
+    },
   },
   computed: {
     groupedSessions() {
@@ -717,6 +805,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.information {
+  width: 250px;
+  font-size: 14px;
 }
 
 .table-container {

@@ -117,61 +117,60 @@ export default {
       return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
     },
     fetchSessions() {
-      const teacherId = sessionStorage.getItem("userId");
-      const token = sessionStorage.getItem("jwtToken");
+      return new Promise((resolve, reject) => {
+        const teacherId = sessionStorage.getItem("userId");
+        const token = sessionStorage.getItem("jwtToken");
 
-      if (!teacherId || !token) {
-        console.error("Token missing");
-        return;
-      }
+        if (!teacherId || !token) {
+          console.error("Token missing");
+          reject("Token missing");
+          return;
+        }
 
-      axios
-          .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then((response) => {
-            if (response.data.code === 0 && Array.isArray(response.data.result)) {
-              this.sessions = response.data.result;
-            } else {
-              console.error(
-                  "Lỗi khi fetch dữ liệu sessions:",
-                  response.data.message || "Lỗi không xác định"
-              );
-              this.sessions = []; // Đảm bảo luôn là mảng
-            }
-          })
-          .catch((error) => {
-            console.error("Lỗi khi gọi API:", error);
-            this.sessions = []; // Đảm bảo luôn là mảng
-          });
+        axios
+            .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+              if (response.data.code === 0 && Array.isArray(response.data.result)) {
+                this.sessions = response.data.result;
+                resolve(); // Thành công
+              } else {
+                console.error(
+                    "Lỗi khi fetch dữ liệu sessions:",
+                    response.data.message || "Lỗi không xác định"
+                );
+                this.sessions = [];
+                reject("Error fetching sessions");
+              }
+            })
+            .catch((error) => {
+              console.error("Lỗi khi gọi API:", error);
+              this.sessions = [];
+              reject(error); // Trả lỗi
+            });
+      });
     },
     getStatusClass(item) {
-      if (item.status) return "yes";
-      const sessionDate = new Date(item.date);
-      const today = new Date();
-      if (sessionDate > today) return "not-happen";
-      return "no";
+      const status = item.attendanceStatus;
+      if (status === "Attended") return "yes";
+      if (status === "Not happen") return "not-happen";
+      if (status === "Not taken") return "no";
+      return "";
     },
     getStatusText(item) {
-      if (item.status) return "Taken";
-      const sessionDate = new Date(item.date);
-      const today = new Date();
-      if (sessionDate > today) return "Not happen";
-      return "Not taken";
+      return item.attendanceStatus;
     },
     isActionDisabled(item) {
       const sessionDate = new Date(item.date);
       const today = new Date();
 
-      if (!item.lessonResponse || item.lessonResponse.lessonTitle === "N/A") {
-        return true;
-      }
-
-      //Nếu session chưa diễn ra hoặc cách ngày hôm nay hơn 2 ngày, nút bị vô hiệu hóa
+      // Nếu session đã qua 2 ngày hoặc chưa diễn ra, nút bị vô hiệu hóa
       if (sessionDate > today || (today - sessionDate) / (1000 * 60 * 60 * 24) > 2) {
         return true;
       }
 
+      return false; // Có thể nhấn nút
     },
     getActionText(item) {
       if (item.status) {
@@ -193,12 +192,45 @@ export default {
           session.status = true;
         }
       });
+    },
+    checkAndUpdateStatus() {
+      const today = new Date();
+      const todayFormatted = today.toISOString().split("T")[0];
+      this.sessions.forEach(session => {
+        const sessionDate = new Date(session.date).toISOString().split("T")[0];
+        if (session.attendanceStatus !== "Attended"  && sessionDate === todayFormatted ) {
+          axios.post(
+              `http://localhost:8088/fja-fap/staff/update-session-attendance-status/${session.sessionId}?new_status=Not taken`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`
+                }
+              }
+          )
+              .then(response => {
+                if (response.status === 200) {
+                  console.log(`Session ${session.sessionId} updated to 'Not taken'`);
+                  session.attendanceStatus = "Not taken";
+                } else {
+                  console.error(`Failed to update session ${session.sessionId}:`, response.data);
+                }
+              })
+              .catch(error => {
+                console.error(`Failed to update session ${session.sessionId}:`, error);
+              });
+        }
+      });
     }
-
   },
-  mounted() {
-    this.fetchSessions();
-  },
+  async mounted() {
+    try {
+      await this.fetchSessions(); // Đợi fetchSessions hoàn thành
+      this.checkAndUpdateStatus(); // Chỉ gọi khi fetchSessions đã xong
+    } catch (error) {
+      console.error("Error during mounted:", error);
+    }
+  }
 };
 </script>
 

@@ -28,9 +28,9 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
     // calculate attend number of one student
 
     @Query(value = "SELECT " +
-            "   COUNT(CASE WHEN status = 'attend' THEN 1 END) AS attendCount, " +
+            "   COUNT(CASE WHEN status = 'Attended' THEN 1 END) AS attendCount, " +
             "   COUNT(*) AS totalCount, " +
-            "   (COUNT(CASE WHEN status = 'attend' THEN 1 END) * 100.0 / COUNT(*)) AS attendPercentage " +
+            "   (COUNT(CASE WHEN status = 'Attended' THEN 1 END) * 100.0 / COUNT(*)) AS attendPercentage " +
             "FROM attendance " +
             "WHERE student_id = :studentId",
             nativeQuery = true)
