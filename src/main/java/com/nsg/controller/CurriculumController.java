@@ -5,17 +5,10 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.curriculumn.CurriculumnListRequest;
 import com.nsg.dto.request.curriculumn.CurriculumnRequest;
-import com.nsg.dto.request.exam.ExamRequest;
-import com.nsg.dto.request.exam.ExamTypeRequest;
-import com.nsg.dto.request.exam.ExamUpdateRequest;
-import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnListResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnResponse;
-import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamResponseForMark;
-import com.nsg.dto.response.exam.ExamTypeResponse;
-import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.entity.*;
 import com.nsg.service.*;
@@ -42,9 +35,6 @@ import java.util.Map;
 public class CurriculumController {
     @Autowired
     LessonService lessonService;
-
-    @Autowired
-    ExamTypeService examTypeService;
 
     @Autowired
     ExamService examService;
@@ -199,146 +189,5 @@ public class CurriculumController {
             @RequestParam int size) {
         Page<ExamResponseForMark> exams = examService.getExamsByStudent(studentId, page, size);
         return ResponseEntity.ok(exams);
-    }
-
-    /**********************************
-     * Manage Exam Type
-     **********************************/
-    //create exam type
-    @PostMapping("/create-exam-type")
-    public ApiResponse<ExamTypeResponse> createExamType(@RequestBody ExamTypeRequest request) {
-        return ApiResponse.<ExamTypeResponse>builder()
-                .result(examTypeService.createExamType(request))
-                .message("Create a new exam type rate successfully")
-                .build();
-    }
-
-    //get all exam type
-    @GetMapping("/get-all-exam-type")
-    public ApiResponse<List<ExamTypeResponse>> getAllExamType() {
-        return ApiResponse.<List<ExamTypeResponse>>builder()
-                .result(examTypeService.getAllExamType())
-                .build();
-    }
-
-    //get exam type by examType
-    @GetMapping("/get-exam-type")
-    public ApiResponse<ExamTypeResponse> getExamType(@RequestParam int examType) {
-        return ApiResponse.<ExamTypeResponse>builder()
-                .result(examTypeService.getExamType(examType))
-                .build();
-    }
-
-    //update exam type
-    @PostMapping("/update-exam-type")
-    public ApiResponse<ExamTypeResponse> updateExamType(@RequestParam int examType, @RequestBody ExamTypeRequest request) {
-        return ApiResponse.<ExamTypeResponse>builder()
-                .result(examTypeService.updateExamType(examType, request))
-                .message("Update exam type successfully!")
-                .build();
-    }
-
-    //delete exam type
-    @DeleteMapping("/delete-exam-type")
-    public ApiResponse<?> deleteExamType(@RequestParam int examType) {
-        examTypeService.deleteExamType(examType);
-        return ApiResponse.builder()
-                .message("Delete exam type successfully!")
-                .build();
-    }
-
-    /**********************************
-     * Manage Exam
-     **********************************/
-
-    //create new exam
-    @PostMapping("/create-exam")
-    public ApiResponse<?> createExam(@RequestBody ExamRequest request) {
-        examService.createExam(request);
-        return ApiResponse.builder()
-                .message("Create new exam successfully!")
-                .build();
-    }
-
-    //get all exam
-    @GetMapping("/get-all-exam")
-    public ApiResponse<List<ExamResponse>> getAllExam() {
-        return ApiResponse.<List<ExamResponse>>builder()
-                .result(examService.getAllExam())
-                .build();
-    }
-
-    //get exam by id
-    @GetMapping("/get-exam/{exam_id}")
-    public ApiResponse<ExamResponse> getExam(@PathVariable("exam_id") String exam_id) {
-        return ApiResponse.<ExamResponse>builder()
-                .result(examService.getExam(exam_id))
-                .build();
-    }
-
-    //update
-    @PostMapping("/update-exam/{exam_id}")
-    public ApiResponse<ExamResponse> updateExam(@PathVariable("exam_id") String exam_id, @RequestBody ExamUpdateRequest request) {
-        return ApiResponse.<ExamResponse>builder()
-                .result(examService.updateExam(exam_id, request))
-                .message("Update exam successfully!")
-                .build();
-    }
-
-    //delete
-    @DeleteMapping("/delete-exam/{exam_id}")
-    public ApiResponse<?> deleteExam(@PathVariable("exam_id") String exam_id) {
-        examService.deleteExam(exam_id);
-        return ApiResponse.builder()
-                .message("Delete exam successfully!")
-                .build();
-    }
-
-    /**********************************
-     * Manage Lesson
-     **********************************/
-
-    //get all
-    @GetMapping("/lesson")
-    ApiResponse<Page<LessonResponse>> getAllLesson(@RequestParam int page, @RequestParam int size) {
-        Page<LessonResponse> lessonEntityList = lessonService.getLessons(page, size);
-        return ApiResponse.<Page<LessonResponse>>builder()
-                .result(lessonEntityList)
-                .build();
-    }
-
-    //create new lesson
-    @PostMapping("/create-lesson")
-    ApiResponse<LessonEntity> createLesson(@RequestBody @Valid LessonCreateRequest request) {
-        lessonService.createLesson(request);
-        return ApiResponse.<LessonEntity>builder()
-                .message("A new lesson have been created!")
-                .build();
-    }
-
-    //get a lesson by id
-    @GetMapping("/get-lesson/{lesson_id}")
-    ApiResponse<LessonResponse> getLesson(@PathVariable("lesson_id") String lesson_id) {
-        return ApiResponse.<LessonResponse>builder()
-                .result(lessonService.getLesson(lesson_id))
-                .build();
-    }
-
-    //delete lesson
-    @DeleteMapping("/lesson/{lessonId}")
-    ApiResponse<?> deleteLesson(@PathVariable("lessonId") String lessonId) {
-        lessonService.deleteLesson(lessonId);
-        return ApiResponse.builder()
-                .message("Delete lesson successfully!")
-                .build();
-    }
-
-    //update lesson
-    @PostMapping("/update-lesson/{lessonId}")
-    ApiResponse<LessonEntity> updateLesson(@PathVariable("lessonId") String lessonId, @RequestBody LessonCreateRequest request) {
-        LessonEntity lesson = lessonService.updateLesson(lessonId, request);
-        return ApiResponse.<LessonEntity>builder()
-                .result(lesson)
-                .build();
     }
 }
