@@ -71,6 +71,10 @@ public enum ErrorCode {
     EVENT_EXISTED(1221, "Event existed!"),
     EVENT_NOT_FOUND(1222, "Event not found"),
 
+    //Event feedback
+    EVENT_FEED_BACK_RATE_IS_NULL(1223, "Event feed back rate can not be null!"),
+    EVENT_FEED_BACK_NOT_FOUND(1224, "Event feedback not found"),
+
     //news
     NEWS_NOT_FOUND(2000, "News not found"),
 

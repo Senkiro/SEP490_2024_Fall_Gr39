@@ -35,5 +35,7 @@ public interface StudentService {
     Page<StudentResponse> getStudentByClass(int page, int size, String studentId);
 
     Page<StudentResponse> getStudentByClassId(int page, int size, String classId);
+
+    void markUpdate(String studentId, float avgMark);
 }
 

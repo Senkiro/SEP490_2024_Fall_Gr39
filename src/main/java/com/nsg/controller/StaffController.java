@@ -10,6 +10,7 @@ import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.request.curriculumn.CurriculumnListRequest;
 import com.nsg.dto.request.curriculumn.CurriculumnRequest;
 import com.nsg.dto.request.event.EventUpdateRequest;
+import com.nsg.dto.request.eventFeedback.EventFeedbackCreattionRequest;
 import com.nsg.dto.request.exam.ExamRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.exam.ExamTypeRequest;
@@ -35,6 +36,7 @@ import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnListResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnResponse;
 import com.nsg.dto.response.event.EventResponse;
+import com.nsg.dto.response.eventFeedback.EventFeedbackResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.dto.response.exam.ExamTypeResponse;
@@ -136,6 +138,9 @@ public class StaffController {
     @Autowired
     MarkService markService;
 
+    @Autowired
+    EventFeedbackService eventFeedbackService;
+
 
     /**********************************
      * Manage Student
@@ -176,6 +181,7 @@ public class StaffController {
                                                                                  @RequestParam String batch_name,
                                                                                  @RequestParam String class_id) {
         Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_id);
+        markService.calculateAverageMark(class_id);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();
@@ -1262,7 +1268,7 @@ public class StaffController {
     //get mark list of a student
     @GetMapping("/get-student-mark/{student_id}")
     public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
-        markService.countAverageMark(student_id);
+        markService.calculateAverageMark(student_id);
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByStudent(student_id))
                 .build();
@@ -1291,6 +1297,74 @@ public class StaffController {
     public ApiResponse<List<MarkResponse>> getMarkByExamAndClass(@RequestParam int exam_id, @RequestParam String class_id) {
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByExamAndSessionClass(exam_id, class_id) )
+                .build();
+    }
+
+    /**********************************
+     * Manage Event Feedback
+     **********************************/
+    //create new event feedback
+    @PostMapping("/create-event-feedback")
+    public ApiResponse<?> createEventFeedback(@RequestBody @Valid EventFeedbackCreattionRequest request) {
+        eventFeedbackService.createEventFeedback(request);
+        return ApiResponse.builder()
+                .message("Create new event feedback successfully!")
+                .build();
+    }
+
+
+    //get all
+    @GetMapping("/get-all-event-feedback")
+    public ApiResponse<Page<EventFeedbackResponse>> getAllEventFeedback(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<EventFeedbackResponse>>builder()
+                .result( eventFeedbackService.getAllEventFeedback(page, size) )
+                .build();
+    }
+
+    //get one
+    @GetMapping("/get-event-feedback")
+    public ApiResponse<EventFeedbackResponse> getEventFeedback(@RequestParam String event_feedback_id) {
+        return ApiResponse.<EventFeedbackResponse>builder()
+                .result( eventFeedbackService.getEventFeedback(event_feedback_id) )
+                .build();
+    }
+
+    //get by event id
+    @GetMapping("/get-event-feedback-by-event")
+    public ApiResponse<Page<EventFeedbackResponse>> getEventFeedbackByEvent(@RequestParam String event_id,
+                                                                            @RequestParam int page,
+                                                                            @RequestParam int size) {
+        return ApiResponse.<Page<EventFeedbackResponse>>builder()
+                .result( eventFeedbackService.getEventFeedbackOfOneEvent(event_id, page, size) )
+                .build();
+    }
+
+    //get by student id
+    @GetMapping("/get-event-feedback-by-student")
+    public ApiResponse<Page<EventFeedbackResponse>> getEventFeedbackByStudent(@RequestParam String student_id,
+                                                                            @RequestParam int page,
+                                                                            @RequestParam int size) {
+        return ApiResponse.<Page<EventFeedbackResponse>>builder()
+                .result( eventFeedbackService.getEventFeedbackOfOneStudent(student_id, page, size) )
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-event-feedback")
+    public ApiResponse<EventFeedbackResponse> updateEventFeedback(@RequestParam String event_feedback_id,
+                                                                  @RequestBody @Valid EventFeedbackCreattionRequest request) {
+        eventFeedbackService.updateEventFeedback(event_feedback_id, request);
+        return ApiResponse.<EventFeedbackResponse>builder()
+                .message("Update event feedback successfully!")
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-event-feedback")
+    public ApiResponse<?> deleteEventFeedback(@RequestParam String event_feedback_id) {
+        eventFeedbackService.deleteEventFeedback(event_feedback_id);
+        return ApiResponse.builder()
+                .message("Delete event feedback successfully!")
                 .build();
     }
 
