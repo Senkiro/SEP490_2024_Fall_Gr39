@@ -1,5 +1,6 @@
 package com.nsg.dto.response.student;
 
+import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import lombok.*;
@@ -24,4 +25,7 @@ public class StudentResponse {
 
     //class
     ClassResponse classResponse;
+
+    //Attendance statistic
+    AttendanceStatisticsResponse attendanceStatisticsResponse;
 }

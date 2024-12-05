@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -88,13 +89,15 @@ public class ExcelHelper {
                 }
 
                 UserEntity user = new UserEntity();
-                user.setFullName(getStringCellValue(currentRow.getCell(1)));
+                String fullName = getStringCellValue(currentRow.getCell(1));
+                user.setFullName(fullName);
                 user.setJapaneseName(getStringCellValue(currentRow.getCell(2)));
                 user.setEmail(getStringCellValue(currentRow.getCell(3)));
                 user.setRole("STUDENT");
                 String defaultPassword = "12341234";
                 user.setPassword(passwordEncoder.encode(defaultPassword));
                 user.setActive(true);
+                user.setUsername(generateUsername(fullName));
 
                 Cell dobCell = currentRow.getCell(4);
                 if (dobCell != null && dobCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dobCell)) {
@@ -124,46 +127,46 @@ public class ExcelHelper {
         List<LessonEntity> lessons = new ArrayList<>();
         List<ExamEntity> exams = new ArrayList<>();
         List<CurriculumnEntity> curriculumns = new ArrayList<>();
-//        CurriculumnEntity curriculumn = new CurriculumnEntity();
 
         try (Workbook workbook = new XSSFWorkbook(is)) {
 
+            // Kiểm tra số lượng sheet
             if (workbook.getNumberOfSheets() < 2) {
-                throw new IllegalStateException("Excel file must have at least 2 sheets: Lessons and Exams");
+                throw new AppException(ErrorCode.NUMBER_SHEET);
             }
 
-            // Process Lessons from the first sheet
+            // Kiểm tra và xử lý Lesson Sheet
             Sheet lessonSheet = workbook.getSheetAt(0);
             if (lessonSheet == null) {
-                throw new IllegalStateException("Lesson sheet is null");
+                throw new AppException(ErrorCode.LESSON_SHEET_MISSING);
             }
             processLessonSheet(lessonSheet, lessons);
 
-            // Process Exams from the second sheet
+            // Kiểm tra và xử lý Exam Sheet
             Sheet examSheet = workbook.getSheetAt(1);
             if (examSheet == null) {
-                throw new IllegalStateException("Exam sheet is null");
+                throw new AppException(ErrorCode.EXAM_SHEET_MISSING);
             }
             processExamSheet(examSheet, exams);
 
-            // Process Curriculumns from the third sheet
-            Sheet curriculumnSheet = workbook.getSheetAt(2);
-            if (curriculumnSheet == null) {
-                throw new IllegalStateException("Curriculumn sheet is null");
+            // Kiểm tra và xử lý Curriculumn
+            if (workbook.getNumberOfSheets() > 2) {
+                Sheet curriculumnSheet = workbook.getSheetAt(2);
+                if (curriculumnSheet == null) {
+                    throw new AppException(ErrorCode.CURRICULUMN_LIST_NOT_FOUND);
+                }
+                processCurriculumnSheet(curriculumnSheet, curriculumns, lessons, exams);
             }
-            processCurriculumnSheet(
-                    curriculumnSheet,
-                    curriculumns,
-                    lessons,
-                    exams);
 
+            // Lưu kết quả vào map
             result.put("lessons", lessons);
             result.put("exams", exams);
             result.put("curriculumns", curriculumns);
 
+        } catch (AppException e) {
+            System.err.println("Error: " + e.getErrorCode().getMessage());
+            throw e;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e);
             throw new AppException(ErrorCode.PARSE_ERROR);
         }
 
@@ -308,6 +311,29 @@ public class ExcelHelper {
         return exams.stream()
                 .filter(exam -> examTitle.equalsIgnoreCase(exam.getExamTitle()))
                 .findFirst();
+    }
+
+    public static String generateUsername(String fullName) {
+        if (fullName == null || fullName.isEmpty()) {
+            throw new IllegalArgumentException("Full name cannot be null or empty");
+        }
+
+        // Loại bỏ dấu tiếng Việt
+        String normalized = Normalizer.normalize(fullName, Normalizer.Form.NFD);
+        String noAccent = normalized.replaceAll("\\p{M}", "");
+
+        // Loại bỏ các ký tự không phải chữ cái hoặc dấu cách
+        noAccent = noAccent.replaceAll("[^a-zA-Z\\s]", "");
+
+        // Loại bỏ khoảng trắng thừa và viết hoa chữ cái đầu mỗi từ
+        String[] words = noAccent.trim().split("\\s+");
+        StringBuilder username = new StringBuilder();
+        for (String word : words) {
+            username.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1).toLowerCase());
+        }
+
+        return username.toString();
     }
 }
 

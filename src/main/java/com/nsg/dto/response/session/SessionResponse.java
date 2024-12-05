@@ -21,12 +21,16 @@ public class SessionResponse {
     String sessionId;
 
     int sessionNumber;
+
     int sessionWeek;
+
     DayOfWeek dayOfWeek;
 
     LocalDate date;
 
     boolean status;
+
+    boolean sessionAvailable;
 
     ClassResponse classResponse;
 
@@ -39,6 +43,16 @@ public class SessionResponse {
     String eventName;
 
     String fullName;
+
     String email;
 
+    String note;
+
+    String markStatus;
+
+    String attendanceStatus;
+  
+    String userId;
+
+    String eventId;
 }

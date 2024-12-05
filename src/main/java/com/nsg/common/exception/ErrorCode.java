@@ -6,6 +6,7 @@ public enum ErrorCode {
     INVALID_KEY(1002,"Invalid message key!"),
     USER_NOT_EXISTED(1007,"User not existed!"),
     INVALID_LOGINRQ(1008,"Wrong username or password "),
+    PASSWORD_NOT_MATCHED(10081,"Old password not matched!"),
     INVALID_ACCBAN(1009,"Your account has been locked !"),
     USER_NOT_FOUND(1010, "User not found"),
     INVALID_PASSWORD(1012, "Password must be at least 8 characters!"),
@@ -48,13 +49,15 @@ public enum ErrorCode {
     EXAM_TYPE_EXISTED(1161, "Exam type already existed!"),
     EXAM_NOT_FOUND(1162, "Exam not found!"),
     EXAM_TITLE_EXISTED(1163, "Exam title already existed!"),
+    EXAM_LIST_IS_EMPTY(1164, "Exam list is empty"),
+    EXAM_NOT_EXIST(1165, "Exam not exist!"),
 
     //Class
     CLASS_NAME_IS_NULL(1180, "Class name can not be null!"),
     CLASS_COLOUR_IS_NULL(1181, "Class colour can not be null!"),
     CLASS_NOT_FOUND(1182, "Class not found!"),
     CLASS_NAME_EXISTED(1183, "Class name already existed!"),
-    STUDENT_LIST_IS_EMPTY(1184, "Student list is empty!"),
+    STUDENT_LIST_IS_EMPTY(1184, "Student in class is empty!"),
 
 
     //Lesson
@@ -83,6 +86,7 @@ public enum ErrorCode {
 
     //attendance
     ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
+    NO_DATA_ATTENDANCE(1301, "No data attendance found for student"),
 
     //curriculumn
     CURRICULUMN_NOT_FOUND(1320, "Curriculumn not found!"),
@@ -90,11 +94,23 @@ public enum ErrorCode {
     CURRICULUMN_LIST_NOT_FOUND(1340, "Curriculumn list not found!"),
     CURRICULUMN_LIST_TITLE_EXISTED(1341, "Curriculumn list title already existed!"),
 
+    //mark
+    MARK_NOT_FOUND(1360, "Mark not found!"),
+    MARK_LIST_EMPTY(1361, "There are no mark!"),
+    MIN_VALUE_MARK(1362, "Mark must be at least 0.0"),
+    MAX_VALUE_MARK(1363, "Mark must not exceed 10.0"),
+    MARK_NOT_NULL(1364, "Mark must not be null"),
+    MARK_EXISTED(1365, "Mark already exists for this student and exam."),
+
+
     //holiday
     HOLIDAY_NOT_FOUND(2100, "Holiday not found"),
 
     //Excel
-    PARSE_ERROR(1230,"Failed to parse Excel file" );
+    PARSE_ERROR(1230,"Failed to parse Excel file" ),
+    NUMBER_SHEET(1231, "Excel file must have at least 2 sheets: Lessons and Exams."),
+    LESSON_SHEET_MISSING(1232, "Lesson sheet is missing"),
+    EXAM_SHEET_MISSING(1233, "Exam sheet is missing");
 
     ErrorCode(int code, String message) {
         this.code = code;

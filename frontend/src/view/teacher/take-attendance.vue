@@ -135,7 +135,7 @@ export default {
 
       // Kiểm tra học sinh chưa được điểm danh
       const unmarkedStudents = this.students.filter(
-          (student) => student.status === "incoming"
+          (student) => student.status === "Not happen"
       );
 
       if (unmarkedStudents.length > 0) {
@@ -203,21 +203,21 @@ export default {
         classId: classId,
       };
       axios
-          .post(`http://localhost:8088/fja-fap/staff/update-session/${this.sessionId}`, payload, {
+          .post(`http://localhost:8088/fja-fap/staff/update-session-attendance-status/${this.sessionId}?new_status=Attended`, payload, {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((response) => {
             if (response.data.code === 0) {
               console.log("Session status updated successfully.");
-              this.showNotification("Session marked as complete.", "success");
+              return true;
             } else {
               console.error("Failed to update session status:", response.data.message);
-              this.showNotification("Failed to update session status.", "error");
+              return false;
             }
           })
           .catch((error) => {
             console.error("Error updating session status:", error);
-            this.showNotification("An error occurred while updating the session.", "error");
+            return false;
           });
     },
 

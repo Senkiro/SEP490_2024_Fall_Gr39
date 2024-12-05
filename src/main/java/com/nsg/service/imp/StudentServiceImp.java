@@ -7,6 +7,7 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
+import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
@@ -14,10 +15,8 @@ import com.nsg.entity.BatchEntity;
 import com.nsg.entity.ClassEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
-import com.nsg.repository.BatchRepository;
-import com.nsg.repository.ClassRepository;
-import com.nsg.repository.StudentRepository;
-import com.nsg.repository.UserRepository;
+import com.nsg.repository.*;
+import com.nsg.service.AttendanceService;
 import com.nsg.service.StudentService;
 import com.nsg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,9 @@ public class StudentServiceImp implements StudentService {
 
     @Autowired
     ClassRepository classRepository;
+
+    @Autowired
+    AttendanceRepository attendanceRepository;
 
     @Override
     public StudentResponse createStudent(StudentCreattionRequest request) {
@@ -90,54 +92,18 @@ public class StudentServiceImp implements StudentService {
         Page<StudentEntity> studentEntityList = studentRepository.findAll(PageRequest.of(page, size));
 
         //generate list for response
-        List<StudentResponse> studentListResponse = new ArrayList<>();
-
-        //for
-        for (StudentEntity student : studentEntityList) {
-            StudentResponse studentResponse = new StudentResponse();
-            //get,set rollNumber
-            studentResponse.setRollNumber(student.getRollNumber());
-            studentResponse.setStudentId(student.getStudentId());
-
-            //map user to UserInforResponse
-            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
-            //set user
-            studentResponse.setUserInforResponse(userInforResponse);
-
-            //set batch
-            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
-
-            //set class
-            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
-
-            //add to response list
-            studentListResponse.add(studentResponse);
-        }
+        List<StudentResponse> studentListResponse = toStudentResponseList(studentEntityList.getContent());
 
         return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
     }
 
     @Override
     public StudentResponse getStudent(String studentId) {
-        StudentResponse response = new StudentResponse();
-
         StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow(
                 () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
         );
 
-        response.setRollNumber(studentEntity.getRollNumber());
-        response.setStudentId(studentEntity.getStudentId());
-
-        //set user
-        response.setUserInforResponse(UserMapper.INSTANCE.toUserInforResponse(studentEntity.getUser()));
-
-        //set batch
-        response.setBatchName(studentEntity.getBatchEntity().getBatchName());
-
-        //set class
-        response.setClassResponse(ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()));
-
-        return response;
+        return convertToStudentResponse(studentEntity);
     }
 
     //get student by batchName
@@ -153,29 +119,7 @@ public class StudentServiceImp implements StudentService {
         Page<StudentEntity> studentEntityList = studentRepository.findByBatchEntityBatchName(batchName, PageRequest.of(page, size));
 
         //generate list for response
-        List<StudentResponse> studentListResponse = new ArrayList<>();
-
-        //for
-        for (StudentEntity student : studentEntityList) {
-            StudentResponse studentResponse = new StudentResponse();
-            //get,set rollNumber
-            studentResponse.setRollNumber(student.getRollNumber());
-            studentResponse.setStudentId(student.getStudentId());
-
-            //map user to UserInforResponse
-            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
-            //set user
-            studentResponse.setUserInforResponse(userInforResponse);
-
-            //set batch
-            studentResponse.setBatchName(student.getBatchEntity().getBatchName());
-
-            //set class
-            studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
-
-            //add to response list
-            studentListResponse.add(studentResponse);
-        }
+        List<StudentResponse> studentListResponse = toStudentResponseList(studentEntityList.getContent());
 
         return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
     }
@@ -183,22 +127,22 @@ public class StudentServiceImp implements StudentService {
     @Override
     public Page<StudentResponse> getStudentByBatchNameAndClassName(int page, int size,
                                                                    String batchName,
-                                                                   String className) {
+                                                                   String classId) {
         //check batch existed
         if (batchRepository.findByBatchName(batchName).isEmpty()) {
             throw new AppException(ErrorCode.BATCH_NOT_EXISTED);
         }
 
         //check class existed
-        if (classRepository.findByClassName(className) == null) {
+        if (classRepository.findByClassId(classId) == null) {
             throw new AppException(ErrorCode.CLASS_NOT_FOUND);
         }
 
         //find all student
         Page<StudentEntity> studentEntityList =
-                studentRepository.findByBatchEntityBatchNameAndClassEntityClassName(
+                studentRepository.findByBatchEntityBatchNameAndClassEntityClassId(
                         batchName,
-                        className,
+                        classId,
                         PageRequest.of(page, size));
 
         //generate list for response
@@ -253,6 +197,7 @@ public class StudentServiceImp implements StudentService {
 
         return studentResponse;
     }
+
 
     //generate random roll number
     public String generateRollNumber(){
@@ -319,6 +264,35 @@ public class StudentServiceImp implements StudentService {
         }
         Page<StudentEntity> studentEntityList = studentRepository.findByClassEntityClassId(classId,PageRequest.of(page, size));
 
+        List<StudentResponse> studentListResponse = toStudentResponseList(studentEntityList.getContent());
+
+        return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
+
+    }
+
+    @Override
+    public Page<StudentResponse> getStudentByClassId(int page, int size, String classId) {
+        //check class existed
+        if (classRepository.findByClassId(classId) == null) {
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+
+        //find all student
+        Page<StudentEntity> studentEntityList =
+                studentRepository.findByClassEntityClassId(
+                        classId,
+                        PageRequest.of(page, size));
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = toStudentResponseListWithAttendanceStatistic(studentEntityList.getContent());
+
+        return new PageImpl<>(studentListResponse,
+                studentEntityList.getPageable(),
+                studentEntityList.getTotalElements());
+    }
+
+    //convert data to list of student response
+    public List<StudentResponse> toStudentResponseList(List<StudentEntity> studentEntityList) {
         List<StudentResponse> studentListResponse = new ArrayList<>();
 
         for (StudentEntity student : studentEntityList) {
@@ -341,28 +315,13 @@ public class StudentServiceImp implements StudentService {
             //add to response list
             studentListResponse.add(studentResponse);
         }
-
-        return new PageImpl<>(studentListResponse, studentEntityList.getPageable(), studentEntityList.getTotalElements());
-
+        return studentListResponse;
     }
 
-    @Override
-    public Page<StudentResponse> getStudentByClassId(int page, int size, String classId) {
-        //check class existed
-        if (classRepository.findByClassId(classId) == null) {
-            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
-        }
-
-        //find all student
-        Page<StudentEntity> studentEntityList =
-                studentRepository.findByClassEntityClassId(
-                        classId,
-                        PageRequest.of(page, size));
-
-        //generate list for response
+    //convert data to list of student response BUT: with attendance statistics information
+    public List<StudentResponse> toStudentResponseListWithAttendanceStatistic(List<StudentEntity> studentEntityList) {
         List<StudentResponse> studentListResponse = new ArrayList<>();
 
-        //for
         for (StudentEntity student : studentEntityList) {
             StudentResponse studentResponse = new StudentResponse();
             //get,set rollNumber
@@ -370,8 +329,7 @@ public class StudentServiceImp implements StudentService {
             studentResponse.setStudentId(student.getStudentId());
 
             //map user to UserInforResponse
-            UserInforResponse userInforResponse =
-                    UserMapper.INSTANCE.toUserInforResponse(student.getUser());
+            UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(student.getUser());
             //set user
             studentResponse.setUserInforResponse(userInforResponse);
 
@@ -381,12 +339,35 @@ public class StudentServiceImp implements StudentService {
             //set class
             studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
 
+            //get attendance statistics
+            AttendanceStatisticsResponse attendanceStatisticsResponse = getDataAttendanceStatisticsResponse(student.getStudentId());
+
+            studentResponse.setAttendanceStatisticsResponse(attendanceStatisticsResponse);
+
             //add to response list
             studentListResponse.add(studentResponse);
         }
-
-        return new PageImpl<>(studentListResponse,
-                studentEntityList.getPageable(),
-                studentEntityList.getTotalElements());
+        return studentListResponse;
     }
+
+    public AttendanceStatisticsResponse getDataAttendanceStatisticsResponse(String studentId) {
+        List<Object[]> result = attendanceRepository.getAttendanceStatistics(studentId);
+
+        AttendanceStatisticsResponse attendanceStatisticsResponse = new AttendanceStatisticsResponse();
+
+        if (result.isEmpty()) {
+            throw new AppException(ErrorCode.NO_DATA_ATTENDANCE);
+        }
+
+        Object[] row = result.get(0);
+        long attendCount = ((Number) row[0]).longValue();
+        long totalCount = ((Number) row[1]).longValue();
+        double attendPercentage = ((Number) row[2]).doubleValue();
+
+        attendanceStatisticsResponse.setAttendCount(attendCount);
+        attendanceStatisticsResponse.setTotalCount(totalCount);
+        attendanceStatisticsResponse.setAttendPercentage(attendPercentage);
+        return attendanceStatisticsResponse;
+    }
+
 }

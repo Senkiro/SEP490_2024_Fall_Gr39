@@ -14,6 +14,11 @@ public interface RoomService {
     //get all room
     List<RoomResponse> getAllRoom();
 
+    //get available room for session
+    List<RoomResponse> getAvailableRoomForSession(String sessionId);
+
+    List<RoomResponse> getAvailableRoomForSchedule(String timeSlotId);
+
     //get a room by id
     RoomResponse getRoom(String roomId);
 

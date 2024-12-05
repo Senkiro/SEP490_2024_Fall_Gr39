@@ -1,12 +1,10 @@
 package com.nsg.controller;
 
 import com.nsg.dto.response.ApiResponse;
-import com.nsg.dto.response.curriculumn.CurriculumnResponse;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.holiday.HolidayResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.student.StudentResponse;
-import com.nsg.entity.EventEntity;
 import com.nsg.entity.NewEntity;
 import com.nsg.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

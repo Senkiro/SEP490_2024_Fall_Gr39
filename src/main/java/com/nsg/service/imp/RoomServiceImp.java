@@ -6,7 +6,9 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.entity.RoomEntity;
+import com.nsg.entity.SessionEntity;
 import com.nsg.repository.RoomRepository;
+import com.nsg.repository.SessionRepository;
 import com.nsg.service.RoomService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class RoomServiceImp implements RoomService {
     @Autowired
     RoomRepository roomRepository;
 
+    @Autowired
+    SessionRepository sessionRepository;
+
     @Override
     public RoomResponse createRoom(RoomRequest request) {
         RoomEntity room = new RoomEntity();
@@ -32,6 +37,42 @@ public class RoomServiceImp implements RoomService {
     @Override
     public List<RoomResponse> getAllRoom() {
         List<RoomEntity> roomEntityList = roomRepository.findAll();
+        List<RoomResponse> responseList = new ArrayList<>();
+
+        for (RoomEntity room: roomEntityList) {
+            RoomResponse tempRoom = new RoomResponse();
+            tempRoom.setRoomId(room.getRoomId());
+            tempRoom.setRoomNumber(room.getRoomNumber());
+
+            responseList.add(tempRoom);
+        }
+        return responseList;
+    }
+
+    @Override
+    public List<RoomResponse> getAvailableRoomForSession(String sessionId) {
+
+        SessionEntity session = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        List<RoomEntity> roomEntityList = roomRepository.findAvailableRooms(session.getDate(), session.getTimeSlotEntity().getTimeSlotId());
+        List<RoomResponse> responseList = new ArrayList<>();
+
+        for (RoomEntity room: roomEntityList) {
+            RoomResponse tempRoom = new RoomResponse();
+            tempRoom.setRoomId(room.getRoomId());
+            tempRoom.setRoomNumber(room.getRoomNumber());
+
+            responseList.add(tempRoom);
+        }
+        return responseList;
+    }
+
+    //get available room for each schedule
+    @Override
+    public List<RoomResponse> getAvailableRoomForSchedule(String timeSlotId) {
+        List<RoomEntity> roomEntityList = roomRepository.findAvailableRooms(timeSlotId);
         List<RoomResponse> responseList = new ArrayList<>();
 
         for (RoomEntity room: roomEntityList) {

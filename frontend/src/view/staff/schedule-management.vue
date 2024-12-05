@@ -4,34 +4,35 @@
       <h1>Schedule Management</h1>
     </div>
 
+    <div v-if="notification.message" class="notification" :class="notification.type">
+      {{ notification.message }}
+    </div>
+
     <div class="filters-actions">
       <div class="filters">
         <select v-model="selectedBatch" id="batch-filter" class="filter-select"
-                @change="fetchClassesByBatch(selectedBatch.batchName)">
+          @change="fetchClassesByBatch(selectedBatch.batchName)">
           <option value="" disabled>Select Batch</option>
           <option v-for="batch in batches" :key="batch.id" :value="batch">
             {{ batch.batchName }}
           </option>
         </select>
 
-        <select id="class-filter" class="filter-select" v-model="selectedClassId">
+        <select id="class-filter" class="filter-select" v-model="selectedClassId" @change="fetchSessions">
           <option value="" disabled>Select Class</option>
           <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
             {{ classItem.name }}
           </option>
         </select>
-
-        <div v-if="isLoadingClasses" class="loading-indicator">Loading classes...</div>
-
       </div>
 
       <div class="actions">
         <button @click="showAddSchedulePopup = true">
-          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
+          <VsxIcon iconName="AddCircle" size="20" type="bold" />
           Create new schedule
         </button>
         <button>
-          <VsxIcon iconName="Trash" size="20" type="bold"/>
+          <VsxIcon iconName="Trash" size="20" type="bold" />
           Delete schedule
         </button>
       </div>
@@ -49,220 +50,106 @@
     <div class="table-container">
       <table>
         <thead>
-        <tr>
-          <th>Date</th>
-          <th>Slot</th>
-          <th>Teacher</th>
-          <th>Room</th>
-          <th>Lesson</th>
-          <th>Exam</th>
-          <th>Event</th>
-          <th>Action</th>
-        </tr>
+          <tr>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Teacher</th>
+            <th>Room</th>
+            <th>Lesson</th>
+            <th>Exam</th>
+            <th>Event</th>
+            <th>Action</th>
+          </tr>
         </thead>
         <tbody>
-        <template v-for="session in sessions" :key="session.sessionId">
-          <!-- Hàng Sáng -->
-          <tr>
-            <!-- Cột Ngày (chỉ hiển thị ở hàng đầu tiên trong ngày) -->
-            <td v-if="!session.morningProcessed" :rowspan="2">
-              <div class="schedule-date">
-                <h1>{{ new Date(session.date).getDate() }}</h1>
-                <p>{{ session.dayOfWeek }}</p>
-              </div>
-            </td>
-            <!-- Cột Slot -->
-            <td>Morning</td>
-            <!-- Dữ liệu nếu Slot là Morning -->
-            <td id="teacher">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.fullName || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedTeacher[session.sessionId]"
-                        @change="assignTeacher(session.sessionId, selectedTeacher[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Teacher</option>
-                  <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                    {{ teacher.name }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="room">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.roomNumber || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedRoomTable[session.sessionId]"
-                        @change="assignRoom(session.sessionId, selectedRoomTable[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Room</option>
-                  <option v-for="room in rooms" :key="room.id" :value="room.id">
-                    Room {{ room.number }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-
-            <td>{{
-                session.timeSlotResponse?.name === "Morning" ? session.lessonResponse || "N/A" :
-                    "N/A"
-              }}
-            </td>
-            <td id="exam">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.examResponse || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedExamTable[session.sessionId]"
-                    @change="assignExam(session.sessionId, selectedExamTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Exam</option>
-                  <option v-for="exam in exams" :key="exam.id" :value="exam.id">
-                    {{ exam.title }} ({{ exam.type }} - {{ exam.rate }}%)
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="event">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.eventName || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedEventTable[session.sessionId]"
-                    @change="assignEvent(session.sessionId, selectedEventTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Event</option>
-                  <option v-for="event in events" :key="event.id" :value="event.id">
-                    {{ event.title }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td>
-              <div v-if="!isEditing[session.sessionId]">
-                <div class="button-group">
-                  <VsxIcon iconName="Edit2" size="25" type="linear"
-                           @click="toggleEdit(session.sessionId)"/>
-                  <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
+          <template v-for="(sessions, date) in groupedSessions" :key="date">
+            <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
+              <!-- Cột Ngày -->
+              <td :rowspan="1">
+                <div class="schedule-date">
+                  <h1>{{ new Date(date).getDate() }}</h1>
+                  <p>{{ sessions[0].dayOfWeek }}</p>
                 </div>
-              </div>
-              <div v-else>
-                <VsxIcon iconName="TickCircle" size="25" type="linear"
-                         @click="toggleEdit(session.sessionId)"/>
-              </div>
-            </td>
+              </td>
+
+              <!-- Gộp các cột khi có note -->
+              <td colspan="7" class="note-content">
+                {{ sessions.find(session => session.note)?.note }}
+              </td>
+            </tr>
+            <template v-else>
+              <tr v-for="(session, index) in sessions" :key="session.sessionId">
+                <!-- Cột Ngày -->
+                <td v-if="index === 0" :rowspan="sessions.length">
+                  <div class="schedule-date">
+                    <h1>{{ new Date(session.date).getDate() }}</h1>
+                    <p>{{ session.dayOfWeek }}</p>
+                  </div>
+                </td>
+
+                <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
+                <td id="teacher">
+                  <template v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</template>
+                  <template v-else>
+                    <select v-model="selectedTeacher[session.sessionId]" class="filter-select"
+                            v-if="session.lessonResponse || session.eventName">
+                      <option value="" disabled>Select Teacher</option>
+                      <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
+                        {{ teacher.name }}
+                      </option>
+                    </select>
+                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.fullName || "-" }}</template>
+                  </template>
+                </td>
+                <td id="room">
+                  <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</template>
+                  <template v-else>
+                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select"
+                            v-if="session.lessonResponse || session.eventName">
+                      <option value="" disabled>Select Room</option>
+                      <option v-for="room in rooms" :key="room.number" :value="room.number">
+                        {{ room.number }}
+                      </option>
+                    </select>
+                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.roomNumber || "-" }}</template>
+                  </template>
+                </td>
+                <td id="lesson">
+                  <div>{{ session.lessonResponse || "-" }}</div>
+                </td>
+                <td id="exam">
+                  <div>{{ session.examResponse || "-" }}</div>
+                </td>
+                <td id="event">
+                  <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</template>
+                  <template v-else>
+                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
+                            v-if="!session.lessonResponse">
+                      <option value="" disabled>Select Event</option>
+                      <option v-for="event in events" :key="event.id" :value="event.id">
+                        {{ event.title }}
+                      </option>
+                    </select>
+                    <template v-if="session.lessonResponse">{{ session.eventName || "-" }}</template>
+                  </template>
+                </td>
+                <td>
+                  <div v-if="!isEditing[session.sessionId]" class="icon-group">
+                    <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
+                  </div>
+                  <div v-else class="icon-group">
+                    <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8" @click="editSession(session.sessionId)" />
+                    <!-- Cancel Button -->
+                    <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F" @click="cancelEdit(session.sessionId)" />
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </template>
+          <tr v-if="Object.keys(groupedSessions).length === 0">
+            <td colspan="8" class="center">No record.</td>
           </tr>
-
-          <!-- Hàng Chiều -->
-          <tr>
-            <!-- Slot Chiều -->
-            <td>Afternoon</td>
-            <!-- Dữ liệu nếu Slot là Afternoon -->
-            <td id="teacher">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.teacherName || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedTeacher[session.sessionId]"
-                        @change="assignTeacher(session.sessionId, selectedTeacher[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Teacher</option>
-                  <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                    {{ teacher.name }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="room">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.roomName || "N/A" }}
-              </div>
-              <div v-else>
-                <select v-model="selectedRoomTable[session.sessionId]"
-                        @change="assignRoom(session.sessionId, selectedRoomTable[session.sessionId])"
-                        class="filter-select">
-                  <option value="" disabled>Select Room</option>
-                  <option v-for="room in rooms" :key="room.id" :value="room.id">
-                    Room {{ room.number }}
-                  </option>
-                </select>
-              </div>
-            </td>
-            <td>{{
-                session.timeSlotResponse?.name === "Afternoon" ? session.lessonResponse || "N/A" :
-                    "N/A"
-              }}
-            </td>
-            <td id="exam">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.examResponse || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedExamTable[session.sessionId]"
-                    @change="assignExam(session.sessionId, selectedExamTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Exam</option>
-                  <option v-for="exam in exams" :key="exam.id" :value="exam.id">
-                    {{ exam.title }} ({{ exam.type }} - {{ exam.rate }}%)
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td id="event">
-              <div v-if="!isEditing[session.sessionId]">
-                {{ session.eventName || "N/A" }}
-              </div>
-              <div v-else>
-                <select
-                    v-model="selectedEventTable[session.sessionId]"
-                    @change="assignEvent(session.sessionId, selectedEventTable[session.sessionId])"
-                    class="filter-select"
-                >
-                  <option value="" disabled>Select Event</option>
-                  <option v-for="event in events" :key="event.id" :value="event.id">
-                    {{ event.title }}
-                  </option>
-                </select>
-              </div>
-            </td>
-
-            <td>
-              <div v-if="!isEditing[session.sessionId]">
-                <div class="button-group">
-                  <VsxIcon
-                      iconName="Edit2"
-                      size="25"
-                      type="linear"
-                      @click="session.sessionId ? toggleEdit(session.sessionId) : console.error('Session ID is undefined')"
-                  />
-
-                  <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"/>
-                </div>
-              </div>
-              <div v-else>
-                <VsxIcon iconName="TickCircle" size="25" type="linear"
-                         @click="toggleEdit(session.sessionId)"/>
-              </div>
-            </td>
-          </tr>
-        </template>
-        <tr v-if="sessions.length === 0">
-          <td colspan="8" class="center">No record.</td>
-        </tr>
         </tbody>
 
       </table>
@@ -271,7 +158,8 @@
     <div v-if="showAddSchedulePopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddSchedulePopup = false" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold"
+            @click="showAddSchedulePopup = false" />
         </div>
         <div class="popup-title">
           <h2>Add Schedule</h2>
@@ -286,8 +174,6 @@
                   Room {{ room.number }}
                 </option>
               </select>
-
-              <div v-if="isLoadingRooms" class="loading-indicator">Loading rooms...</div>
             </div>
           </div>
           <div class="form-group">
@@ -299,7 +185,6 @@
                   {{ slot.name }} ({{ slot.start }} - {{ slot.end }})
                 </option>
               </select>
-              <div v-if="isLoadingTimeSlots" class="loading-indicator">Loading time slots...</div>
             </div>
           </div>
           <div class="form-group">
@@ -308,11 +193,10 @@
               <select id="curriculum-filter" class="filter-select" v-model="selectedCurriculumId">
                 <option value="" disabled>Select Curriculum</option>
                 <option v-for="curriculum in curriculums" :key="curriculum.curriculumListId"
-                        :value="curriculum.curriculumListId">
+                  :value="curriculum.curriculumListId">
                   {{ curriculum.curriculumTitle }}
                 </option>
               </select>
-              <div v-if="isLoadingCurriculums" class="loading-indicator">Loading curriculums...</div>
             </div>
           </div>
 
@@ -323,11 +207,99 @@
         <p v-if="errorMessage" class="error"></p>
       </div>
     </div>
+
+    <div v-if="showChangeDatePopup" class="popup-overlay">
+      <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showChangeDatePopup = false" />
+        </div>
+        <div class="popup-title">
+          <h2>Change date</h2>
+        </div>
+        <form>
+          <!-- Thông tin hiện tại -->
+          <b>From:</b>
+          <div class="form-group">
+            <label>Week: </label>
+            <div class="information">
+              Week {{ selectedBatch.weeks.indexOf(selectedWeekFromSession) + 1 || "N/A" }}
+              ({{ selectedWeekFromSession?.start || "dd/mm/yyyy" }} - {{ selectedWeekFromSession?.end || "dd/mm/yyyy" }})
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Date: </label>
+            <div class="information">
+              {{ currentSession?.dayOfWeek || "dd/mm/yyyy" }} ({{ currentSession?.date || "dd/mm/yyyy" }})
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Slot: </label>
+            <div class="information">
+              {{ currentSession?.timeSlotResponse?.name || "N/A" }} ({{ currentSession?.timeSlotResponse?.startTime || "hh:mm" }} - {{ currentSession?.timeSlotResponse?.endTime || "hh:mm" }})
+            </div>
+          </div>
+          <b>To:</b>
+          <div class="form-group">
+            <label for="Week">Week <span class="required">*</span></label>
+            <div class="filters">
+              <select
+                  id="week-filter"
+                  class="filter-select"
+                  v-model="popupSelectedWeekIndex"
+                  @change="fetchUnavailableSessions"
+              >
+                <option value="" disabled>Select Week</option>
+                <option v-for="(week, index) in selectedBatch?.weeks" :key="index" :value="index">
+                  Week {{ index + 1 }} ({{ week.start }} to {{ week.end }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="date">Date <span class="required">*</span></label>
+            <div class="filters">
+              <select id="date-filter" class="filter-select" v-model="selectedDate">
+                <option value="" disabled>Select Date</option>
+                <option
+                    v-for="item in groupedUnavailableSessions"
+                    :key="item.date"
+                    :value="item.date"
+                >
+                  {{ new Date(item.date).toLocaleDateString("en-US", { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="time-slot">Slot <span class="required">*</span></label>
+            <div class="filters">
+              <select id="time-slot-filter" class="filter-select" v-model="selectedChangeDateTimeSlotId">
+                <option value="" disabled>Select Slot</option>
+                <option
+                    v-for="slot in groupedUnavailableSessions.find(item => item.date === selectedDate)?.slots || []"
+                    :key="slot.id"
+                    :value="slot.id"
+                >
+                  {{ slot.name }} ({{ slot.start }} - {{ slot.end }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-submit" type="button" @click="swapSessions">Change</button>
+          </div>
+        </form>
+        <p v-if="errorMessage" class="error"></p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import {VsxIcon} from "vue-iconsax";
+import { VsxIcon } from "vue-iconsax";
 import axios from 'axios';
 
 export default {
@@ -339,30 +311,42 @@ export default {
     return {
       batches: [],
       classes: [],
-      selectedBatch: '',
-      showEventListPopup: false,
-      showAddSchedulePopup: false,
-      isLoadingClasses: false,
       rooms: [],
-      selectedRoom: '',
-      isLoadingRooms: false,
+      sessions: [],
+      teachers: [],
+      curriculums: [],
       timeSlots: [],
+
+      selectedBatch: '',
       selectedTimeSlot: '',
-      isLoadingTimeSlots: false,
       selectedClassId: '',
       selectedRoomId: '',
       selectedTimeSlotId: '',
-      sessions: [],
-      teachers: [],
+      selectedCurriculumId: '',
+      selectedEventId: '',
+
+      showChangeDatePopup: false,
+      showEventListPopup: false,
+      showAddSchedulePopup: false,
+      isLoadingClasses: false,
+      isLoadingRooms: false,
+      isLoadingCurriculums: false,
+
       selectedTeacher: {},
       selectedRoomTable: {},
-      isEditing: {},
-      curriculums: [],
-      selectedCurriculumId: '',
-      isLoadingCurriculums: false,
-      selectedEventId: "",
       selectedEventTable: {},
-      selectedExamTable: {},
+      isEditing: {},
+
+      notification: {
+        message: "",
+        type: "" // "success" or "error"
+      },
+      currentSession: null,
+      popupSelectedWeekIndex: null,
+      unavailableSessions: [],
+      selectedDate: null,
+      selectedChangeDateTimeSlotId: null,
+      groupedUnavailableSessions: [],
     };
   },
   methods: {
@@ -370,15 +354,15 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/batch`, {
-              params: {
-                page: 0,
-                size: 1000
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/batch`, {
+          params: {
+            page: 0,
+            size: 1000
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
         this.batches = response.data.result.content.map(batch => {
           const start = new Date(batch.startTime);
@@ -415,16 +399,16 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
-              params: {
-                batch_name: batchName,
-                page: 0,
-                size: 100,
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
+          params: {
+            batch_name: batchName,
+            page: 0,
+            size: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
         if (response.data && response.data.result && response.data.result.content) {
           this.classes = response.data.result.content.map((classItem) => ({
@@ -443,19 +427,47 @@ export default {
         this.isLoadingClasses = false;
       }
     },
+    async fetchAvailableRooms(sessionId) {
+      this.isLoadingRooms = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+          `http://localhost:8088/fja-fap/staff/get-available-room/${sessionId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+        );
+
+        // Map the API response to the rooms array
+        if (response.data && response.data.result) {
+          this.rooms = response.data.result.map((room) => ({
+            id: room.roomId,
+            number: room.roomNumber,
+          }));
+        } else {
+          console.error('Unexpected response structure:', response.data);
+          this.rooms = [];
+        }
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+        this.rooms = [];
+      } finally {
+        this.isLoadingRooms = false;
+      }
+    },
     async fetchRooms() {
       this.isLoadingRooms = true;
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-all-room`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-all-room`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
 
-        // Map the API response to the rooms array
         if (response.data && response.data.result) {
           this.rooms = response.data.result.map((room) => ({
             id: room.roomId,
@@ -477,12 +489,12 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/time-slot-list`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/time-slot-list`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         // Ánh xạ chính xác từ `timeSLotId` sang `id`
@@ -510,15 +522,15 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken'); // Lấy token từ sessionStorage
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list`, {
-              params: {
-                page: 0,
-                size: 100,
-              },
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list`, {
+          params: {
+            page: 0,
+            size: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
         );
 
         if (response.data && response.data) {
@@ -543,37 +555,37 @@ export default {
       console.log('Room ID:', this.selectedRoomId);
       console.log('Time Slot ID:', this.selectedTimeSlotId);
       if (!this.selectedClassId || !this.selectedRoomId || !this.selectedTimeSlotId || !this.selectedCurriculumId) {
-        //alert('Please select a class, room, and time slot before submitting.');
+        alert('Please select batch, class, room, time slot and curiculumn before submitting.');
         return;
       }
 
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/create-schedule/${this.selectedClassId}`,
-            {
-              timeSlotId: this.selectedTimeSlotId,
-              roomNumber: this.selectedRoomId,
-              curriculumnListId: this.selectedCurriculumId
+          `http://localhost:8088/fja-fap/staff/create-schedule/${this.selectedClassId}`,
+          {
+            timeSlotId: this.selectedTimeSlotId,
+            roomNumber: this.selectedRoomId,
+            curriculumnListId: this.selectedCurriculumId
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          }
         );
 
         if (response.data && response.data.code === 0) {
-          //alert('Schedule created successfully!');
+          this.showNotification('Schedule created successfully!', 'success');
           this.selectedRoomId = '';
           this.selectedTimeSlotId = '';
           this.selectedCurriculumId = '';
         } else {
-          //alert('Failed to create the schedule. Please try again.');
+          this.showNotification('Failed to create the schedule. Please try again.', 'error');
         }
       } catch (error) {
         console.error('Error creating schedule:', error);
-        //alert('An error occurred while creating the schedule.');
+        this.showNotification(error.response?.data?.message, 'error');
       }
     },
     async fetchSessions() {
@@ -585,74 +597,69 @@ export default {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get("http://localhost:8088/fja-fap/staff/get-session-week", {
           params: {
-            week: this.selectedWeekIndex, // Chỉ số tuần
-            class_id: this.selectedClassId, // ID lớp
+            week: this.selectedWeekIndex,
+            class_id: this.selectedClassId,
           },
-          headers: {Authorization: `Bearer ${token}`},
+          headers: { Authorization: `Bearer ${token}` },
         });
-        this.sessions = response.data.result.map((session) => ({
-          date: session.date,
-          dayOfWeek: session.dayOfWeek,
-          timeSlotResponse: session.timeSlotResponse,
-          fullName: session.fullName,
-          roomNumber: session.roomNumber,
-          lessonResponse: session.curriculumnResponse?.lessonResponse?.lessonTitle,
-          examResponse: session.curriculumnResponse?.examResponse?.examTitle,
-          eventName: session.eventName,
-        }));
-        console.log("Fetched Sessions:", this.sessions);
+        this.sessions = response.data.result.map((session) => {
+          //console.log("Fetched session:", session);
+          return {
+            curriculumnResponse: session.curriculumnResponse,
+            sessionId: session.sessionId,
+            sessionWeek: session.sessionWeek,
+            sessionNumber: session.sessionNumber,
+            date: session.date,
+            dayOfWeek: session.dayOfWeek,
+            timeSlotResponse: session.timeSlotResponse,
+            fullName: session.fullName,
+            roomNumber: session.roomNumber,
+            lessonResponse: session.curriculumnResponse?.lessonResponse?.lessonTitle,
+            examResponse: session.curriculumnResponse?.examResponse?.examTitle,
+            eventName: session.eventName,
+            note: session.note,
+            eventId: session.eventId,
+            userId: session.userId,
+
+          };
+        });
       } catch (error) {
         console.error("Error fetching sessions:", error);
       }
     },
-    async fetchTeachers() {
-      try {
-        const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get("http://localhost:8088/fja-fap/staff/teacher", {
-          params: {page: 0, size: 100},
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        this.teachers = response.data.result.teachers.map((teacher) => ({
-          id: teacher.id,
-          name: teacher.fullName,
-        }));
-      } catch (error) {
-        console.error("Error fetching teachers:", error);
-        //alert("Failed to fetch teacher data. Please try again.");
+    async fetchAvailableTeachers(sessionId) {
+      if (!sessionId) {
+        console.error("sessionId không hợp lệ");
+        return;
       }
-    },
-    async fetchExams() {
+
       try {
         const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get("http://localhost:8088/fja-fap/staff/get-all-exam", {
+        const response = await axios.get(`http://localhost:8088/fja-fap/staff/get-available-teacher/${sessionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.data && response.data.result) {
-          this.exams = response.data.result.map(exam => ({
-            id: exam.examId,
-            title: exam.examTitle,
-            type: exam.examTypeRate.examName,
-            rate: exam.examTypeRate.examRate,
+          this.teachers = response.data.result.map((teacher) => ({
+            id: teacher.userId,
+            name: teacher.fullName,
           }));
         } else {
           console.error("Unexpected response structure:", response.data);
-          this.exams = [];
+          this.teachers = [];
         }
       } catch (error) {
-        console.error("Error fetching exams:", error);
+        console.error("Error fetching available teachers:", error);
+        this.teachers = [];
       }
     },
     async fetchEvents() {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get("http://localhost:8088/fja-fap/staff/event", {
-          params: {page: 0, size: 100},
+          params: { page: 0, size: 100 },
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -676,85 +683,230 @@ export default {
       }
     },
     toggleEdit(sessionId) {
-      if (!Object.hasOwn(this.isEditing, sessionId)) {
-        this.isEditing = {
-          ...this.isEditing,
-          [sessionId]: false,
-        };
+      if (!sessionId) {
+        console.error("Invalid sessionId");
+        return;
       }
 
+      if (!this.isEditing[sessionId]) {
+        // Enter edit mode: Initialize temporary data
+        this.selectedTeacher[sessionId] = this.sessions.find(
+          (session) => session.sessionId === sessionId
+        )?.teacherId || null;
+        this.selectedRoomTable[sessionId] = this.sessions.find(
+          (session) => session.sessionId === sessionId
+        )?.roomId || null;
+        this.selectedEventTable[sessionId] = this.sessions.find(
+          (session) => session.sessionId === sessionId
+        )?.eventId || null;
+
+        this.fetchAvailableTeachers(sessionId);
+        this.fetchAvailableRooms(sessionId);
+      }
+
+      // Toggle edit mode
       this.isEditing[sessionId] = !this.isEditing[sessionId];
     },
-    assignTeacher(sessionId, teacherId) {
-      console.log(`Assign teacher ${teacherId} to session ${sessionId}`);
-      this.toggleEdit(sessionId);
-    },
-    assignRoom(sessionId, roomId) {
-      console.log(`Assign room ${roomId} to session ${sessionId}`);
-      this.toggleEdit(sessionId);
-    },
-    async assignEvent(sessionId, eventId) {
-      console.log(`Assign event ${eventId} to session ${sessionId}`);
+    async editSession(sessionId) {
+      if (!sessionId) {
+        console.error("Invalid session ID");
+        return;
+      }
+
+      const sessionData = this.sessions.find((session) => session.sessionId === sessionId);
+      if (!sessionData) {
+        console.error("Session data not found for sessionId:", sessionId);
+        return;
+      }
+
+      console.log(sessionData);
+
+      const updatedData = {
+        date: sessionData.date,
+        status: 0,
+        sessionNumber: sessionData.sessionNumber,
+        sessionWeek: this.selectedWeekIndex,
+        sessionAvailable: sessionData.sessionAvailable || 1,
+        curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
+        timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
+        roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
+        eventId: this.selectedEventTable[sessionId] || sessionData.eventId  ||"",
+        userId: this.selectedTeacher[sessionId] || sessionData.userId || "",
+      };
+
+      console.log("Updated Data:", updatedData);
+
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/assign-event`,
-            {
-              sessionId: sessionId,
-              eventId: eventId,
+          `http://localhost:8088/fja-fap/staff/update-session/${sessionId}`,
+          updatedData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          }
         );
 
         if (response.data && response.data.code === 0) {
-          console.log("Event assigned successfully!");
+          this.showNotification("Session updated successfully!", "success");
           this.isEditing[sessionId] = false;
+          this.fetchSessions();
         } else {
-          console.error("Failed to assign event:", response.data);
+          this.showNotification("Failed to update session. Please try again.", "error");
         }
       } catch (error) {
-        console.error("Error assigning event:", error);
+        console.error("Error updating session:", error);
+        this.showNotification("An error occurred. Please try again.", "error");
       }
     },
-    async assignExam(sessionId, examId) {
-      console.log(`Assign exam ${examId} to session ${sessionId}`);
+    cancelEdit(sessionId) {
+      if (!sessionId) {
+        console.error("Invalid sessionId");
+        return;
+      }
+
+      // Reset temporary changes
+      this.selectedTeacher[sessionId] = null;
+      this.selectedRoomTable[sessionId] = null;
+      this.selectedEventTable[sessionId] = null;
+
+      // Exit edit mode
+      this.isEditing[sessionId] = false;
+    },
+    showNotification(message, type) {
+      this.notification = { message, type };
+      setTimeout(() => {
+        this.notification.message = "";
+      }, 3000);
+    },
+    openChangeDatePopup(sessionId) {
+      if (!sessionId) {
+        console.error("Session ID is invalid.");
+        return;
+      }
+
+      this.currentSession = this.sessions.find((session) => session.sessionId === sessionId);
+
+      if (!this.currentSession) {
+        console.error("Session not found for the given ID:", sessionId);
+        return;
+      }
+
+      this.selectedWeekFromSession = this.selectedBatch?.weeks[this.selectedWeekIndex] || null;
+
+      this.showChangeDatePopup = true; // Hiển thị popup đổi ngày
+    },
+    async fetchUnavailableSessions() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get("http://localhost:8088/fja-fap/staff/get-unavailable-session", {
+          params: {
+            class_id: this.selectedClassId,
+            sessionWeek: this.popupSelectedWeekIndex,
+          },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data && response.data.result) {
+          this.unavailableSessions = response.data.result;
+          this.processUnavailableSessions();
+        }
+      } catch (error) {
+        console.error("Error fetching unavailable sessions:", error);
+      }
+    },
+    processUnavailableSessions() {
+      const groupedByDate = this.unavailableSessions.reduce((acc, session) => {
+        const date = session.date;
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(session);
+        return acc;
+      }, {});
+
+      this.groupedUnavailableSessions = Object.entries(groupedByDate).map(([date, sessions]) => {
+        return {
+          date,
+          slots: sessions.map((session) => ({
+            id: session.timeSlotResponse.timeSLotId,
+            name: session.timeSlotResponse.name,
+            start: session.timeSlotResponse.startTime,
+            end: session.timeSlotResponse.endTime,
+          })),
+        };
+      });
+    },
+    getSelectedToSessionId() {
+      // Tìm session không khả dụng dựa trên ngày và timeSlot
+      const selectedSession = this.unavailableSessions.find((session) => {
+        return (
+            session.date === this.selectedDate &&
+            session.timeSlotResponse.timeSLotId === this.selectedChangeDateTimeSlotId
+        );
+      });
+
+      return selectedSession ? selectedSession.sessionId : null; // Lấy sessionId nếu tìm thấy
+    },
+    async swapSessions() {
+      const currentSessionId = this.currentSession?.sessionId; // Lấy ID session hiện tại
+      const toSessionId = this.getSelectedToSessionId(); // Lấy ID session muốn chuyển đến
+
+      if (!currentSessionId || !toSessionId) {
+        console.error("Invalid session IDs for swapping.");
+        return;
+      }
+
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/staff/assign-exam`,
+            `http://localhost:8088/fja-fap/staff/swap-to-unavailable-session`,
+            null,
             {
-              sessionId: sessionId,
-              examId: examId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+              params: { currentSessionId, toSessionId },
+              headers: { Authorization: `Bearer ${token}` },
             }
         );
 
-        if (response.data && response.data.code === 0) {
-          console.log("Exam assigned successfully!");
-          this.isEditing[sessionId] = false; // Thoát chế độ chỉnh sửa
+        if (response.status === 200) {
+          console.log("Session swap successful:", response.data);
+          this.showChangeDatePopup = false;
+          this.selectedChangeDateTimeSlotId = null;
+          this.selectedDate = null;
+          this.popupSelectedWeekIndex = null;
+
+          this.showNotification("Session swap successfully!", "success");
+          this.fetchSessions();
+          // Có thể cập nhật lại danh sách sessions nếu cần
         } else {
-          console.error("Failed to assign exam:", response.data);
+          console.error("Failed to swap sessions:", response);
         }
       } catch (error) {
-        console.error("Error assigning exam:", error);
+        console.error("Error swapping sessions:", error);
       }
+    },
+
+  },
+  computed: {
+    groupedSessions() {
+      const grouped = {};
+      this.sessions.forEach((session) => {
+        if (session && session.date) {
+          if (!grouped[session.date]) {
+            grouped[session.date] = [];
+          }
+          grouped[session.date].push(session);
+        } else {
+          console.warn("Invalid session data:", session);
+        }
+      });
+      return grouped;
     },
   },
   mounted() {
-    this.fetchBatches();
     this.fetchRooms();
+    this.fetchBatches();
     this.fetchTimeSlots();
-    this.fetchTeachers();
     this.fetchCurriculums();
-    this.fetchExams();
     this.fetchEvents();
   },
 };
@@ -765,6 +917,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.information {
+  width: 250px;
+  font-size: 14px;
 }
 
 .table-container {

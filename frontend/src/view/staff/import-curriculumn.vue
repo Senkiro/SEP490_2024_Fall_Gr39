@@ -25,19 +25,16 @@
           />
         </div>
         <!-- Notification -->
-        <div
-            v-if="notification.message"
-            :class="['notification', notification.type]"
-        >
-          {{ notification.message }}
+        <div v-if="notification.message" :class="['notification', notification.type]">
+          <p v-for="line in notification.message.split('\n')" :key="line">
+            {{ line }}
+          </p>
         </div>
+
       </div>
     </div>
   </template>
-  
-  
-  
-  
+
   <script>
   import axios from "axios";
   
@@ -60,36 +57,38 @@
       },
       handleFileUpload(event) {
         const file = event.target.files[0];
-        if (file) {
-          this.fileName = file.name;
-  
-          const formData = new FormData();
-          formData.append("file", file);
-  
-          try {
-            const token = sessionStorage.getItem("jwtToken");
-            axios.post('http://localhost:8088/fja-fap/staff/upload-curriculumn', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-              },
-            })
-                .then((response) => {
-                  console.log("Upload success:", response.data);
-                  this.showNotification("File uploaded successfully!", "success");
-                })
-                .catch((error) => {
-                  console.error("Upload failed:", error);
-                  this.showNotification("Upload failed! " + error.response?.data?.message || "Please try again.", "error");
-                });
-          } catch (error) {
-            console.error("Error uploading file:", error);
-            this.showNotification("Error occurred: " + error.message, "error");
-          }
-        } else {
+        if (!file) {
           console.error("No file selected.");
           this.showNotification("No file selected. Please choose a file to upload.", "error");
+          return;
         }
+
+        this.fileName = file.name;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const token = sessionStorage.getItem("jwtToken");
+        axios.post('http://localhost:8088/fja-fap/staff/upload-curriculumn', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+            .then((response) => {
+              console.log("Upload success:", response.data);
+              this.showNotification(response.data.message || "File uploaded successfully!", "success");
+            })
+            .catch((error) => {
+              console.error("Upload failed:", error);
+
+              if (error.response && error.response.data) {
+                const errorMessage = error.response.data.message || "An error occurred during the upload.";
+                this.showNotification(`Upload failed: ${errorMessage}`, "error");
+              } else {
+                this.showNotification("Upload failed: Unable to reach the server. Please try again.", "error");
+              }
+            });
       },
       showNotification(message, type) {
         this.notification.message = message;

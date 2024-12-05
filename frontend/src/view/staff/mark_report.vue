@@ -4,19 +4,26 @@
       <h1>Mark Report</h1>
     </div>
 
-      <div class="filters">
-        <select v-model="selectedSemester" @change="fetchData">
-          <option value="FALL2024">FALL2024</option>
-          <option value="SPRING2024">SPRING2024</option>
-          <option value="SUMMER2024">SUMMER2024</option>
-        </select>
+    <div class="filters">
+      <select v-model="selectedBatch" id="batch-filter" class="filter-select"
+              @change="fetchClassesByBatch(selectedBatch.batchName)">
+        <option value="" disabled>Select Batch</option>
+        <option v-for="batch in batches" :key="batch.id" :value="batch">
+          {{ batch.batchName }}
+        </option>
+      </select>
 
-        <select v-model="selectedClass" @change="fetchData">
-          <option value="Blue">Blue</option>
-          <option value="Green">Green</option>
-          <option value="Red">Red</option>
-        </select>
-      </div>
+      <select
+          id="class-filter"
+          class="filter-select"
+          v-model="selectedClassId">
+<!--          @change="fetchSessions(selectedClassId)"-->
+        <option value="" disabled>Select Class</option>
+        <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
+          {{ classItem.name }}
+        </option>
+      </select>
+    </div>
 
       <div class="table-container">
         <table>
@@ -33,17 +40,14 @@
           <tbody>
           <tr v-for="(student, index) in students" :key="student.id">
             <td class="center">{{ index + 1 }}</td>
-            <td>{{ student.fullname }}</td>
-            <td>{{ student.rollNumber }}</td>
-            <td>{{ student.japaneseName || '-' }}</td>
-            <td class="center">{{ student.averageMark }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="center"></td>
             <td class="center">
               <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear"
                        @click="viewStudentDetails(student.id)" />
             </td>
-          </tr>
-          <tr v-if="students.length === 0">
-            <td colspan="6" class="center">No record.</td>
           </tr>
           </tbody>
         </table>
@@ -65,55 +69,74 @@
 </template>
 
 <script>
-import { VsxIcon } from "vue-iconsax";
-
+import axios from "axios";
 
 export default {
-  name: "MarkReport",
-  components: {
-    VsxIcon
-  },
   data() {
     return {
-      selectedSemester: 'FALL2024',
-      selectedClass: 'Blue',
-      currentPage: 1,
-      itemsPerPage: 5,
-      students: []
+      batches: [],
+      classes: [],
+      sessions: [],
+      selectedBatch: null,
+      selectedClassId: null,
     };
   },
-  computed: {
-    displayedPages() {
-      const totalPages = Math.ceil(this.students.length / this.itemsPerPage);
-      let pages = [];
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-      return pages;
-    },
-    totalPages() {
-      return Math.ceil(this.students.length / this.itemsPerPage);
-    },
-    paginatedStudents() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.students.slice(start, end);
-    }
-  },
   methods: {
-    changePage(page) {
-      this.currentPage = page;
+    async fetchBatches() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get("http://localhost:8088/fja-fap/staff/batch", {
+          params: {
+            page: 0,
+            size: 1000,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        this.batches = response.data.result.content;
+      } catch (error) {
+        console.error("Error fetching batches:", error);
+      }
     },
-    fetchData() {
-
-      console.log(`Fetching data for semester: ${this.selectedSemester}, class: ${this.selectedClass}`);
-
+    async fetchClassesByBatch(batchName) {
+      this.isLoadingClasses = true;
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
+              params: {
+                batch_name: batchName,
+                page: 0,
+                size: 100,
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+        if (response.data && response.data.result && response.data.result.content) {
+          this.classes = response.data.result.content.map((classItem) => ({
+            id: classItem.classId,
+            name: classItem.className,
+            colour: classItem.classColour,
+          }));
+        } else {
+          this.classes = [];
+          console.error('Unexpected response format', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+        this.classes = [];
+      } finally {
+        this.isLoadingClasses = false;
+      }
     },
-    viewStudentDetails(studentId) {
-      this.$router.push({ name: "StudentMarkReport", params: { id: studentId } });
-    }
 
-  }
+  },
+  mounted() {
+    this.fetchBatches();
+  },
 };
 </script>
 

@@ -19,7 +19,7 @@ public class SessionCreattionRequest {
     int sessionNumber;
     int sessionWeek;
 
-    int curriculumnId;
+    Integer curriculumnId;
 
     String timeSlotId;
 
@@ -29,4 +29,12 @@ public class SessionCreattionRequest {
 
     String eventId;
     String userId;
+
+    boolean sessionAvailable;
+
+    String note;
+
+    String markStatus;
+
+    String attendanceStatus;
 }

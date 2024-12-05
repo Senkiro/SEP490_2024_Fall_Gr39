@@ -9,10 +9,8 @@ import com.nsg.dto.request.exam.ExamUpdateRequest;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.exam.ExamResponseForMark;
 import com.nsg.dto.response.exam.ExamTypeResponse;
-import com.nsg.entity.AttendanceEntity;
-import com.nsg.entity.ExamEntity;
-import com.nsg.entity.ExamTypeRateEntity;
-import com.nsg.entity.StudentEntity;
+import com.nsg.dto.response.timeSlot.TimeSlotResponse;
+import com.nsg.entity.*;
 import com.nsg.repository.AttendanceRepository;
 import com.nsg.repository.ExamRepository;
 import com.nsg.service.ExamService;
@@ -145,6 +143,19 @@ public class ExamServiceImp implements ExamService {
         }
 
         return new PageImpl<>(responseList, listExam.getPageable(), listExam.getTotalElements());
+    }
+
+    //get exam by class
+    @Override
+    public List<ExamEntity> getExamByClassId(String classId) {
+        List<ExamEntity> examEntityList = examRepository.findExamsByClassId(classId);
+        //check null
+        if (!examEntityList.isEmpty()) {
+            return examEntityList;
+        } else {
+            throw new AppException(ErrorCode.EXAM_LIST_IS_EMPTY);
+        }
+
     }
 
 }

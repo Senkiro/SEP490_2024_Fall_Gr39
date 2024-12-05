@@ -4,6 +4,7 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.response.attendance.AttendanceResponse;
+import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.entity.AttendanceEntity;
@@ -15,6 +16,7 @@ import com.nsg.repository.ClassRepository;
 import com.nsg.repository.SessionRepository;
 import com.nsg.repository.StudentRepository;
 import com.nsg.service.AttendanceService;
+import com.nsg.service.SessionService;
 import com.nsg.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,9 @@ public class AttendanceServiceImp implements AttendanceService {
 
     @Autowired
     ClassRepository classRepository;
+
+    @Autowired
+    SessionService sessionService;
 
     @Override
     public void createAttendance(AttendanceRequest request) {
@@ -87,27 +92,28 @@ public class AttendanceServiceImp implements AttendanceService {
         }
 
         // get session by classId
-        List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classId);
+        //get all session available by classId, then sort it by day and sessionNumber
+        List<SessionEntity> availableSessions = sessionRepository.findSessionsByClassIdAndAvailableAndStatus(classId);
 
         //check session
-        if (sessionEntityList.isEmpty()) {
+        if (availableSessions.isEmpty()) {
             //There are no session for this class
             throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
         }
 
-        // filter which session has CurriculumnEntity not null
-        List<SessionEntity> validSessions = new ArrayList<>();
-        for (SessionEntity session : sessionEntityList) {
-            if (session.getCurriculumnEntity() != null) {
-                validSessions.add(session);
-            }
-        }
+//        // filter which session has CurriculumnEntity not null
+//        List<SessionEntity> validSessions = new ArrayList<>();
+//        for (SessionEntity session : sessionEntityList) {
+//            if (session.getCurriculumnEntity() != null) {
+//                validSessions.add(session);
+//            }
+//        }
 
         // list AttendanceRequest
         List<AttendanceRequest> createRequest = new ArrayList<>();
-        String defaultStatus = "incoming";
+        String defaultStatus = "Not happen";
 
-        for (SessionEntity session : validSessions) {
+        for (SessionEntity session : availableSessions) {
             for (StudentEntity student : studentEntityList) {
                 AttendanceRequest attendanceRequest = new AttendanceRequest();
 
@@ -119,7 +125,6 @@ public class AttendanceServiceImp implements AttendanceService {
                 } else {
 
                 }
-
                 createRequest.add(attendanceRequest);
             }
         }
@@ -178,10 +183,13 @@ public class AttendanceServiceImp implements AttendanceService {
             SessionEntity session = attendance.getSessionEntity();
 
             if (session.getUser() != null) {
-                attendanceResponse.setTeacher(session.getUser().getUsername());
+                attendanceResponse.setTeacherName(session.getUser().getFullName());
             }
 
             attendanceResponse.setStudentResponse(studentResponse);
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
+
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
 
             responseList.add(attendanceResponse);
         }
@@ -240,5 +248,27 @@ public class AttendanceServiceImp implements AttendanceService {
     @Override
     public void deleteAttendance(String attendanceId) {
         attendanceRepository.deleteById(attendanceId);
+    }
+
+    //convert attendance statistic data
+    @Override
+    public AttendanceStatisticsResponse getDataAttendanceStatisticsResponse(String studentId) {
+        List<Object[]> result = attendanceRepository.getAttendanceStatistics(studentId);
+
+        AttendanceStatisticsResponse attendanceStatisticsResponse = new AttendanceStatisticsResponse();
+
+        if (result.isEmpty()) {
+            throw new AppException(ErrorCode.NO_DATA_ATTENDANCE);
+        }
+
+        Object[] row = result.get(0);
+        long attendCount = ((Number) row[0]).longValue();
+        long totalCount = ((Number) row[1]).longValue();
+        double attendPercentage = ((Number) row[2]).doubleValue();
+
+        attendanceStatisticsResponse.setAttendCount(attendCount);
+        attendanceStatisticsResponse.setTotalCount(totalCount);
+        attendanceStatisticsResponse.setAttendPercentage(attendPercentage);
+        return attendanceStatisticsResponse;
     }
 }

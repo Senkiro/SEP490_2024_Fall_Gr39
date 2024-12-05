@@ -6,6 +6,7 @@ import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.student.StudentCreattionRequest;
+import com.nsg.dto.request.user.ResetPasswordRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +104,9 @@ public class UserServiceImp implements UserService {
         user.setPassword(passwordEncoder.encode(defaultPassword));
         user.setRoles(role);
         user.setActive(true);
+
+        //set full name
+        user.setUsername(generateUsername(request.getFullName()));
 
         return userRepository.save(user);
     }
@@ -185,6 +190,28 @@ public class UserServiceImp implements UserService {
         response.setImg(updatedUser.getImg());
 
         return response;
+    }
+
+    @Override
+    public UserInforResponse updateUserPassword (ResetPasswordRequest request) {
+        String userId = request.getUserId();
+        String oldPassword = request.getOldPassword();
+        String newPassword = request.getNewPassword();
+
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_MATCHED);
+        }
+
+        String encryptedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encryptedPassword);
+
+        userRepository.save(user);
+
+        return UserMapper.INSTANCE.toUserInforResponse(user);
     };
 
     private String saveImageToAssetsFolder(MultipartFile image) {
@@ -305,5 +332,29 @@ public class UserServiceImp implements UserService {
     @Override
     public Object search(Object request) {
         return null;
+    }
+
+    //create userName base on fullName
+    public static String generateUsername(String fullName) {
+        if (fullName == null || fullName.isEmpty()) {
+            throw new IllegalArgumentException("Full name cannot be null or empty");
+        }
+
+        // Loại bỏ dấu tiếng Việt
+        String normalized = Normalizer.normalize(fullName, Normalizer.Form.NFD);
+        String noAccent = normalized.replaceAll("\\p{M}", "");
+
+        // Loại bỏ các ký tự không phải chữ cái hoặc dấu cách
+        noAccent = noAccent.replaceAll("[^a-zA-Z\\s]", "");
+
+        // Loại bỏ khoảng trắng thừa và viết hoa chữ cái đầu mỗi từ
+        String[] words = noAccent.trim().split("\\s+");
+        StringBuilder username = new StringBuilder();
+        for (String word : words) {
+            username.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1).toLowerCase());
+        }
+
+        return username.toString();
     }
 }

@@ -5,26 +5,19 @@
     </div>
 
     <div class="filters">
-      <label for="class-filter">Select Class:</label>
-      <select id="class-filter" class="filter-select" v-model="selectedClassId">
-        <option value="" disabled>Select Class</option>
-        <option v-for="classItem in uniqueClasses" :key="classItem.classId" :value="classItem.classId">
-          {{ classItem.className }}
-        </option>
-      </select>
-    </div>
-
-    <div class="filters">
       <label for="week-filter">Select Week:</label>
-      <select id="week-filter" class="filter-select" v-model="selectedWeek">
+      <select id="week-filter" class="filter-select" v-model="selectedWeek" v-if="uniqueWeeks.length > 0">
         <option value="" disabled>Select Week</option>
+        <option value="all">All Week</option>
         <option v-for="(week, index) in uniqueWeeks" :key="index" :value="week.index">
           Week {{ index + 1 }} ({{ week.start }} to {{ week.end }})
         </option>
       </select>
+      <p v-else>No weeks available</p>
     </div>
 
-    <div v-if="selectedClassId && filteredSessions.length > 0" class="table-container">
+
+    <div v-if="filteredSessions.length > 0" class="table-container">
       <table>
         <thead>
         <tr>
@@ -58,13 +51,9 @@
         </tbody>
       </table>
     </div>
-    <div v-else-if="selectedClassId" class="no-data">
-      <p>No attendance records available for the selected filters.</p>
+    <div v-else-if="selectedWeek" class="no-data">
+      <p>No attendance records available.</p>
     </div>
-    <div v-else class="no-data">
-      <p>Please select a class to view attendance records.</p>
-    </div>
-
   </div>
 </template>
 
@@ -74,25 +63,13 @@ import axios from "axios";
 export default {
   data() {
     return {
-      sessions: [], // Danh sách các phiên học
-      selectedClassId: "", // Lớp học được chọn
-      selectedWeek: null, // Tuần được chọn
+      sessions: [],
+      selectedWeek: "all",
     };
   },
   computed: {
-    uniqueClasses() {
-      const classMap = new Map();
-      this.sessions.forEach((item) => {
-        if (!classMap.has(item.classResponse.classId)) {
-          classMap.set(item.classResponse.classId, {
-            classId: item.classResponse.classId,
-            className: item.classResponse.className.trim(),
-          });
-        }
-      });
-      return Array.from(classMap.values());
-    },
     uniqueWeeks() {
+      if (!Array.isArray(this.sessions)) return [];
       const weeks = [];
       const weekMap = new Map();
 
@@ -113,12 +90,15 @@ export default {
       return weeks;
     },
     filteredSessions() {
-      return this.sessions.filter(
-          (session) =>
-              (!this.selectedClassId || session.classResponse.classId === this.selectedClassId) &&
-              (this.selectedWeek === null || session.sessionWeek === this.selectedWeek)
-      );
-    },
+      return this.sessions.filter(session => {
+        const hasValidLesson = session.curriculumnResponse?.lessonResponse?.lessonTitle;
+        const isWeekMatched =
+            this.selectedWeek === "all" ||
+            this.selectedWeek === null ||
+            session.sessionWeek === this.selectedWeek;
+        return hasValidLesson && isWeekMatched;
+      });
+    }
   },
   methods: {
     formatDate(date) {
@@ -137,64 +117,63 @@ export default {
       return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
     },
     fetchSessions() {
-      const teacherId = sessionStorage.getItem("userId");
-      const token = sessionStorage.getItem("jwtToken");
+      return new Promise((resolve, reject) => {
+        const teacherId = sessionStorage.getItem("userId");
+        const token = sessionStorage.getItem("jwtToken");
 
-      if (!teacherId || !token) {
-        console.error("Teacher ID hoặc JWT token không tồn tại trong session storage");
-        return;
-      }
+        if (!teacherId || !token) {
+          console.error("Token missing");
+          reject("Token missing");
+          return;
+        }
 
-      axios
-          .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then((response) => {
-            if (response.data.code === 0) {
-              this.sessions = response.data.result; // Lưu toàn bộ dữ liệu
-            } else {
-              console.error(
-                  "Lỗi khi fetch dữ liệu sessions:",
-                  response.data.message || "Lỗi không xác định"
-              );
-            }
-          })
-          .catch((error) => {
-            console.error("Lỗi khi gọi API:", error);
-          });
+        axios
+            .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+              if (response.data.code === 0 && Array.isArray(response.data.result)) {
+                this.sessions = response.data.result;
+                resolve(); // Thành công
+              } else {
+                console.error(
+                    "Lỗi khi fetch dữ liệu sessions:",
+                    response.data.message || "Lỗi không xác định"
+                );
+                this.sessions = [];
+                reject("Error fetching sessions");
+              }
+            })
+            .catch((error) => {
+              console.error("Lỗi khi gọi API:", error);
+              this.sessions = [];
+              reject(error); // Trả lỗi
+            });
+      });
     },
     getStatusClass(item) {
-      if (item.status) return "yes";
-      const sessionDate = new Date(item.date);
-      const today = new Date();
-      if (sessionDate > today) return "not-happen";
-      return "no";
+      const status = item.attendanceStatus;
+      if (status === "Attended") return "yes";
+      if (status === "Not happen") return "not-happen";
+      if (status === "Not taken") return "no";
+      return "";
     },
     getStatusText(item) {
-      if (item.status) return "Taken";
-      const sessionDate = new Date(item.date);
-      const today = new Date();
-      if (sessionDate > today) return "Not happen";
-      return "Not taken";
+      return item.attendanceStatus;
     },
     isActionDisabled(item) {
       const sessionDate = new Date(item.date);
       const today = new Date();
 
-      if (!item.timeSlotResponse || item.timeSlotResponse.name === "N/A") {
-        return true;
-      }
-
-      // Nếu session chưa diễn ra hoặc cách ngày hôm nay hơn 2 ngày, nút bị vô hiệu hóa
+      // Nếu session đã qua 2 ngày hoặc chưa diễn ra, nút bị vô hiệu hóa
       if (sessionDate > today || (today - sessionDate) / (1000 * 60 * 60 * 24) > 2) {
         return true;
       }
 
-      // Nếu đã điểm danh thì nút cũng bị vô hiệu hóa
-      return item.status === true;
+      return false; // Có thể nhấn nút
     },
     getActionText(item) {
-      if (item.status) {
+      if (item.attendanceStatus === 'Attended') {
         return "Edit attendance";
       }
 
@@ -202,18 +181,56 @@ export default {
     },
     navigateToAttendance(sessionId) {
       if (!sessionId) {
-        console.error("Session ID không hợp lệ.");
         return;
       }
 
       this.$router.push({
         path: `/teacher/take-attendance/${sessionId}`,
+      }).then(() => {
+        const session = this.sessions.find(item => item.sessionId === sessionId);
+        if (session) {
+          session.status = true;
+        }
       });
     },
+    checkAndUpdateStatus() {
+      const today = new Date();
+      const todayFormatted = today.toISOString().split("T")[0];
+      this.sessions.forEach(session => {
+        const sessionDate = new Date(session.date).toISOString().split("T")[0];
+        if (session.attendanceStatus !== "Attended"  && sessionDate === todayFormatted ) {
+          axios.post(
+              `http://localhost:8088/fja-fap/staff/update-session-attendance-status/${session.sessionId}?new_status=Not taken`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`
+                }
+              }
+          )
+              .then(response => {
+                if (response.status === 200) {
+                  console.log(`Session ${session.sessionId} updated to 'Not taken'`);
+                  session.attendanceStatus = "Not taken";
+                } else {
+                  console.error(`Failed to update session ${session.sessionId}:`, response.data);
+                }
+              })
+              .catch(error => {
+                console.error(`Failed to update session ${session.sessionId}:`, error);
+              });
+        }
+      });
+    }
   },
-  mounted() {
-    this.fetchSessions();
-  },
+  async mounted() {
+    try {
+      await this.fetchSessions(); // Đợi fetchSessions hoàn thành
+      this.checkAndUpdateStatus(); // Chỉ gọi khi fetchSessions đã xong
+    } catch (error) {
+      console.error("Error during mounted:", error);
+    }
+  }
 };
 </script>
 

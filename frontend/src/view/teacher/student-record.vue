@@ -14,7 +14,7 @@
             v-model="searchQuery"
             @input="filterStudents"
         />
-        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
       </div>
     </div>
 
@@ -37,10 +37,14 @@
           <td>{{ student.userInforResponse.fullName }}</td>
           <td>{{ student.rollNumber }}</td>
           <td class="center">
-            <img v-if="student.userInforResponse.img" :src="student.userInforResponse.img"
-                 alt="Student Image" />
-            <span v-else><img src="@/assets/smiling-young-man-illustration_1308-174669.avif"></span>
+            <img v-if="student.userInforResponse.img"
+                 :src="`/${student.userInforResponse.img}`"
+                 alt="Student Image"/>
+            <span v-else>
+                <img src="@/assets/smiling-young-man-illustration_1308-174669.avif" alt="Default Student Image"/>
+            </span>
           </td>
+
           <td class="center">
             <VsxIcon
                 iconName="Eye"
@@ -55,22 +59,24 @@
       </table>
       <div class="pagination" v-if="totalPages > 1">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
-          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
                 @click="changePage(page)">
           {{ page }}
         </button>
         <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
         </button>
       </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
+import defaultAvatar from "@/assets/smiling-young-man-illustration_1308-174669.avif";
+
 export default {
   data() {
     return {
@@ -84,6 +90,9 @@ export default {
     };
   },
   computed: {
+    defaultAvatar() {
+      return defaultAvatar
+    },
     displayedPages() {
       const range = [];
       for (let i = 1; i <= this.totalPages; i++) {
@@ -104,7 +113,7 @@ export default {
         const response = await axios.get(
             `http://localhost:8088/fja-fap/teacher/get-students-class`,
             {
-              headers: { Authorization: `Bearer ${token}` },
+              headers: {Authorization: `Bearer ${token}`},
               params: {
                 classId: this.$route.params.classId,
                 page: this.currentPage - 1,
@@ -137,10 +146,10 @@ export default {
     navigateToProfile(studentId) {
       switch (this.$route.name) {
         case "TeacherStudentRecord":
-          this.$router.push({ name: "TeacherStudentProfile", params: { id: studentId } });
+          this.$router.push({name: "TeacherStudentProfile", params: {id: studentId}});
           break;
         case "StudentStudentRecord":
-          this.$router.push({ name: "StudentStudentProfile", params: { id: studentId } });
+          this.$router.push({name: "StudentStudentProfile", params: {id: studentId}});
           break;
       }
     },

@@ -15,4 +15,5 @@ public class ClassResponse {
 
     String classColour;
 
+    int totalStudent;
 }

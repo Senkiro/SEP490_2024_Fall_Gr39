@@ -33,6 +33,20 @@ public class SessionEntity extends BaseEntity {
     @Column(name = "status")
     boolean status;
 
+    @Column(name = "session_available")
+    boolean sessionAvailable;
+
+    @Column(name = "note")
+    String note;
+
+    //Added, Not added, Not happen
+    @Column(name = "mark_status")
+    String markStatus;
+
+    //Taken, Not taken, Not happen
+    @Column(name = "attendance_status")
+    String attendanceStatus;
+
     @ManyToOne
     @JoinColumn(name = "class_id", referencedColumnName = "class_id")
     ClassEntity classEntity;
@@ -41,7 +55,7 @@ public class SessionEntity extends BaseEntity {
     @JoinColumn(name = "curriculumnId", referencedColumnName = "lesson_id")
     CurriculumnEntity curriculumnEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sessionEntity", orphanRemoval = true)
+    @OneToMany(mappedBy = "sessionEntity", orphanRemoval = true)
     List<AttendanceEntity> attendanceEntityList;
 
     @ManyToOne
