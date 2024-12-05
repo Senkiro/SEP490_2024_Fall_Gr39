@@ -5,16 +5,6 @@ import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.request.classRequest.ClassRequest;
-import com.nsg.dto.request.curriculumn.CurriculumnListRequest;
-import com.nsg.dto.request.curriculumn.CurriculumnRequest;
-import com.nsg.dto.request.event.EventUpdateRequest;
-import com.nsg.dto.request.eventFeedback.EventFeedbackCreattionRequest;
-import com.nsg.dto.request.exam.ExamRequest;
-import com.nsg.dto.request.event.EventCreateRequest;
-import com.nsg.dto.request.exam.ExamTypeRequest;
-import com.nsg.dto.request.exam.ExamUpdateRequest;
-import com.nsg.dto.request.holiday.HolidayRequest;
-import com.nsg.dto.request.lesson.LessonCreateRequest;
 import com.nsg.dto.request.mark.MarkCreationRequest;
 import com.nsg.dto.request.mark.MarkUpdateRequest;
 import com.nsg.dto.request.news.NewsRequest;
@@ -25,15 +15,6 @@ import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
-import com.nsg.dto.response.curriculumn.CurriculumnListResponse;
-import com.nsg.dto.response.curriculumn.CurriculumnResponse;
-import com.nsg.dto.response.event.EventResponse;
-import com.nsg.dto.response.eventFeedback.EventFeedbackResponse;
-import com.nsg.dto.response.exam.ExamResponse;
-import com.nsg.dto.response.exam.ExamResponseForMark;
-import com.nsg.dto.response.exam.ExamTypeResponse;
-import com.nsg.dto.response.holiday.HolidayResponse;
-import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.mark.MarkResponse;
 import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.student.StudentResponse;
@@ -66,13 +47,7 @@ import java.util.Map;
 @SecurityRequirement(name = "Authorization")
 public class StaffController {
     @Autowired
-    BatchService batchService;
-
-    @Autowired
     TeacherService teacherService;
-
-    @Autowired
-    LessonService lessonService;
 
     @Autowired
     UserService userService;
@@ -81,19 +56,7 @@ public class StaffController {
     StudentService studentService;
 
     @Autowired
-    ClassService classService;
-
-    @Autowired
-    AttendanceService attendanceService;
-
-    @Autowired
     private ExcelHelper excelHelper;
-
-    @Autowired
-    private NewsService newsService;
-
-    @Autowired
-    MarkService markService;
 
     /**********************************
      * Manage Student
@@ -134,7 +97,6 @@ public class StaffController {
                                                                                  @RequestParam String batch_name,
                                                                                  @RequestParam String class_id) {
         Page<StudentResponse> studentList = studentService.getStudentByBatchNameAndClassName(page, size, batch_name, class_id);
-        markService.calculateAverageMark(class_id);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();
@@ -202,74 +164,6 @@ public class StaffController {
     }
 
     /**********************************
-     * Manage Batch
-     **********************************/
-
-    //get all batch
-    @GetMapping("/batch")
-    ApiResponse<Page<BatchResponse>> getAllBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<BatchResponse>>builder()
-                .code(1000)
-                .result(batchService.getBatches(page, size))
-                .build();
-    }
-
-    @GetMapping("/search-batch")
-    public ApiResponse<Page<BatchResponse>> searchBatchByName(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
-        Page<BatchResponse> batchEntityList = batchService.findBatchsByName(name, page, size);
-        return ApiResponse.<Page<BatchResponse>>builder()
-                .result(batchEntityList)
-                .build();
-    }
-
-    //get batch by batch name
-    @GetMapping("/batch/by-name")
-    ApiResponse<BatchEntity> getBatchByName(@RequestParam String batchName) {
-        ApiResponse<BatchEntity> apiResponse = new ApiResponse<>();
-        BatchEntity batchEntity = batchService.getBatch(batchName);
-
-        if (batchEntity != null) {
-            apiResponse.setCode(1000);
-            apiResponse.setResult(batchEntity);
-        } else {
-            apiResponse.setCode(1017);
-            apiResponse.setMessage("Batch not found with name: " + batchName);
-        }
-
-        return apiResponse;
-    }
-
-    //create new batch
-    @PostMapping("/save-batch")
-    ApiResponse<BatchEntity> saveBatch(@RequestBody @Validated BatchCreationRequest request) {
-        batchService.saveBatch(request);
-        BatchEntity batchEntity = batchService.getBatch(request.getBatchName());
-        return ApiResponse.<BatchEntity>builder()
-                .message("A new batch have been created!")
-                .result(batchEntity)
-                .build();
-    }
-
-    //update
-    @PostMapping("/update-batch")
-    ApiResponse<BatchEntity> updateBatch(@RequestBody BatchCreationRequest request) {
-        BatchEntity batch = batchService.updateBatch(request.getBatchName(), request);
-        return ApiResponse.<BatchEntity>builder()
-                .result(batch)
-                .build();
-    }
-
-    //delete batch
-    @DeleteMapping("/delete-batch/{batchName}")
-    ApiResponse<?> deleteBatch(@PathVariable("batchName") String batchName) {
-        batchService.deleteBatch(batchName);
-        return ApiResponse.builder()
-                .message("Delete successfully!")
-                .build();
-    }
-
-
-    /**********************************
      * Manage Teacher
      **********************************/
 
@@ -296,255 +190,6 @@ public class StaffController {
         UserRole role = UserRole.TEACHER;
         return ApiResponse.builder()
                 .result(userService.createUser(request, role))
-                .build();
-    }
-
-
-    /**********************************
-     * Manage Class
-     **********************************/
-    //create a class
-    @PostMapping("/create-class")
-    public ApiResponse<?> createClass(@RequestBody ClassRequest request ) {
-        classService.createClass(request);
-        return ApiResponse.builder()
-                .message("Create new class successfully!")
-                .build();
-    }
-
-    //get all class
-    @GetMapping("/get-all-class")
-    public ApiResponse<Page<ClassResponse>> getAllClass(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<ClassResponse>>builder()
-                .result(classService.getAllClass(page, size))
-                .build();
-    }
-
-    //get by batch
-    @GetMapping("/get-class-by-batch")
-    public ApiResponse<Page<ClassResponse>> getClassByBatch(@RequestParam String batch_name, @RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<ClassResponse>>builder()
-                .result(classService.getClassByBatch(batch_name,page, size))
-                .build();
-    }
-
-    //get a class
-    @GetMapping("/get-class/{class_id}")
-    public ApiResponse<ClassResponse> getClass(@PathVariable("class_id") String class_id) {
-        return ApiResponse.<ClassResponse>builder()
-                .result(classService.getClass(class_id))
-                .build();
-    }
-
-    //update a class
-    @PostMapping("/update-class/{class_id}")
-    public ApiResponse<ClassResponse> updateClass(@PathVariable("class_id") String class_id, @RequestBody ClassRequest request) {
-        return ApiResponse.<ClassResponse>builder()
-                .result(classService.updateClass(class_id, request))
-                .message("Update class successfully!")
-                .build();
-    }
-
-    //delete a class
-    @DeleteMapping("/delete-clas/{class_id}")
-    public ApiResponse<?> deleteClass(@PathVariable("class_id") String class_id) {
-        classService.deleteClass(class_id);
-        return ApiResponse.builder()
-                .message("Delete class successfully!")
-                .build();
-    }
-
-    /**********************************
-     * Manage Attendance
-     **********************************/
-    //get student by class Id
-    @GetMapping("/get-students-class")
-    public ApiResponse<Page<StudentResponse>> viewStudentByBatchNameAndClassName(@RequestParam int page,
-                                                                                 @RequestParam int size,
-                                                                                 @RequestParam String classId) {
-
-        Page<StudentResponse> studentList = studentService.getStudentByClassId(page, size, classId);
-        return ApiResponse.<Page<StudentResponse>>builder()
-                .result(studentList)
-                .build();
-    }
-
-    //create new attendance
-    @PostMapping("/create-attendance")
-    public ApiResponse<?> createAttendance(@RequestBody AttendanceRequest request) {
-        attendanceService.createAttendance(request);
-        return ApiResponse.builder()
-                .message("Create new attendance successfully!")
-                .build();
-    }
-
-    //get all attendance
-    @GetMapping("/get-all-attendance")
-    public ApiResponse<Page<AttendanceResponse>> getAllAttendance(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<AttendanceResponse>>builder()
-                .result(attendanceService.getAllAttendance(page, size))
-                .build();
-    }
-
-    //get attendance by id
-    @GetMapping("/get-attendance/{attendance_id}")
-    public ApiResponse<AttendanceResponse> getAttendanceById(@PathVariable("attendance_id") String attendance_id) {
-        return ApiResponse.<AttendanceResponse>builder()
-                .result(attendanceService.getAttendance(attendance_id))
-                .build();
-    }
-
-    //get attendance by session
-    @GetMapping("/get-attendance-session/{session_id}")
-    public ApiResponse<Page<AttendanceResponse>> getAttendanceBySession(@PathVariable("session_id") String session_id,
-                                                                        @RequestParam int page,
-                                                                        @RequestParam int size) {
-        return ApiResponse.<Page<AttendanceResponse>>builder()
-                .result(attendanceService.getAttendanceBySession(session_id, page, size))
-                .build();
-    }
-
-    //get attendance by student
-    @GetMapping("/get-attendance-student/{student_id}")
-    public ApiResponse<Page<AttendanceResponse>> getAttendanceByStudent(@PathVariable("student_id") String student_id,
-                                                                        @RequestParam int page,
-                                                                        @RequestParam int size) {
-        return ApiResponse.<Page<AttendanceResponse>>builder()
-                .result(attendanceService.getAttendanceByStudent(student_id, page, size))
-                .build();
-    }
-
-    //update attendance
-    @PostMapping("/update-attendance/{attendance_id}")
-    public ApiResponse<AttendanceResponse> updateSessionById(@PathVariable("attendance_id") String attendance_id, @RequestBody AttendanceRequest request) {
-        return ApiResponse.<AttendanceResponse>builder()
-                .result(attendanceService.updateAttendance(attendance_id, request))
-                .build();
-    }
-
-    //delete attendance
-    @DeleteMapping("/delete-attendance/{attendance_id}")
-    public ApiResponse<?> deleteAttendanceById(@PathVariable("attendance_id") String attendance_id) {
-        attendanceService.deleteAttendance(attendance_id);
-        return ApiResponse.builder()
-                .message("Delete attendance successfully!")
-                .build();
-    }
-
-    /**********************************
-     * Manage News
-     **********************************/
-    @PostMapping("/create-news")
-    public ApiResponse<NewsResponse> createNews(@RequestBody @Valid NewsRequest request) {
-        return ApiResponse.<NewsResponse>builder()
-                .result(newsService.createNews(request))
-                .message("Create draft news successfully!")
-                .build();
-    }
-
-    //get news
-    @GetMapping("/get-all-news")
-    public ApiResponse<Page<NewsResponse>> getNewsByBatch(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<NewsResponse>>builder()
-                .result(newsService.getAllNews(page, size))
-                .build();
-    }
-
-    //get publish news
-    @GetMapping("/get-all-publish-news")
-    public ApiResponse<Page<NewsResponse>> getAllPublishNews(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<NewsResponse>>builder()
-                .result(newsService.getAllPublishNews(page, size))
-                .build();
-    }
-
-    //update news
-    @PostMapping("/update-news/{newsId}")
-    public ApiResponse<NewsResponse> updateNews(@PathVariable("newsId") String newsId, @RequestBody NewsRequest request) {
-        return ApiResponse.<NewsResponse>builder()
-                .result(newsService.updateNews(newsId, request))
-                .build();
-    }
-
-    //delete news
-    @DeleteMapping("/delete-news/{newsId}")
-    public ApiResponse<?> deleteNews(@PathVariable("newsId") String newsId) {
-        newsService.deleteNews(newsId);
-        return ApiResponse.builder()
-                .message("Delete news successfully!")
-                .build();
-    }
-
-    // getNewsById
-    @GetMapping("/get-news")
-    public ApiResponse<NewEntity> getNewsById(@RequestParam String newsId) {
-        NewEntity newEntity = newsService.getNewtById(newsId);
-        return ApiResponse.<NewEntity>builder()
-                .result(newEntity)
-                .build();
-    }
-
-
-    /**********************************
-     * Manage Mark
-     **********************************/
-    //create mark
-    @PostMapping("/create-mark")
-    public ApiResponse<?> createMark(@RequestBody @Valid MarkCreationRequest request) {
-        markService.createMark(request);
-        return ApiResponse.builder()
-                .message("Create new mark successfully!")
-                .build();
-    }
-
-    //get all mark
-    @GetMapping("/get-all-mark")
-    public ApiResponse<Page<MarkResponse>> getAllMark(@RequestParam int page, @RequestParam int size) {
-        return ApiResponse.<Page<MarkResponse>>builder()
-                .result(markService.getAllMark(page, size))
-                .build();
-    }
-
-    //get a mark by id
-    @GetMapping("/get-mark/{mark_id}")
-    public ApiResponse<MarkResponse> getMark(@PathVariable("mark_id") String mark_id) {
-        return ApiResponse.<MarkResponse>builder()
-                .result(markService.getMark(mark_id))
-                .build();
-    }
-
-    //get mark list of a student
-    @GetMapping("/get-student-mark/{student_id}")
-    public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
-        markService.calculateAverageMark(student_id);
-        return ApiResponse.<List<MarkResponse>>builder()
-                .result(markService.getMarkByStudent(student_id))
-                .build();
-    }
-
-    //update mark
-    @PostMapping("/update-mark/{mark_id}")
-    public ApiResponse<MarkResponse> updateMark(@PathVariable("mark_id") String mark_id, @RequestBody @Valid MarkUpdateRequest request) {
-        return ApiResponse.<MarkResponse>builder()
-                .result(markService.updateMark(mark_id, request))
-                .message("Mark update successfully!")
-                .build();
-    }
-
-    //deleteMark
-    @DeleteMapping("/delete-mark/{mark_id}")
-    public ApiResponse<?> deleteMark(@PathVariable("mark_id") String mark_id) {
-        markService.deleteMark(mark_id);
-        return ApiResponse.builder()
-                .message("Delete mark successfully!")
-                .build();
-    }
-
-    //get mark by exam and class
-    @GetMapping("/get-mark-by-session-exam")
-    public ApiResponse<List<MarkResponse>> getMarkByExamAndClass(@RequestParam int exam_id, @RequestParam String class_id) {
-        return ApiResponse.<List<MarkResponse>>builder()
-                .result(markService.getMarkByExamAndSessionClass(exam_id, class_id) )
                 .build();
     }
 

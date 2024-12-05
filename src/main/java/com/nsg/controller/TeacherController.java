@@ -23,8 +23,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @SecurityRequirement(name = "Authorization")
 public class TeacherController {
-    @Autowired
-    TeacherService teacherService;
 
     @Autowired
     UserService userService;
