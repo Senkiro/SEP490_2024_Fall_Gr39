@@ -1,9 +1,5 @@
 package com.nsg.controller;
 
-import com.nsg.common.enums.UserRole;
-import com.nsg.dto.request.lesson.LessonCreateRequest;
-import com.nsg.dto.request.student.StudentCreattionRequest;
-import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.session.SessionResponse;
@@ -11,13 +7,11 @@ import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
