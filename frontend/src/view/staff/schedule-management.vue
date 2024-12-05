@@ -18,7 +18,7 @@
           </option>
         </select>
 
-        <select id="class-filter" class="filter-select" v-model="selectedClassId">
+        <select id="class-filter" class="filter-select" v-model="selectedClassId" @change="fetchSessions">
           <option value="" disabled>Select Class</option>
           <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
             {{ classItem.name }}
@@ -87,28 +87,31 @@
                   </div>
                 </td>
 
-                <!-- Hiển thị các cột bình thường -->
                 <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
                 <td id="teacher">
                   <template v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</template>
                   <template v-else>
-                    <select v-model="selectedTeacher[session.sessionId]" class="filter-select">
+                    <select v-model="selectedTeacher[session.sessionId]" class="filter-select"
+                            v-if="session.lessonResponse || session.eventName">
                       <option value="" disabled>Select Teacher</option>
                       <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
                         {{ teacher.name }}
                       </option>
                     </select>
+                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.fullName || "-" }}</template>
                   </template>
                 </td>
                 <td id="room">
                   <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</template>
                   <template v-else>
-                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select">
+                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select"
+                            v-if="session.lessonResponse || session.eventName">
                       <option value="" disabled>Select Room</option>
                       <option v-for="room in rooms" :key="room.number" :value="room.number">
                         {{ room.number }}
                       </option>
                     </select>
+                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.roomNumber || "-" }}</template>
                   </template>
                 </td>
                 <td id="lesson">
@@ -120,34 +123,26 @@
                 <td id="event">
                   <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</template>
                   <template v-else>
-                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select">
+                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
+                            v-if="!session.lessonResponse">
                       <option value="" disabled>Select Event</option>
                       <option v-for="event in events" :key="event.id" :value="event.id">
                         {{ event.title }}
                       </option>
                     </select>
+                    <template v-if="session.lessonResponse">{{ session.eventName || "-" }}</template>
                   </template>
                 </td>
                 <td>
-                  <template v-if="session.eventName || session.lessonResponse">
-                    <div v-if="!isEditing[session.sessionId]" class="icon-group">
-                      <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
-                      <VsxIcon
-                          iconName="ArrowSwapVertical"
-                          size="25"
-                          type="linear"
-                          @click="openChangeDatePopup(session.sessionId)"
-                      />
-
-                    </div>
-                    <div v-else class="icon-group">
-                      <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8"
-                        @click="editSession(session.sessionId)" />
-                      <!-- Cancel Button -->
-                      <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F"
-                        @click="cancelEdit(session.sessionId)" />
-                    </div>
-                  </template>
+                  <div v-if="!isEditing[session.sessionId]" class="icon-group">
+                    <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
+                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
+                  </div>
+                  <div v-else class="icon-group">
+                    <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8" @click="editSession(session.sessionId)" />
+                    <!-- Cancel Button -->
+                    <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F" @click="cancelEdit(session.sessionId)" />
+                  </div>
                 </td>
               </tr>
             </template>
@@ -221,7 +216,7 @@
         <div class="popup-title">
           <h2>Change date</h2>
         </div>
-        <form @submit.prevent="changeDate">
+        <form>
           <!-- Thông tin hiện tại -->
           <b>From:</b>
           <div class="form-group">
@@ -294,7 +289,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn-submit" type="button" @click="changeDate">Change</button>
+            <button class="btn-submit" type="button" @click="swapSessions">Change</button>
           </div>
         </form>
         <p v-if="errorMessage" class="error"></p>
@@ -735,7 +730,7 @@ export default {
         curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
         timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
         roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
-        eventId: this.selectedEventTable[sessionId] || sessionData.eventId || "",
+        eventId: this.selectedEventTable[sessionId] || sessionData.eventId  ||"",
         userId: this.selectedTeacher[sessionId] || sessionData.userId || "",
       };
 
@@ -841,6 +836,55 @@ export default {
         };
       });
     },
+    getSelectedToSessionId() {
+      // Tìm session không khả dụng dựa trên ngày và timeSlot
+      const selectedSession = this.unavailableSessions.find((session) => {
+        return (
+            session.date === this.selectedDate &&
+            session.timeSlotResponse.timeSLotId === this.selectedChangeDateTimeSlotId
+        );
+      });
+
+      return selectedSession ? selectedSession.sessionId : null; // Lấy sessionId nếu tìm thấy
+    },
+    async swapSessions() {
+      const currentSessionId = this.currentSession?.sessionId; // Lấy ID session hiện tại
+      const toSessionId = this.getSelectedToSessionId(); // Lấy ID session muốn chuyển đến
+
+      if (!currentSessionId || !toSessionId) {
+        console.error("Invalid session IDs for swapping.");
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.post(
+            `http://localhost:8088/fja-fap/staff/swap-to-unavailable-session`,
+            null,
+            {
+              params: { currentSessionId, toSessionId },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+
+        if (response.status === 200) {
+          console.log("Session swap successful:", response.data);
+          this.showChangeDatePopup = false;
+          this.selectedChangeDateTimeSlotId = null;
+          this.selectedDate = null;
+          this.popupSelectedWeekIndex = null;
+
+          this.showNotification("Session swap successfully!", "success");
+          this.fetchSessions();
+          // Có thể cập nhật lại danh sách sessions nếu cần
+        } else {
+          console.error("Failed to swap sessions:", response);
+        }
+      } catch (error) {
+        console.error("Error swapping sessions:", error);
+      }
+    },
+
   },
   computed: {
     groupedSessions() {

@@ -173,7 +173,7 @@ export default {
       return false; // Có thể nhấn nút
     },
     getActionText(item) {
-      if (item.status) {
+      if (item.attendanceStatus === 'Attended') {
         return "Edit attendance";
       }
 

@@ -131,9 +131,9 @@ export default {
           }
         }
 
+
         await this.updateSessionMarkStatus(this.sessionId, "Added");
 
-        this.showNotification("All marks updated successfully and session status updated!", "success");
       } catch (error) {
         console.error("Error updating marks:", error);
         this.showNotification("Error occurred while updating marks.", "error");
@@ -155,6 +155,7 @@ export default {
         );
 
         if (response.data.code === 0) {
+          this.showNotification("All marks updated successfully and session status updated!", "success");
           console.log(`Session ${sessionId} status updated to ${newStatus}`);
         } else {
           console.error(`Failed to update session status: ${response.data.message}`);
@@ -177,7 +178,6 @@ export default {
         alert("Marks must be between 0 and 10.");
         mark.mark = 0;
       } else if (!/^\d+(\.\d{1,2})?$/.test(mark.mark)) {npm
-        // alert("Marks must have at most 2 decimal places.");
         mark.mark = Math.round(mark.mark * 100) / 100;
       }
     }
