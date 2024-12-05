@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.dto.request.event.EventUpdateRequest;
 import com.nsg.dto.request.event.EventCreateRequest;
+import com.nsg.dto.request.eventFeedback.EventFeedbackCreattionRequest;
 import com.nsg.dto.request.holiday.HolidayRequest;
 import com.nsg.dto.request.room.RoomRequest;
 import com.nsg.dto.request.session.ScheduleCreationRequest;
@@ -11,6 +12,7 @@ import com.nsg.dto.request.timeSlot.TimeSlotCreationRequest;
 import com.nsg.dto.request.timeSlot.TimeSlotUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.event.EventResponse;
+import com.nsg.dto.response.eventFeedback.EventFeedbackResponse;
 import com.nsg.dto.response.holiday.HolidayResponse;
 import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.session.SessionResponse;
@@ -59,6 +61,9 @@ public class ScheduleController {
 
     @Autowired
     MarkService markService;
+
+    @Autowired
+    EventFeedbackService eventFeedbackService;
 
     /**********************************
      * Manage Session
@@ -440,4 +445,73 @@ public class ScheduleController {
                 .result(holidayEntity)
                 .build();
     }
+
+    /**********************************
+     * Manage Event Feedback
+     **********************************/
+    //create new event feedback
+    @PostMapping("/create-event-feedback")
+    public ApiResponse<?> createEventFeedback(@RequestBody @Valid EventFeedbackCreattionRequest request) {
+        eventFeedbackService.createEventFeedback(request);
+        return ApiResponse.builder()
+                .message("Create new event feedback successfully!")
+                .build();
+    }
+
+
+    //get all
+    @GetMapping("/get-all-event-feedback")
+    public ApiResponse<Page<EventFeedbackResponse>> getAllEventFeedback(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<EventFeedbackResponse>>builder()
+                .result( eventFeedbackService.getAllEventFeedback(page, size) )
+                .build();
+    }
+
+    //get one
+    @GetMapping("/get-event-feedback")
+    public ApiResponse<EventFeedbackResponse> getEventFeedback(@RequestParam String event_feedback_id) {
+        return ApiResponse.<EventFeedbackResponse>builder()
+                .result( eventFeedbackService.getEventFeedback(event_feedback_id) )
+                .build();
+    }
+
+    //get by event id
+    @GetMapping("/get-event-feedback-by-event")
+    public ApiResponse<Page<EventFeedbackResponse>> getEventFeedbackByEvent(@RequestParam String event_id,
+                                                                            @RequestParam int page,
+                                                                            @RequestParam int size) {
+        return ApiResponse.<Page<EventFeedbackResponse>>builder()
+                .result( eventFeedbackService.getEventFeedbackOfOneEvent(event_id, page, size) )
+                .build();
+    }
+
+    //get by student id
+    @GetMapping("/get-event-feedback-by-student")
+    public ApiResponse<Page<EventFeedbackResponse>> getEventFeedbackByStudent(@RequestParam String student_id,
+                                                                              @RequestParam int page,
+                                                                              @RequestParam int size) {
+        return ApiResponse.<Page<EventFeedbackResponse>>builder()
+                .result( eventFeedbackService.getEventFeedbackOfOneStudent(student_id, page, size) )
+                .build();
+    }
+
+    //update
+    @PostMapping("/update-event-feedback")
+    public ApiResponse<EventFeedbackResponse> updateEventFeedback(@RequestParam String event_feedback_id,
+                                                                  @RequestBody @Valid EventFeedbackCreattionRequest request) {
+        eventFeedbackService.updateEventFeedback(event_feedback_id, request);
+        return ApiResponse.<EventFeedbackResponse>builder()
+                .message("Update event feedback successfully!")
+                .build();
+    }
+
+    //delete
+    @DeleteMapping("/delete-event-feedback")
+    public ApiResponse<?> deleteEventFeedback(@RequestParam String event_feedback_id) {
+        eventFeedbackService.deleteEventFeedback(event_feedback_id);
+        return ApiResponse.builder()
+                .message("Delete event feedback successfully!")
+                .build();
+    }
+
 }
