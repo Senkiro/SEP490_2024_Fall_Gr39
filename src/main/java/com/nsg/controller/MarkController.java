@@ -57,7 +57,7 @@ public class MarkController {
     //get mark list of a student
     @GetMapping("/get-student-mark/{student_id}")
     public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
-        markService.countAverageMark(student_id);
+        markService.calculateAverageMark(student_id);
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByStudent(student_id))
                 .build();

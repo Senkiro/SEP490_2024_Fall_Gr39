@@ -70,6 +70,7 @@ public enum ErrorCode {
     EVENT_NOT_EXIST(1220, "Event not existed!"),
     EVENT_EXISTED(1221, "Event existed!"),
     EVENT_NOT_FOUND(1222, "Event not found"),
+    NO_EVENT_IN_CLASS(1225, "No event in class!"),
 
     //Event feedback
     EVENT_FEED_BACK_RATE_IS_NULL(1223, "Event feed back rate can not be null!"),

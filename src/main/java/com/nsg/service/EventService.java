@@ -27,5 +27,7 @@ public interface EventService {
     void deleteEvent(String examId);
 
     EventResponse updateEventById(String eventId, EventUpdateRequest request, MultipartFile image);
+
+    List<EventResponse> findEventsOfOneClassInSchedule(String classId);
 }
 

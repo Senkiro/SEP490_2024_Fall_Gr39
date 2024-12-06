@@ -93,4 +93,11 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
                                                         @Param("date") String date,
                                                         @Param("time_slot_id") String time_slot_id);
 
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND event_id is not null " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsHaveEvent(@Param("classId") String classId);
+
 }

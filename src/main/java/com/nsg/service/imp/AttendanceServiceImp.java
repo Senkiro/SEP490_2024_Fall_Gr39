@@ -128,13 +128,11 @@ public class AttendanceServiceImp implements AttendanceService {
                 createRequest.add(attendanceRequest);
             }
         }
-
         // call create attendance function
         for (AttendanceRequest request : createRequest) {
             createAttendance(request);
         }
     }
-
 
     @Override
     public Page<AttendanceResponse> getAllAttendance(int page, int size) {
