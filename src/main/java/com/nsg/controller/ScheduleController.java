@@ -197,4 +197,16 @@ public class ScheduleController {
                 .build();
     }
 
+    @PostMapping("/auto-fill-teacher")
+    public ApiResponse<?> autoFillTeacherIntoSchedule(@RequestParam String teacherId,
+                                                    @RequestParam String classId,
+                                                      @RequestParam String sessionId,
+                                                      @RequestParam int weekStart,
+                                                      @RequestParam int weekEnd ) {
+        sessionService.autoFillTeacherToSession(teacherId, classId, sessionId, weekStart, weekEnd);
+        return ApiResponse.builder()
+                .message("Fill teacher!")
+                .build();
+    }
+
 }
