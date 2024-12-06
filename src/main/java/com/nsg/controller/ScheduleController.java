@@ -201,9 +201,8 @@ public class ScheduleController {
     public ApiResponse<?> autoFillTeacherIntoSchedule(@RequestParam String teacherId,
                                                     @RequestParam String classId,
                                                       @RequestParam String sessionId,
-                                                      @RequestParam int weekStart,
                                                       @RequestParam int weekEnd ) {
-        sessionService.autoFillTeacherToSession(teacherId, classId, sessionId, weekStart, weekEnd);
+        sessionService.autoFillTeacherToSession(teacherId, classId, sessionId, weekEnd);
         return ApiResponse.builder()
                 .message("Fill teacher!")
                 .build();

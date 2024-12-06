@@ -332,7 +332,6 @@ public class SessionServiceImp implements SessionService {
     public void autoFillTeacherToSession(String teacherId,
                                          String classId,
                                          String sessionId,
-                                         int weekStart,
                                          int weekEnd) {
         //get teacher
         UserEntity teacher = userRepository.findById(teacherId).orElseThrow(
@@ -354,8 +353,10 @@ public class SessionServiceImp implements SessionService {
                     session.getTimeSlotEntity().getTimeSlotId());
 
         for (SessionEntity sessionEntity : sessionEntityList) {
-            //set teacher for each session
-            sessionEntity.setUser(teacher);
+            //set teacher for each session if session is available
+            if ( sessionEntity.isSessionAvailable() ) {
+                sessionEntity.setUser(teacher);
+            }
         }
 
         //save all

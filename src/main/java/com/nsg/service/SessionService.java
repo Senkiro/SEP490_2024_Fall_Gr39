@@ -69,7 +69,6 @@ public interface SessionService {
     void autoFillTeacherToSession(String teacherId,
                                   String classId,
                                   String sessionId,
-                                  int weekStart,
                                   int weekEnd);
 
 }
