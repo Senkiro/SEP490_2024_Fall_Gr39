@@ -28,4 +28,6 @@ public interface EventFeedbackService {
 
     //delete
     void deleteEventFeedback(String eventFeedbackId);
+
+    void calculateAvgRateOfOneEvent(String eventId);
 }

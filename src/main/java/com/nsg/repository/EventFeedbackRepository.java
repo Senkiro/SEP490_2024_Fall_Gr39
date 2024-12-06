@@ -19,10 +19,6 @@ public interface EventFeedbackRepository extends JpaRepository<EventFeedbackEnti
 
     Page<EventFeedbackEntity> findByStudentEntityStudentId(String studentId, PageRequest pageable);
 
-    @Query(value = "SELECT * FROM Event " +
-            "WHERE class_id = :classId " +
-            "AND attendance_status is not null " +
-            "ORDER BY date ASC, session_number ASC",
-            nativeQuery = true)
-    List<EventEntity> findSessionsAttendanceStatus(@Param("classId") String classId);
+    List<EventFeedbackEntity> findByEventEntityEventId(String eventId);
+
 }

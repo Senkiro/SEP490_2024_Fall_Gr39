@@ -175,4 +175,13 @@ public class EventController {
                 .build();
     }
 
+    //calculate avgRate of one event
+    @GetMapping("/calculate-avg-rate-event")
+    public ApiResponse<?> calculateEventFeedbackAvgRate(@RequestParam String event_id) {
+        eventFeedbackService.calculateAvgRateOfOneEvent(event_id);
+        return ApiResponse.builder()
+                .message("Average event feedback rate have been calculated!")
+                .build();
+    }
+
 }

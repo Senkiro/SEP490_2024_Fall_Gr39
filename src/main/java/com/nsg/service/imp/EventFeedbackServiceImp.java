@@ -112,6 +112,10 @@ public class EventFeedbackServiceImp implements EventFeedbackService {
     public Page<EventFeedbackResponse> getEventFeedbackOfOneEvent(String eventId, int page, int size) {
         Page<EventFeedbackEntity> eventFeedbackEntities = eventFeedbackRepository.findByEventEntityEventId(eventId, PageRequest.of(page, size));
         List<EventFeedbackResponse> eventFeedbackResponses = toEventFeedbackResponseList(eventFeedbackEntities.getContent());
+
+        //calculate avg rate of event
+        calculateAvgRateOfOneEvent(eventId);
+
         return new PageImpl<>(eventFeedbackResponses, eventFeedbackEntities.getPageable(), eventFeedbackEntities.getTotalElements());
     }
 
@@ -163,4 +167,32 @@ public class EventFeedbackServiceImp implements EventFeedbackService {
     public void deleteEventFeedback(String eventFeedbackId) {
         eventFeedbackRepository.deleteById(eventFeedbackId);
     }
+
+    //calculate avgRate of one event
+    @Override
+    public void calculateAvgRateOfOneEvent(String eventId) {
+        //get event
+        EventEntity event = eventRepository.findById(eventId).orElseThrow(
+                () -> new AppException(ErrorCode.EVENT_NOT_FOUND)
+        );
+
+        //get event feedbacks by eventId
+        List<EventFeedbackEntity> eventFeedbackEntities = eventFeedbackRepository.findByEventEntityEventId(eventId);
+
+        float avgRate = 0.0F;
+
+        //calculate avgRate
+        for (EventFeedbackEntity eventFeedback : eventFeedbackEntities) {
+            avgRate += eventFeedback.getFeedbackRate();
+        }
+
+        avgRate = avgRate / eventFeedbackEntities.size();
+
+        //update event's avgRate
+        event.setAvgRate(avgRate);
+
+        eventRepository.save(event);
+
+    }
+
 }
