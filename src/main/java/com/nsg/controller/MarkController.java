@@ -57,7 +57,7 @@ public class MarkController {
     //get mark list of a student
     @GetMapping("/get-student-mark/{student_id}")
     public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
-        markService.countAverageMark(student_id);
+        markService.calculateAverageMark(student_id);
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByStudent(student_id))
                 .build();
@@ -86,6 +86,15 @@ public class MarkController {
     public ApiResponse<List<MarkResponse>> getMarkByExamAndClass(@RequestParam int exam_id, @RequestParam String class_id) {
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByExamAndSessionClass(exam_id, class_id) )
+                .build();
+    }
+
+    //create mark for one student
+    @PostMapping("/create-students-marks")
+    public ApiResponse<?> createAllMarkForOneStudent(@RequestParam String studentId) {
+        markService.createAllMarkForOneStudent(studentId);
+        return ApiResponse.builder()
+                .message("Marks for student create successfully!")
                 .build();
     }
 }

@@ -66,4 +66,9 @@ public interface SessionService {
 
     void swapToUnavailableSession(String currentSessionId, String toSessionId);
 
+    void autoFillTeacherToSession(String teacherId,
+                                  String classId,
+                                  String sessionId,
+                                  int weekEnd);
+
 }

@@ -17,7 +17,7 @@ public interface ExamRepository extends BaseRepository<ExamEntity, String> {
             "FROM exam e " +
             "JOIN curriculumn c ON e.exam_id = c.exam_id " +
             "JOIN session s ON c.curriculumn_id = s.curriculumn_id " +
-            "WHERE s.class_id = :classId AND c.exam_id IS NOT NULL", nativeQuery = true)
+            "WHERE s.class_id = :classId ", nativeQuery = true)
     List<ExamEntity> findExamsByClassId(@Param("classId") String classId);
 
 }

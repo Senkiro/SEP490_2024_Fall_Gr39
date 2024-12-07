@@ -201,11 +201,22 @@ public class ScheduleController {
                 .build();
     }
 
+
+    @PostMapping("/auto-fill-teacher")
+    public ApiResponse<?> autoFillTeacherIntoSchedule(@RequestParam String teacherId,
+                                                    @RequestParam String classId,
+                                                      @RequestParam String sessionId,
+                                                      @RequestParam int weekEnd ) {
+        sessionService.autoFillTeacherToSession(teacherId, classId, sessionId, weekEnd);
+        return ApiResponse.builder()
+                .message("Fill teacher!")
+
     //get available room for session
     @GetMapping("/get-available-room/{session_id}")
     public ApiResponse<List<RoomResponse>> getAvailableRoom(@PathVariable("session_id") String session_id) {
         return ApiResponse.<List<RoomResponse>>builder()
                 .result(roomService.getAvailableRoomForSession(session_id))
+
                 .build();
     }
 

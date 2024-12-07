@@ -86,11 +86,21 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     //find by date, time_slot_id, class_id
     @Query(value = "SELECT * FROM Session " +
             "WHERE class_id = :classId " +
-            "AND date = :date " +
+            "AND WEEKDAY(date) = WEEKDAY(:date) " +
+            "AND date >= :date " +
+            "AND date <= DATE_ADD(:date, INTERVAL :weekEnd WEEK) " +
             "AND time_slot_id = :time_slot_id ",
             nativeQuery = true)
-    SessionEntity findSessionsByDateTimeSlotClass(@Param("classId") String classId,
+    List<SessionEntity> findSessionsByDateTimeSlotClass(@Param("classId") String classId,
                                                         @Param("date") String date,
+                                                        @Param("weekEnd") int weekEnd,
                                                         @Param("time_slot_id") String time_slot_id);
+
+    @Query(value = "SELECT * FROM Session " +
+            "WHERE class_id = :classId " +
+            "AND event_id is not null " +
+            "ORDER BY date ASC, session_number ASC",
+            nativeQuery = true)
+    List<SessionEntity> findSessionsHaveEvent(@Param("classId") String classId);
 
 }

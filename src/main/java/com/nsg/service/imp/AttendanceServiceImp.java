@@ -80,6 +80,7 @@ public class AttendanceServiceImp implements AttendanceService {
     }
 
     //create attendance for students in a class
+    @Override
     public void createAttendanceForStudentsInClass(String classId, List<StudentEntity> studentEntityList) {
         //check class existed or not
         if (!classRepository.existsById(classId)) {
@@ -98,16 +99,8 @@ public class AttendanceServiceImp implements AttendanceService {
         //check session
         if (availableSessions.isEmpty()) {
             //There are no session for this class
-            throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
+            throw new AppException(ErrorCode.SCHEDULE_EMPTY);
         }
-
-//        // filter which session has CurriculumnEntity not null
-//        List<SessionEntity> validSessions = new ArrayList<>();
-//        for (SessionEntity session : sessionEntityList) {
-//            if (session.getCurriculumnEntity() != null) {
-//                validSessions.add(session);
-//            }
-//        }
 
         // list AttendanceRequest
         List<AttendanceRequest> createRequest = new ArrayList<>();
@@ -128,13 +121,53 @@ public class AttendanceServiceImp implements AttendanceService {
                 createRequest.add(attendanceRequest);
             }
         }
-
         // call create attendance function
         for (AttendanceRequest request : createRequest) {
             createAttendance(request);
         }
     }
 
+    @Override
+    public void createAttendanceForOneStudent(String studentId) {
+        //get student
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        //check exist?
+        if (attendanceRepository.existsByStudentId(studentId)) {
+            throw new AppException(ErrorCode.ATTENDANCE_EXISTED);
+        }
+
+        //get all session available by classId, then sort it by day and sessionNumber
+        List<SessionEntity> availableSessions = sessionRepository.findSessionsByClassIdAndAvailableAndStatus( student.getClassEntity().getClassId() );
+
+        //check session
+        if (availableSessions.isEmpty()) {
+            //There are no session for this class
+            throw new AppException(ErrorCode.SCHEDULE_EMPTY);
+        }
+
+        // list AttendanceRequest
+        List<AttendanceRequest> createRequest = new ArrayList<>();
+        String defaultStatus = "Not happen";
+
+        for (SessionEntity session : availableSessions) {
+                AttendanceRequest attendanceRequest = new AttendanceRequest();
+
+                attendanceRequest.setStatus(defaultStatus);
+                attendanceRequest.setSessionId(session.getSessionId());
+                attendanceRequest.setStudentId( studentId );
+
+                createRequest.add(attendanceRequest);
+        }
+
+        // call create attendance function
+        for (AttendanceRequest request : createRequest) {
+            createAttendance(request);
+        }
+
+    }
 
     @Override
     public Page<AttendanceResponse> getAllAttendance(int page, int size) {

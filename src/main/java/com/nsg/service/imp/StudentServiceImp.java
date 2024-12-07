@@ -17,6 +17,7 @@ import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.*;
 import com.nsg.service.AttendanceService;
+import com.nsg.service.MarkService;
 import com.nsg.service.StudentService;
 import com.nsg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -289,6 +290,18 @@ public class StudentServiceImp implements StudentService {
         return new PageImpl<>(studentListResponse,
                 studentEntityList.getPageable(),
                 studentEntityList.getTotalElements());
+    }
+
+    @Override
+    public void markUpdate(String studentId, float avgMark) {
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        student.setAvgMark(avgMark);
+
+        studentRepository.save(student);
+
     }
 
     //convert data to list of student response

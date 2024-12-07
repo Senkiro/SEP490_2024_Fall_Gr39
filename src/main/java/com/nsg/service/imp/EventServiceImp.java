@@ -8,7 +8,9 @@ import com.nsg.dto.request.event.EventCreateRequest;
 import com.nsg.dto.request.event.EventUpdateRequest;
 import com.nsg.dto.response.event.EventResponse;
 import com.nsg.entity.EventEntity;
+import com.nsg.entity.SessionEntity;
 import com.nsg.repository.EventRepository;
+import com.nsg.repository.SessionRepository;
 import com.nsg.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,26 +32,30 @@ public class EventServiceImp implements EventService {
     @Autowired
     private EventMapper eventMapper;
 
+    @Autowired
+    SessionRepository sessionRepository;
+
     @Override
     public List<EventResponse> getAllEvent() {
         List<EventEntity> eventEntities = eventRepository.findAll();
-        List<EventResponse> eventResponses = new ArrayList<>();
-        for (EventEntity eventEntity : eventEntities) {
-            EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
-            eventResponses.add(eventResponse);
-        }
+        List<EventResponse> eventResponses = toEventResponseList(eventEntities);
         return eventResponses;
     }
 
     @Override
     public Page<EventResponse> getEvents(int page, int size){
         Page<EventEntity> eventEntities = eventRepository.findAll(PageRequest.of(page, size));
+        List<EventResponse> eventResponses = toEventResponseList(eventEntities.getContent());
+        return new PageImpl<>(eventResponses, eventEntities.getPageable(), eventEntities.getTotalElements());
+    }
+
+    public List<EventResponse> toEventResponseList(List<EventEntity> eventEntities) {
         List<EventResponse> eventResponses = new ArrayList<>();
         for (EventEntity eventEntity : eventEntities) {
             EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
             eventResponses.add(eventResponse);
         }
-        return new PageImpl<>(eventResponses, eventEntities.getPageable(), eventEntities.getTotalElements());
+        return eventResponses;
     }
 
     @Override
@@ -74,11 +80,7 @@ public class EventServiceImp implements EventService {
     @Override
     public Page<EventResponse> findEventsByName(String name, int page, int size) {
         Page<EventEntity> eventEntities =  eventRepository.findByEventNameContaining(name, PageRequest.of(page, size));
-        List<EventResponse> eventResponses = new ArrayList<>();
-        for (EventEntity eventEntity : eventEntities) {
-            EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
-            eventResponses.add(eventResponse);
-        }
+        List<EventResponse> eventResponses = toEventResponseList(eventEntities.getContent());
         return new PageImpl<>(eventResponses, eventEntities.getPageable(), eventEntities.getTotalElements());
     }
 
@@ -132,4 +134,25 @@ public class EventServiceImp implements EventService {
             throw new RuntimeException("Failed to save image", e);
         }
     }
+
+    //get event feedback of one class (in all session of one class)
+    @Override
+    public List<EventResponse> findEventsOfOneClassInSchedule(String classId) {
+        //get list of session have event of one class
+        List<SessionEntity> sessionEntityList = sessionRepository.findSessionsHaveEvent(classId);
+
+        //check empty
+        if (sessionEntityList.isEmpty()) {
+            throw new AppException(ErrorCode.NO_EVENT_IN_CLASS);
+        }
+
+        //get list of event
+        List<EventEntity> eventEntityList = new ArrayList<>();
+        for (SessionEntity session : sessionEntityList) {
+            EventEntity event = session.getEventEntity();
+            eventEntityList.add(event);
+        }
+        return toEventResponseList(eventEntityList);
+    }
+
 }

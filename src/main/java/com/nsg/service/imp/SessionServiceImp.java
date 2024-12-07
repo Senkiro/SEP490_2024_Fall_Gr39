@@ -295,7 +295,7 @@ public class SessionServiceImp implements SessionService {
 
         //if available sesssion list null
         if (availableSessions.isEmpty()) {
-            throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
+            throw new AppException(ErrorCode.NO_SESSION_AVAILABLE);
         }
 
         int count_curriculumn = 0;
@@ -328,37 +328,39 @@ public class SessionServiceImp implements SessionService {
 
     //get session by session id and time_slot_id
     //autofill teacher on session when update
+    @Override
     public void autoFillTeacherToSession(String teacherId,
                                          String classId,
-                                         String date,
-                                         String timeSlotId,
-                                         int weekStart,
+                                         String sessionId,
                                          int weekEnd) {
         //get teacher
         UserEntity teacher = userRepository.findById(teacherId).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
 
-        LocalDate startDate = LocalDate.parse(date);
+        //get session
+        SessionEntity session = sessionRepository.findById(sessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
 
-        weekStart = 1;
-        int dateIncrease = 7;
-        weekEnd = 7;
+        //get date of first session
+        LocalDate startDate = session.getDate();
 
-        //get session by week
-        while (weekStart < weekEnd) {
+        //get all session need to set teacher
+        List<SessionEntity> sessionEntityList = sessionRepository.findSessionsByDateTimeSlotClass(classId,
+                    String.valueOf(startDate),
+                    weekEnd,
+                    session.getTimeSlotEntity().getTimeSlotId());
 
-            LocalDate dateOfSession = startDate.plusDays(dateIncrease);
-            //find session by: classId, date, time_slot_id
-            //get session: classId, date, timeSlotId
-            SessionEntity session = sessionRepository.findSessionsByDateTimeSlotClass(classId, String.valueOf(dateOfSession), timeSlotId);
-
-
-            weekStart++;
-            dateIncrease += 7;
+        for (SessionEntity sessionEntity : sessionEntityList) {
+            //set teacher for each session if session is available
+            if ( sessionEntity.isSessionAvailable() ) {
+                sessionEntity.setUser(teacher);
+            }
         }
 
-
+        //save all
+        sessionRepository.saveAll(sessionEntityList);
     }
 
     @Override

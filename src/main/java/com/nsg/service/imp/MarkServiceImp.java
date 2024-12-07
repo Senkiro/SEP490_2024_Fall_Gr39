@@ -5,9 +5,11 @@ import com.nsg.common.exception.AppException;
 import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.mark.MarkCreationRequest;
 import com.nsg.dto.request.mark.MarkUpdateRequest;
+import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
 import com.nsg.dto.response.mark.MarkResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.*;
+import com.nsg.service.AttendanceService;
 import com.nsg.service.ExamService;
 import com.nsg.service.MarkService;
 import com.nsg.service.StudentService;
@@ -43,6 +45,9 @@ public class MarkServiceImp implements MarkService {
 
     @Autowired
     ClassRepository classRepository;
+
+    @Autowired
+    AttendanceService attendanceService;
 
     @Override
     public void createMark(MarkCreationRequest request) {
@@ -126,17 +131,36 @@ public class MarkServiceImp implements MarkService {
     }
 
     @Override
-    public void countAverageMark(String studentId) {
+    public void calculateAverageMark(String studentId) {
+        // Lấy danh sách MarkEntity
         List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
 
-        Float totalMark = 0.0F;
-
-        for (MarkEntity mark : markEntityList) {
-            int rate = Integer.parseInt( mark.getExamEntity().getExamTypeRateEntity().getExamRate() );
-            totalMark = totalMark + ( mark.getMark() * rate / 100 );
+        // Kiểm tra danh sách rỗng để tránh lỗi chia cho 0
+        if (markEntityList.isEmpty()) {
+            throw new IllegalArgumentException("Không tìm thấy điểm của sinh viên với ID: " + studentId);
         }
 
-        System.out.println("Total mark: "+totalMark);
+        // Tính tổng điểm
+        double totalMark = 0.0;
+        for (MarkEntity mark : markEntityList) {
+            int rate = Integer.parseInt(mark.getExamEntity().getExamTypeRateEntity().getExamRate());
+            totalMark += (mark.getMark() * rate / 100.0);
+        }
+
+        // Tính trung bình
+        totalMark /= markEntityList.size();
+
+        // Lấy thống kê điểm danh
+        AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse(studentId);
+
+        // Cộng thêm điểm thưởng từ tỷ lệ điểm danh
+        totalMark += attendanceStatisticsResponse.getAttendPercentage() * 0.1;
+
+        float avgMark = (float) totalMark;
+        System.out.println("Avg mark: "+avgMark);
+
+        //update student avg mark
+        studentService.markUpdate(studentId, avgMark);
     }
 
     @Override
@@ -216,6 +240,27 @@ public class MarkServiceImp implements MarkService {
         markRepository.save(markEntity);
     }
 
+    //generate all mark for one student
+    @Override
+    public void createAllMarkForOneStudent(String studentId) {
+        //get student
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        //check exist
+        if (markRepository.existsByStudentEntityStudentId( student.getStudentId() )) {
+            throw new AppException(ErrorCode.MARK_EXISTED);
+        }
+
+        //get all exam of student in class
+        List<ExamEntity> examEntityList = examRepository.findExamsByClassId( student.getClassEntity().getClassId() );
+
+        //create marks
+        generateMarkEntityForOneStudent(student, examEntityList);
+
+    }
+
     //get all mark by examId and classId
     @Override
     public List<MarkResponse> getMarkByExamAndSessionClass(int examId, String classId) {
@@ -226,10 +271,30 @@ public class MarkServiceImp implements MarkService {
 
         List<MarkEntity> markEntityList = markRepository.findMarksByExamIdAndClassId((long) examId, classId );
         if (!markEntityList.isEmpty()) {
+            //calculate all mark of student in class
+            calculateAllStudentsMarkInClass(classId);
+
             return toMarkResponseList(markEntityList);
         } else {
             throw new AppException(ErrorCode.MARK_LIST_EMPTY);
         }
+    }
+
+    //calculate all mark of student in class
+    @Override
+    public void calculateAllStudentsMarkInClass(String classId) {
+        //get class
+        ClassEntity classEntity = classRepository.findById(classId).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        //get student list
+        List<StudentEntity> studentEntityList = classEntity.getStudentEntityList();
+
+        for (StudentEntity student : studentEntityList) {
+            calculateAverageMark(student.getStudentId());
+        }
+
     }
 
 }

@@ -24,7 +24,7 @@ public interface MarkService {
     List<MarkResponse> getMarkByStudent(String studentId);
 
     //count average mark for student
-    void countAverageMark(String studentId);
+    void calculateAverageMark(String studentId);
 
     //update mark
     MarkResponse updateMark(String markId, MarkUpdateRequest request);
@@ -35,5 +35,9 @@ public interface MarkService {
     void generateMarkForAllStudentInClass(String classId);
 
     List<MarkResponse> getMarkByExamAndSessionClass(int examId, String classId);
+
+    void calculateAllStudentsMarkInClass(String classId);
+
+    void createAllMarkForOneStudent(String studentId);
 
 }

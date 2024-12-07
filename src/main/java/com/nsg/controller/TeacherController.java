@@ -36,6 +36,9 @@ public class TeacherController {
     @Autowired
     SessionService sessionService;
 
+    @Autowired
+    MarkService markService;
+
     @GetMapping("/detail/{teacher_id}")
     public ApiResponse<UserInforResponse> teacherDetail(@PathVariable("teacher_id") String teacher_id){
         return ApiResponse.<UserInforResponse>builder()
@@ -67,6 +70,7 @@ public class TeacherController {
                                                                                  @RequestParam String classId) {
 
         Page<StudentResponse> studentList = studentService.getStudentByClassId(page, size, classId);
+        markService.calculateAllStudentsMarkInClass(classId);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentList)
                 .build();
