@@ -84,14 +84,16 @@ public enum ErrorCode {
 
     //session
     SESSION_NOT_FOUND(1260, "Session not found"),
-    SESSION_LIST_EMPTY(1261, "There are no session for this class"),
+    NO_SESSION_AVAILABLE(1261, "There are no  available session for this class"),
 
     //schedule
     SCHEDULE_EXISTED(1280, "Schedule for this class already existed!"),
+    SCHEDULE_EMPTY(1281, "Schedule is empty!"),
 
     //attendance
     ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
     NO_DATA_ATTENDANCE(1301, "No data attendance found for student"),
+    ATTENDANCE_EXISTED(1302, "Attendance already existed!"),
 
     //curriculumn
     CURRICULUMN_NOT_FOUND(1320, "Curriculumn not found!"),

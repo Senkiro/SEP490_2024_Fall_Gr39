@@ -295,7 +295,7 @@ public class SessionServiceImp implements SessionService {
 
         //if available sesssion list null
         if (availableSessions.isEmpty()) {
-            throw new AppException(ErrorCode.SESSION_LIST_EMPTY);
+            throw new AppException(ErrorCode.NO_SESSION_AVAILABLE);
         }
 
         int count_curriculumn = 0;

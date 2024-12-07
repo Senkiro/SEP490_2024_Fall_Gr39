@@ -51,6 +51,15 @@ public class AttendanceController {
                 .build();
     }
 
+    //create all attendance for one student in class
+    @PostMapping("/create-students-attendances")
+    public ApiResponse<?> createAttendanceForOneStudent(@RequestParam String studentId) {
+        attendanceService.createAttendanceForOneStudent( studentId );
+        return ApiResponse.builder()
+                .message("Create attendance for student successfully!")
+                .build();
+    }
+
     //get all attendance
     @GetMapping("/get-all-attendance")
     public ApiResponse<Page<AttendanceResponse>> getAllAttendance(@RequestParam int page, @RequestParam int size) {

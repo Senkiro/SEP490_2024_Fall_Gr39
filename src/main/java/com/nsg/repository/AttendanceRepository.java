@@ -36,12 +36,7 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
             nativeQuery = true)
     List<Object[]> getAttendanceStatistics(@Param("studentId") String studentId);
 
-//    @Query("SELECT " +
-//            "   COUNT(CASE WHEN a.status = 'attend' THEN 1 ELSE NULL END), " +
-//            "   COUNT(a), " +
-//            "   (COUNT(CASE WHEN a.status = 'attend' THEN 1 ELSE NULL END) * 1.0 / COUNT(a) * 100) " +
-//            "FROM AttendanceEntity a " +
-//            "WHERE a.studentId = :studentId")
-//    List<Object[]> getAttendanceStatisticsRaw(@Param("studentId") String studentId);
+    @Query("SELECT COUNT(a) > 0 FROM AttendanceEntity a WHERE a.studentEntity.studentId = :studentId")
+    boolean existsByStudentId(@Param("studentId") String studentId);
 
 }

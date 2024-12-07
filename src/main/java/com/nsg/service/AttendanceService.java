@@ -3,8 +3,11 @@ package com.nsg.service;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
+import com.nsg.entity.StudentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface AttendanceService {
@@ -14,6 +17,11 @@ public interface AttendanceService {
 
     //create attendance for schedule
     void createAttendancesForSession(String classId);
+
+    void createAttendanceForOneStudent(String studentId);
+
+
+    void createAttendanceForStudentsInClass(String classId, List<StudentEntity> studentEntityList);
 
     //get all
     Page<AttendanceResponse> getAllAttendance(int page, int size);
