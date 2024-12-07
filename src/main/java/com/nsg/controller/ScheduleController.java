@@ -4,6 +4,7 @@ import com.nsg.dto.request.session.ScheduleCreationRequest;
 import com.nsg.dto.request.session.SessionCreattionRequest;
 import com.nsg.dto.request.session.SessionUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.room.RoomResponse;
 import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.service.*;
@@ -32,6 +33,9 @@ public class ScheduleController {
 
     @Autowired
     MarkService markService;
+
+    @Autowired
+    RoomService roomService;
 
     /**********************************
      * Manage Session
@@ -197,6 +201,7 @@ public class ScheduleController {
                 .build();
     }
 
+
     @PostMapping("/auto-fill-teacher")
     public ApiResponse<?> autoFillTeacherIntoSchedule(@RequestParam String teacherId,
                                                     @RequestParam String classId,
@@ -205,6 +210,13 @@ public class ScheduleController {
         sessionService.autoFillTeacherToSession(teacherId, classId, sessionId, weekEnd);
         return ApiResponse.builder()
                 .message("Fill teacher!")
+
+    //get available room for session
+    @GetMapping("/get-available-room/{session_id}")
+    public ApiResponse<List<RoomResponse>> getAvailableRoom(@PathVariable("session_id") String session_id) {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .result(roomService.getAvailableRoomForSession(session_id))
+
                 .build();
     }
 

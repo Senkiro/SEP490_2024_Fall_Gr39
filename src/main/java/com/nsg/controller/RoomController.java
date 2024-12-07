@@ -44,14 +44,6 @@ public class RoomController {
                 .build();
     }
 
-    //get available room for session
-    @GetMapping("/get-available-room/{session_id}")
-    public ApiResponse<List<RoomResponse>> getAvailableRoom(@PathVariable("session_id") String session_id) {
-        return ApiResponse.<List<RoomResponse>>builder()
-                .result(roomService.getAvailableRoomForSession(session_id))
-                .build();
-    }
-
     //get available room for schedule creatation
     @GetMapping("/get-available-room-for-schedule")
     public ApiResponse<List<RoomResponse>> getAvailableRoomForSchedule(@RequestParam String time_slot_id) {

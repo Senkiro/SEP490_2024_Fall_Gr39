@@ -31,7 +31,7 @@ public class NewsController {
     public ApiResponse<NewsResponse> createNews(@RequestBody @Valid NewsRequest request) {
         return ApiResponse.<NewsResponse>builder()
                 .result(newsService.createNews(request))
-                .message("Create draft news successfully!")
+                .message("Create news successfully!")
                 .build();
     }
 
