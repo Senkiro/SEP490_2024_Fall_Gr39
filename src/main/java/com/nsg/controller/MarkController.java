@@ -88,4 +88,13 @@ public class MarkController {
                 .result(markService.getMarkByExamAndSessionClass(exam_id, class_id) )
                 .build();
     }
+
+    //create mark for one student
+    @PostMapping("/create-students-marks")
+    public ApiResponse<?> createAllMarkForOneStudent(@RequestParam String studentId) {
+        markService.createAllMarkForOneStudent(studentId);
+        return ApiResponse.builder()
+                .message("Marks for student create successfully!")
+                .build();
+    }
 }

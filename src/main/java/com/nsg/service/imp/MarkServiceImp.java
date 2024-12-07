@@ -240,6 +240,27 @@ public class MarkServiceImp implements MarkService {
         markRepository.save(markEntity);
     }
 
+    //generate all mark for one student
+    @Override
+    public void createAllMarkForOneStudent(String studentId) {
+        //get student
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        //check exist
+        if (markRepository.existsByStudentEntityStudentId( student.getStudentId() )) {
+            throw new AppException(ErrorCode.MARK_EXISTED);
+        }
+
+        //get all exam of student in class
+        List<ExamEntity> examEntityList = examRepository.findExamsByClassId( student.getClassEntity().getClassId() );
+
+        //create marks
+        generateMarkEntityForOneStudent(student, examEntityList);
+
+    }
+
     //get all mark by examId and classId
     @Override
     public List<MarkResponse> getMarkByExamAndSessionClass(int examId, String classId) {

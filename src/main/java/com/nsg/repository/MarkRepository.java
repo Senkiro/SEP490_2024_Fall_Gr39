@@ -27,4 +27,5 @@ public interface MarkRepository extends BaseRepository<MarkEntity, String> {
     List<MarkEntity> findMarksByExamIdAndClassId(@Param("examId") Long examId,
                                                  @Param("classId") String classId);
 
+    boolean existsByStudentEntityStudentId(String studentId);
 }

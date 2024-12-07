@@ -38,4 +38,6 @@ public interface MarkService {
 
     void calculateAllStudentsMarkInClass(String classId);
 
+    void createAllMarkForOneStudent(String studentId);
+
 }
