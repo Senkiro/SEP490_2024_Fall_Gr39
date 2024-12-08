@@ -782,9 +782,10 @@ export default {
           this.showNotification("Session updated successfully!", "success");
 
           // Hiển thị modal hỏi người dùng có muốn áp dụng auto-fill không
-          this.pendingSessionId = sessionId;
-          this.showAutoFillModal = true;
-
+          if (updatedData.userId && updatedData.userId !== sessionData.userId) {
+            this.pendingSessionId = sessionId;
+            this.showAutoFillModal = true;
+          }
           this.isEditing[sessionId] = false;
           this.fetchSessions();
         } else {
