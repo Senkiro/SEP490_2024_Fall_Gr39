@@ -209,6 +209,8 @@ public class ScheduleController {
         sessionService.autoFillTeacherToSession(teacherId, classId, sessionId, weekEnd);
         return ApiResponse.builder()
                 .message("Fill teacher!")
+                .build();
+    }
 
     //get available room for session
     @GetMapping("/get-available-room/{session_id}")
