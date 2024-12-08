@@ -146,13 +146,12 @@ public class EventController {
                 .build();
     }
 
-    //get by student id
+    //get by student id and event id
     @GetMapping("/get-event-feedback-by-student")
-    public ApiResponse<Page<EventFeedbackResponse>> getEventFeedbackByStudent(@RequestParam String student_id,
-                                                                              @RequestParam int page,
-                                                                              @RequestParam int size) {
-        return ApiResponse.<Page<EventFeedbackResponse>>builder()
-                .result( eventFeedbackService.getEventFeedbackOfOneStudent(student_id, page, size) )
+    public ApiResponse<EventFeedbackResponse> getEventFeedbackByStudent(@RequestParam String student_id,
+                                                                        @RequestParam String event_id) {
+        return ApiResponse.<EventFeedbackResponse>builder()
+                .result( eventFeedbackService.getEventFeedbackOfOneStudent( student_id, event_id) )
                 .build();
     }
 

@@ -42,6 +42,12 @@ public class EventFeedbackServiceImp implements EventFeedbackService {
 
     @Override
     public void createEventFeedback(EventFeedbackCreattionRequest request) {
+
+        //check existed
+        if (eventFeedbackRepository.existsByStudentEntityStudentIdAndEventEntityEventId( request.getStudentId(), request.getEventId() )) {
+            throw new AppException(ErrorCode.EVENT_FEED_BACK_EXISTED);
+        }
+
         EventFeedbackEntity eventFeedbackEntity = new EventFeedbackEntity();
 
         eventFeedbackEntity.setFeedbackRate( request.getFeedbackRate() );
@@ -120,10 +126,11 @@ public class EventFeedbackServiceImp implements EventFeedbackService {
     }
 
     @Override
-    public Page<EventFeedbackResponse> getEventFeedbackOfOneStudent(String studentId, int page, int size) {
-        Page<EventFeedbackEntity> eventFeedbackEntities = eventFeedbackRepository.findByStudentEntityStudentId(studentId, PageRequest.of(page, size));
-        List<EventFeedbackResponse> eventFeedbackResponses = toEventFeedbackResponseList(eventFeedbackEntities.getContent());
-        return new PageImpl<>(eventFeedbackResponses, eventFeedbackEntities.getPageable(), eventFeedbackEntities.getTotalElements());
+    public EventFeedbackResponse getEventFeedbackOfOneStudent(String studentId, String eventId) {
+        EventFeedbackEntity eventFeedback =
+                eventFeedbackRepository.findByStudentEntityStudentIdAndEventEntityEventId(studentId, eventId);
+
+        return toEventFeedbackResponse(eventFeedback);
     }
 
     @Override

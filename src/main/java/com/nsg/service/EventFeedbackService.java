@@ -21,7 +21,7 @@ public interface EventFeedbackService {
     Page<EventFeedbackResponse> getEventFeedbackOfOneEvent(String eventId, int page, int size);
 
     //get all event feedback of one student
-    Page<EventFeedbackResponse> getEventFeedbackOfOneStudent(String studentId, int page, int size);
+    EventFeedbackResponse getEventFeedbackOfOneStudent(String studentId, String eventId);
 
     //update by id
     EventFeedbackResponse updateEventFeedback(String eventFeedbackId, EventFeedbackCreattionRequest request);
@@ -30,4 +30,6 @@ public interface EventFeedbackService {
     void deleteEventFeedback(String eventFeedbackId);
 
     void calculateAvgRateOfOneEvent(String eventId);
+
+
 }

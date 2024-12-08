@@ -10,10 +10,7 @@ import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.*;
-import com.nsg.service.CurriculumnService;
-import com.nsg.service.SessionService;
-import com.nsg.service.StudentService;
-import com.nsg.service.TimeSlotService;
+import com.nsg.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class SessionServiceImp implements SessionService {
@@ -80,6 +79,8 @@ public class SessionServiceImp implements SessionService {
     StudentRepository studentRepository;
 
 
+
+
     @Override
     public void createSession(SessionCreattionRequest request) {
         SessionEntity session = new SessionEntity();
@@ -100,16 +101,6 @@ public class SessionServiceImp implements SessionService {
         if (request.getNote() != null) {
             session.setNote(request.getNote());
         }
-
-//        //curriculumn
-//        if (request.getCurriculumnId() >= 0) {
-//            CurriculumnEntity curriculumnEntity = curriculumnRepository.findById(String.valueOf(request.getCurriculumnId())).orElseThrow(
-//                    () -> new AppException(ErrorCode.CURRICULUMN_NOT_FOUND)
-//            );
-//            session.setCurriculumnEntity(curriculumnEntity);
-//        } else {
-//            session.setCurriculumnEntity(null);
-//        }
 
         //time slot
         if (request.getTimeSlotId() != null) {

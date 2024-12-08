@@ -29,10 +29,7 @@ public class ScheduleController {
     SessionService sessionService;
 
     @Autowired
-    AttendanceService attendanceService;
-
-    @Autowired
-    MarkService markService;
+    CreationService creationService;
 
     @Autowired
     RoomService roomService;
@@ -53,8 +50,10 @@ public class ScheduleController {
     @PostMapping("/create-schedule/{class_id}")
     public ApiResponse<?> createSchedule(@PathVariable("class_id") String class_id, @RequestBody ScheduleCreationRequest request) {
         sessionService.createSchedule(class_id, request);
-        attendanceService.createAttendancesForSession(class_id);
-        markService.generateMarkForAllStudentInClass(class_id);
+
+        //add in queue: create attendances and marks for all students
+        creationService.addCreationQueue(class_id);
+
         return ApiResponse.builder()
                 .message("Create new schedule successfully!")
                 .build();
