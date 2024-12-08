@@ -68,16 +68,47 @@
     </form>
 
     <h2>Feedback</h2>
-    <div class="tab-buttons-container">
-      <div class="tab-buttons">
-        <button class="tab-button" :class="{ active: tabs.blue }" @click="showTab('blue', 'green', 'red')">
-          <h4>Blue</h4>
+
+    <div class="feedback-summary" style="margin-left: auto">
+      <span>Total rate: {{ eventDetail.avgRate}}
+        <span>/5</span><span class="star">★</span>
+      </span>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th>No</th>
+          <th>Student</th>
+          <th>Batch</th>
+          <th>Rate</th>
+          <th>Feedback</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(feedback, index) in filteredFeedbacks" :key="feedback.feedbackId">
+          <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+          <td>{{ feedback.fullName }}</td>
+          <td>{{feedback.batch}}</td>
+          <td>
+            <span v-for="star in feedback.feedbackRate" :key="star" style="color: gold" class="star">★</span>
+          </td>
+          <td v-html="feedback.feedbackContent"></td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination" v-if="totalPages > 1">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
-        <button class="tab-button" :class="{ active: tabs.green }" @click="showTab('green', 'red', 'blue')">
-          <h4>Green</h4>
+        <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
+                @click="changePage(page)">
+          {{ page }}
         </button>
-        <button class="tab-button" :class="{ active: tabs.red }" @click="showTab('red', 'blue', 'green')">
-          <h4>Red</h4>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
         </button>
       </div>
     </div>
@@ -102,7 +133,7 @@ export default {
   data() {
     return {
       isActive: false,
-      backupEventDetail: {}, // Lưu trạng thái ban đầu để khôi phục khi cancel
+      backupEventDetail: {},
       eventId: this.$route.params.eventId,
       tabs: {
         blue: true,
@@ -116,12 +147,18 @@ export default {
         description: "",
         status: false,
       },
-      selectedImage: null, // Lưu trữ tệp ảnh được chọn
-      previewImage: "", // Lưu URL ảnh xem trước
+      selectedImage: null,
+      previewImage: "",
       notification: {
         message: "",
         type: "",
       },
+      feedbacks: [],
+      filteredFeedbacks: [],
+      currentPage: 1,
+      itemsPerPage: 10,
+      totalElements: 0,
+      totalPages: 0,
     };
   },
   methods: {
@@ -133,11 +170,6 @@ export default {
       this.isActive = false;
       this.eventDetail = JSON.parse(JSON.stringify(this.backupEventDetail)); // Khôi phục trạng thái ban đầu
       this.previewImage = ""; // Xóa URL xem trước nếu có
-    },
-    showTab(open, close1, close2) {
-      this.tabs[open] = true;
-      this.tabs[close1] = false;
-      this.tabs[close2] = false;
     },
     updateDescription(value) {
       if (typeof value === "string") {
@@ -234,9 +266,57 @@ export default {
         sessionStorage.removeItem("notification");
       }, 3000);
     },
+    async fetchFeedbacks() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-event-feedback-by-event?event_id=${this.eventId}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const data = response.data.result.content;
+
+        this.filteredFeedbacks = data.map((feedback) => ({
+          feedbackId: feedback.eventFeedbackId,
+          feedbackRate: feedback.feedbackRate,
+          feedbackContent: feedback.feedbackContent,
+          fullName: feedback.studentResponse.userInforResponse.fullName,
+          batch: feedback.studentResponse.batchName,
+        }));
+
+        this.totalElements = response.data.result.totalElements;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+        this.updateDisplayedPages();
+      } catch (error) {
+        console.error("Error fetching feedbacks:", error);
+        this.showNotification("Error fetching feedbacks. Please try again.", "error");
+      }
+    },
+
+    updateDisplayedPages() {
+      const range = 3;
+      const pages = [];
+
+      const start = Math.max(1, this.currentPage - range);
+      const end = Math.min(this.totalPages, this.currentPage + range);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      this.displayedPages = pages;
+    },
+
+    changePage(newPage) {
+      if (newPage >= 1 && newPage <= this.totalPages) {
+        this.currentPage = newPage;
+        this.fetchFeedbacks();
+      }
+    },
   },
   mounted() {
     this.fetchEventDetail();
+    this.fetchFeedbacks();
 
     // Kiểm tra nếu có thông báo trong sessionStorage
     const storedNotification = sessionStorage.getItem("notification");
@@ -256,6 +336,21 @@ export default {
 
 
 <style lang="scss" scoped>
+.feedback-summary {
+  display: flex;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #555;
+
+  span {
+    margin-right: 10px;
+  }
+
+  .star {
+    color: gold;
+    font-size: 16px;
+  }
+}
 i{
   color: #b9b9b9;
 }
