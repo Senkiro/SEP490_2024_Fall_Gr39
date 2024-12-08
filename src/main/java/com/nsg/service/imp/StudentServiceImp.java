@@ -243,6 +243,9 @@ public class StudentServiceImp implements StudentService {
                 //set class
                 studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(user.getStudentEntity().getClassEntity()));
 
+                //set mark
+                studentResponse.setAvgMark( user.getStudentEntity().getAvgMark() );
+
                 //add to response list
                 studentListResponse.add(studentResponse);
             }
@@ -324,6 +327,8 @@ public class StudentServiceImp implements StudentService {
 
             //set class
             studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(student.getClassEntity()));
+
+            studentResponse.setAvgMark( student.getAvgMark() );
 
             //add to response list
             studentListResponse.add(studentResponse);
