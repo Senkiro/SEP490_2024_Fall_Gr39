@@ -357,6 +357,9 @@ public class StudentServiceImp implements StudentService {
 
             studentResponse.setAttendanceStatisticsResponse(attendanceStatisticsResponse);
 
+            //set avg mark
+            studentResponse.setAvgMark( student.getAvgMark() );
+
             //add to response list
             studentListResponse.add(studentResponse);
         }

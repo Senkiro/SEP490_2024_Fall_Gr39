@@ -28,4 +28,6 @@ public class StudentResponse {
 
     //Attendance statistic
     AttendanceStatisticsResponse attendanceStatisticsResponse;
+
+    float avgMark;
 }
