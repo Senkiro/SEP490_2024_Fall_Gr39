@@ -89,7 +89,7 @@ public class MarkServiceImp implements MarkService {
 
         markResponse.setStudentResponse(studentService.convertToStudentResponse(markEntity.getStudentEntity()));
 
-        markResponse.setExamResponse(ExamMapper.INSTANCE.toExamResponse(markEntity.getExamEntity()));
+        markResponse.setExamResponse( examService.toExamResponse( markEntity.getExamEntity() ) );
 
         return markResponse;
     }
@@ -135,31 +135,69 @@ public class MarkServiceImp implements MarkService {
         // Lấy danh sách MarkEntity
         List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
 
-        // Kiểm tra danh sách rỗng để tránh lỗi chia cho 0
         if (markEntityList.isEmpty()) {
             throw new IllegalArgumentException("Không tìm thấy điểm của sinh viên với ID: " + studentId);
         }
 
-        // Tính tổng điểm
-        double totalMark = 0.0;
+        // Tạo biến lưu điểm cho từng loại exam
+        double dailyExamTotal = 0.0;
+        int dailyExamCount = 0;
+        double midTermMark = 0.0;
+        double finalMark = 0.0;
+        double participationMark = 0.0;
+
+        // Phân loại điểm theo loại bài thi
         for (MarkEntity mark : markEntityList) {
-            int rate = Integer.parseInt(mark.getExamEntity().getExamTypeRateEntity().getExamRate());
-            totalMark += (mark.getMark() * rate / 100.0);
+            String examType = mark.getExamEntity().getExamTypeRateEntity().getExamCategory();
+            double markValue = mark.getMark();
+
+            switch (examType) {
+                case "Daily exam":
+                    dailyExamTotal += markValue;
+                    dailyExamCount++;
+                    break;
+                case "Mid-term exam":
+                    midTermMark = markValue;
+                    break;
+                case "Final exam":
+                    finalMark = markValue;
+                    break;
+                case "Participation":
+                    participationMark = markValue;
+                    break;
+            }
         }
 
-        // Tính trung bình
-        totalMark /= markEntityList.size();
+        // Tính điểm trung bình của Daily exam
+        double dailyExamAverage = (dailyExamCount > 0) ? (dailyExamTotal / dailyExamCount) : 0.0;
+
+        // Tính GPA theo quy tắc
+        double gpa = 0.0;
+        if (participationMark > 0) {
+            // Có đủ tất cả các đầu điểm
+            gpa = dailyExamAverage * 0.7 + midTermMark * 0.1 + finalMark * 0.1 + participationMark * 0.1;
+        } else if (finalMark > 0) {
+            // Có điểm Final exam
+            gpa = dailyExamAverage * 0.7778 + midTermMark * 0.1111 + finalMark * 0.1111;
+        } else if (midTermMark > 0) {
+            // Có điểm Mid-term exam
+            gpa = dailyExamAverage * 0.875 + midTermMark * 0.125;
+        } else {
+            // Chỉ có điểm Daily exam
+            gpa = dailyExamAverage;
+        }
 
         // Lấy thống kê điểm danh
         AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse(studentId);
 
         // Cộng thêm điểm thưởng từ tỷ lệ điểm danh
-        totalMark += attendanceStatisticsResponse.getAttendPercentage() * 0.1;
+        gpa += attendanceStatisticsResponse.getAttendPercentage() * 0.1;
 
-        float avgMark = (float) totalMark;
-        System.out.println("Avg mark: "+avgMark);
+        // Làm tròn GPA và cập nhật vào student
+        float avgMark = (float) Math.round(gpa * 100) / 100; // Làm tròn 2 chữ số
+        System.out.println("Avg mark: " + avgMark);
 
-        //update student avg mark
+        // Cập nhật điểm trung bình cho sinh viên
         studentService.markUpdate(studentId, avgMark);
     }
 

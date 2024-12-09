@@ -24,7 +24,7 @@ public class ExamTypeRateEntity {
     String examRate;
 
     @Column(name = "exam_category")
-    String examName;
+    String examCategory;
 
     @OneToMany(mappedBy = "examTypeRateEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<ExamEntity> examEntityList;

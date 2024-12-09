@@ -117,6 +117,20 @@ public class ExamServiceImp implements ExamService {
     }
 
     @Override
+    public ExamResponse toExamResponse(ExamEntity exam) {
+        ExamResponse examResponse = new ExamResponse();
+        examResponse.setExamId(exam.getExamId());
+        examResponse.setExamTitle(exam.getExamTitle());
+        examResponse.setExamContent(exam.getExamContent());
+
+        //find exam type rate by id
+        ExamTypeResponse examTypeResponse = examTypeService.getExamType( exam.getExamTypeRateEntity().getExamType() );
+        examResponse.setExamTypeRate(examTypeResponse);
+
+        return examResponse;
+    }
+
+    @Override
     public void deleteExam(String examId) {
         examRepository.deleteById(examId);
 
@@ -138,7 +152,7 @@ public class ExamServiceImp implements ExamService {
             response.setExamId(exam.getExamId());
             response.setExamTitle(exam.getExamTitle());
             response.setExamContent(exam.getExamContent());
-            response.setExamType(exam.getExamTypeRateEntity().getExamType().toString());
+            response.setExamType( exam.getExamTypeRateEntity().getExamType().toString() );
             responseList.add(response);
         }
 

@@ -38,8 +38,8 @@ public class ExamTypeServiceImp implements ExamTypeService {
 
             ExamTypeResponse temp = new ExamTypeResponse();
             temp.setExamType(examTypeRate.getExamType());
-            temp.setExamName(examTypeRate.getExamName());
-            temp.setExamRate(examTypeRate.getExamRate());
+            temp.setExamCategory( examTypeRate.getExamCategory());
+            temp.setExamRate( examTypeRate.getExamRate());
 
             listResponse.add(temp);
 
@@ -48,9 +48,19 @@ public class ExamTypeServiceImp implements ExamTypeService {
         return listResponse;
     }
 
+    public ExamTypeResponse toExamTypeResponse(ExamTypeRateEntity examTypeRate) {
+        ExamTypeResponse examTypeResponse = new ExamTypeResponse();
+
+        examTypeResponse.setExamType( examTypeRate.getExamType() );
+        examTypeResponse.setExamRate( examTypeRate.getExamRate() );
+        examTypeResponse.setExamCategory( examTypeRate.getExamCategory() );
+
+        return examTypeResponse;
+    }
+
     @Override
     public ExamTypeResponse getExamType(int examType) {
-        return ExamTypeMapper.INSTANCE.toExamTypeResponse(examTypeRepository.findByExamType(examType).orElseThrow(
+        return toExamTypeResponse(examTypeRepository.findByExamType(examType).orElseThrow(
                 () -> new AppException(ErrorCode.EXAM_TYPE_NOT_FOUND)
         ));
     }
@@ -61,10 +71,10 @@ public class ExamTypeServiceImp implements ExamTypeService {
                 () -> new AppException(ErrorCode.EXAM_TYPE_NOT_FOUND)
         );
 
-        examTypeRate.setExamName(request.getExamName());
+        examTypeRate.setExamCategory( request.getExamName());
         examTypeRate.setExamRate(request.getExamRate());
 
-        return ExamTypeMapper.INSTANCE.toExamTypeResponse(examTypeRepository.save(examTypeRate));
+        return toExamTypeResponse(examTypeRepository.save(examTypeRate));
     }
 
     @Override

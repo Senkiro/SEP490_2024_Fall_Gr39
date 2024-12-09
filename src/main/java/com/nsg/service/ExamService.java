@@ -24,6 +24,8 @@ public interface ExamService {
     //get exam by id
     ExamResponse getExam(String examId);
 
+    ExamResponse toExamResponse(ExamEntity exam);
+
     //update exam
     ExamResponse updateExam(String examId, ExamUpdateRequest request);
 

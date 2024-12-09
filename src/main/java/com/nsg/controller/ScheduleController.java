@@ -34,6 +34,12 @@ public class ScheduleController {
     @Autowired
     RoomService roomService;
 
+    @Autowired
+    AttendanceService attendanceService;
+
+    @Autowired
+    MarkService markService;
+
     /**********************************
      * Manage Session
      **********************************/
@@ -52,7 +58,10 @@ public class ScheduleController {
         sessionService.createSchedule(class_id, request);
 
         //add in queue: create attendances and marks for all students
-        creationService.addCreationQueue(class_id);
+//        creationService.addCreationQueue(class_id);
+
+        attendanceService.createAttendancesForSession(class_id);
+        markService.generateMarkForAllStudentInClass(class_id);
 
         return ApiResponse.builder()
                 .message("Create new schedule successfully!")

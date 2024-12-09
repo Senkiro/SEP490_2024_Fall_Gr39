@@ -26,19 +26,19 @@ public class ExamTypeRateInitConfig {
                 ExamTypeRateEntity finalExam = ExamTypeRateEntity.builder()
                         .examType(1)
                         .examRate("10")
-                        .examName("Final Exam")
+                        .examCategory("Final Exam")
                         .build();
 
                 ExamTypeRateEntity midtermExam = ExamTypeRateEntity.builder()
                         .examType(2)
                         .examRate("10")
-                        .examName("Mid-term Exam")
+                        .examCategory("Mid-term Exam")
                         .build();
 
                 ExamTypeRateEntity quiz = ExamTypeRateEntity.builder()
                         .examType(3)
                         .examRate("70")
-                        .examName("Daily")
+                        .examCategory("Daily")
                         .build();
 
                 // Lưu vào cơ sở dữ liệu

@@ -13,5 +13,5 @@ public class ExamTypeResponse {
 
     String examRate;
 
-    String examName;
+    String examCategory;
 }
