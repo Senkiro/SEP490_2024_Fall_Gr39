@@ -1,6 +1,7 @@
 package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
+import com.nsg.common.exception.AppException;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
@@ -124,10 +125,16 @@ public class StaffController {
             try {
                 List<StudentEntity> students = excelHelper.excelToStudents(file.getInputStream());
                 studentService.saveAll(students);
-                return ResponseEntity.ok(ApiResponse.<String>builder().message("File uploaded and students added successfully.").build());
+                return ResponseEntity.ok(ApiResponse.<String>builder()
+                        .message("File uploaded and students added successfully.")
+                        .build());
+            } catch (AppException e) {
+                return ResponseEntity.status(400).body(ApiResponse.<String>builder()
+                        .message(e.getMessage())
+                        .build());
             } catch (Exception e) {
                 return ResponseEntity.status(500).body(ApiResponse.<String>builder()
-                        .message("Failed to parse file.")
+                        .message("Batch Name or Class Name not existed")
                         .build());
             }
         }
@@ -142,6 +149,17 @@ public class StaffController {
                                                                   @RequestParam int page,
                                                                   @RequestParam int size) {
         Page<StudentResponse> studentEntityList = studentService.findStudentsByName(name, class_id, page, size);
+        return ApiResponse.<Page<StudentResponse>>builder()
+                .result(studentEntityList)
+                .build();
+    }
+
+    @GetMapping("/search-student-by-batch")
+    public ApiResponse<Page<StudentResponse>> searchStudentByBatch(@RequestParam String name,
+                                                                  @RequestParam String batch_name,
+                                                                  @RequestParam int page,
+                                                                  @RequestParam int size) {
+        Page<StudentResponse> studentEntityList = studentService.findStudentsByNameByBatch(name, batch_name, page, size);
         return ApiResponse.<Page<StudentResponse>>builder()
                 .result(studentEntityList)
                 .build();

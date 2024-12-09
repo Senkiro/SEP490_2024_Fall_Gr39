@@ -2,6 +2,7 @@
   <div class="container">
     <div class="headContent">
       <h1>{{ batchName }}</h1>
+      <button> Tong ket </button>
     </div>
 
     <!-- Phần chuyển đổi tab -->
@@ -384,17 +385,17 @@ export default {
     async fetchStudent() {
       try {
         const token = sessionStorage.getItem('jwtToken');
-        const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&batch_name=${this.batchName}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+        const apiEndpoint = this.selectedClass
+            ? `http://localhost:8088/fja-fap/staff/get-student-by-batch-class?batch_name=${this.batchName}&class_id=${this.selectedClass}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}`
+            : `http://localhost:8088/fja-fap/staff/get-student-by-batch?page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&batch_name=${this.batchName}`;
 
-        // Kiểm tra nếu response.data.result và response.data.result.content tồn tại
-        if (response.status === 200 && response.data.result && Array.isArray(response.data.result.content)) {
+        const response = await axios.get(apiEndpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200 && response.data.result) {
           this.students = response.data.result.content.map((item) => ({
             id: item.studentId || "Unknown ID",
             rollNumber: item.rollNumber || "N/A",
@@ -409,16 +410,14 @@ export default {
           }));
 
           this.studentPagination.totalElements = response.data.result.totalElements;
-          this.studentPagination.totalPages = Math.ceil(this.studentPagination.totalElements / this.studentPagination.itemsPerPage);
+          this.studentPagination.totalPages = Math.ceil(
+              this.studentPagination.totalElements / this.studentPagination.itemsPerPage
+          );
           this.updateStudentDisplayedPages();
-        } else {
-          console.error('No student data available:', response);
-          this.students = []; // Gán mảng trống nếu không có dữ liệu
-          alert('Không có dữ liệu sinh viên nào để hiển thị.');
         }
       } catch (error) {
-        console.error('Error fetching students:', error);
-        alert('Đã có lỗi xảy ra khi kết nối tới server.');
+        console.error("Error fetching students:", error);
+        alert("Đã có lỗi xảy ra khi lấy danh sách sinh viên.");
       }
     },
 
@@ -484,6 +483,7 @@ export default {
     },
 
     async searchStudent() {
+      this.studentPagination.currentPage = 1;
       if (!this.searchQuery.trim()) {
         // Nếu không có từ khóa tìm kiếm, chỉ cần tải lại danh sách sinh viên dựa vào lớp được chọn (nếu có)
         if (this.selectedClass) {
@@ -498,7 +498,7 @@ export default {
         const token = sessionStorage.getItem('jwtToken');
         const apiEndpoint = this.selectedClass
             ? `http://localhost:8088/fja-fap/staff/search-student?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&class_id=${this.selectedClass}`
-            : `http://localhost:8088/fja-fap/staff/search-student?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}`;
+            : `http://localhost:8088/fja-fap/staff/search-student-by-batch?name=${this.searchQuery}&page=${this.studentPagination.currentPage - 1}&size=${this.studentPagination.itemsPerPage}&batch_name=${this.batchName}`;
 
         const response = await axios.get(apiEndpoint, {
           headers: {
