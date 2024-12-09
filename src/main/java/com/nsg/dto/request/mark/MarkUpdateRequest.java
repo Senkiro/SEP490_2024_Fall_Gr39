@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MarkUpdateRequest {
+    String markId;
+
     @NotNull(message = "MARK_NOT_NULL")
     @DecimalMin(value = "0.0", inclusive = true, message = "MIN_VALUE_MARK")
     @DecimalMax(value = "10.0", inclusive = true, message = "MAX_VALUE_MARK")

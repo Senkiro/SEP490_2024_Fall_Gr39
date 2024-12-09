@@ -2,6 +2,7 @@ package com.nsg.dto.response.session;
 
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.curriculumn.CurriculumnResponse;
+import com.nsg.dto.response.event.EventResponse;
 import com.nsg.dto.response.exam.ExamResponse;
 import com.nsg.dto.response.lesson.LessonResponse;
 import com.nsg.dto.response.timeSlot.TimeSlotResponse;
@@ -41,6 +42,8 @@ public class SessionResponse {
     String roomNumber;
 
     String eventName;
+
+    EventResponse eventResponse;
 
     String fullName;
 

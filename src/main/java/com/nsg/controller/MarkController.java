@@ -57,7 +57,6 @@ public class MarkController {
     //get mark list of a student
     @GetMapping("/get-student-mark/{student_id}")
     public ApiResponse<List<MarkResponse>> getStudentMark(@PathVariable("student_id") String student_id) {
-        markService.calculateAverageMark(student_id);
         return ApiResponse.<List<MarkResponse>>builder()
                 .result(markService.getMarkByStudent(student_id))
                 .build();
@@ -69,6 +68,16 @@ public class MarkController {
         return ApiResponse.<MarkResponse>builder()
                 .result(markService.updateMark(mark_id, request))
                 .message("Mark update successfully!")
+                .build();
+    }
+
+    //update many marks at the same request
+    @PostMapping("/update-marks")
+    public ApiResponse<List<MarkResponse>> updateMarks(@RequestBody @Valid List<MarkUpdateRequest> requests) {
+        List<MarkResponse> updatedMarks = markService.updateMarks(requests);
+        return ApiResponse.<List<MarkResponse>>builder()
+                .result(updatedMarks)
+                .message("Marks updated successfully!")
                 .build();
     }
 
@@ -97,4 +106,24 @@ public class MarkController {
                 .message("Marks for student create successfully!")
                 .build();
     }
+
+
+    //calculate marks of students
+    @PostMapping("/calculate-students-marks")
+    public ApiResponse<?> calculateMarks(@RequestParam String classId) {
+        markService.calculateAllStudentsMarkInClass(classId);
+        return ApiResponse.builder()
+                .message("Marks for student have been calculated and updated!")
+                .build();
+    }
+
+    //course summary and calculate all mark include participation mark
+    @PostMapping("/course-summary")
+    public ApiResponse<?> courseSummary(@RequestParam String classId) {
+        markService.courseSummary(classId);
+        return ApiResponse.builder()
+                .message("Marks for student have been summary!")
+                .build();
+    }
+
 }

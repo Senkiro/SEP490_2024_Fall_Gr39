@@ -131,7 +131,7 @@ public class MarkServiceImp implements MarkService {
     }
 
     @Override
-    public void calculateAverageMark(String studentId) {
+    public void calculateAverageMark(String studentId, double participationMark) {
         // Lấy danh sách MarkEntity
         List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
 
@@ -144,26 +144,21 @@ public class MarkServiceImp implements MarkService {
         int dailyExamCount = 0;
         double midTermMark = 0.0;
         double finalMark = 0.0;
-        double participationMark = 0.0;
 
         // Phân loại điểm theo loại bài thi
         for (MarkEntity mark : markEntityList) {
             String examType = mark.getExamEntity().getExamTypeRateEntity().getExamCategory();
             double markValue = mark.getMark();
-
             switch (examType) {
-                case "Daily exam":
+                case "Daily":
                     dailyExamTotal += markValue;
                     dailyExamCount++;
                     break;
-                case "Mid-term exam":
+                case "Mid-term Exam":
                     midTermMark = markValue;
                     break;
-                case "Final exam":
+                case "Final Exam":
                     finalMark = markValue;
-                    break;
-                case "Participation":
-                    participationMark = markValue;
                     break;
             }
         }
@@ -187,11 +182,8 @@ public class MarkServiceImp implements MarkService {
             gpa = dailyExamAverage;
         }
 
-        // Lấy thống kê điểm danh
-        AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse(studentId);
-
         // Cộng thêm điểm thưởng từ tỷ lệ điểm danh
-        gpa += attendanceStatisticsResponse.getAttendPercentage() * 0.1;
+        gpa += participationMark * 0.1;
 
         // Làm tròn GPA và cập nhật vào student
         float avgMark = (float) Math.round(gpa * 100) / 100; // Làm tròn 2 chữ số
@@ -219,6 +211,34 @@ public class MarkServiceImp implements MarkService {
         markRepository.save(markEntity);
 
         return getMark(markId);
+    }
+
+    public List<MarkResponse> updateMarks(List<MarkUpdateRequest> requests) {
+        List<MarkResponse> responses = new ArrayList<>();
+
+        for (MarkUpdateRequest request : requests) {
+            // Xử lý từng yêu cầu cập nhật
+            MarkEntity markEntity = markRepository.findById(request.getMarkId()).orElseThrow(
+                    () -> new AppException(ErrorCode.MARK_NOT_FOUND)
+            );
+
+            // Cập nhật thông tin
+            markEntity.setMark(request.getMark());
+            markEntity.setStatus(request.isStatus());
+            markEntity.setComment(request.getComment());
+
+            if (request.getUpdatedBy() != null) {
+                markEntity.setUpdatedBy(request.getUpdatedBy());
+            }
+
+            // Lưu vào cơ sở dữ liệu
+            markRepository.save(markEntity);
+
+            // Thêm vào danh sách phản hồi
+            responses.add(getMark( markEntity.getMarkId() ));
+        }
+
+        return responses;
     }
 
     @Override
@@ -310,7 +330,7 @@ public class MarkServiceImp implements MarkService {
         List<MarkEntity> markEntityList = markRepository.findMarksByExamIdAndClassId((long) examId, classId );
         if (!markEntityList.isEmpty()) {
             //calculate all mark of student in class
-            calculateAllStudentsMarkInClass(classId);
+//            calculateAllStudentsMarkInClass(classId);
 
             return toMarkResponseList(markEntityList);
         } else {
@@ -318,7 +338,7 @@ public class MarkServiceImp implements MarkService {
         }
     }
 
-    //calculate all mark of student in class
+    //calculate all mark of student in class without participation mark
     @Override
     public void calculateAllStudentsMarkInClass(String classId) {
         //get class
@@ -330,9 +350,29 @@ public class MarkServiceImp implements MarkService {
         List<StudentEntity> studentEntityList = classEntity.getStudentEntityList();
 
         for (StudentEntity student : studentEntityList) {
-            calculateAverageMark(student.getStudentId());
+            calculateAverageMark(student.getStudentId(), 0.0);
         }
+    }
 
+    @Override
+    public void courseSummary(String classId) {
+        //get class
+        ClassEntity classEntity = classRepository.findById(classId).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        //get student list
+        List<StudentEntity> studentEntityList = classEntity.getStudentEntityList();
+
+        for (StudentEntity student : studentEntityList) {
+
+            //get participation of each student
+            AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse( student.getStudentId() );
+
+            double participationMark = attendanceStatisticsResponse.getAttendPercentage() * 0.1;
+
+            calculateAverageMark(student.getStudentId(), participationMark);
+        }
     }
 
 }

@@ -485,6 +485,9 @@ public class SessionServiceImp implements SessionService {
             if (session.getEventEntity() != null) {
                 tempResponse.setEventName(session.getEventEntity().getEventName());
                 tempResponse.setEventId(session.getEventEntity().getEventId());
+
+                tempResponse.setEventResponse( EventMapper.INSTANCE.toEventResponse( session.getEventEntity() ));
+
             }else {
                 tempResponse.setEventName(null);
             }

@@ -58,6 +58,12 @@ public class EventServiceImp implements EventService {
         return eventResponses;
     }
 
+    public EventResponse toEventResponse(EventEntity eventEntity) {
+        EventResponse eventResponse = new EventResponse();
+
+        return eventResponse;
+    }
+
     @Override
     public void createEvent(EventCreateRequest request) {
         EventEntity event = eventMapper.toEventEntity(request);
