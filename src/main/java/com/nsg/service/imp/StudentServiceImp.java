@@ -194,7 +194,10 @@ public class StudentServiceImp implements StudentService {
         studentResponse.setBatchName(studentEntity.getBatchEntity().getBatchName());
 
         //set class
-        studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()));
+        studentResponse.setClassResponse( ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()) );
+
+        //set avg mark
+        studentResponse.setAvgMark( studentEntity.getAvgMark() );
 
         return studentResponse;
     }

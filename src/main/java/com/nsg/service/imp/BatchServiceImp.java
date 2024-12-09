@@ -36,6 +36,10 @@ public class BatchServiceImp implements BatchService {
             throw new AppException(ErrorCode.BATCH_EXISTED);
         }
         BatchEntity batchEntity = batchMapper.toBatchEntity(batchCreationRequest);
+
+        //set default status is 2 (Not happen)
+        batchEntity.setBatchStatus( 2 );
+
         batchRepository.save(batchEntity);
     }
 
@@ -100,6 +104,24 @@ public class BatchServiceImp implements BatchService {
             responseList.add(batchResponse);
         }
         return new PageImpl<>(responseList, batchEntities.getPageable(), batchEntities.getTotalElements());
+    }
+
+    //change status of batch
+    @Override
+    public void changeBatchStatus(String batchName) {
+        BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+
+        // 0 -> graduated; 1 -> on progress
+        if (batchEntity.getBatchStatus() == 2 || batchEntity.getBatchStatus() == 0) {
+            batchEntity.setBatchStatus( 1 );
+        } else {
+            batchEntity.setBatchStatus( 0 );
+        }
+
+        batchRepository.save(batchEntity);
+
     }
 
 }

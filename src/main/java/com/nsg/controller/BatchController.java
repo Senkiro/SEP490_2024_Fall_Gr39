@@ -91,4 +91,13 @@ public class BatchController {
                 .build();
     }
 
+    //change batch status
+    @GetMapping("/change-batch-status")
+    public ApiResponse<?> changeBatchStatus(@RequestParam String batch_name) {
+        batchService.changeBatchStatus(batch_name);
+        return ApiResponse.builder()
+                .message("Batch status have been changed!")
+                .build();
+    }
+
 }
