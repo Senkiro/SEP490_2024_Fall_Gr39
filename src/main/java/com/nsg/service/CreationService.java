@@ -29,25 +29,28 @@ public class CreationService {
     //generate attendance and mark
     private void startCreationThread() {
         Thread creationThread = new Thread(() -> {
+            System.out.println("Creation thread started."); // Log để kiểm tra thread bắt đầu
+
             while (true) {
                 try {
-                    // Lấy một tác vụ từ hàng đợi
-                    String classId = creationQueue.take();
+                    String classId = creationQueue.take(); // Lấy tác vụ từ hàng đợi
+                    System.out.println("Processing classId: " + classId); // Log kiểm tra dữ liệu
 
-                    // Xử lý tác vụ
                     attendanceService.createAttendancesForSession(classId);
                     markService.generateMarkForAllStudentInClass(classId);
 
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Xử lý trường hợp thread bị ngắt
+                    Thread.currentThread().interrupt(); // Thread bị ngắt
+                    System.err.println("Thread interrupted: " + e.getMessage());
                 } catch (Exception ex) {
                     System.err.println("Error while processing task: " + ex.getMessage());
                 }
             }
         });
 
-        creationThread.setDaemon(true); // Đặt thread là daemon để nó không giữ JVM chạy khi ứng dụng tắt
-        creationThread.start(); // Bắt đầu worker thread
+        creationThread.setDaemon(true);
+        creationThread.start(); // Bắt đầu thread
+        System.out.println("Thread creation started successfully."); // Log thread khởi động
     }
 
     //add queue
