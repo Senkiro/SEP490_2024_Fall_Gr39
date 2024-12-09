@@ -29,25 +29,35 @@
             <td></td>
           </tr>
           <tr v-for="(grade, index) in grades" :key="index">
-            <td class="bold" v-if="index === 0 || grades[index - 1].category !== grade.category"
-              :rowspan="calculateRowspan(grades, index, 'category')">{{ grade.category }}</td>
-            <td :class="{ bold: grade.item === 'Total' }">{{ grade.item }}</td>
-            <td :class="{ bold: grade.item === 'Total' }">{{ grade.weight }}</td>
+            <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
+                :rowspan="calculateRowspan(grades, index, 'category')">
+              {{ grade.category }}
+            </td>
+            <td>{{ grade.item }}</td>
+            <td></td>
             <td>{{ grade.value }}</td>
+            <td>{{ grade.comment || "" }}</td>
+          </tr>
+          <!-- Tổng điểm -->
+          <tr>
+            <td class="bold"> </td>
+            <td class="bold">Total</td>
+            <td class="bold">70%</td>
+            <td class="bold">{{ totalValue }}</td>
             <td></td>
           </tr>
           <tr>
             <td class="bold">Mid-term Exam</td>
             <td class="bold">Mid-term Exam</td>
             <td class="bold">10%</td>
-            <td></td>
+            <td>{{ midtermValue }}</td>
             <td></td>
           </tr>
           <tr>
             <td class="bold">Final Exam</td>
             <td class="bold">Final Exam</td>
             <td class="bold">10%</td>
-            <td></td>
+            <td>{{ finalValue }}</td>
             <td></td>
           </tr>
           <tr>
@@ -58,13 +68,17 @@
       </table>
       <div class="actions">
         <p>Current GPA: <strong>{{ currentGPA }}</strong></p>
-        <p class="grade-remark"><strong>Grade:</strong> <span class="remark">{{ gradeRemark }}</span></p>
+        <p class="grade-remark">
+          <strong>Grade:</strong> <span class="remark">{{ gradeRemark }}</span>
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "StudentMarkReport",
   data() {
@@ -76,32 +90,109 @@ export default {
       batch: "FALL2024",
       className: "Blue",
       currentGPA: 7.6,
-      grades: [
-        { category: "Daily Exam", item: "Chapter 1 - Vocabulary", weight: "", value: 8.2 },
-        { category: "Daily Exam", item: "Chapter 1 - Kanji", weight: "", value: 8.7 },
-        { category: "Daily Exam", item: "Chapter 1 - Grammar", weight: "", value: 7.8 },
-        { category: "Daily Exam", item: "Chapter 2 - Vocabulary", weight: "", value: 8.5 },
-        { category: "Daily Exam", item: "Chapter 2 - Kanji", weight: "", value: 8.0 },
-        { category: "Daily Exam", item: "Chapter 2 - Grammar", weight: "", value: 9.0 },
-        { category: "Daily Exam", item: "Chapter 3 - Vocabulary", weight: "", value: 10.0 },
-        { category: "Daily Exam", item: "Total", weight: "70%", value: 10.0 },
-      ],
+      grades: [],
+      totalValue: 0.0,
       totalGPA: 8.6,
       gradeRemark: "Very Good",
     };
   },
   methods: {
+    getGradeRemark(gpa) {
+      if (gpa < 5) {
+        return "Poor";
+      } else if (gpa >= 5 && gpa < 7) {
+        return "Fair";
+      } else if (gpa >= 7 && gpa < 8) {
+        return "Good";
+      } else if (gpa >= 8 && gpa < 9) {
+        return "Very Good";
+      } else if (gpa >= 9 && gpa <= 10) {
+        return "Excellent";
+      } else {
+        return "Invalid GPA";
+      }
+    },
     calculateRowspan(grades, index, property) {
       let count = 1;
       while (index + count < grades.length && grades[index + count][property] === grades[index][property]) {
         count++;
       }
       return count;
-    }
+    },
+    async fetchData() {
+      try {
+        const studentId = this.$route.params.id; // Lấy studentId từ URL
+        if (!studentId) {
+          console.error("studentId không tồn tại trong URL");
+          return;
+        }
+
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-student-mark/${studentId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        const { result } = response.data;
+
+        if (result && result.length) {
+          // Lọc Daily Exam
+          const dailyExams = result
+              .filter(item => item.mark > 0)
+              .filter(item => item.examResponse.examTypeRate.examCategory === "Daily")
+              .sort((a, b) => a.examResponse.examId - b.examResponse.examId);
+
+          // Map dữ liệu Daily Exam
+          this.grades = dailyExams.map(item => ({
+            category: item.examResponse.examTypeRate.examCategory + " Exam",
+            item: item.examResponse.examTitle,
+            weight: `${item.examResponse.examTypeRate.examRate}%`,
+            value: item.mark || 0.0,
+            comment: item.comment,
+          }));
+
+          // Tính tổng trung bình của Daily Exam
+          this.totalValue = (
+              dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length
+          );
+
+          // Lấy điểm của Mid-term Exam
+          const midtermExam = result.find(
+              item => item.examResponse.examTypeRate.examCategory === "Mid-term Exam"
+          );
+          this.midtermValue = midtermExam ? midtermExam.mark || 0.0 : null;
+
+          // Lấy điểm của Final Exam
+          const finalExam = result.find(
+              item => item.examResponse.examTypeRate.examCategory === "Final Exam"
+          );
+          this.finalValue = finalExam ? finalExam.mark || 0.0 : null;
+
+          // Cập nhật thông tin sinh viên
+          const studentInfo = result[0].studentResponse;
+          this.student = {
+            fullname: studentInfo.userInforResponse.fullName,
+            rollNumber: studentInfo.rollNumber,
+          };
+          this.batch = studentInfo.batchName;
+          this.className = studentInfo.classResponse.className;
+          this.currentGPA = studentInfo.avgMark;
+          this.gradeRemark = this.getGradeRemark(this.currentGPA);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchData();
   }
 };
 </script>
-
 <style lang="scss" scoped>
 .bold {
   color: #171717 !important;

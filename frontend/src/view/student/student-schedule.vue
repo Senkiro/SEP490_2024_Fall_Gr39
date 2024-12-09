@@ -23,98 +23,100 @@
         <thead>
         <tr>
           <th class="center">Date</th>
-          <th class="center">8:30 - 12:30</th>
+          <th class="center">7:30 - 12:30</th>
           <th class="center">13:30 - 17:30</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(sessions, date) in groupedSessionsByDate" :key="date">
+          <!-- Cột ngày -->
           <td>
             <div class="schedule-date">
               <h1>{{ formatDate(date) }}</h1>
               <p>{{ sessions.morning?.dayOfWeek || sessions.afternoon?.dayOfWeek }}</p>
             </div>
           </td>
+          <td v-if="sessions.note" colspan="2">
+            <div class="note-content" style="text-align: center">
+              {{ sessions.note }}
+            </div>
+          </td>
+          <template v-else>
           <!-- Morning -->
           <td>
-            <div v-if="sessions.morning" class="activities-container">
-              <div class="activity">
-                <div class="thumbnail">
-                  <p id="lesson">Lesson</p>
-                  <p id="number">
-                    {{ sessions.morning.curriculumnResponse?.lessonResponse?.lessonId || "N/A" }}
-                  </p>
+            <div v-if="sessions.morning">
+              <div v-if="sessions.morning.eventId" class="activities-container">
+                <div class="activity">
+                  <div class="thumbnail">
+                    <p id="lesson">Event</p>
+                  </div>
+                  <div class="information">
+                    <b>{{ sessions.morning.eventName || "N/A" }}</b>
+                    <span>Destination: <b>{{ sessions.morning.destination || "TBD" }}</b></span>
+                    <b :class="getStatusAttendClass(sessions.morning.attendanceStatus)">{{ sessions.morning.attendanceStatus}}</b>
+                  </div>
                 </div>
-                <div class="information">
-                  <b>
-                    {{
-                      sessions.morning.curriculumnResponse?.lessonResponse?.lessonTitle ||
-                      "N/A"
-                    }}
-                  </b>
-                  <span>
-                      Exam:
-                      <b>
-                        {{
-                          sessions.morning.curriculumnResponse?.examResponse?.examTitle ||
-                          "N/A"
-                        }}
-                      </b>
-                    </span>
-                  <span>
-                      Teacher:
-                      <b>{{ sessions.morning.teacherName || "TBD" }}</b>
-                    </span>
-                  <span>Room: <b>{{ sessions.morning.roomNumber || "TBD" }}</b></span>
-                  <b class="attended">
-                    {{ sessions.morning.attendanceStatus || "N/A" }}
-                  </b>
+              </div>
+              <div v-else-if="sessions.morning.curriculumnResponse" class="activities-container">
+                <div class="activity">
+                  <div class="thumbnail">
+                    <p id="lesson">Lesson</p>
+                    <p id="number">
+                      {{ sessions.morning.curriculumnResponse?.lessonResponse?.lessonId || "N/A" }}
+                    </p>
+                  </div>
+                  <div class="information">
+                    <b>{{ sessions.morning.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</b>
+                    <span>Exam: <b>{{ sessions.morning.curriculumnResponse?.examResponse?.examTitle || "N/A" }}</b></span>
+                    <span>Teacher: <b>{{ sessions.morning.fullName || "TBD" }}</b></span>
+                    <span>Room: <b>{{ sessions.morning.roomNumber || "TBD" }}</b></span>
+                    <b :class="getStatusAttendClass(sessions.morning.attendanceStatus)">{{ sessions.morning.attendanceStatus}}</b>
+                  </div>
                 </div>
               </div>
             </div>
           </td>
+
           <!-- Afternoon -->
           <td>
-            <div v-if="sessions.afternoon" class="activities-container">
-              <div class="activity">
-                <div class="thumbnail">
-                  <p id="lesson">Lesson</p>
-                  <p id="number">
-                    {{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonId || "N/A" }}
-                  </p>
+            <div v-if="sessions.afternoon">
+              <div v-if="sessions.afternoon.eventId" class="activities-container">
+                <div class="activity">
+                  <div class="thumbnail">
+                    <p id="lesson">Event</p>
+                  </div>
+                  <div class="information">
+                    <b>{{ sessions.afternoon.eventName || "N/A" }}</b>
+                    <span>Destination: <b>{{ sessions.afternoon.destination || "TBD" }}</b></span>
+                    <b :class="getStatusAttendClass(sessions.afternoon.attendanceStatus)">{{ sessions.afternoon.attendanceStatus}}</b>
+                  </div>
                 </div>
-                <div class="information">
-                  <b>
-                    {{
-                      sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonTitle ||
-                      "N/A"
-                    }}
-                  </b>
-                  <span>
-                      Exam:
-                      <b>
-                        {{
-                          sessions.afternoon.curriculumnResponse?.examResponse?.examTitle ||
-                          "N/A"
-                        }}
-                      </b>
-                    </span>
-                  <span>
-                      Teacher:
-                      <b>{{ sessions.afternoon.teacherName || "TBD" }}</b>
-                    </span>
-                  <span>Room: <b>{{ sessions.afternoon.roomNumber || "TBD" }}</b></span>
-                  <b class="attended">
-                    {{ sessions.afternoon.attendanceStatus || "N/A" }}
-                  </b>
+              </div>
+              <div v-else-if="sessions.afternoon.curriculumnResponse" class="activities-container">
+                <div class="activity">
+                  <div class="thumbnail">
+                    <p id="lesson">Lesson</p>
+                    <p id="number">
+                      {{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonId || "N/A" }}
+                    </p>
+                  </div>
+                  <div class="information">
+                    <b>{{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</b>
+                    <span>Exam: <b>{{ sessions.afternoon.curriculumnResponse?.examResponse?.examTitle || "N/A" }}</b></span>
+                    <span>Teacher: <b>{{ sessions.afternoon.fullName || "TBD" }}</b></span>
+                    <span>Room: <b>{{ sessions.afternoon.roomNumber || "TBD" }}</b></span>
+                    <b :class="getStatusAttendClass(sessions.afternoon.attendanceStatus)">{{ sessions.afternoon.attendanceStatus}}</b>
+                  </div>
                 </div>
               </div>
             </div>
           </td>
+          </template>
         </tr>
         </tbody>
       </table>
     </div>
+
   </div>
 </template>
 
@@ -124,12 +126,11 @@ import axios from "axios";
 export default {
   data() {
     return {
-      sessions: [], // Dữ liệu từ API
-      selectedWeek: null, // Tuần được chọn
+      sessions: [],
+      selectedWeek: 0,
     };
   },
   computed: {
-    // Lấy danh sách tuần
     uniqueWeeks() {
       const weeks = [];
       const weekMap = new Map();
@@ -168,11 +169,20 @@ export default {
         if (session.timeSlotResponse?.name === "Afternoon") {
           grouped[date].afternoon = session;
         }
+        if (session.note) {
+          grouped[date].note = session.note;
+        }
       });
       return grouped;
     },
   },
   methods: {
+    getStatusAttendClass(status) {
+      if (status === "Attended") return "yes";
+      if (status === "Not happen") return "not-happen";
+      if (status === "Not taken") return "no";
+      return "";
+    },
     // Gọi API để lấy sessions
     fetchSessions() {
       const studentId = sessionStorage.getItem("userId");
