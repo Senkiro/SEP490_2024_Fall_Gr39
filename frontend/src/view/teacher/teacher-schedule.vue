@@ -5,16 +5,6 @@
     </div>
 
     <div class="filters">
-      <label for="classFilter">Select Class:</label>
-      <select id="classFilter" v-model="selectedClassId">
-        <option value="" disabled>Class</option>
-        <option v-for="classItem in uniqueClasses" :key="classItem.classId" :value="classItem.classId">
-          {{ classItem.className }}
-        </option>
-      </select>
-    </div>
-
-    <div class="filters">
       <label for="weekFilter">Select Week:</label>
       <select id="weekFilter" v-model="selectedWeek">
         <option value="" disabled>Week</option>
@@ -24,7 +14,7 @@
       </select>
     </div>
 
-    <div v-if="selectedClassId && selectedWeek !== null" class="table-container">
+    <div v-if="selectedWeek !== null" class="table-container">
       <table>
         <thead>
         <tr>
@@ -41,7 +31,14 @@
               <p>{{ sessions.morning?.dayOfWeek || sessions.afternoon?.dayOfWeek }}</p>
             </div>
           </td>
-          <!-- Cột buổi sáng -->
+
+          <td v-if="sessions.note" colspan="2">
+            <div class="note-content" style="text-align: center">
+              {{ sessions.note }}
+            </div>
+          </td>
+          <template v-else>
+          <!-- Morning session -->
           <td>
             <div v-if="sessions.morning" class="activities-container">
               <div class="activity">
@@ -52,13 +49,16 @@
                 <div class="information">
                   <b>{{ sessions.morning.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</b>
                   <span>Exam: <b>{{ sessions.morning.curriculumnResponse?.examResponse?.examTitle || "N/A" }}</b></span>
-                  <span>Class: <b>{{ sessions.morning.classResponse?.className || "N/A" }}</b></span>
                   <span>Room: <b>{{ sessions.morning.roomNumber || "TBD" }}</b></span>
                   <div class="status-button">
-                    <button :class="['table-button', isActionDisabled(sessions.morning.date) ? 'disabled' : '']" :disabled="isActionDisabled(sessions.morning.date)" @click="navigateToAttendance(sessions.morning.sessionId)">
+                    <button :class="['table-button', isActionDisabled(sessions.morning.date) ? 'disabled' : '']"
+                            :disabled="isActionDisabled(sessions.morning.date)"
+                            @click="navigateToAttendance(sessions.morning.sessionId)">
                       View attendance
                     </button>
-                    <p :class="getStatusAttendClass(sessions.morning.attendanceStatus)">{{ sessions.morning.attendanceStatus}}</p>
+                    <p :class="getStatusAttendClass(sessions.morning.attendanceStatus)">
+                      {{ sessions.morning.attendanceStatus }}
+                    </p>
                   </div>
                   <div class="status-button" v-if="sessions.morning.curriculumnResponse?.examResponse">
                     <button :class="['table-button', isActionDisabled(sessions.morning.date) ? 'disabled' : '']" :disabled="isActionDisabled(sessions.morning.date)" @click="navigateToMarkManagement(sessions.morning.classResponse.classId, sessions.morning.curriculumnResponse.examResponse.examId, sessions.morning.sessionId)">
@@ -70,7 +70,7 @@
               </div>
             </div>
           </td>
-          <!-- Cột buổi chiều -->
+          <!-- Afternoon session -->
           <td>
             <div v-if="sessions.afternoon" class="activities-container">
               <div class="activity">
@@ -81,13 +81,16 @@
                 <div class="information">
                   <b>{{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</b>
                   <span>Exam: <b>{{ sessions.afternoon.curriculumnResponse?.examResponse?.examTitle || "N/A" }}</b></span>
-                  <span>Class: <b>{{ sessions.afternoon.classResponse?.className || "N/A" }}</b></span>
                   <span>Room: <b>{{ sessions.afternoon.roomNumber || "TBD" }}</b></span>
                   <div class="status-button">
-                    <button :class="['table-button', isActionDisabled(sessions.afternoon.date) ? 'disabled' : '']" :disabled="isActionDisabled(sessions.afternoon.date)" @click="navigateToAttendance(sessions.afternoon.sessionId)">
+                    <button :class="['table-button', isActionDisabled(sessions.afternoon.date) ? 'disabled' : '']"
+                            :disabled="isActionDisabled(sessions.afternoon.date)"
+                            @click="navigateToAttendance(sessions.afternoon.sessionId)">
                       View attendance
                     </button>
-                    <p :class="getStatusAttendClass(sessions.afternoon.attendanceStatus)">{{ sessions.afternoon.attendanceStatus}}</p>
+                    <p :class="getStatusAttendClass(sessions.afternoon.attendanceStatus)">
+                      {{ sessions.afternoon.attendanceStatus }}
+                    </p>
                   </div>
                   <div class="status-button" v-if="sessions.afternoon.curriculumnResponse?.examResponse">
                     <button :class="['table-button', isActionDisabled(sessions.afternoon.date) ? 'disabled' : '']" :disabled="isActionDisabled(sessions.afternoon.date)" @click="navigateToMarkManagement(sessions.afternoon.classResponse.classId, sessions.afternoon.curriculumnResponse.examResponse.examId, sessions.afternoon.sessionId)">
@@ -99,6 +102,7 @@
               </div>
             </div>
           </td>
+          </template>
         </tr>
         </tbody>
       </table>
@@ -108,27 +112,15 @@
 
 <script>
 import axios from "axios";
+
 export default {
   data() {
     return {
       sessions: [],
-      selectedClassId: "",
       selectedWeek: null,
     };
   },
   computed: {
-    uniqueClasses() {
-      const classMap = new Map();
-      this.sessions.forEach((item) => {
-        if (!classMap.has(item.classResponse.classId)) {
-          classMap.set(item.classResponse.classId, {
-            classId: item.classResponse.classId,
-            className: item.classResponse.className.trim(),
-          });
-        }
-      });
-      return Array.from(classMap.values());
-    },
     uniqueWeeks() {
       const weeks = [];
       const weekMap = new Map();
@@ -150,11 +142,9 @@ export default {
       return weeks;
     },
     filteredSessions() {
-      // Lọc theo lớp và tuần
+      // Chỉ lọc theo tuần
       return this.sessions.filter(
-          (session) =>
-              (!this.selectedClassId || session.classResponse.classId === this.selectedClassId) &&
-              (this.selectedWeek === null || session.sessionWeek === this.selectedWeek)
+          (session) => this.selectedWeek === null || session.sessionWeek === this.selectedWeek
       );
     },
     groupedSessionsByDate() {
@@ -169,6 +159,9 @@ export default {
         }
         if (session.timeSlotResponse?.name === "Afternoon") {
           grouped[date].afternoon = session;
+        }
+        if (session.note) {
+          grouped[date].note = session.note;
         }
       });
       return grouped;
@@ -192,17 +185,6 @@ export default {
 
       return false;
     },
-    navigateToMarkManagement(classId, examId, sessionId) {
-      if (!classId || !examId) {
-        console.error("Missing required parameters:", { classId, examId, sessionId });
-        return;
-      }
-
-      this.$router.push({
-        name: "TeacherMarkManagement",
-        params: { classId, examId, sessionId },
-      });
-    },
     navigateToAttendance(sessionId) {
       if (!sessionId) {
         return;
@@ -210,11 +192,6 @@ export default {
 
       this.$router.push({
         path: `/teacher/take-attendance/${sessionId}`,
-      }).then(() => {
-        const session = this.sessions.find(item => item.sessionId === sessionId);
-        if (session) {
-          session.status = true;
-        }
       });
     },
     getStatusAttendClass(status) {
