@@ -199,6 +199,8 @@ public class StudentServiceImp implements StudentService {
         //set avg mark
         studentResponse.setAvgMark( studentEntity.getAvgMark() );
 
+        studentResponse.setAvgMark( studentEntity.getAvgMark() );
+
         return studentResponse;
     }
 
@@ -230,6 +232,46 @@ public class StudentServiceImp implements StudentService {
         for (UserEntity user : userEntityList) {
             // check classId
             if (user.getStudentEntity().getClassEntity().getClassId().equals(classId)) {
+                StudentResponse studentResponse = new StudentResponse();
+                //get,set rollNumber
+                studentResponse.setRollNumber(user.getStudentEntity().getRollNumber());
+                studentResponse.setStudentId(user.getStudentEntity().getStudentId());
+
+                //map user to UserInforResponse
+                UserInforResponse userInforResponse = UserMapper.INSTANCE.toUserInforResponse(user);
+                //set user
+                studentResponse.setUserInforResponse(userInforResponse);
+
+                //set batch
+                studentResponse.setBatchName(user.getStudentEntity().getBatchEntity().getBatchName());
+
+                //set class
+                studentResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(user.getStudentEntity().getClassEntity()));
+
+                //set mark
+                studentResponse.setAvgMark( user.getStudentEntity().getAvgMark() );
+
+                //add to response list
+                studentListResponse.add(studentResponse);
+            }
+
+        }
+
+        return new PageImpl<>(studentListResponse, userEntityList.getPageable(), userEntityList.getTotalElements());
+    }
+
+    @Override
+    public Page<StudentResponse> findStudentsByNameByBatch(String name, String batch_name, int page, int size) {
+        //find all student
+        Page<UserEntity> userEntityList = userRepository.findByFullNameContaining(name,PageRequest.of(page, size));
+
+        //generate list for response
+        List<StudentResponse> studentListResponse = new ArrayList<>();
+
+        //for
+        for (UserEntity user : userEntityList) {
+            // check classId
+            if (user.getStudentEntity().getBatchEntity().getBatchName().equals(batch_name)) {
                 StudentResponse studentResponse = new StudentResponse();
                 //get,set rollNumber
                 studentResponse.setRollNumber(user.getStudentEntity().getRollNumber());

@@ -11,7 +11,7 @@
     <div class="filters-actions">
       <div class="filters">
         <select v-model="selectedBatch" id="batch-filter" class="filter-select"
-          @change="fetchClassesByBatch(selectedBatch.batchName)">
+                @change="fetchClassesByBatch(selectedBatch.batchName)">
           <option value="" disabled>Select Batch</option>
           <option v-for="batch in batches" :key="batch.id" :value="batch">
             {{ batch.batchName }}
@@ -28,11 +28,11 @@
 
       <div class="actions">
         <button @click="showAddSchedulePopup = true">
-          <VsxIcon iconName="AddCircle" size="20" type="bold" />
+          <VsxIcon iconName="AddCircle" size="20" type="bold"/>
           Create new schedule
         </button>
         <button>
-          <VsxIcon iconName="Trash" size="20" type="bold" />
+          <VsxIcon iconName="Trash" size="20" type="bold"/>
           Delete schedule
         </button>
       </div>
@@ -50,47 +50,47 @@
     <div class="table-container">
       <table>
         <thead>
-          <tr>
-            <th>Date</th>
-            <th>Slot</th>
-            <th>Teacher</th>
-            <th>Room</th>
-            <th>Lesson</th>
-            <th>Exam</th>
-            <th>Event</th>
-            <th>Action</th>
-          </tr>
+        <tr>
+          <th>Date</th>
+          <th>Slot</th>
+          <th>Teacher</th>
+          <th>Room</th>
+          <th>Lesson</th>
+          <th>Exam</th>
+          <th>Event</th>
+          <th>Action</th>
+        </tr>
         </thead>
         <tbody>
-          <template v-for="(sessions, date) in groupedSessions" :key="date">
-            <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
-              <!-- Cột Ngày -->
-              <td :rowspan="1">
+        <template v-for="(sessions, date) in groupedSessions" :key="date">
+          <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
+            <!-- Cột Ngày -->
+            <td :rowspan="1">
+              <div class="schedule-date">
+                <h1>{{ new Date(date).getDate() }}</h1>
+                <p>{{ sessions[0].dayOfWeek }}</p>
+              </div>
+            </td>
+
+            <!-- Gộp các cột khi có note -->
+            <td colspan="7" class="note-content">
+              {{ sessions.find(session => session.note)?.note }}
+            </td>
+          </tr>
+          <template v-else>
+            <tr v-for="(session, index) in sessions" :key="session.sessionId">
+              <td v-if="index === 0" :rowspan="sessions.length">
                 <div class="schedule-date">
-                  <h1>{{ new Date(date).getDate() }}</h1>
-                  <p>{{ sessions[0].dayOfWeek }}</p>
+                  <h1>{{ new Date(session.date).getDate() }}</h1>
+                  <p>{{ session.dayOfWeek }}</p>
                 </div>
               </td>
 
-              <!-- Gộp các cột khi có note -->
-              <td colspan="7" class="note-content">
-                {{ sessions.find(session => session.note)?.note }}
-              </td>
-            </tr>
-            <template v-else>
-              <tr v-for="(session, index) in sessions" :key="session.sessionId">
-                <!-- Cột Ngày -->
-                <td v-if="index === 0" :rowspan="sessions.length">
-                  <div class="schedule-date">
-                    <h1>{{ new Date(session.date).getDate() }}</h1>
-                    <p>{{ session.dayOfWeek }}</p>
-                  </div>
-                </td>
-
-                <td>{{ session.timeSlotResponse?.name || "N/A" }}</td>
-                <td id="teacher">
-                  <template v-if="!isEditing[session.sessionId]">{{ session.fullName || "-" }}</template>
-                  <template v-else>
+              <td>{{ session.timeSlotResponse?.name || "" }}</td>
+              <td id="teacher">
+                <template v-if="!isEditing[session.sessionId]">{{ session.fullName || "" }}</template>
+                <template v-else>
+                  <div class="edit-teacher">
                     <select v-model="selectedTeacher[session.sessionId]" class="filter-select"
                             v-if="session.lessonResponse || session.eventName">
                       <option value="" disabled>Select Teacher</option>
@@ -98,58 +98,64 @@
                         {{ teacher.name }}
                       </option>
                     </select>
-                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.fullName || "-" }}</template>
-                  </template>
-                </td>
-                <td id="room">
-                  <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "-" }}</template>
-                  <template v-else>
-                    <select v-model="selectedRoomTable[session.sessionId]" class="filter-select"
-                            v-if="session.lessonResponse || session.eventName">
-                      <option value="" disabled>Select Room</option>
-                      <option v-for="room in rooms" :key="room.number" :value="room.number">
-                        {{ room.number }}
-                      </option>
-                    </select>
-                    <template v-if="!session.lessonResponse && !session.eventName">{{ session.roomNumber || "-" }}</template>
-                  </template>
-                </td>
-                <td id="lesson">
-                  <div>{{ session.lessonResponse || "-" }}</div>
-                </td>
-                <td id="exam">
-                  <div>{{ session.examResponse || "-" }}</div>
-                </td>
-                <td id="event">
-                  <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "-" }}</template>
-                  <template v-else>
-                    <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
-                            v-if="!session.lessonResponse">
-                      <option value="" disabled>Select Event</option>
-                      <option v-for="event in events" :key="event.id" :value="event.id">
-                        {{ event.title }}
-                      </option>
-                    </select>
-                    <template v-if="session.lessonResponse">{{ session.eventName || "-" }}</template>
-                  </template>
-                </td>
-                <td>
-                  <div v-if="!isEditing[session.sessionId]" class="icon-group">
-                    <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
-                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
                   </div>
-                  <div v-else class="icon-group">
-                    <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8" @click="editSession(session.sessionId)" />
-                    <!-- Cancel Button -->
-                    <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F" @click="cancelEdit(session.sessionId)" />
-                  </div>
-                </td>
-              </tr>
-            </template>
+                </template>
+              </td>
+              <td id="room">
+                <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "" }}</template>
+                <template v-else>
+                  <select v-model="selectedRoomTable[session.sessionId]" class="filter-select"
+                          v-if="session.lessonResponse || session.eventName">
+                    <option value="" disabled>Select Room</option>
+                    <option v-for="room in rooms" :key="room.number" :value="room.number">
+                      {{ room.number }}
+                    </option>
+                  </select>
+                  <template v-if="!session.lessonResponse && !session.eventName">{{
+                      session.roomNumber || ""
+                    }}
+                  </template>
+                </template>
+              </td>
+              <td id="lesson">
+                {{ session.lessonResponse || "" }}
+              </td>
+              <td id="exam">
+                {{ session.examResponse || "" }}
+              </td>
+              <td id="event">
+                <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "" }}</template>
+                <template v-else>
+                  <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
+                          v-if="!session.lessonResponse">
+                    <option value="" disabled>Select Event</option>
+                    <option v-for="event in events" :key="event.id" :value="event.id">
+                      {{ event.title }}
+                    </option>
+                  </select>
+                  <template v-if="session.lessonResponse">{{ session.eventName || "" }}</template>
+                </template>
+              </td>
+              <td>
+                <div v-if="!isEditing[session.sessionId]" class="icon-group">
+                  <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)"/>
+                  <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"
+                           @click="openChangeDatePopup(session.sessionId)"/>
+                </div>
+                <div v-else class="icon-group">
+                  <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8"
+                           @click="editSession(session.sessionId)"/>
+                  <!-- Cancel Button -->
+                  <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F"
+                           @click="cancelEdit(session.sessionId)"/>
+                </div>
+              </td>
+            </tr>
           </template>
-          <tr v-if="Object.keys(groupedSessions).length === 0">
-            <td colspan="8" class="center">No record.</td>
-          </tr>
+        </template>
+        <tr v-if="Object.keys(groupedSessions).length === 0">
+          <td colspan="8" class="center">No record.</td>
+        </tr>
         </tbody>
 
       </table>
@@ -159,7 +165,7 @@
       <div class="popup">
         <div class="exit-icon">
           <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold"
-            @click="showAddSchedulePopup = false" />
+                   @click="showAddSchedulePopup = false"/>
         </div>
         <div class="popup-title">
           <h2>Add Schedule</h2>
@@ -193,7 +199,7 @@
               <select id="curriculum-filter" class="filter-select" v-model="selectedCurriculumId">
                 <option value="" disabled>Select Curriculum</option>
                 <option v-for="curriculum in curriculums" :key="curriculum.curriculumListId"
-                  :value="curriculum.curriculumListId">
+                        :value="curriculum.curriculumListId">
                   {{ curriculum.curriculumTitle }}
                 </option>
               </select>
@@ -211,7 +217,7 @@
     <div v-if="showChangeDatePopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showChangeDatePopup = false" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showChangeDatePopup = false"/>
         </div>
         <div class="popup-title">
           <h2>Change date</h2>
@@ -223,7 +229,9 @@
             <label>Week: </label>
             <div class="information">
               Week {{ selectedBatch.weeks.indexOf(selectedWeekFromSession) + 1 || "N/A" }}
-              ({{ selectedWeekFromSession?.start || "dd/mm/yyyy" }} - {{ selectedWeekFromSession?.end || "dd/mm/yyyy" }})
+              ({{ selectedWeekFromSession?.start || "dd/mm/yyyy" }} - {{
+                selectedWeekFromSession?.end || "dd/mm/yyyy"
+              }})
             </div>
           </div>
           <div class="form-group">
@@ -235,7 +243,9 @@
           <div class="form-group">
             <label>Slot: </label>
             <div class="information">
-              {{ currentSession?.timeSlotResponse?.name || "N/A" }} ({{ currentSession?.timeSlotResponse?.startTime || "hh:mm" }} - {{ currentSession?.timeSlotResponse?.endTime || "hh:mm" }})
+              {{ currentSession?.timeSlotResponse?.name || "N/A" }}
+              ({{ currentSession?.timeSlotResponse?.startTime || "hh:mm" }} -
+              {{ currentSession?.timeSlotResponse?.endTime || "hh:mm" }})
             </div>
           </div>
           <b>To:</b>
@@ -266,7 +276,14 @@
                     :key="item.date"
                     :value="item.date"
                 >
-                  {{ new Date(item.date).toLocaleDateString("en-US", { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) }}
+                  {{
+                    new Date(item.date).toLocaleDateString("en-US", {
+                      weekday: 'long',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+                  }}
                 </option>
               </select>
             </div>
@@ -295,11 +312,23 @@
         <p v-if="errorMessage" class="error"></p>
       </div>
     </div>
+
+    <div v-if="showAutoFillModal" class="popup-overlay">
+      <div class="popup">
+        <h3>Apply Teacher to All Weeks</h3>
+        <p>Do you want to apply the selected teacher to all weeks for this class?</p>
+        <div class="actions">
+          <button @click="confirmAutoFill">Yes</button>
+          <button @click="cancelAutoFill">No</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
-import { VsxIcon } from "vue-iconsax";
+import {VsxIcon} from "vue-iconsax";
 import axios from 'axios';
 
 export default {
@@ -347,6 +376,9 @@ export default {
       selectedDate: null,
       selectedChangeDateTimeSlotId: null,
       groupedUnavailableSessions: [],
+      applyToAllWeeks: {},
+      showAutoFillModal: false,
+      pendingSessionId: null,
     };
   },
   methods: {
@@ -354,15 +386,15 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/batch`, {
-          params: {
-            page: 0,
-            size: 1000
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+            `http://localhost:8088/fja-fap/staff/batch`, {
+              params: {
+                page: 0,
+                size: 1000
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
         this.batches = response.data.result.content.map(batch => {
           const start = new Date(batch.startTime);
@@ -399,16 +431,16 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
-          params: {
-            batch_name: batchName,
-            page: 0,
-            size: 100,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+            `http://localhost:8088/fja-fap/staff/get-class-by-batch`, {
+              params: {
+                batch_name: batchName,
+                page: 0,
+                size: 100,
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
         if (response.data && response.data.result && response.data.result.content) {
           this.classes = response.data.result.content.map((classItem) => ({
@@ -432,11 +464,11 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-available-room/${sessionId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+            `http://localhost:8088/fja-fap/staff/get-available-room/${sessionId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
 
         // Map the API response to the rooms array
@@ -461,11 +493,11 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-all-room`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+            `http://localhost:8088/fja-fap/staff/get-all-room`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
 
         if (response.data && response.data.result) {
@@ -489,12 +521,12 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/time-slot-list`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+            `http://localhost:8088/fja-fap/staff/time-slot-list`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
 
         // Ánh xạ chính xác từ `timeSLotId` sang `id`
@@ -522,15 +554,15 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken'); // Lấy token từ sessionStorage
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list`, {
-          params: {
-            page: 0,
-            size: 100,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+            `http://localhost:8088/fja-fap/staff/get-all-curriculumn-list`, {
+              params: {
+                page: 0,
+                size: 100,
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
 
         if (response.data && response.data) {
@@ -562,17 +594,17 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.post(
-          `http://localhost:8088/fja-fap/staff/create-schedule/${this.selectedClassId}`,
-          {
-            timeSlotId: this.selectedTimeSlotId,
-            roomNumber: this.selectedRoomId,
-            curriculumnListId: this.selectedCurriculumId
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
+            `http://localhost:8088/fja-fap/staff/create-schedule/${this.selectedClassId}`,
+            {
+              timeSlotId: this.selectedTimeSlotId,
+              roomNumber: this.selectedRoomId,
+              curriculumnListId: this.selectedCurriculumId
             },
-          }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
 
         if (response.data && response.data.code === 0) {
@@ -600,7 +632,7 @@ export default {
             week: this.selectedWeekIndex,
             class_id: this.selectedClassId,
           },
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {Authorization: `Bearer ${token}`},
         });
         this.sessions = response.data.result.map((session) => {
           //console.log("Fetched session:", session);
@@ -659,7 +691,7 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get("http://localhost:8088/fja-fap/staff/event", {
-          params: { page: 0, size: 100 },
+          params: {page: 0, size: 100},
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -691,13 +723,13 @@ export default {
       if (!this.isEditing[sessionId]) {
         // Enter edit mode: Initialize temporary data
         this.selectedTeacher[sessionId] = this.sessions.find(
-          (session) => session.sessionId === sessionId
+            (session) => session.sessionId === sessionId
         )?.teacherId || null;
         this.selectedRoomTable[sessionId] = this.sessions.find(
-          (session) => session.sessionId === sessionId
+            (session) => session.sessionId === sessionId
         )?.roomId || null;
         this.selectedEventTable[sessionId] = this.sessions.find(
-          (session) => session.sessionId === sessionId
+            (session) => session.sessionId === sessionId
         )?.eventId || null;
 
         this.fetchAvailableTeachers(sessionId);
@@ -719,8 +751,6 @@ export default {
         return;
       }
 
-      console.log(sessionData);
-
       const updatedData = {
         date: sessionData.date,
         status: 0,
@@ -730,26 +760,32 @@ export default {
         curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
         timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
         roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
-        eventId: this.selectedEventTable[sessionId] || sessionData.eventId  ||"",
+        eventId: this.selectedEventTable[sessionId] || sessionData.eventId || "",
         userId: this.selectedTeacher[sessionId] || sessionData.userId || "",
       };
 
-      console.log("Updated Data:", updatedData);
-
       try {
         const token = sessionStorage.getItem("jwtToken");
+
+        // Cập nhật session thông thường
         const response = await axios.post(
-          `http://localhost:8088/fja-fap/staff/update-session/${sessionId}`,
-          updatedData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+            `http://localhost:8088/fja-fap/staff/update-session/${sessionId}`,
+            updatedData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
 
         if (response.data && response.data.code === 0) {
           this.showNotification("Session updated successfully!", "success");
+
+          // Hiển thị modal hỏi người dùng có muốn áp dụng auto-fill không
+          if (updatedData.userId && updatedData.userId !== sessionData.userId) {
+            this.pendingSessionId = sessionId;
+            this.showAutoFillModal = true;
+          }
           this.isEditing[sessionId] = false;
           this.fetchSessions();
         } else {
@@ -759,6 +795,44 @@ export default {
         console.error("Error updating session:", error);
         this.showNotification("An error occurred. Please try again.", "error");
       }
+    },
+
+    // Khi người dùng nhấn "Yes" trong modal
+    async confirmAutoFill() {
+      const sessionId = this.pendingSessionId;
+      const teacherId = this.selectedTeacher[sessionId];
+      const classId = this.selectedClassId;
+      const weekEnd = this.selectedBatch.weeks.length;
+
+      this.showAutoFillModal = false; // Đóng modal
+
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const autoFillResponse = await axios.post(
+            `http://localhost:8088/fja-fap/staff/auto-fill-teacher?teacherId=${teacherId}&classId=${classId}&sessionId=${sessionId}&weekEnd=${weekEnd}`,
+            null,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        if (autoFillResponse.data && autoFillResponse.data.code === 0) {
+          this.showNotification("Teacher applied to all weeks successfully!", "success");
+        } else {
+          this.showNotification("Failed to apply teacher to all weeks. Please try again.", "error");
+        }
+      } catch (error) {
+        console.error("Error:", error.response?.data || error);
+        this.showNotification("An error occurred. Please try again.", "error");
+      }
+    },
+
+    // Khi người dùng nhấn "No" trong modal
+    cancelAutoFill() {
+      this.showAutoFillModal = false;
+      this.pendingSessionId = null;
     },
     cancelEdit(sessionId) {
       if (!sessionId) {
@@ -775,7 +849,7 @@ export default {
       this.isEditing[sessionId] = false;
     },
     showNotification(message, type) {
-      this.notification = { message, type };
+      this.notification = {message, type};
       setTimeout(() => {
         this.notification.message = "";
       }, 3000);
@@ -805,7 +879,7 @@ export default {
             class_id: this.selectedClassId,
             sessionWeek: this.popupSelectedWeekIndex,
           },
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {Authorization: `Bearer ${token}`},
         });
 
         if (response.data && response.data.result) {
@@ -862,8 +936,8 @@ export default {
             `http://localhost:8088/fja-fap/staff/swap-to-unavailable-session`,
             null,
             {
-              params: { currentSessionId, toSessionId },
-              headers: { Authorization: `Bearer ${token}` },
+              params: {currentSessionId, toSessionId},
+              headers: {Authorization: `Bearer ${token}`},
             }
         );
 

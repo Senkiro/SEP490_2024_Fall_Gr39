@@ -1,113 +1,129 @@
 <template>
-    <div class="container">
-        <h2>Upcoming activities</h2>
-        <div class="activities">
-            <div class="daily-activities">
-                <h3>Date: 4/9/2024 - Tomorrow</h3>
-                <div class="activities-container">
-                    <div class="activity">
-                        <div class="thumbnail">
-                            <p id="lesson">Lesson</p>
-                            <p id="number">1</p>
-                        </div>
-
-                        <div class="information">
-                            <span>
-                                <p>Chapter 2 - Lesson 1</p>
-                            </span>
-                            <span>Exam: <b>Chapter 1 - Grammar</b></span>
-                            <span>Teacher: <b>Yuri Ikeda</b></span>
-                        </div>
-                    </div>
-                    <div class="activity">
-                        <div class="thumbnail">
-                            <p id="lesson">Lesson</p>
-                            <p id="number">1</p>
-                        </div>
-
-                        <div class="information">
-                            <span>
-                                <p>Chapter 2 - Lesson 1</p>
-                            </span>
-                            <span>Exam: <b>Chapter 1 - Grammar</b></span>
-                            <span>Teacher: <b>Yuri Ikeda</b></span>
-                        </div>
-                    </div>
-                </div>
-
+  <div class="container">
+    <h2>Upcoming activities</h2>
+    <!-- Schedule -->
+    <div class="activities horizontal-activities">
+      <div
+          v-for="lesson in lessons"
+          :key="lesson.date + lesson.curriculumnResponse?.lessonResponse?.lessonId"
+          class="daily-activities"
+      >
+        <h3>{{ lesson.date === today ? 'Tomorrow' : new Date(lesson.date).toLocaleDateString() }}</h3>
+        <div class="activities-container">
+          <div class="activity">
+            <div class="thumbnail">
+              <p id="lesson">Lesson</p>
+              <p id="number">{{ lesson.curriculumnResponse?.lessonResponse?.lessonId || 'N/A' }}</p>
             </div>
-
-            <div class="daily-activities">
-                <h3>Date: 5/9/2024</h3>
-                <div class="activities-container">
-                    <div class="activity">
-                        <div class="thumbnail">
-                            <p id="lesson">Lesson</p>
-                            <p id="number">1</p>
-                        </div>
-
-                        <div class="information">
-                            <span>
-                                <p>Chapter 2 - Lesson 1</p>
-                            </span>
-                            <span>Exam: <b>Chapter 1 - Grammar</b></span>
-                            <span>Teacher: <b>Yuri Ikeda</b></span>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="daily-activities">
-                <h3>Date: 6/9/2024</h3>
-                <div class="activities-container">
-                    <div class="activity">
-                        <div class="thumbnail">
-                            <p id="lesson">Lesson</p>
-                            <p id="number">1</p>
-                        </div>
-
-                        <div class="information">
-                            <span>
-                                <p>Chapter 2 - Lesson 1</p>
-                            </span>
-                            <span>Exam: <b>Chapter 1 - Grammar</b></span>
-                            <span>Teacher: <b>Yuri Ikeda</b></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row2">
-            <div class="graph"></div>
-          <div id="news-container">
-            <div class="news-upper">
-              <h2>News</h2>
-              <p id="see-all" @click="navigateToNewsRecord">See all</p>
-            </div>
-
-            <div class="news-lower">
-              <div v-for="news in newsList" :key="news.newId" class="news-row">
-                <p class="date">{{ new Date(news.createDate).toLocaleDateString() }}</p>
-                <p class="title">{{ news.newTitle }}</p>
-              </div>
+            <div class="information">
+              <p>{{ lesson.curriculumnResponse?.lessonResponse?.lessonTitle || 'No Title' }}</p>
+              <span>Exam: <b>{{ lesson.curriculumnResponse?.examResponse?.examTitle || 'N/A' }}</b></span>
+              <span>Teacher: <b>{{ lesson.fullName || 'Unknown' }}</b></span>
             </div>
           </div>
         </div>
+      </div>
     </div>
+
+    <!-- Event  -->
+    <div class="activities-container">
+      <div
+          v-for="event in events"
+          :key="'event-' + event.eventId"
+          class="event"
+      >
+        <div class="activity">
+          <div class="thumbnail">
+            <p id="lesson">Event</p>
+          </div>
+          <div class="information">
+            <b>{{ event.eventName || 'No Event Name' }}</b>
+            <span>Destination: <b>{{ event.destination || 'N/A' }}</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- News Section -->
+    <div class="row2">
+      <div class="graph"></div>
+      <div id="news-container">
+        <div class="news-upper">
+          <h2>News</h2>
+          <p id="see-all" @click="navigateToNewsRecord">See all</p>
+        </div>
+
+        <div class="news-lower">
+          <div v-for="news in newsList" :key="news.newId" class="news-row">
+            <p class="date">{{ new Date(news.createDate).toLocaleDateString() }}</p>
+            <p class="title">{{ news.newTitle }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
+
 export default {
   data() {
     return {
-      newsList: [],
-    }
+      newsList: [], // Danh sách tin tức
+      sessions: [], // Tất cả hoạt động (bài học và sự kiện)
+    };
+  },
+  computed: {
+    lessons() {
+      return this.sessions.filter(
+          (session) =>
+              !session.eventId && // Không phải sự kiện
+              session.curriculumnResponse?.lessonResponse?.lessonTitle // Kiểm tra có dữ liệu bài học
+      );
+    },
+    events() {
+      return this.sessions.filter((session) => session.eventId);
+    },
   },
   methods: {
+    fetchSessions() {
+      const studentId = sessionStorage.getItem("userId");
+      const token = sessionStorage.getItem("jwtToken");
+
+      if (!studentId || !token) {
+        console.error("Student ID hoặc JWT token không tồn tại trong session storage");
+        return;
+      }
+
+      axios
+          .get(`http://localhost:8088/fja-fap/staff/get-session-by-student?student_id=${studentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            if (response.data.code === 0) {
+              const allSessions = response.data.result;
+
+              // Lọc 3 ngày gần nhất
+              const today = new Date();
+              const threeDaysLater = new Date();
+              threeDaysLater.setDate(today.getDate() + 3);
+
+              this.sessions = allSessions.filter((session) => {
+                const sessionDate = new Date(session.date);
+                return sessionDate >= today && sessionDate <= threeDaysLater;
+              });
+            } else {
+              console.error(
+                  "Lỗi khi fetch dữ liệu sessions:",
+                  response.data.message || "Lỗi không xác định"
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Lỗi khi gọi API:", error);
+          });
+    },
     async fetchAllNews() {
       try {
         const token = sessionStorage.getItem("jwtToken");
@@ -144,8 +160,9 @@ export default {
   },
   mounted() {
     this.fetchAllNews();
+    this.fetchSessions();
   },
-}
+};
 </script>
 
 <style lang="scss">

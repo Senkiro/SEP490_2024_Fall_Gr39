@@ -58,10 +58,33 @@ export default {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
+
+          // Lưu thông tin đăng nhập vào sessionStorage
           sessionStorage.setItem('jwtToken', data.result.token);
           sessionStorage.setItem('userRole', data.result.scope);
           sessionStorage.setItem('userName', this.username);
-          sessionStorage.setItem('userId',data.result.userId)
+          sessionStorage.setItem('userId', data.result.userId);
+
+          // Gọi API lấy thông tin sinh viên
+          const studentResponse = await fetch(
+              `http://localhost:8088/fja-fap/staff/get-student/${data.result.userId}`,
+              {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${data.result.token}`
+                }
+              }
+          );
+
+          if (studentResponse.ok) {
+            const studentData = await studentResponse.json();
+
+            // Lưu thông tin sinh viên vào sessionStorage
+            sessionStorage.setItem('studentInfo', JSON.stringify(studentData.result));
+          } else {
+            console.error('Failed to fetch student info');
+          }
+
           this.redirectUser(data.result.scope);
         } else {
           const errorData = await response.json();

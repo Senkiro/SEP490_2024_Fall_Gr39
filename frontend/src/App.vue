@@ -97,7 +97,6 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  margin-top: 20px;
 }
 
 h2 {
@@ -149,6 +148,9 @@ button {
 
   .headContent {
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .actions {

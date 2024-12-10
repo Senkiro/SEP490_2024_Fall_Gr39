@@ -26,7 +26,6 @@
             <th>Title</th>
             <th>Destination</th>
             <th>Information</th>
-            <th>Status</th>
             <th>Avg Rate</th>
             <th class="center">Action</th>
           </tr>
@@ -37,10 +36,15 @@
             <td>{{ event.eventName }}</td>
             <td>{{ event.address }}</td>
             <td v-html="event.description"></td>
-            <td :class="event.status ? 'status-finished' : 'status-pending'">
-              {{ event.status ? 'Finished' : 'Not happen' }}
+            <td>
+              {{ event.avgRate !== null ? event.avgRate.toFixed(2) : 'N/A' }}
+              <span
+                  v-for="star in Math.floor(event.avgRate)"
+                  :key="star"
+                  style="color: gold"
+                  class="star"
+              >★</span>
             </td>
-            <td>{{ event.avgRate !== null ? event.avgRate : 'N/A' }}</td>
             <td class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail(event)" />
@@ -55,7 +59,7 @@
         </tbody>
       </table>
 
-      <div class="pagination" v-if="totalPages > 0">
+      <div class="pagination" v-if="totalPages > 1">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
         </button>
@@ -198,15 +202,6 @@ export default {
         console.error('Error deleting room:', error);
         this.showNotification("Error deleting event. Please try again.", "error");
       }
-    },
-    shortenText(text) {
-      if (text.length > this.maxDescriptionLength) {
-        return text.slice(0, this.maxDescriptionLength);
-      }
-      return text;
-    },
-    toggleExpand(index) {
-      this.isExpanded[index] = !this.isExpanded[index];
     },
     updateDisplayedPages() {
       const pages = [];

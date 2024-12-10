@@ -188,7 +188,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/teacher/get-students-class`, {
+            `http://localhost:8088/fja-fap/staff/get-students-class`, {
               params: {
                 page: this.currentPage - 1,
                 size: this.itemsPerPage,
