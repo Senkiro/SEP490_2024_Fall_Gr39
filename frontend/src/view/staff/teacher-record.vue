@@ -54,7 +54,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="pagination" v-if="totalPages > 0">
+      <div class="pagination" v-if="totalPages > 1">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
@@ -77,10 +77,6 @@
           <h2>Add teacher</h2>
         </div>
         <form @submit.prevent="addTeacher">
-          <div class="form-group">
-            <label for="username">Username <span class="required">*</span></label>
-            <input type="text" id="username" v-model="newTeacher.username" required />
-          </div>
           <div class="form-group">
             <label for="fullName">Full Name <span class="required">*</span></label>
             <input type="text" id="fullName" v-model="newTeacher.fullName" required />

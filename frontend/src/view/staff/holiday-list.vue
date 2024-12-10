@@ -9,10 +9,10 @@
         <VsxIcon iconName="AddCircle" size="20" type="bold" />
         Add holiday
       </button>
-      <button @click="navigateToImportHoliday">
-        <VsxIcon iconName="Import" size="20" type="bold" />
-        Import holiday
-      </button>
+<!--      <button @click="navigateToImportHoliday">-->
+<!--        <VsxIcon iconName="Import" size="20" type="bold" />-->
+<!--        Import holiday-->
+<!--      </button>-->
     </div>
 
     <div class="table-container">

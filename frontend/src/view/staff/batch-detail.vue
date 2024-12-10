@@ -2,7 +2,7 @@
   <div class="container">
     <div class="headContent">
       <h1>{{ batchName }}</h1>
-      <button> Tong ket </button>
+      <button> Summary </button>
     </div>
 
     <!-- Phần chuyển đổi tab -->
