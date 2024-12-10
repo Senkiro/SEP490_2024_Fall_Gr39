@@ -26,6 +26,6 @@ public interface UserRepository extends BaseRepository<UserEntity, String> {
 
     Page<UserEntity> findByFullNameContaining(String name, PageRequest of);
 
-//    public Optional<User> findByUserId(String userId);
+    Page<UserEntity> findByRoles(UserRole role, PageRequest of);
 
 }

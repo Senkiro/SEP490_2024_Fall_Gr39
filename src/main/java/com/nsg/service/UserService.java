@@ -40,6 +40,8 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     void deleteUser(String userId);
 
-    List<UserEntity> getUserByRoles(UserRole role);
+    Page<UserInforResponse> getUsersByRoles(UserRole role, int page, int size);
+
+    void changeUsersActive(String userId);
 
 }

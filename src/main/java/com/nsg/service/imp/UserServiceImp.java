@@ -10,8 +10,10 @@ import com.nsg.dto.request.user.ResetPasswordRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
+import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.BatchEntity;
+import com.nsg.entity.NewEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.BatchRepository;
@@ -41,6 +43,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -81,6 +84,41 @@ public class UserServiceImp implements UserService {
     @Override
     public List<UserEntity> getAllUser() {
         return userRepository.findAll();
+    }
+
+    //get user by role
+    @Override
+    public Page<UserInforResponse> getUsersByRoles(UserRole role, int page, int size) {
+
+        Page<UserEntity> userEntities = userRepository.findByRoles(role, PageRequest.of(page, size));
+
+        List<UserInforResponse> responseList = toUserInforResponseList(userEntities.getContent());
+
+        return new PageImpl<>(responseList, userEntities.getPageable(), userEntities.getTotalElements());
+
+    }
+
+    public List<UserInforResponse> toUserInforResponseList(List<UserEntity> userEntities) {
+        List<UserInforResponse> responseList = new ArrayList<>();
+
+        for (UserEntity user : userEntities) {
+            UserInforResponse response = UserMapper.INSTANCE.toUserInforResponse(user);
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
+
+    //set active to false
+    @Override
+    public void changeUsersActive(String userId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+        boolean currentActive = user.isActive();
+        user.setActive(!currentActive);
+
+        userRepository.save(user);
     }
 
     @Override
@@ -240,11 +278,6 @@ public class UserServiceImp implements UserService {
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
-    }
-
-    @Override
-    public List<UserEntity> getUserByRoles(UserRole role) {
-        return userRepository.getByRoles(role);
     }
 
     @Override
