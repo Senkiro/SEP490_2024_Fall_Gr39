@@ -2,8 +2,9 @@
   <div class="container">
     <div class="headContent">
       <h1 class="title-large">Student’s attendance report</h1>
-      <span class="student-name">Student: <b>{{ student.name }} - {{ student.id }}</b></span>
     </div>
+    <span class="student-name">Student: <b>{{ student.name }} - {{ student.id }}</b></span>
+
 
     <div class="actions">
       <span>Attended: <b>{{ attendanceSummary }}</b> sessions</span>

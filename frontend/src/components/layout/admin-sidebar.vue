@@ -8,67 +8,25 @@
             </div>
 
             <div class="sidebar-menu">
-                <router-link class="sidebar-item" to="/teacher" :class="{ 'active': active === 'teacher' }" @click="chooseItem('teacher')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Home3" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">Homepage</span>
-                </router-link>
-
-                <router-link class="sidebar-item" to="/teacher/schedule" :class="{ 'active': active === 'schedule' }" @click="chooseItem('schedule')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">Schedule</span>
-                </router-link>
-
-                <router-link class="sidebar-item" to="/teacher/class-record" :class="{ 'active': active === 'class' }" @click="chooseItem('class')">
+                <router-link class="sidebar-item" to="/admin/account" :class="{ 'active': active === 'account' }" @click="chooseItem('account')">
                     <span class="material-icons">
                         <VsxIcon iconName="Profile2User" :size="32" color="#1A2C6F" type="linear" />
                     </span>
-                    <span class="text">Class</span>
+                    <span class="text">Account</span>
                 </router-link>
 
-                <router-link class="sidebar-item" to="/teacher/curriculumn" :class="{ 'active': active === 'curriculumn' }" @click="chooseItem('curriculumn')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">Curriculumn</span>
-                </router-link>
-
-                <router-link class="sidebar-item" to="/teacher/holiday" :class="{ 'active': active === 'holiday' }" @click="chooseItem('holiday')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Cardano" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">Holiday</span>
-                </router-link>
-
-                <router-link class="sidebar-item" to="/teacher/event" :class="{ 'active': active === 'event' }" @click="chooseItem('event')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">Event</span>
-                </router-link>
-
-                <router-link class="sidebar-item" to="/teacher/mark" :class="{ 'active': active === 'mark' }" @click="chooseItem('mark')">
+                <router-link class="sidebar-item" to="/admin/mark" :class="{ 'active': active === 'mark' }" @click="chooseItem('mark')">
                     <span class="material-icons">
                         <VsxIcon iconName="Award" :size="32" color="#1A2C6F" type="linear" />
                     </span>
                     <span class="text">Mark</span>
                 </router-link>
 
-                <router-link class="sidebar-item" to="/teacher/attendance-management" :class="{ 'active': active === 'attendance' }" @click="chooseItem('attendance')">
+                <router-link class="sidebar-item" to="/admin/attendance" :class="{ 'active': active === 'attendance' }" @click="chooseItem('attendance')">
                     <span class="material-icons">
                         <VsxIcon iconName="Document" :size="32" color="#1A2C6F" type="linear" />
                     </span>
                     <span class="text">Attendance</span>
-                </router-link>
-
-                <router-link class="sidebar-item" to="/teacher/news" :class="{ 'active': active === 'news' }" @click="chooseItem('news')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Information" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">News</span>
                 </router-link>
             </div>
         </div>
@@ -77,25 +35,29 @@
 
 <script>
 import { ref } from 'vue';
+import { VsxIcon } from "vue-iconsax";
 
 const is_expanded = ref(false)
 const ToggleMenu = () => (is_expanded.value = !is_expanded.value)
 
 export default {
     name: "AppSidebar",
+    components: {
+        VsxIcon
+    },
     is_expanded,
     ToggleMenu,
     data() {
         return{
-            active: "homepage"
+            active: "account"
         }
     },
     setup() {
         return { is_expanded, ToggleMenu }
     },
-    methods: {
-        chooseItem(item) {
-            this.active = item;
+    methods:{
+        chooseItem(item){
+            this.active=item;
         }
     }
 };

@@ -19,6 +19,16 @@ const routes = [
         component: () => import('../view/auth/view-profile.vue'),
         meta: { layout: 'auth', requiresAuth: false },
     },
+    //admin
+    {
+        path: '/admin/account',
+        name: 'AdminAccount',
+        component: () => import('../view/admin/account-record.vue'),
+        meta: { 
+            layout: 'admin', 
+            requiresAuth: false, 
+        }, 
+    },
     //dashboard
     {
         path: '/staff',
@@ -30,18 +40,6 @@ const routes = [
             breadcrumbs: [
                 {name: "Homepage", link:"/staff"}
             ] }, 
-    },
-    {
-        path: '/manager',
-        name: 'ManagerHomePage',
-        component: () => import('../view/dashboard/manager-homepage.vue'),
-        meta: { 
-            layout: 'staff', 
-            requiresAuth: false,
-            breadcrumbs: [
-                {name: "Homepage", link:"/manager"},
-            ]
-         },
     },
     {
         path: '/teacher',
@@ -344,7 +342,7 @@ const routes = [
         },
     },
     {
-        path: '/staff/student-mark-report/:id',
+        path: '/staff/student-mark-report',
         name: 'StaffStudentMarkReport',
         component: () => import('../view/staff/student-mark-report.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
@@ -423,6 +421,30 @@ const routes = [
         },
     },
     {
+        path: '/student/lesson-detail',
+        name: 'StudentLessonDetail',
+        component: () => import('../view/student/lesson-detail.vue'),
+        meta: { layout: 'student', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/student"},
+                {name: "Curriculumn", link:"/student/curriculumn"},
+                {name: "Lesson detail", link: ""}
+            ]
+        },
+    },
+    {
+        path: '/student/exam-detail',
+        name: 'StudentExamDetail',
+        component: () => import('../view/student/exam-detail.vue'),
+        meta: { layout: 'student', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/student"},
+                {name: "Curriculumn", link:"/student/curriculumn"},
+                {name: "Exam detail", link: ""}
+            ]
+        },
+    },
+    {
         path: '/student/event',
         name: 'StudentEventList',
         component: () => import('../view/student/event-list.vue'),
@@ -479,7 +501,7 @@ const routes = [
         },
     },
     {
-        path: '/student/news-detail/:eventId',
+        path: '/student/news-detail/:id',
         name: 'StudentNewsDetail',
         component: () => import('../view/student/news-detail.vue'),
         meta: { layout: 'student', requiresAuth: false, 
@@ -558,7 +580,7 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/student-record/:classId',
+        path: '/teacher/student-record',
         name: 'TeacherStudentRecord',
         component: () => import('../view/teacher/student-record.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
@@ -582,47 +604,13 @@ const routes = [
     },
     {
         path: '/teacher/curriculumn',
-        name: 'TeacherCurriculumnList',
-        component: () => import('../view/teacher/curriculumn-list.vue'),
+        name: 'TeacherCurriculumnDetail',
+        component: () => import('../view/student/curriculumn-detail.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
             breadcrumbs: [
                 {name: "Homepage", link:"/teacher"},
                 {name: "Curriculumn", link: ""}
             ]},
-    },
-    {
-        path: '/teacher/curriculumn-detail/:id',
-        name: 'TeacherCurriculumnDetail',
-        component: () => import('../view/teacher/curriculumn-detail.vue'),
-        meta: { layout: 'teacher', requiresAuth: false,
-            breadcrumbs: [
-                {name: "Homepage", link:"/teacher"},
-                {name: "Curriculumn", link: ""}
-            ]},
-    },
-    {
-        path: '/teacher/lesson-detail/:id',
-        name: 'TeacherLessonDetail',
-        component: () => import('../view/teacher/lesson-detail.vue'),
-        meta: { layout: 'student', requiresAuth: false,
-            breadcrumbs: [
-                {name: "Homepage", link:"/student"},
-                {name: "Curriculumn", link:"/student/curriculumn"},
-                {name: "Lesson detail", link: ""}
-            ]
-        },
-    },
-    {
-        path: '/teacher/exam-detail/:id',
-        name: 'TeacherExamDetail',
-        component: () => import('../view/teacher/exam-detail.vue'),
-        meta: { layout: 'student', requiresAuth: false,
-            breadcrumbs: [
-                {name: "Homepage", link:"/student"},
-                {name: "Curriculumn", link:"/student/curriculumn"},
-                {name: "Exam detail", link: ""}
-            ]
-        },
     },
     {
         path: '/teacher/holiday',
@@ -636,6 +624,28 @@ const routes = [
         },
     },
     {
+        path: '/teacher/lesson-detail',
+        name: 'TeacherLessonDetail',
+        component: () => import('../view/student/lesson-detail.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Curriculumn", link:"/teacher/curriculumn"},
+                {name: "Lesson detail", link: ""}
+            ]},
+    },
+    {
+        path: '/teacher/exam-detail',
+        name: 'TeacherExamDetail',
+        component: () => import('../view/student/exam-detail.vue'),
+        meta: { layout: 'teacher', requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link:"/teacher"},
+                {name: "Curriculumn", link:"/teacher/curriculumn"},
+                {name: "Exam detail", link: ""}
+            ]},
+    },
+    {
         path: '/teacher/mark',
         name: 'TeacherMarkEntryManagement',
         component: () => import('../view/teacher/mark-entry-management.vue'),
@@ -646,19 +656,15 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/mark-management/:classId/:examId/:sessionId',
+        path: '/teacher/mark-management',
         name: 'TeacherMarkManagement',
         component: () => import('../view/teacher/mark-management.vue'),
-        props: true,
-        meta: {
-            layout: 'teacher',
-            requiresAuth: false,
+        meta: { layout: 'teacher', requiresAuth: false, 
             breadcrumbs: [
-                { name: "Homepage", link: "/teacher" },
-                { name: "Mark entry management", link: "/teacher/mark" },
-                { name: "Mark management", link: "" }
-            ]
-        }
+                {name: "Homepage", link:"/teacher"},
+                {name: "Mark entry management", link:"/teacher/mark"},
+                {name: "Mark management", link: ""}
+            ]},
     },
     {
         path: '/teacher/event',
@@ -671,7 +677,7 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/event-detail/:id',
+        path: '/teacher/event-detail',
         name: 'TeacherEventDetail',
         component: () => import('../view/student/event-detail.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
@@ -694,7 +700,7 @@ const routes = [
         },
     },
     {
-        path: '/teacher/take-attendance/:sessionId',
+        path: '/teacher/take-attendance',
         name: 'TeacherTakeAttendance',
         component: () => import('../view/teacher/take-attendance.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
