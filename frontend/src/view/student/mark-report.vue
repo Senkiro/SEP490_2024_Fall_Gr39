@@ -1,69 +1,63 @@
 <template>
   <div class="container">
     <div class="headContent">
-        <h1>Mark report</h1>
-      <p>Student: <strong> {{ student.fullname }} - {{ student.rollNumber }}</strong></p>
-    </div>
-    <div class="actions">
-      <p>Batch: <strong> {{ batch }} </strong></p>
-      <p>Class: <strong> {{ className }} </strong></p>
-      <p>Current GPA:<strong> {{ currentGPA }}</strong></p>
+      <h1>Mark report</h1>
     </div>
     <div class="table-container">
       <table>
         <thead>
-        <tr>
-          <th>Grade category</th>
-          <th>Grade item</th>
-          <th>Weight</th>
-          <th>Value</th>
-          <th>Comment</th>
-        </tr>
+          <tr>
+            <th>Grade category</th>
+            <th>Grade item</th>
+            <th>Weight</th>
+            <th>Value</th>
+            <th>Comment</th>
+          </tr>
         </thead>
         <tbody>
-        <tr>
-          <td class="bold">Participation</td>
-          <td class="bold">Participation</td>
-          <td class="bold">10%</td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr v-for="(grade, index) in grades" :key="index">
-          <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
+          <tr>
+            <td class="bold">Participation</td>
+            <td class="bold">Participation</td>
+            <td class="bold">10%</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr v-for="(grade, index) in grades" :key="index">
+            <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
               :rowspan="calculateRowspan(grades, index, 'category')">
-            {{ grade.category }}
-          </td>
-          <td>{{ grade.item }}</td>
-          <td></td>
-          <td>{{ grade.value }}</td>
-          <td>{{ grade.comment || "" }}</td>
-        </tr>
-        <!-- Tổng điểm -->
-        <tr>
-          <td class="bold"> </td>
-          <td class="bold">Total</td>
-          <td class="bold">70%</td>
-          <td class="bold">{{ totalValue }}</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td class="bold">Mid-term Exam</td>
-          <td class="bold">Mid-term Exam</td>
-          <td class="bold">10%</td>
-          <td>{{ midtermValue }}</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td class="bold">Final Exam</td>
-          <td class="bold">Final Exam</td>
-          <td class="bold">10%</td>
-          <td>{{ finalValue }}</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td class="bold">Course total</td>
-          <td class="bold" colspan="2">Average</td>
-        </tr>
+              {{ grade.category }}
+            </td>
+            <td>{{ grade.item }}</td>
+            <td></td>
+            <td>{{ grade.value }}</td>
+            <td>{{ grade.comment || "" }}</td>
+          </tr>
+          <!-- Tổng điểm -->
+          <tr>
+            <td class="bold"> </td>
+            <td class="bold">Total</td>
+            <td class="bold">70%</td>
+            <td>{{ totalValue }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="bold">Mid-term Exam</td>
+            <td class="bold">Mid-term Exam</td>
+            <td class="bold">10%</td>
+            <td>{{ midtermValue }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="bold">Final Exam</td>
+            <td class="bold">Final Exam</td>
+            <td class="bold">10%</td>
+            <td>{{ finalValue }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="bold">Course total</td>
+            <td class="bold" colspan="2">Average</td>
+          </tr>
         </tbody>
       </table>
       <div class="actions">
@@ -129,12 +123,12 @@ export default {
 
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            `http://localhost:8088/fja-fap/staff/get-student-mark/${studentId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `http://localhost:8088/fja-fap/staff/get-student-mark/${studentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         const { result } = response.data;
@@ -142,9 +136,9 @@ export default {
         if (result && result.length) {
           // Lọc Daily Exam
           const dailyExams = result
-              .filter(item => item.mark > 0)
-              .filter(item => item.examResponse.examTypeRate.examCategory === "Daily")
-              .sort((a, b) => a.examResponse.examId - b.examResponse.examId);
+            .filter(item => item.mark > 0)
+            .filter(item => item.examResponse.examTypeRate.examCategory === "Daily")
+            .sort((a, b) => a.examResponse.examId - b.examResponse.examId);
 
           // Map dữ liệu Daily Exam
           this.grades = dailyExams.map(item => ({
@@ -157,18 +151,18 @@ export default {
 
           // Tính tổng trung bình của Daily Exam
           this.totalValue = (
-              dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length
+            dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length
           );
 
           // Lấy điểm của Mid-term Exam
           const midtermExam = result.find(
-              item => item.examResponse.examTypeRate.examCategory === "Mid-term Exam"
+            item => item.examResponse.examTypeRate.examCategory === "Mid-term Exam"
           );
           this.midtermValue = midtermExam ? midtermExam.mark || 0.0 : null;
 
           // Lấy điểm của Final Exam
           const finalExam = result.find(
-              item => item.examResponse.examTypeRate.examCategory === "Final Exam"
+            item => item.examResponse.examTypeRate.examCategory === "Final Exam"
           );
           this.finalValue = finalExam ? finalExam.mark || 0.0 : null;
 

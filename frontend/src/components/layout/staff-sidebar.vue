@@ -1,9 +1,6 @@
 <template>
   <aside :class="`${is_expanded && 'is-expanded'}`">
     <div class="sidebar-container">
-      <div class="logo">
-        <img src="">
-      </div>
 
       <div class="menu-toggle-wrap">
         <button class="menu-toggle" @click="ToggleMenu">
@@ -12,7 +9,8 @@
       </div>
 
       <div class="sidebar-menu">
-        <router-link class="sidebar-item" to="/staff">
+        <router-link class="sidebar-item" to="/staff" :class="{ 'active': active === 'homepage' }"
+          @click="chooseItem('homepage')">
           <span class="material-icons">
             <VsxIcon iconName="Home3" :size="32" color="#1A2C6F" type="linear" />
           </span>
@@ -21,8 +19,9 @@
 
         <!-- -----Record----- -->
 
-        <div class="dropdown" :class="{ active: dropdowns.record }">
-          <button class="dropdown-header" @click="toggleDropdown('record', 'learningMaterial', 'schedule')">
+        <div class="dropdown">
+          <button class="dropdown-header" :class="{ 'active1': dropdowns.record }"
+            @click="toggleDropdown('record', 'learningMaterial', 'schedule')">
             <span class="material-icons">
               <VsxIcon iconName="Note" :size="32" color="#1A2C6F" type="linear" />
             </span>
@@ -30,28 +29,29 @@
           </button>
 
           <div v-if="dropdowns.record" class="dropdown-container">
-            <router-link class="sidebar-item dropdown-item" to="/staff/batch-record">
+            <router-link class="sidebar-item dropdown-item" to="/staff/batch-record"
+              :class="{ 'active': active === 'batch-record' }" @click="chooseItem1('batch-record')">
               <span class="material-icons">
                 <VsxIcon iconName="LanguageCircle" :size="32" color="#1A2C6F" type="linear" />
               </span>
               <span class="text">Batch record</span>
             </router-link>
 
-            <router-link class="sidebar-item dropdown-item" to="/staff/student-record">
+            <router-link class="sidebar-item dropdown-item" to="/staff/student-record" :class="{ 'active': active === 'student-record' }" @click="chooseItem1('student-record')">
               <span class="material-icons">
                 <VsxIcon iconName="Profile2User" :size="32" color="#1A2C6F" type="linear" />
               </span>
               <span class="text">Student record</span>
             </router-link>
 
-            <router-link class="sidebar-item dropdown-item" to="/staff/class-record">
+            <router-link class="sidebar-item dropdown-item" to="/staff/class-record" :class="{ 'active': active === 'class-record' }" @click="chooseItem1('class-record')">
               <span class="material-icons">
                 <VsxIcon iconName="People" :size="32" color="#1A2C6F" type="linear" />
               </span>
               <span class="text">Class record</span>
             </router-link>
 
-            <router-link class="sidebar-item dropdown-item" to="/staff/teacher-record">
+            <router-link class="sidebar-item dropdown-item" to="/staff/teacher-record" :class="{ 'active': active === 'teacher-record' }" @click="chooseItem1('teacher-record')">
               <span class="material-icons">
                 <VsxIcon iconName="Teacher" :size="32" color="#1A2C6F" type="linear" />
               </span>
@@ -62,7 +62,7 @@
 
         <!-- -----Schedule Management----- -->
 
-        <div class="dropdown" :class="{ active: dropdowns.schedule }">
+        <div class="dropdown" :class="{ 'active1': dropdowns.schedule }">
           <button class="dropdown-header" @click="toggleDropdown('schedule', 'learningMaterial', 'record')">
             <span class="material-icons">
               <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
@@ -71,28 +71,28 @@
           </button>
 
           <div v-if="dropdowns.schedule" class="dropdown-container">
-            <router-link class="sidebar-item dropdown-item" to="/staff/schedule">
+            <router-link class="sidebar-item dropdown-item" to="/staff/schedule" :class="{ 'active': active === 'schedule' }" @click="chooseItem1('schedule')">
               <span class="material-icons">
                 <VsxIcon iconName="Calendar" :size="32" color="#1A2C6F" type="linear" />
               </span>
               <span class="text">Schedule</span>
             </router-link>
 
-            <router-link class="sidebar-item dropdown-item" to="/staff/time-slot">
+            <router-link class="sidebar-item dropdown-item" to="/staff/time-slot" :class="{ 'active': active === 'time-slot' }" @click="chooseItem1('time-slot')">
               <span class="material-icons">
                 <VsxIcon iconName="Clock" :size="32" color="#1A2C6F" type="linear" />
               </span>
               <span class="text">Time slot</span>
             </router-link>
 
-            <router-link class="sidebar-item dropdown-item" to="/staff/event">
+            <router-link class="sidebar-item dropdown-item" to="/staff/event" :class="{ 'active': active === 'event' }" @click="chooseItem1('event')">
               <span class="material-icons">
                 <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
               </span>
               <span class="text">Event</span>
             </router-link>
 
-            <router-link class="sidebar-item dropdown-item" to="/staff/room">
+            <router-link class="sidebar-item dropdown-item" to="/staff/room" :class="{ 'active': active === 'room' }" @click="chooseItem1('room')">
               <span class="material-icons">
                 <VsxIcon iconName="House2" :size="32" color="#1A2C6F" type="linear" />
               </span>
@@ -101,53 +101,44 @@
           </div>
         </div>
 
-        <router-link class="sidebar-item" to="/staff/curriculumn">
+        <router-link class="sidebar-item" to="/staff/curriculumn" :class="{ 'active': active === 'curriculum' }"
+          @click="chooseItem('curriculum')">
           <span class="material-icons">
             <VsxIcon iconName="Book1" :size="32" color="#1A2C6F" type="linear" />
           </span>
           <span class="text">Curriculumn</span>
         </router-link>
 
-        <router-link class="sidebar-item" to="/staff/holiday">
+        <router-link class="sidebar-item" to="/staff/holiday" :class="{ 'active': active === 'holiday' }"
+          @click="chooseItem('holiday')">
           <span class="material-icons">
             <VsxIcon iconName="Cardano" :size="32" color="#1A2C6F" type="linear" />
           </span>
           <span class="text">Holiday</span>
         </router-link>
 
-        <router-link class="sidebar-item" to="/staff/exam-type">
-          <span class="material-icons">
-            <VsxIcon iconName="Category2" :size="32" color="#1A2C6F" type="linear" />
-          </span>
-          <span class="text">Exam type</span>
-        </router-link>
-
-        <router-link class="sidebar-item" to="/staff/mark">
+        <router-link class="sidebar-item" to="/staff/mark" :class="{ 'active': active === 'mark' }"
+          @click="chooseItem('mark')">
           <span class="material-icons">
             <VsxIcon iconName="Award" :size="32" color="#1A2C6F" type="linear" />
           </span>
           <span class="text">Mark</span>
         </router-link>
 
-        <router-link class="sidebar-item" to="/staff/attendance">
+        <router-link class="sidebar-item" to="/staff/attendance" :class="{ 'active': active === 'attendance' }"
+          @click="chooseItem('attendance')">
           <span class="material-icons">
             <VsxIcon iconName="Document" :size="32" color="#1A2C6F" type="linear" />
           </span>
           <span class="text">Attendance</span>
         </router-link>
 
-        <router-link class="sidebar-item" to="/staff/news">
+        <router-link class="sidebar-item" to="/staff/news" :class="{ 'active': active === 'news' }"
+          @click="chooseItem('news')">
           <span class="material-icons">
             <VsxIcon iconName="Information" :size="32" color="#1A2C6F" type="linear" />
           </span>
           <span class="text">News</span>
-        </router-link>
-
-        <router-link class="sidebar-item" to="/staff/guide">
-          <span class="material-icons">
-            <VsxIcon iconName="BookSquare" :size="32" color="#1A2C6F" type="linear" />
-          </span>
-          <span class="text">Guide</span>
         </router-link>
       </div>
     </div>
@@ -156,7 +147,6 @@
 
 <script>
 import { ref } from 'vue';
-import { VsxIcon } from "vue-iconsax";
 
 const is_expanded = ref(false)
 const ToggleMenu = () => (is_expanded.value = !is_expanded.value)
@@ -164,12 +154,12 @@ const ToggleMenu = () => (is_expanded.value = !is_expanded.value)
 export default {
   name: "AppSidebar",
   components: {
-    VsxIcon
   },
   is_expanded,
   ToggleMenu,
   data() {
     return {
+      active: "homepage",
       dropdowns: {
         record: false,
         schedule: false,
@@ -182,6 +172,15 @@ export default {
       this.dropdowns[menu] = !this.dropdowns[menu];
       this.dropdowns[off1] = false;
       this.dropdowns[off2] = false;
+    },
+    chooseItem(item) {
+      this.dropdowns.record = false;
+      this.dropdowns.schedule = false;
+      this.dropdowns.learningMaterial = false;
+      this.active = item;
+    },
+    chooseItem1(item) {
+      this.active = item;
     }
   },
   setup() {
@@ -191,6 +190,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 aside {
   display: flex;
   width: 72px;
@@ -209,8 +209,8 @@ aside {
     transition: 0.2s ease-out;
     height: 100%;
 
-    a{
-      &:active{
+    a {
+      &:active {
         color: #c9d6f3;
       }
     }
@@ -266,15 +266,17 @@ aside {
       display: flex;
       flex-direction: column;
 
-      .active {
-        background-color: #6281cb;
+      .active1 {
+        background-color: #d0dcf4;
 
-        .dropdown-header {
-          .text {
-            color: white;
-            transition: 0.2s ease-out;
-          }
+        .dropdown-item {
+          background-color: #c9d6f3;
         }
+      }
+
+      .active {
+        background-color: #c9d6f3 !important;
+        border-left: 5px solid #8aa6e5;
 
         .dropdown-container {
           background-color: #c9d6f3;
@@ -286,26 +288,24 @@ aside {
         flex-direction: column;
 
         &:hover {
-          background-color: #c8d6f8;
+          background-color: #c9d6f3;
         }
 
         .dropdown-header {
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding: 0.5rem 1rem;
+          padding: 15px 1rem;
           transition: 0.2s ease-out;
           width: 100%;
           gap: 0px;
+          border-radius: 0;
         }
 
         .dropdown-container {
-
-          &:hover {
             .dropdown-item {
-              background-color: #c8d6f8;
+              background-color: #d0dcf4;
             }
-          }
         }
       }
 
@@ -313,7 +313,7 @@ aside {
         display: flex;
         align-items: center;
         text-decoration: none;
-        padding: 0.5rem 1rem;
+        padding: 15px 1rem;
 
         .dropdown-item {
           padding: 1rem 0rem 0rem 0rem;
@@ -321,11 +321,7 @@ aside {
         }
 
         &:hover {
-          background-color: #c8d6f8;
-
-          .text {
-            color: white;
-          }
+          background-color: #c9d6f3;
         }
       }
     }
@@ -339,7 +335,7 @@ aside {
 
 
       .menu-toggle-wrap {
-        top: -3rem;
+        // top: -3rem;
 
         .menu-toggle {
           transform: rotate(-180deg);

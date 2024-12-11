@@ -3,7 +3,7 @@
     <div class="header-left">
       <ul class="breadcrumb">
         <li v-for="breadcrumb in this.$route.meta.breadcrumbs" :key="breadcrumb.name">
-          <router-link :to="breadcrumb.link">{{ breadcrumb.name }}</router-link>
+          <router-link v-if="breadcrumb" :to="breadcrumb.link">{{ breadcrumb.name }}</router-link>
         </li>
       </ul>
     </div>

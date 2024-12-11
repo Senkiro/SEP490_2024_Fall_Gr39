@@ -1,0 +1,170 @@
+<template>
+  <div class="container">
+    <div class="headContent">
+      <h1>Account management</h1>
+    </div>
+    <div class="actions" id="account-mng">
+      <div class="filters">
+        <select id="role-filter" class="filter-select">
+          <option value="">All Role</option>
+          <option value="staff">Staff</option>
+          <option value="teacher">Teacher</option>
+          <option value="student">Student</option>
+        </select>
+      </div>
+      <button>
+        <VsxIcon iconName="AddCircle" size="20" type="bold" @click="showAddAccountPopup = true" />
+        Add account
+      </button>
+    </div>
+    <div class="actions">
+      <div class="search-container">
+        <input type="text" placeholder="Search..." class="search-field" />
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Full name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th class="center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="center"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="center">
+              <div class="icon-group">
+                <VsxIcon iconName="Unlock" :size="30" color="#171717" type="linear" />
+                <VsxIcon iconName="Key" :size="30" color="#171717" type="linear" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination" v-if="totalPages > 0">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+        </button>
+        <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
+          @click="changePage(page)">
+          {{ page }}
+        </button>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+        </button>
+      </div>
+    </div>
+
+    <div v-if="showAddAccountPopup" class="popup-overlay">
+      <div class="popup">
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddAccountPopup = false" />
+        </div>
+        <div class="popup-title">
+          <h2>Add account</h2>
+        </div>
+        <form @submit.prevent="addAccount">
+          <div class="form-group">
+            <label for="username">Email <span class="required">*</span></label>
+            <input type="text" id="email" v-model="newAccount.email" required />
+          </div>
+          <div class="form-group">
+            <label for="fullName">Full Name <span class="required">*</span></label>
+            <input type="text" id="fullName" v-model="newAccount.fullName" required />
+          </div>
+          <div class="form-group">
+            <label for="japaneseName">Japanese Name <span class="required">*</span></label>
+            <input type="text" id="japaneseName" v-model="newAccount.japaneseName" required />
+          </div>
+          <div class="form-group">
+            <label for="role">Role <span class="required">*</span></label>
+            <div class="filters">
+              <select id="role-filter" class="filter-select" v-model="newAccount.role">
+                <option value="" disabled>Select Role</option>
+                <option value="staff">Staff</option>
+                <option value="staff">Teacher</option>
+                <option value="staff">Student</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-submit">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      showAddAccountPopup: false,
+      currentPage: 1,
+      itemsPerPage: 5,
+      totalElements: 0,
+      totalPages: 0,
+      newAccount: {
+        email: "",
+        fullName: "",
+        japaneseName: "",
+        role: "",
+        active: true
+      },
+    }
+  },
+  methods: {
+    changePage(newPage) {
+      if (newPage > 0 && newPage <= this.totalPages) {
+        this.currentPage = newPage;
+        this.fetchBatches();
+      }
+    },
+    updateDisplayedPages() {
+      const pages = [];
+      if (this.totalPages <= 5) {
+        for (let i = 1; i <= this.totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (this.currentPage <= 3) {
+          pages.push(1, 2, 3, '...', this.totalPages);
+        } else if (this.currentPage >= this.totalPages - 2) {
+          pages.push(1, '...', this.totalPages - 2, this.totalPages - 1, this.totalPages);
+        } else {
+          pages.push(1, '...', this.currentPage, '...', this.totalPages);
+        }
+      }
+      this.displayedPages = pages;
+    },
+  },
+  watch: {
+    // Watcher to update URL when `currentPage` changes
+    currentPage(newPage) {
+      this.$router.push({ path: '/admin/account', query: { page: newPage } }).catch(() => {
+      });
+    }
+  }
+
+}
+</script>
+
+<style lang="scss">
+#account-mng {
+  justify-content: space-between;
+}
+</style>

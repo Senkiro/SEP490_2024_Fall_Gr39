@@ -12,6 +12,8 @@ import staffLayout from "./layouts/staff-layout.vue";
 import authLayout from "./layouts/auth-layout.vue";
 import studentLayout from "./layouts/student-layout.vue";
 import teacherLayout from "./layouts/teacher-layout.vue";
+import adminLayout from "./layouts/admin-layout.vue";
+
 
 
 export default {
@@ -24,7 +26,8 @@ export default {
     staff: staffLayout,
     auth: authLayout,
     student: studentLayout,
-    teacher: teacherLayout
+    teacher: teacherLayout,
+    admin: adminLayout
   },
   computed: {
     layout() {
@@ -37,6 +40,8 @@ export default {
           return studentLayout;
         case 'teacher':
           return teacherLayout;
+        case 'admin':
+          return adminLayout;
         default:
           return authLayout;
       }
