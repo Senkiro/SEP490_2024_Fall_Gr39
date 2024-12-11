@@ -132,6 +132,15 @@ public class MarkServiceImp implements MarkService {
 
     @Override
     public void calculateAverageMark(String studentId, double participationMark) {
+        //check class status -> if status if false -> so can not calculate mark again
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        if (!student.getClassEntity().isClassStatus()) {
+            throw new AppException(ErrorCode.CLASS_IS_CLOSED);
+        }
+
         // Lấy danh sách MarkEntity
         List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
 

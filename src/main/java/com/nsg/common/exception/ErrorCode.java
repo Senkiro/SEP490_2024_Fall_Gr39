@@ -58,6 +58,7 @@ public enum ErrorCode {
     CLASS_NOT_FOUND(1182, "Class not found!"),
     CLASS_NAME_EXISTED(1183, "Class name already existed!"),
     STUDENT_LIST_IS_EMPTY(1184, "Student in class is empty!"),
+    CLASS_IS_CLOSED(1185, "Class is closed!"),
 
 
     //Lesson

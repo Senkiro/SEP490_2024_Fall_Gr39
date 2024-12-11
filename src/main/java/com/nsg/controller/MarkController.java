@@ -4,6 +4,7 @@ import com.nsg.dto.request.mark.MarkCreationRequest;
 import com.nsg.dto.request.mark.MarkUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.mark.MarkResponse;
+import com.nsg.service.ClassService;
 import com.nsg.service.MarkService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -25,6 +26,9 @@ import java.util.List;
 public class MarkController {
     @Autowired
     MarkService markService;
+
+    @Autowired
+    ClassService classService;
 
     /**********************************
      * Manage Mark
@@ -121,6 +125,10 @@ public class MarkController {
     @PostMapping("/course-summary")
     public ApiResponse<?> courseSummary(@RequestParam String classId) {
         markService.courseSummary(classId);
+
+        //then change status of class to false
+        classService.changeClassStatus(classId);
+
         return ApiResponse.builder()
                 .message("Marks for student have been summary!")
                 .build();

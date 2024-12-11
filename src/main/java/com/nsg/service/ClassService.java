@@ -29,4 +29,6 @@ public interface ClassService {
     void deleteClass(String classId);
 
     List<ClassResponse> getClassByTeacherId(String teacherId);
+
+    void changeClassStatus(String classId);
 }
