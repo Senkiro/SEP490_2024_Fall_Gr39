@@ -58,7 +58,6 @@ public class ScheduleController {
         sessionService.createSchedule(class_id, request);
 
         //add in queue: create attendances and marks for all students
-//        creationService.addCreationQueue(class_id);
 
         attendanceService.createAttendancesForSession(class_id);
         markService.generateMarkForAllStudentInClass(class_id);

@@ -27,6 +27,9 @@ public class ClassEntity extends BaseEntity {
     @Column(name = "class_colour")
     String classColour;
 
+    @Column(name = "class_status")
+    boolean classStatus;
+
     @OneToMany(mappedBy = "classEntity", fetch = FetchType.EAGER)
     List<StudentEntity> studentEntityList;
 

@@ -91,4 +91,21 @@ public class BatchController {
                 .build();
     }
 
+    //change batch status to On progress
+    @GetMapping("/change-batch-status")
+    public ApiResponse<?> changeBatchStatus(@RequestParam String batch_name) {
+        batchService.changeBatchStatus(batch_name);
+        return ApiResponse.builder()
+                .message("Batch status have been changed!")
+                .build();
+    }
+
+    //batch summary
+    @GetMapping("/batch-summary")
+    public ApiResponse<?> summaryBatch(@RequestParam String batch_name) {
+        batchService.batchSummary(batch_name);
+        return ApiResponse.builder()
+                .message("Batch have been summary and closed!")
+                .build();
+    }
 }

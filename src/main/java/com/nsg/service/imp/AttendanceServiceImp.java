@@ -286,22 +286,28 @@ public class AttendanceServiceImp implements AttendanceService {
     //convert attendance statistic data
     @Override
     public AttendanceStatisticsResponse getDataAttendanceStatisticsResponse(String studentId) {
-        List<Object[]> result = attendanceRepository.getAttendanceStatistics(studentId);
+        //check existed attendance for this student
+        if (attendanceRepository.existsByStudentId(studentId)) {
+            List<Object[]> result = attendanceRepository.getAttendanceStatistics(studentId);
 
-        AttendanceStatisticsResponse attendanceStatisticsResponse = new AttendanceStatisticsResponse();
+            AttendanceStatisticsResponse attendanceStatisticsResponse = new AttendanceStatisticsResponse();
 
-        if (result.isEmpty()) {
-            throw new AppException(ErrorCode.NO_DATA_ATTENDANCE);
+            if (result.isEmpty()) {
+                throw new AppException(ErrorCode.NO_DATA_ATTENDANCE);
+            }
+
+            Object[] row = result.get(0);
+            long attendCount = ((Number) row[0]).longValue();
+            long totalCount = ((Number) row[1]).longValue();
+            double attendPercentage = ((Number) row[2]).doubleValue();
+
+            attendanceStatisticsResponse.setAttendCount(attendCount);
+            attendanceStatisticsResponse.setTotalCount(totalCount);
+            attendanceStatisticsResponse.setAttendPercentage(attendPercentage);
+            return attendanceStatisticsResponse;
+        } else {
+            throw new AppException(ErrorCode.NO_ATTENDANCE_FOR_STUDENT);
         }
 
-        Object[] row = result.get(0);
-        long attendCount = ((Number) row[0]).longValue();
-        long totalCount = ((Number) row[1]).longValue();
-        double attendPercentage = ((Number) row[2]).doubleValue();
-
-        attendanceStatisticsResponse.setAttendCount(attendCount);
-        attendanceStatisticsResponse.setTotalCount(totalCount);
-        attendanceStatisticsResponse.setAttendPercentage(attendPercentage);
-        return attendanceStatisticsResponse;
     }
 }

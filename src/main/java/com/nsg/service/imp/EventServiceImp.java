@@ -52,7 +52,7 @@ public class EventServiceImp implements EventService {
     public List<EventResponse> toEventResponseList(List<EventEntity> eventEntities) {
         List<EventResponse> eventResponses = new ArrayList<>();
         for (EventEntity eventEntity : eventEntities) {
-            EventResponse eventResponse = EventMapper.INSTANCE.toEventResponse(eventEntity);
+            EventResponse eventResponse = toEventResponse(eventEntity);
             eventResponses.add(eventResponse);
         }
         return eventResponses;
@@ -60,6 +60,17 @@ public class EventServiceImp implements EventService {
 
     public EventResponse toEventResponse(EventEntity eventEntity) {
         EventResponse eventResponse = new EventResponse();
+
+        eventResponse.setEventId( eventEntity.getEventId() );
+        eventResponse.setEventName( eventEntity.getEventName() );
+        eventResponse.setAddress( eventEntity.getAddress() );
+        eventResponse.setImagePath( eventEntity.getImagePath() );
+        eventResponse.setStatus( eventEntity.isStatus() );
+        eventResponse.setDescription( eventEntity.getDescription() );
+        eventResponse.setAvgRate( eventEntity.getAvgRate() );
+        eventResponse.setEventDate( eventEntity.getSessionEntityList().get(0).getDate() );
+
+        eventResponse.setSessionId( eventEntity.getSessionEntityList().get(0).getSessionId() );
 
         return eventResponse;
     }
@@ -80,7 +91,7 @@ public class EventServiceImp implements EventService {
                 () -> new AppException(ErrorCode.EVENT_NOT_EXIST)
         );
 
-        return EventMapper.INSTANCE.toEventResponse(eventEntity);
+        return toEventResponse(eventEntity);
     }
 
     @Override

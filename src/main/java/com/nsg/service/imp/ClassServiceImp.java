@@ -40,24 +40,32 @@ public class ClassServiceImp implements ClassService {
     @Override
     public void createClass(ClassRequest request) {
 
-        //check class name existed?
-        if (!classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()).isEmpty()) {
-            throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
+        //check batch status
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+        if (batch.getBatchStatus() == 2) {
+            //check class name existed?
+            if (!classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()).isEmpty()) {
+                throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
+            } else {
+                //create new class
+                ClassEntity classEntity = new ClassEntity();
+                classEntity.setClassName(request.getClassName());
+                classEntity.setClassColour(request.getClassColour());
+
+                //set default class status is true
+                classEntity.setClassStatus( true );
+
+                classEntity.setBatchEntity(batch);
+                batch.getClassEntityList().add(classEntity);
+                batchRepository.save(batch);
+                classRepository.save(classEntity);
+            }
         } else {
-            //create new class
-            ClassEntity classEntity = new ClassEntity();
-            classEntity.setClassName(request.getClassName());
-            classEntity.setClassColour(request.getClassColour());
-
-            BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
-                    () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
-            );
-
-            classEntity.setBatchEntity(batch);
-            batch.getClassEntityList().add(classEntity);
-            batchRepository.save(batch);
-            classRepository.save(classEntity);
+            throw new AppException(ErrorCode.BATCH_IS_CLOSED);
         }
+
     }
 
     @Override
@@ -66,11 +74,18 @@ public class ClassServiceImp implements ClassService {
                 () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
         );
 
+        ClassResponse response = toClassResponse(classEntity);
+
+        return response;
+    }
+
+    public ClassResponse toClassResponse(ClassEntity classEntity) {
         ClassResponse response = new ClassResponse();
         response.setClassId(classEntity.getClassId());
         response.setClassName(classEntity.getClassName());
         response.setClassColour(classEntity.getClassColour());
-        response.setTotalStudent(classEntity.getStudentEntityList().size());
+        response.setTotalStudent( classEntity.getStudentEntityList().size() );
+        response.setClassStatus(classEntity.isClassStatus() );
 
         return response;
     }
@@ -101,15 +116,12 @@ public class ClassServiceImp implements ClassService {
         List<ClassResponse> responseList = new ArrayList<>();
 
         for (ClassEntity classEntity : classEntityList) {
-            ClassResponse tempResponse = new ClassResponse();
-            tempResponse.setClassId(classEntity.getClassId());
-            tempResponse.setClassName(classEntity.getClassName());
-            tempResponse.setClassColour(classEntity.getClassColour());
+            ClassResponse tempResponse = toClassResponse(classEntity);
 
             //get number student in class
-            int totalStudent = classEntity.getStudentEntityList().size();
-
-            tempResponse.setTotalStudent(totalStudent);
+//            int totalStudent = classEntity.getStudentEntityList().size();
+//
+//            tempResponse.setTotalStudent(totalStudent);
 
             responseList.add(tempResponse);
         }
@@ -162,4 +174,19 @@ public class ClassServiceImp implements ClassService {
         }
         return classEntities;
     }
+
+    //change class status
+    @Override
+    public void changeClassStatus(String classId) {
+        ClassEntity classEntity = classRepository.findById(classId).orElseThrow(
+                () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
+        );
+
+        boolean oldStatus = classEntity.isClassStatus();
+
+        classEntity.setClassStatus(!oldStatus);
+
+        classRepository.save(classEntity);
+    }
+
 }

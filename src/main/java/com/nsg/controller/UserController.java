@@ -1,13 +1,16 @@
 package com.nsg.controller;
 
+import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.UserEntity;
 import com.nsg.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +24,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create-user")
-    public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request) {
-        return ApiResponse.ok(userService.createUser(request, null));
+    public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request, @RequestParam UserRole role) {
+        userService.createUser(request, role);
+        return ApiResponse.<UserInforResponse>builder()
+                .message("Create new user successfully!")
+                .build();
     }
 
     //get all users in database
@@ -31,10 +37,29 @@ public class UserController {
         return userService.getAllUser();
     }
 
+    //get users by role
+    @GetMapping("/get-users-by-role")
+    public ApiResponse<Page<UserInforResponse>> getUsersByRoles(@RequestParam UserRole role, int page, int size) {
+        return ApiResponse.<Page<UserInforResponse>>builder()
+                .result(userService.getUsersByRoles(role, page, size))
+                .build();
+    }
+
+    //set user to not active
+    @GetMapping("/change-users-active")
+    public ApiResponse<?> changeUsersActive(@RequestParam String userId) {
+        userService.changeUsersActive(userId);
+        return ApiResponse.builder()
+                .message("User active's have been changed!")
+                .build();
+    }
+
     //get user by userId
     @GetMapping("/{userId}")
-    public ApiResponse<?> getUser(@PathVariable("userId") String userId) {
-        return ApiResponse.ok(userService.getUserById(userId));
+    public ApiResponse<UserInforResponse> teacherDetail(@PathVariable("userId") String userId){
+        return ApiResponse.<UserInforResponse>builder()
+                .result(userService.getUserInforById(userId))
+                .build();
     }
 
     //update user
