@@ -50,7 +50,7 @@ public class EventController {
 
     //create new batch
     @PostMapping("/create-event")
-    public ApiResponse<EventResponse> createEvnet(@RequestBody @Validated EventCreateRequest request) {
+    public ApiResponse<EventResponse> createEvent(@RequestBody @Validated EventCreateRequest request) {
         eventService.createEvent(request);
         return ApiResponse.<EventResponse>builder()
                 .message("A new event have been created!")
