@@ -145,7 +145,7 @@ public class MarkServiceImp implements MarkService {
         List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
 
         if (markEntityList.isEmpty()) {
-            throw new IllegalArgumentException("Không tìm thấy điểm của sinh viên với ID: " + studentId);
+            throw new AppException(ErrorCode.NOT_FOUND_MARK_FOR_STUDENT);
         }
 
         // Tạo biến lưu điểm cho từng loại exam
@@ -325,7 +325,6 @@ public class MarkServiceImp implements MarkService {
 
         //create marks
         generateMarkEntityForOneStudent(student, examEntityList);
-
     }
 
     //get all mark by examId and classId
@@ -357,9 +356,10 @@ public class MarkServiceImp implements MarkService {
 
         //get student list
         List<StudentEntity> studentEntityList = classEntity.getStudentEntityList();
-
-        for (StudentEntity student : studentEntityList) {
-            calculateAverageMark(student.getStudentId(), 0.0);
+        if (!studentEntityList.isEmpty()) {
+            for (StudentEntity student : studentEntityList) {
+                calculateAverageMark(student.getStudentId(), 0.0);
+            }
         }
     }
 
@@ -373,14 +373,17 @@ public class MarkServiceImp implements MarkService {
         //get student list
         List<StudentEntity> studentEntityList = classEntity.getStudentEntityList();
 
-        for (StudentEntity student : studentEntityList) {
+        //check list student: if not empty then calculate mark with participation mark
+        if (!studentEntityList.isEmpty()) {
+            for (StudentEntity student : studentEntityList) {
 
-            //get participation of each student
-            AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse( student.getStudentId() );
+                //get participation of each student
+                AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse( student.getStudentId() );
 
-            double participationMark = attendanceStatisticsResponse.getAttendPercentage() * 0.1;
+                double participationMark = attendanceStatisticsResponse.getAttendPercentage() * 0.1;
 
-            calculateAverageMark(student.getStudentId(), participationMark);
+                calculateAverageMark(student.getStudentId(), participationMark);
+            }
         }
     }
 

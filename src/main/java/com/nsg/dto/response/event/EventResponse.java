@@ -1,7 +1,10 @@
 package com.nsg.dto.response.event;
 
+import com.nsg.dto.response.session.SessionResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -16,4 +19,8 @@ public class EventResponse {
     boolean status;
     String description;
     Float avgRate;
+
+    String sessionId;
+    LocalDate eventDate;
+
 }

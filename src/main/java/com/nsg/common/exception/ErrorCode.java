@@ -30,6 +30,7 @@ public enum ErrorCode {
     END_TIME_NOTIN_FUTURE(1104, "End time must be in the future"),
     YEAR_NOT_AFTER2000(1105, "Year must be after 2000"),
     YEAR_IS_NULL(1106, "Year can not be null!"),
+    BATCH_IS_CLOSED(1107, "Batch is closed!"),
 
     //Time slot
     TIME_SLOT_NAME_IS_NULL(1120, "Time slot name can not be null!"),
@@ -96,6 +97,7 @@ public enum ErrorCode {
     ATTENDANCE_NOT_FOUND(1300, "Attendance not found!"),
     NO_DATA_ATTENDANCE(1301, "No data attendance found for student"),
     ATTENDANCE_EXISTED(1302, "Attendance already existed!"),
+    NO_ATTENDANCE_FOR_STUDENT(1303, "No attendance for this student!"),
 
     //curriculumn
     CURRICULUMN_NOT_FOUND(1320, "Curriculumn not found!"),
@@ -110,7 +112,7 @@ public enum ErrorCode {
     MAX_VALUE_MARK(1363, "Mark must not exceed 10.0"),
     MARK_NOT_NULL(1364, "Mark must not be null"),
     MARK_EXISTED(1365, "Mark already exists for this student and exam."),
-
+    NOT_FOUND_MARK_FOR_STUDENT(1366, "Can not find mark for student!"),
 
     //holiday
     HOLIDAY_NOT_FOUND(2100, "Holiday not found"),

@@ -2,6 +2,7 @@ package com.nsg.controller;
 
 import com.nsg.common.enums.UserRole;
 import com.nsg.common.exception.AppException;
+import com.nsg.common.exception.ErrorCode;
 import com.nsg.common.utils.ExcelHelper;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.request.batch.BatchCreationRequest;
@@ -21,6 +22,7 @@ import com.nsg.dto.response.news.NewsResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.*;
+import com.nsg.repository.BatchRepository;
 import com.nsg.service.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -59,13 +61,26 @@ public class StaffController {
     @Autowired
     private ExcelHelper excelHelper;
 
+    @Autowired
+    BatchRepository batchRepository;
+
     /**********************************
      * Manage Student
      **********************************/
     //create new student
     @PostMapping("/create-student")
     public ApiResponse<StudentResponse> createStudent(@RequestBody @Valid StudentCreattionRequest request) {
-        studentService.createStudent(request);
+
+        //check batch status
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+
+        if (batch.getBatchStatus() == 2) {
+            studentService.createStudent(request);
+        } else {
+            throw new AppException(ErrorCode.BATCH_IS_CLOSED);
+        }
         return ApiResponse.<StudentResponse>builder()
                 .message("Create student successfully!")
                 .build();

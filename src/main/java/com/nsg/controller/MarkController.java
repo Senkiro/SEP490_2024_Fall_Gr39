@@ -121,17 +121,4 @@ public class MarkController {
                 .build();
     }
 
-    //course summary and calculate all mark include participation mark
-    @PostMapping("/course-summary")
-    public ApiResponse<?> courseSummary(@RequestParam String classId) {
-        markService.courseSummary(classId);
-
-        //then change status of class to false
-        classService.changeClassStatus(classId);
-
-        return ApiResponse.builder()
-                .message("Marks for student have been summary!")
-                .build();
-    }
-
 }

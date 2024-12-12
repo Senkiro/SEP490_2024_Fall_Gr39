@@ -6,9 +6,12 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.batch.BatchCreationRequest;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.entity.BatchEntity;
+import com.nsg.entity.ClassEntity;
 import com.nsg.entity.EventEntity;
 import com.nsg.repository.BatchRepository;
 import com.nsg.service.BatchService;
+import com.nsg.service.ClassService;
+import com.nsg.service.MarkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,12 @@ public class BatchServiceImp implements BatchService {
 
     @Autowired
     BatchMapper batchMapper;
+
+    @Autowired
+    MarkService markService;
+
+    @Autowired
+    ClassService classService;
 
     @Override
     public void saveBatch(BatchCreationRequest batchCreationRequest) {
@@ -116,10 +125,32 @@ public class BatchServiceImp implements BatchService {
         // 0 -> graduated; 1 -> on progress
         if (batchEntity.getBatchStatus() == 2 || batchEntity.getBatchStatus() == 0) {
             batchEntity.setBatchStatus( 1 );
-        } else {
-            batchEntity.setBatchStatus( 0 );
+        }
+        batchRepository.save(batchEntity);
+    }
+
+    //batch summary
+    @Override
+    public void batchSummary(String batchName) {
+        BatchEntity batchEntity = batchRepository.findByBatchName(batchName).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+
+        //get list of class in batch
+        List<ClassEntity> classEntityList = batchEntity.getClassEntityList();
+
+        for (ClassEntity classEntity : classEntityList) {
+            if (classEntity.isClassStatus()) {
+                //calculate all student's mark of one class
+                markService.courseSummary( classEntity.getClassId() );
+
+                //then change status of class to false
+                classService.changeClassStatus( classEntity.getClassId() );
+            }
         }
 
+        //change batch status to Graduated
+        batchEntity.setBatchStatus( 0 );
         batchRepository.save(batchEntity);
 
     }

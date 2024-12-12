@@ -31,4 +31,6 @@ public interface BatchService {
     Page<BatchResponse> findBatchsByName(String batchName, int page, int size);
 
     void changeBatchStatus(String batchName);
+
+    void batchSummary(String batchName);
 }

@@ -40,27 +40,32 @@ public class ClassServiceImp implements ClassService {
     @Override
     public void createClass(ClassRequest request) {
 
-        //check class name existed?
-        if (!classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()).isEmpty()) {
-            throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
+        //check batch status
+        BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
+        if (batch.getBatchStatus() == 2) {
+            //check class name existed?
+            if (!classRepository.findByClassNameAndBatchEntityBatchName(request.getClassName(), request.getBatchName()).isEmpty()) {
+                throw new AppException(ErrorCode.CLASS_NAME_EXISTED);
+            } else {
+                //create new class
+                ClassEntity classEntity = new ClassEntity();
+                classEntity.setClassName(request.getClassName());
+                classEntity.setClassColour(request.getClassColour());
+
+                //set default class status is true
+                classEntity.setClassStatus( true );
+
+                classEntity.setBatchEntity(batch);
+                batch.getClassEntityList().add(classEntity);
+                batchRepository.save(batch);
+                classRepository.save(classEntity);
+            }
         } else {
-            //create new class
-            ClassEntity classEntity = new ClassEntity();
-            classEntity.setClassName(request.getClassName());
-            classEntity.setClassColour(request.getClassColour());
-
-            //set default class status is true
-            classEntity.setClassStatus( true );
-
-            BatchEntity batch = batchRepository.findByBatchName(request.getBatchName()).orElseThrow(
-                    () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
-            );
-
-            classEntity.setBatchEntity(batch);
-            batch.getClassEntityList().add(classEntity);
-            batchRepository.save(batch);
-            classRepository.save(classEntity);
+            throw new AppException(ErrorCode.BATCH_IS_CLOSED);
         }
+
     }
 
     @Override
