@@ -86,32 +86,36 @@ public class BatchServiceImp implements BatchService {
     @Override
     public Page<BatchResponse> getBatches(int page, int size) {
         Page<BatchEntity> batchEntities = batchRepository.findAll(PageRequest.of(page, size));
+        List<BatchResponse> responseList = totoBatchResponseList(batchEntities.getContent());
+        return new PageImpl<>(responseList, batchEntities.getPageable(), batchEntities.getTotalElements());
+    }
+
+    public BatchResponse toBatchResponse(BatchEntity batch) {
+        BatchResponse batchResponse = new BatchResponse();
+        batchResponse.setBatchName(batch.getBatchName());
+        batchResponse.setStartTime(batch.getStartTime());
+        batchResponse.setEndTime(batch.getEndTime());
+        batchResponse.setYear(batch.getYear());
+        batchResponse.setBatchStatus( batch.getBatchStatus() );
+
+        return batchResponse;
+    }
+
+    public List<BatchResponse> totoBatchResponseList(List<BatchEntity> batchEntities) {
         List<BatchResponse> responseList = new ArrayList<>();
 
         for (BatchEntity batch : batchEntities) {
-            BatchResponse batchResponse = new BatchResponse();
-            batchResponse.setBatchName(batch.getBatchName());
-            batchResponse.setStartTime(batch.getStartTime());
-            batchResponse.setEndTime(batch.getEndTime());
-            batchResponse.setYear(batch.getYear());
+            BatchResponse batchResponse = toBatchResponse(batch);
             responseList.add(batchResponse);
         }
-        return new PageImpl<>(responseList, batchEntities.getPageable(), batchEntities.getTotalElements());
+
+        return responseList;
     }
 
     @Override
     public Page<BatchResponse> findBatchsByName(String batchName, int page, int size) {
         Page<BatchEntity> batchEntities = batchRepository.findByBatchNameContaining(batchName, PageRequest.of(page, size));
-        List<BatchResponse> responseList = new ArrayList<>();
-
-        for (BatchEntity batch : batchEntities) {
-            BatchResponse batchResponse = new BatchResponse();
-            batchResponse.setBatchName(batch.getBatchName());
-            batchResponse.setStartTime(batch.getStartTime());
-            batchResponse.setEndTime(batch.getEndTime());
-            batchResponse.setYear(batch.getYear());
-            responseList.add(batchResponse);
-        }
+        List<BatchResponse> responseList = totoBatchResponseList(batchEntities.getContent());
         return new PageImpl<>(responseList, batchEntities.getPageable(), batchEntities.getTotalElements());
     }
 

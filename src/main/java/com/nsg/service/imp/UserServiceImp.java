@@ -26,6 +26,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -103,10 +104,17 @@ public class UserServiceImp implements UserService {
 
         for (UserEntity user : userEntities) {
             UserInforResponse response = UserMapper.INSTANCE.toUserInforResponse(user);
+            response.setUserId( user.getUserId() );
             responseList.add(response);
         }
 
         return responseList;
+    }
+
+    public UserInforResponse toUserInforResponse(UserEntity user) {
+        UserInforResponse response = new UserInforResponse();
+
+        return  response;
     }
 
     //set active to false

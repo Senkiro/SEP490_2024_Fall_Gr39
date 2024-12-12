@@ -68,10 +68,12 @@ public class EventServiceImp implements EventService {
         eventResponse.setStatus( eventEntity.isStatus() );
         eventResponse.setDescription( eventEntity.getDescription() );
         eventResponse.setAvgRate( eventEntity.getAvgRate() );
-        eventResponse.setEventDate( eventEntity.getSessionEntityList().get(0).getDate() );
 
-        eventResponse.setSessionId( eventEntity.getSessionEntityList().get(0).getSessionId() );
+        if (!eventEntity.getSessionEntityList().isEmpty()) {
+            eventResponse.setEventDate( eventEntity.getSessionEntityList().get(0).getDate() );
 
+            eventResponse.setSessionId( eventEntity.getSessionEntityList().get(0).getSessionId() );
+        }
         return eventResponse;
     }
 
