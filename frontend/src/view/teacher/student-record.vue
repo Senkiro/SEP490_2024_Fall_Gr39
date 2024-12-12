@@ -2,8 +2,9 @@
   <div class="container">
     <div class="headContent">
       <h1>Class member</h1>
-      <p>Class: <b>{{ className }}</b></p>
     </div>
+    <p>Class: <b>{{ className }}</b></p>
+
 
     <div class="actions">
       <div class="search-container">

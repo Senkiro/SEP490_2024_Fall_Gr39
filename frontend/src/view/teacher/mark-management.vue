@@ -2,8 +2,9 @@
   <div class="container">
     <div class="headContent">
       <h1>Manage Mark</h1>
-      <p>Exam: <b>{{ examTitle }}</b></p>
     </div>
+    <p>Exam: <b>{{ examTitle }}</b></p>
+
 
     <div class="actions">
       <p>Class: <b>{{ className }}</b></p>

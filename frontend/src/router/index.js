@@ -27,6 +27,71 @@ const routes = [
         meta: { 
             layout: 'admin', 
             requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Account", link:""}
+            ]
+        }, 
+    },
+    {
+        path: '/admin/mark',
+        name: 'AdminMark',
+        component: () => import('../view/admin/mark-entry-management.vue'),
+        meta: { 
+            layout: 'admin', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Mark", link:""}
+            ]
+        }, 
+    },
+    {
+        path: '/admin/attendance',
+        name: 'AdminAttendance',
+        component: () => import('../view/admin/attendance-management.vue'),
+        meta: { 
+            layout: 'admin', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Attendance", link:""}
+            ]
+        }, 
+    },
+    {
+        path: '/admin/edit-attendance/:id',
+        name: 'AdminEditAttendance',
+        component: () => import('../view/admin/take-attendance.vue'),
+        meta: { 
+            layout: 'admin', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Attendance", link:"/admin/attendance"},
+                {name: "Edit attendance", link:""}
+            ]
+        }, 
+    },
+    {
+        path: '/admin/edit-mark/:id',
+        name: 'AdminEditMark',
+        component: () => import('../view/admin/mark-management.vue'),
+        meta: { 
+            layout: 'admin', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Mark", link:"/admin/mark"},
+                {name: "Edit mark", link:""}
+            ]
+        }, 
+    },
+    {
+        path: '/admin/view-profile/:id',
+        name: 'AdminViewProfile',
+        component: () => import('../view/admin/my-profile.vue'),
+        meta: { 
+            layout: 'admin', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "My Profile", link:""}
+            ]
         }, 
     },
     //dashboard
@@ -66,6 +131,19 @@ const routes = [
          },
     },
     //------------------------------Staff router------------------------
+    {
+        path: '/staff/view-profile/:id',
+        name: 'StaffViewProfile',
+        component: () => import('../view/admin/my-profile.vue'),
+        meta: { 
+            layout: 'staff', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link: "/staff"},
+                {name: "My Profile", link:""}
+            ]
+        }, 
+    },
     {
         path: '/staff/batch-record',
         name: 'BatchRecord',
@@ -548,7 +626,19 @@ const routes = [
     },
 
     //----------------------Teacher router----------------------
-
+    {
+        path: '/teacher/view-profile/:id',
+        name: 'TeacherViewProfile',
+        component: () => import('../view/admin/my-profile.vue'),
+        meta: { 
+            layout: 'teacher', 
+            requiresAuth: false, 
+            breadcrumbs: [
+                {name: "Homepage", link: "/teacher"},
+                {name: "My Profile", link:""}
+            ]
+        }, 
+    },
     {
         path: '/teacher/schedule',
         name: 'TeacherSchedule',

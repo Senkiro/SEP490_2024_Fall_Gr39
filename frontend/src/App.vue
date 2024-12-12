@@ -152,7 +152,6 @@ button {
   gap: 20px;
 
   .headContent {
-    margin-bottom: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

@@ -2,8 +2,9 @@
   <div class="container">
     <div class="headContent">
       <h1>Student's mark report</h1>
-      <p>Student: <strong> {{ student.fullname }} - {{ student.rollNumber }}</strong></p>
     </div>
+    <p>Student: <strong> {{ student.fullname }} - {{ student.rollNumber }}</strong></p>
+
     <div class="actions">
       <p>Batch: <strong> {{ batch }} </strong></p>
       <p>Class: <strong> {{ className }} </strong></p>

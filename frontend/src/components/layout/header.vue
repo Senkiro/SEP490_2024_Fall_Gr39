@@ -9,14 +9,8 @@
     </div>
     <div class="header-right">
       <slot name="user-actions">
-        <VsxIcon
-            iconName="UserSquare"
-            :size="30"
-            color="#01447e"
-            type="linear"
-            class="icon"
-            @click="navigateToUserProfile"
-        />
+        <VsxIcon iconName="UserSquare" :size="30" color="#01447e" type="linear" class="icon"
+          @click="navigateToUserProfile" />
         <VsxIcon iconName="Logout" :size="30" color="#01447e" type="linear" class="icon logout-icon" @click="logout"
           style="cursor: pointer;" />
       </slot>
@@ -33,22 +27,41 @@ export default {
   components: {
     VsxIcon
   },
+  data() {
+    return {
+      userId: "1"
+    }
+  },
   setup() {
     const router = useRouter();
-
-    const userId = sessionStorage.getItem("userId") || "defaultUserId";
 
     const logout = () => {
       sessionStorage.clear();
       router.push("/login");
     };
-
-    const navigateToUserProfile = () => {
-      router.push({ name: "UserProfile", params: { id: userId } });
-    };
-
-    return { logout , navigateToUserProfile };
+    return { logout };
   },
+  methods: {
+    navigateToUserProfile() {
+      switch (this.$route.meta.layout) {
+        case "admin":
+        this.$router.push({ name: 'AdminViewProfile', params: { id: this.userId } });
+        break;
+
+        case "staff":
+        this.$router.push({ name: 'StaffViewProfile', params: { id: this.userId } });
+        break;
+
+        case "teacher":
+        this.$router.push({ name: 'TeacherViewProfile', params: { id: this.userId } });
+        break;
+
+        case "student":
+        this.$router.push({ name: 'MyStudentProfile', params: { id: this.userId } });
+        break;
+      }      
+    }
+  }
 };
 </script>
 
