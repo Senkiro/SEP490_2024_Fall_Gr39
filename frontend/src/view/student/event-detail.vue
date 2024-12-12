@@ -2,8 +2,9 @@
   <div class="container">
     <div class="headContent">
       <h1>{{ eventDetail.eventName }}</h1>
-      <p>{{ eventDetail.address }}</p>
     </div>
+    <p>{{ eventDetail.address }}</p>
+
 
     <div class="image-container">
       <img :src="`/${eventDetail.imagePath}`" alt="Event Image"/>
