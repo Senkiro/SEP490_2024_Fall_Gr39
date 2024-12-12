@@ -5,7 +5,7 @@
     </div>
     <div class="actions" id="account-mng">
       <div class="filters">
-        <select id="role-filter" class="filter-select">
+        <select id="role-filter" class="filter-select" @change="handleRoleChange">
           <option value="">All Role</option>
           <option value="staff">Staff</option>
           <option value="teacher">Teacher</option>
@@ -38,10 +38,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="center"></td>
-            <td></td>
-            <td></td>
+        <tr v-for="(user, index) in users" :key="user.userId">
+            <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+            <td>{{ user?.fullName || 'N/A' }}</td>
+            <td>{{ user?.email }}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -54,7 +54,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="pagination" v-if="totalPages > 0">
+      <div class="pagination" v-if="totalPages > 1">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
         </button>
@@ -110,14 +110,18 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
+      users: [],
       showAddAccountPopup: false,
       currentPage: 1,
       itemsPerPage: 5,
       totalElements: 0,
       totalPages: 0,
+      currentRole: "",
       newAccount: {
         email: "",
         fullName: "",
@@ -128,10 +132,37 @@ export default {
     }
   },
   methods: {
+    async fetchUsersByRole(role) {
+      this.isLoading = true; // Bắt đầu trạng thái loading
+      try {
+        const token = sessionStorage.getItem("jwtToken"); // Lấy token từ sessionStorage
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/user/get-users-by-role?role=${role}&page=${this.currentPage - 1}&size=${this.itemsPerPage}`,
+            {headers: {Authorization: `Bearer ${token}`}}
+        );
+        // Cập nhật dữ liệu từ API
+        this.users = response.data.result.content;
+        this.totalElements = response.data.result.totalElements;
+        this.totalPages = Math.ceil(this.totalElements / this.itemsPerPage);
+
+        // Cập nhật danh sách trang hiển thị
+        this.updateDisplayedPages();
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        this.isLoading = false; // Kết thúc trạng thái loading
+      }
+    },
+    handleRoleChange(event) {
+      const selectedRole = event.target.value.toUpperCase();
+      this.currentRole = selectedRole; // Lưu role hiện tại
+      this.currentPage = 1; // Reset về trang đầu
+      this.fetchUsersByRole(selectedRole); // Gọi API với role mới
+    },
     changePage(newPage) {
       if (newPage > 0 && newPage <= this.totalPages) {
         this.currentPage = newPage;
-        this.fetchBatches();
+        this.fetchUsersByRole(this.currentRole); // Truyền role hiện tại
       }
     },
     updateDisplayedPages() {

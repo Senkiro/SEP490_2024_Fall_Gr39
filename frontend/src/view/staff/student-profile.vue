@@ -69,8 +69,8 @@
                   <strong>Average Score</strong>
                 </div>
                 <div class="score-box-lower">
-                  <p class="score">8.6</p>
-                  <strong class="score-status">Very Good</strong>
+                  <p class="score">{{ studentData.avgMark}}</p>
+                  <strong class="score-status">{{ getGradeRemark(studentData.avgMark)}}</strong>
                 </div>
               </div>
             </div>
@@ -150,7 +150,12 @@
     </div>
 
     <!-- Attendance Report Table -->
-    <div class="table-container">
+    <div class="actions" v-if="showAttendance">
+      <div class="actions" v-if="showAttendance">
+        <p>{{ attendanceSummary() }}</p>
+      </div>
+    </div>
+    <div class="table-container" >
       <table v-if="showAttendance">
         <thead>
         <tr>
@@ -164,12 +169,12 @@
         <tbody>
         <tr v-for="(attendance, index) in attendanceReport" :key="index">
           <td class="center">{{ index + 1 }}</td>
-          <td>{{ attendance.date || 'N/A' }}</td>
-          <td>{{ attendance.slot || 'N/A' }}</td>
-          <td>{{ attendance.teacher || 'N/A' }}</td>
+          <td>{{ attendance.date}}</td>
+          <td>{{ attendance.slot}}</td>
+          <td>{{ attendance.teacher}}</td>
           <td class="center"
-              :class="{ attended: attendance.status === 'Attend', absent: attendance.status === 'Absent' }">
-            {{ attendance.status || 'N/A' }}
+              :class="getAttendanceClass(attendance.status)">
+            {{ attendance.status}}
           </td>
         </tr>
         <tr v-if="attendanceReport.length === 0">
@@ -189,15 +194,48 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="grade in markReport" :key="grade.category || grade.item">
-          <td>{{ grade.category || 'N/A' }}</td>
-          <td>{{ grade.item || 'N/A' }}</td>
-          <td>{{ grade.weight || 'N/A' }}</td>
-          <td>{{ grade.value || 'N/A' }}</td>
-          <td>{{ grade.comment || 'N/A' }}</td>
+        <tr>
+          <td class="bold">Participation</td>
+          <td class="bold">Participation</td>
+          <td class="bold">10%</td>
+          <td></td>
+          <td></td>
         </tr>
-        <tr v-if="markReport.length === 0">
-          <td colspan="5" class="center">No mark report data available.</td>
+        <tr v-for="(grade, index) in grades" :key="index">
+          <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
+              :rowspan="calculateRowspan(grades, index, 'category')">
+            {{ grade.category }}
+          </td>
+          <td>{{ grade.item }}</td>
+          <td></td>
+          <td>{{ grade.value }}</td>
+        </tr>
+        <!-- Tổng điểm -->
+        <tr>
+          <td class="bold"> </td>
+          <td class="bold">Total</td>
+          <td class="bold">70%</td>
+          <td class="bold">{{ totalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Mid-term Exam</td>
+          <td class="bold">Mid-term Exam</td>
+          <td class="bold">10%</td>
+          <td>{{ midtermValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Final Exam</td>
+          <td class="bold">Final Exam</td>
+          <td class="bold">10%</td>
+          <td>{{ finalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Course total</td>
+          <td class="bold" colspan="2">Average</td>
+          <td>{{ studentData.avgMark }}</td>
         </tr>
         </tbody>
       </table>
@@ -238,15 +276,34 @@ const studentData = ref({
 });
 
 const showAttendance = ref(true);
-const markReport = ref([
-  {category: 'Participation', item: 'Total', weight: '10%', value: '9.0', comment: 'Excellent'},
-  {category: 'Daily Exam', item: 'Total', weight: '20%', value: '8.5', comment: 'Very Good'},
-  {category: 'Mid-term Exam', item: 'Total', weight: '30%', value: '8.0', comment: 'Good'},
-  {category: 'Final Exam', item: 'Average', weight: '40%', value: '7.5', comment: 'Good'},
-  {category: 'Course Total', item: 'Status', weight: '-', value: '-', comment: 'Good'},
-]);
 
 const attendanceReport = ref([]);
+
+const getAttendanceClass = (status) => {
+  switch (status) {
+    case 'Attended':
+      return 'yes';
+    case 'Absent':
+      return 'no';
+    case 'Not happen':
+      return 'not-happen';
+    default:
+      return '';
+  }
+};
+
+const attendanceSummary = () => {
+  if (!attendanceReport.value || attendanceReport.value.length === 0) {
+    return 'No attendance data available';
+  }
+
+  const totalSessions = attendanceReport.value.length;
+  const attendedSessions = attendanceReport.value.filter(
+      (session) => session.status === 'Attended'
+  ).length;
+  const attendancePercentage = ((attendedSessions / totalSessions) * 100).toFixed(0); // No decimal places
+  return `${attendedSessions}/${totalSessions} sessions attended (${attendancePercentage}%)`;
+};
 
 studentId.value = useRoute().params.id;
 
@@ -274,7 +331,7 @@ const fetchAttendanceData = async () => {
   try {
     const token = sessionStorage.getItem('jwtToken');
     const response = await axios.get(
-        `http://localhost:8088/fja-fap/staff/get-attendance-student/${studentId.value}?page=0&size=10`,
+        `http://localhost:8088/fja-fap/staff/get-attendance-student/${studentId.value}?page=0&size=100`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -286,8 +343,8 @@ const fetchAttendanceData = async () => {
       attendanceReport.value = response.data.result.content
           .map((attendance) => ({
             date: attendance.date,
-            slot: "N/A",
-            teacher: "N/A",
+            slot: attendance.sessionResponse.timeSlotResponse.name,
+            teacher: attendance.teacherName,
             status: attendance.status,
           }))
           .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -303,9 +360,102 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
+const grades = ref([]);
+const totalValue = ref(0.0);
+const midtermValue = ref(null);
+const finalValue = ref(null);
+// const courseTotal = ref(0.0);
+
+const calculateRowspan = (grades, index, property) => {
+  let count = 1;
+  while (index + count < grades.length && grades[index + count][property] === grades[index][property]) {
+    count++;
+  }
+  return count;
+};
+
+const fetchMarkData = async () => {
+  try {
+    const token = sessionStorage.getItem("jwtToken");
+    const response = await axios.get(
+        `http://localhost:8088/fja-fap/staff/get-student-mark/${studentId.value}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+
+    const { result } = response.data;
+
+    if (result && result.length) {
+      // Lọc các loại bài kiểm tra
+      const dailyExams = result
+          .filter(
+              (item) =>
+                  item.examResponse.examTypeRate.examCategory === "Daily" &&
+                  item.mark > 0 &&
+                  !isNaN(item.mark)
+          )
+          .sort((a, b) => a.examResponse.examId - b.examResponse.examId);
+      const midtermExam = result.find(
+          (item) => item.examResponse.examTypeRate.examCategory === "Mid-term Exam"
+      );
+      const finalExam = result.find(
+          (item) => item.examResponse.examTypeRate.examCategory === "Final Exam"
+      );
+
+      // Map dữ liệu bài kiểm tra hàng ngày
+      grades.value = dailyExams.map((item) => ({
+        category: "Daily Exam",
+        item: item.examResponse.examTitle,
+        weight: `${item.examResponse.examTypeRate.examRate}%`,
+        value: item.mark !== null && !isNaN(item.mark) ? item.mark : 0.0,
+      }));
+
+      // Tính tổng giá trị trung bình cho Daily Exams
+      totalValue.value =
+          dailyExams.length > 0
+              ? (
+                  dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) /
+                  dailyExams.length
+              ).toFixed(2)
+              : 0.0;
+
+      // Giá trị cho Mid-term và Final Exam
+      midtermValue.value =
+          midtermExam && midtermExam.mark !== null && !isNaN(midtermExam.mark)
+              ? midtermExam.mark
+              : "";
+      finalValue.value =
+          finalExam && finalExam.mark !== null && !isNaN(finalExam.mark)
+              ? finalExam.mark
+              : "";
+    } else {
+      console.log("No marks available for this student.");
+    }
+  } catch (error) {
+    console.error("Error fetching mark data:", error);
+  }
+};
+const getGradeRemark = (gpa) => {
+  if (gpa < 5) {
+    return "Poor";
+  } else if (gpa >= 5 && gpa < 7) {
+    return "Fair";
+  } else if (gpa >= 7 && gpa < 8) {
+    return "Good";
+  } else if (gpa >= 8 && gpa < 9) {
+    return "Very Good";
+  } else if (gpa >= 9 && gpa <= 10) {
+    return "Excellent";
+  } else {
+    return "Invalid GPA";
+  }
+};
+
 onMounted(() => {
   fetchStudentData();
   fetchAttendanceData();
+  fetchMarkData();
 });
 const isEditing = ref(false);
 const editData = ref({...studentData.value.userInforResponse});

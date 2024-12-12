@@ -107,7 +107,9 @@ export default {
         this.$router.push({ name: 'TeacherHomepage' });
       }else if (role === 'STUDENT'){
         this.$router.push({ name: 'StudentHomepage' });
-      }else {
+      }else if (role === 'ADMIN'){
+        this.$router.push({ name: 'AdminAccount' });
+      } else {
         this.$router.push({ name: 'LoginPage' }); // Default route if role is not recognized
       }
     },

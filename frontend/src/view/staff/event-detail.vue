@@ -69,13 +69,13 @@
 
     <h2>Feedback</h2>
 
-    <div class="feedback-summary" style="margin-left: auto">
+    <div class="feedback-summary" style="margin-left: auto" v-if="totalElements > 0">
       <span>Total rate: {{ eventDetail.avgRate}}
         <span>/5</span><span class="star">★</span>
       </span>
     </div>
 
-    <div class="table-container">
+    <div class="table-container" v-if="totalElements > 0">
       <table>
         <thead>
         <tr>
@@ -289,7 +289,6 @@ export default {
         this.updateDisplayedPages();
       } catch (error) {
         console.error("Error fetching feedbacks:", error);
-        this.showNotification("Error fetching feedbacks. Please try again.", "error");
       }
     },
 
