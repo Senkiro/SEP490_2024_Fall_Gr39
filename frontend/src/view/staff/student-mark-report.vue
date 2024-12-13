@@ -90,7 +90,7 @@ export default {
       },
       batch: "FALL2024",
       className: "Blue",
-      currentGPA: 7.6,
+      currentGPA: "",
       grades: [],
       totalValue: 0.0,
       totalGPA: 8.6,

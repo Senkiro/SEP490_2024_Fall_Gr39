@@ -129,6 +129,7 @@
                   <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
                           v-if="!session.lessonResponse">
                     <option value="" disabled>Select Event</option>
+                    <option value="">Remove Event</option>
                     <option v-for="event in events" :key="event.id" :value="event.id">
                       {{ event.title }}
                     </option>
@@ -760,7 +761,8 @@ export default {
         curriculumnId: sessionData.curriculumnResponse?.curriculumnId,
         timeSlotId: sessionData.timeSlotResponse?.timeSLotId,
         roomNumber: this.selectedRoomTable[sessionId] || sessionData.roomNumber || "",
-        eventId: this.selectedEventTable[sessionId] || sessionData.eventId || "",
+        //eventId: this.selectedEventTable[sessionId] || sessionData.eventId || "",
+        eventId: this.selectedEventTable[sessionId] === "" ? null : this.selectedEventTable[sessionId],
         userId: this.selectedTeacher[sessionId] || sessionData.userId || "",
       };
 

@@ -122,7 +122,7 @@ export default {
         }, {});
       } catch (error) {
         console.error("Error fetching events:", error);
-        this.showNotification("Error fetching events. Please try again.", 'error');
+        //this.showNotification("Error fetching events. Please try again.", 'error');
       } finally {
         this.isLoading = false;
       }

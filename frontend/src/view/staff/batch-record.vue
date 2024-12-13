@@ -51,9 +51,14 @@
           <td>{{ batchEntity.endTime }}</td>
           <td class="center">{{ batchEntity.studentCount || 0 }}</td>
           <td
-              :class="{ 'status-progress': getStatus(batchEntity.endTime) === 'On progress', 'status-graduated': getStatus(batchEntity.endTime) === 'Graduated' }">
-            {{ getStatus(batchEntity.endTime) }}
+              :class="{
+                'status-progress': getStatus(batchEntity) === 'On progress',
+                'status-not-happen': getStatus(batchEntity) === 'Not happen',
+                'status-graduated': getStatus(batchEntity) === 'Graduated'
+              }">
+            {{ getStatus(batchEntity) }}
           </td>
+
           <td class="center">
             <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)"/>
           </td>
@@ -264,7 +269,6 @@ export default {
       this.newBatch.endTime = endDate.toISOString().split("T")[0];
     },
 
-    // Hàm kiểm tra ngày làm việc
     isWeekday(date) {
       const day = date.getDay();
       return day >= 1 && day <= 5;
@@ -314,10 +318,21 @@ export default {
       this.errorMessage = "";
       this.newBatch = {name: "", startTime: "", endTime: "", year: ""};
     },
-    getStatus(endTime) {
+    getStatus(batch) {
       const currentDate = new Date();
-      const batchEndDate = new Date(endTime);
-      return batchEndDate < currentDate ? 'Graduated' : 'On progress';
+      const startTime = new Date(batch.startTime);
+
+      // Xử lý theo batchStatus
+      if (batch.batchStatus === 2) {
+        return currentDate < startTime ? 'Not happen' : 'On progress';
+      }
+
+      if (batch.batchStatus === 0) {
+        return 'Graduated';
+      }
+
+      // Trường hợp không xác định
+      return 'Unknown';
     },
     showNotification(message, type) {
       this.notification = {message, type};

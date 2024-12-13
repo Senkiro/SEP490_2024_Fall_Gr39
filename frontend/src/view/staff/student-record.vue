@@ -163,7 +163,7 @@ export default {
   components: { VsxIcon },
   data() {
     return {
-      batchName: 'SPRING24',
+      batchName: 'Fall24',
       activeTab: 'student',
       selectedClass: "",
       showAddStudentPopup: false,

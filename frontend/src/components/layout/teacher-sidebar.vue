@@ -43,13 +43,6 @@
                     <span class="text">Holiday</span>
                 </router-link>
 
-                <router-link class="sidebar-item" to="/teacher/event" :class="{ 'active': active === 'event' }" @click="chooseItem('event')">
-                    <span class="material-icons">
-                        <VsxIcon iconName="Activity" :size="32" color="#1A2C6F" type="linear" />
-                    </span>
-                    <span class="text">Event</span>
-                </router-link>
-
                 <router-link class="sidebar-item" to="/teacher/mark" :class="{ 'active': active === 'mark' }" @click="chooseItem('mark')">
                     <span class="material-icons">
                         <VsxIcon iconName="Award" :size="32" color="#1A2C6F" type="linear" />
