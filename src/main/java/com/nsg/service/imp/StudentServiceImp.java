@@ -446,6 +446,7 @@ public class StudentServiceImp implements StudentService {
     }
 
     //change student class
+    @Override
     public void changeClassForStudent(String studentId, String classId) {
         StudentEntity student = studentRepository.findById(studentId).orElseThrow(
                 () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
@@ -467,5 +468,7 @@ public class StudentServiceImp implements StudentService {
             studentRepository.save(student);
         }
     }
+
+
 
 }

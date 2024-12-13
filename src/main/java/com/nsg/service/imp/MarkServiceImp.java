@@ -7,6 +7,7 @@ import com.nsg.dto.request.mark.MarkCreationRequest;
 import com.nsg.dto.request.mark.MarkUpdateRequest;
 import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
 import com.nsg.dto.response.mark.MarkResponse;
+import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.entity.*;
 import com.nsg.repository.*;
 import com.nsg.service.AttendanceService;
@@ -87,7 +88,13 @@ public class MarkServiceImp implements MarkService {
         markResponse.setMark(markEntity.getMark());
         markResponse.setComment(markEntity.getComment());
 
-        markResponse.setStudentResponse(studentService.convertToStudentResponse(markEntity.getStudentEntity()));
+        StudentResponse studentResponse = studentService.convertToStudentResponse(markEntity.getStudentEntity());
+        //get participation of each student
+        AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse(
+                markEntity.getStudentEntity().getStudentId() );
+        studentResponse.setAttendanceStatisticsResponse(attendanceStatisticsResponse);
+
+        markResponse.setStudentResponse(studentResponse);
 
         markResponse.setExamResponse( examService.toExamResponse( markEntity.getExamEntity() ) );
 
@@ -121,6 +128,15 @@ public class MarkServiceImp implements MarkService {
         if (!studentRepository.existsById(studentId)) {
             throw new AppException(ErrorCode.STUDENT_NOT_FOUND);
         }
+
+        //if batch was closed then return participation mark
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+        //get participation of each student
+        AttendanceStatisticsResponse attendanceStatisticsResponse = attendanceService.getDataAttendanceStatisticsResponse( student.getStudentId() );
+
+        double participationMark = attendanceStatisticsResponse.getAttendPercentage() * 0.1;
 
         List<MarkEntity> markEntityList = markRepository.findByStudentEntityStudentId(studentId);
         if (!markEntityList.isEmpty()) {
