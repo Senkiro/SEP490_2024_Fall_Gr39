@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -434,6 +435,37 @@ public class StudentServiceImp implements StudentService {
         attendanceStatisticsResponse.setTotalCount(totalCount);
         attendanceStatisticsResponse.setAttendPercentage(attendPercentage);
         return attendanceStatisticsResponse;
+    }
+
+    //get top 10 student by avg mark in a batch
+    @Override
+    public List<StudentResponse> getTop10Students(String batchName) {
+        Pageable pageable = PageRequest.of(0, 10); // Page 0, size 10
+        List<StudentEntity> studentEntityList = studentRepository.findTop10ByBatchOrderByAvgMarkDesc(batchName, pageable);
+        return toStudentResponseList(studentEntityList);
+    }
+
+    //change student class
+    public void changeClassForStudent(String studentId, String classId) {
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new AppException(ErrorCode.STUDENT_NOT_FOUND)
+        );
+
+        //get class
+        ClassEntity newClass = classRepository.findByClassId(classId);
+
+        //check batch status
+        BatchEntity batch = student.getBatchEntity();
+
+        // if status = 2 -> then can change student in batch
+        if (batch.getBatchStatus() == 2) {
+
+            //change student class
+            student.setClassEntity(newClass);
+
+            //save
+            studentRepository.save(student);
+        }
     }
 
 }

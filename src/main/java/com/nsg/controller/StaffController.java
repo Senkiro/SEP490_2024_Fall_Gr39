@@ -196,6 +196,15 @@ public class StaffController {
                 .build();
     }
 
+    //get top 10 avg_mark of student by batch_name
+    @GetMapping("/get-top-10-students")
+    public ApiResponse<List<StudentResponse>> getTop10Students(@RequestParam String batch_name) {
+        List<StudentResponse> studentEntityList = studentService.getTop10Students(batch_name);
+        return ApiResponse.<List<StudentResponse>>builder()
+                .result(studentEntityList)
+                .build();
+    }
+
     /**********************************
      * Manage Teacher
      **********************************/
