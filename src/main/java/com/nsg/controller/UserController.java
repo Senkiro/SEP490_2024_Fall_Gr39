@@ -4,6 +4,7 @@ import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.user.UserFullDetailsResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.UserEntity;
 import com.nsg.service.UserService;
@@ -39,8 +40,8 @@ public class UserController {
 
     //get users by role
     @GetMapping("/get-users-by-role")
-    public ApiResponse<Page<UserInforResponse>> getUsersByRoles(@RequestParam UserRole role, int page, int size) {
-        return ApiResponse.<Page<UserInforResponse>>builder()
+    public ApiResponse<Page<UserFullDetailsResponse>> getUsersByRoles(@RequestParam UserRole role, int page, int size) {
+        return ApiResponse.<Page<UserFullDetailsResponse>>builder()
                 .result(userService.getUsersByRoles(role, page, size))
                 .build();
     }

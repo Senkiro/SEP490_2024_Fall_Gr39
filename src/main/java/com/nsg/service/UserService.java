@@ -6,6 +6,7 @@ import com.nsg.dto.request.user.ResetPasswordRequest;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
+import com.nsg.dto.response.user.UserFullDetailsResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
@@ -40,7 +41,7 @@ public interface UserService extends BaseService<UserEntity, String>  {
 
     void deleteUser(String userId);
 
-    Page<UserInforResponse> getUsersByRoles(UserRole role, int page, int size);
+    Page<UserFullDetailsResponse> getUsersByRoles(UserRole role, int page, int size);
 
     void changeUsersActive(String userId);
 

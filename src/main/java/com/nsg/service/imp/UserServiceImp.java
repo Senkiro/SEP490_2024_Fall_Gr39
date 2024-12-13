@@ -11,6 +11,7 @@ import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.news.NewsResponse;
+import com.nsg.dto.response.user.UserFullDetailsResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.NewEntity;
@@ -89,15 +90,40 @@ public class UserServiceImp implements UserService {
 
     //get user by role
     @Override
-    public Page<UserInforResponse> getUsersByRoles(UserRole role, int page, int size) {
+    public Page<UserFullDetailsResponse> getUsersByRoles(UserRole role, int page, int size) {
 
         Page<UserEntity> userEntities = userRepository.findByRoles(role, PageRequest.of(page, size));
 
-        List<UserInforResponse> responseList = toUserInforResponseList(userEntities.getContent());
+        List<UserFullDetailsResponse> responseList = toUserFullDetailsResponseList(userEntities.getContent());
 
         return new PageImpl<>(responseList, userEntities.getPageable(), userEntities.getTotalElements());
 
     }
+
+    public List<UserFullDetailsResponse> toUserFullDetailsResponseList(List<UserEntity> userEntities) {
+        List<UserFullDetailsResponse> responseList = new ArrayList<>();
+
+        for (UserEntity user : userEntities) {
+            UserFullDetailsResponse response = new UserFullDetailsResponse();
+            response.setUserId( user.getUserId() );
+
+            response.setFullName( user.getFullName() );
+            response.setJapaneseName( user.getJapaneseName() );
+            response.setDob( user.getDob() );
+            response.setImg( user.getImg() );
+            response.setGender( user.isGender());
+            response.setEmail( user.getEmail() );
+            response.setPhone( user.getPhone() );
+            response.setRole( user.getRoles() );
+            response.setActive( user.isActive() );
+            response.setPassword( user.getPassword() );
+
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
+
 
     public List<UserInforResponse> toUserInforResponseList(List<UserEntity> userEntities) {
         List<UserInforResponse> responseList = new ArrayList<>();
