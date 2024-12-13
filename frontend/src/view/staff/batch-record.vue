@@ -63,7 +63,7 @@
         </tr>
         </tbody>
       </table>
-      <div class="pagination" v-if="totalPages > 1">
+      <div class="pagination" v-if="totalPages > 0">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
           <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
@@ -366,7 +366,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btn-submit{
-  width: 100%;
-  justify-content: center;
-}</style>
+</style>

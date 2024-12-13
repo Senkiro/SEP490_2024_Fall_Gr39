@@ -4,6 +4,7 @@
         <div class="headContent">
           <h1>Import curriculumn</h1>
         </div>
+        
         <div class="description">
           <p>This is the template file to import curriculumn to the system.</p>
           <p>

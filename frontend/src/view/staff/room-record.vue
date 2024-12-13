@@ -3,6 +3,7 @@
     <div class="headContent">
       <h1>Room Record</h1>
     </div>
+    
     <div class="actions">
       <button @click="showAddRoomPopup = true">
         <VsxIcon iconName="AddCircle" size="20" type="bold"/>

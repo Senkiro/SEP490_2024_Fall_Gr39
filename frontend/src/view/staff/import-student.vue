@@ -2,7 +2,7 @@
   <div class="container">
     <div class="import-student-page">
       <div class="headContent">
-        <h1>Import student from Excel file</h1>
+        <h1>Import student</h1>
       </div>
       <div class="description">
         <p>This is the template file to import students to the system.</p>
