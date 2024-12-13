@@ -2,7 +2,7 @@
   <div class="container">
     <div class="headContent">
       <h1>{{ batchName }}</h1>
-      <button> Summary </button>
+      <button @click="confirmBatchSummary">Summary</button>
     </div>
 
     <!-- Phần chuyển đổi tab -->
@@ -82,7 +82,7 @@
           </tbody>
         </table>
 
-        <div class="pagination" v-if="studentPagination.totalElements > 0">
+        <div class="pagination" v-if="studentPagination.totalElements > 1">
           <button @click="changeStudentPage(studentPagination.currentPage - 1)"
             :disabled="studentPagination.currentPage <= 1">
             <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
@@ -133,7 +133,7 @@
           </tbody>
         </table>
 
-        <div class="pagination" v-if="classPagination.totalElements > 0">
+        <div class="pagination" v-if="classPagination.totalElements > 1">
           <button @click="changeClassPage(classPagination.currentPage - 1)"
             :disabled="classPagination.currentPage <= 1">
             <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
@@ -324,6 +324,32 @@ export default {
     };
   },
   methods: {
+    async confirmBatchSummary() {
+      const userConfirmed = confirm("Do you want to summarize this batch?");
+      if (!userConfirmed) {
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/batch-summary`,
+            {
+              params: { batch_name: this.batchName },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+
+        if (response.status === 200) {
+          this.showNotification("Batch summary completed successfully!", "success");
+        } else {
+          this.showNotification("Batch summary failed. Please try again.", "error");
+        }
+      } catch (error) {
+        console.error("Error during batch summary:", error);
+        this.showNotification("An error occurred while summarizing the batch. Please try again.", "error");
+      }
+    },
     switchTab(tab) {
       this.activeTab = tab;
     },

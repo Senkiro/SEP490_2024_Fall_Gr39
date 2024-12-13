@@ -138,6 +138,10 @@ export default {
             {headers: {Authorization: `Bearer ${token}`}}
         );
         this.eventDetail = response.data.result;
+        const currentDate = new Date();
+        const eventDate = new Date(this.eventDetail.eventDate);
+
+        this.eventDetail.isEditable = currentDate > eventDate;
       } catch (error) {
         this.showNotification("Failed to fetch event details. Please try again.", "error");
       }
@@ -234,9 +238,14 @@ export default {
       this.showFeedbackPopup = true;
     },
     editFeedback(event_feedback_id) {
+      if (!this.eventDetail.isEditable) {
+        this.showNotification("You cannot edit feedback before the event date.", "error");
+        return;
+      }
+
       this.editForm.feedbackRate = this.eventFeedback.feedbackRate;
       this.editForm.feedbackContent = this.eventFeedback.feedbackContent;
-      this.editForm.event_feedback_id = event_feedback_id; // Gán ID được truyền vào
+      this.editForm.event_feedback_id = event_feedback_id;
       this.showEditPopup = true;
     },
     closeEditPopup() {

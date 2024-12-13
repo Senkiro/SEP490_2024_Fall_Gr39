@@ -420,7 +420,7 @@ const routes = [
         },
     },
     {
-        path: '/staff/student-mark-report',
+        path: '/staff/student-mark-report/:id',
         name: 'StaffStudentMarkReport',
         component: () => import('../view/staff/student-mark-report.vue'),
         meta: { layout: 'staff', requiresAuth: false, 
@@ -670,7 +670,7 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/student-record',
+        path: '/teacher/student-record/:classId',
         name: 'TeacherStudentRecord',
         component: () => import('../view/teacher/student-record.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
