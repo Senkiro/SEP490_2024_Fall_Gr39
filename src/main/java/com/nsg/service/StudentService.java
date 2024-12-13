@@ -39,5 +39,7 @@ public interface StudentService {
     Page<StudentResponse> getStudentByClassId(int page, int size, String classId);
 
     void markUpdate(String studentId, float avgMark);
+
+    List<StudentResponse> getTop10Students(String batchName);
 }
 

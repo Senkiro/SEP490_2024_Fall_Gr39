@@ -4,6 +4,9 @@ import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.entity.StudentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +22,8 @@ public interface StudentRepository extends BaseRepository<StudentEntity, String>
     Page<StudentEntity> findByClassEntityClassId(String classEntityClassId, PageRequest pageable);
 
     Page<StudentEntity> findByBatchEntityBatchNameAndClassEntityClassId(String batchName, String classId, PageRequest of);
+
+    @Query("SELECT s FROM StudentEntity s WHERE s.batchEntity.batchName = :batchName ORDER BY s.avgMark DESC")
+    List<StudentEntity> findTop10ByBatchOrderByAvgMarkDesc(@Param("batchName") String batchName, Pageable pageable);
+
 }
