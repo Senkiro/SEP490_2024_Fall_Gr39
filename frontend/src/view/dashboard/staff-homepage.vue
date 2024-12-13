@@ -137,7 +137,6 @@
 </template>
 
 <script>
-import { VsxIcon } from 'vue-iconsax';
 import axios from "axios";
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, CategoryScale, LineController, LineElement, LinearScale } from 'chart.js'
@@ -147,7 +146,6 @@ ChartJS.register(Title, Tooltip, Legend, PointElement, CategoryScale, LineContro
 export default {
   name: "StaffHomepage",
   components: {
-    VsxIcon,
     Line
   },
   data() {
