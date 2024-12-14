@@ -53,7 +53,6 @@
                   <div class="information">
                     <b>{{ sessions.morning.eventName || "N/A" }}</b>
                     <span>Destination: <b>{{ sessions.morning.eventResponse.address}}</b></span>
-                    <b :class="getStatusAttendClass(sessions.morning.attendanceStatus)">{{ sessions.morning.attendanceStatus}}</b>
                   </div>
                 </div>
               </div>
@@ -88,7 +87,6 @@
                   <div class="information">
                     <b>{{ sessions.afternoon.eventName || "N/A" }}</b>
                     <span>Destination: <b>{{ sessions.afternoon.eventResponse.address}}</b></span>
-                    <b :class="getStatusAttendClass(sessions.afternoon.attendanceStatus)">{{ sessions.afternoon.attendanceStatus}}</b>
                   </div>
                 </div>
               </div>

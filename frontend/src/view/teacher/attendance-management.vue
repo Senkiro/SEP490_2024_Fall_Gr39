@@ -198,7 +198,7 @@ export default {
       const todayFormatted = today.toISOString().split("T")[0];
       this.sessions.forEach(session => {
         const sessionDate = new Date(session.date).toISOString().split("T")[0];
-        if (session.attendanceStatus !== "Attended"  && sessionDate === todayFormatted ) {
+        if (session.attendanceStatus !== "Attended"  && sessionDate <= todayFormatted ) {
           axios.post(
               `http://localhost:8088/fja-fap/staff/update-session-attendance-status/${session.sessionId}?new_status=Not taken`,
               {},
@@ -225,8 +225,8 @@ export default {
   },
   async mounted() {
     try {
-      await this.fetchSessions(); // Đợi fetchSessions hoàn thành
-      this.checkAndUpdateStatus(); // Chỉ gọi khi fetchSessions đã xong
+      await this.fetchSessions();
+      this.checkAndUpdateStatus();
     } catch (error) {
       console.error("Error during mounted:", error);
     }

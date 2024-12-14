@@ -5,9 +5,7 @@
     <div class="activities horizontal-activities">
       <div v-for="(sessions, date) in groupedSessionsByDate" :key="date" class="daily-activities">
 
-        <h3 :class="date === Object.keys(groupedSessionsByDate)[0] ? 'no' : ''">{{ date ===
-          Object.keys(groupedSessionsByDate)[0] ? 'Tomorrow (' + new Date(date).toLocaleDateString() + ')' : new
-            Date(date).toLocaleDateString() }}</h3>
+        <h3>{{new Date(date).toLocaleDateString() }}</h3>
 
         <div class="activities-container">
           <div v-if="sessions.morning" class="activity">
@@ -19,7 +17,7 @@
               <div class="information">
                 <b>{{ sessions.morning.curriculumnResponse?.lessonResponse?.lessonTitle || 'No Title' }}</b>
                 <span>Exam: <b>{{ sessions.morning.curriculumnResponse?.examResponse?.examTitle || 'N/A' }}</b></span>
-                <span>Class: <b>{{ sessions.morning.class || 'Unknown' }}</b></span>
+                <span>Class: <b>{{ sessions.morning.classResponse.className || 'Unknown' }}</b></span>
                 <span>Room: <b>{{ sessions.morning.roomNumber || 'Unknown' }}</b></span>
               </div>
             </template>
@@ -34,7 +32,7 @@
               <div class="information">
                 <b>{{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonTitle || 'No Title' }}</b>
                 <span>Exam: <b>{{ sessions.afternoon.curriculumnResponse?.examResponse?.examTitle || 'N/A' }}</b></span>
-                <span>Class: <b>{{ sessions.afternoon.class || 'Unknown' }}</b></span>
+                <span>Class: <b>{{  sessions.morning.classResponse.className  || 'Unknown' }}</b></span>
                 <span>Room: <b>{{ sessions.afternoon.roomNumber || 'Unknown' }}</b></span>
               </div>
             </template>
@@ -63,6 +61,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -130,7 +129,45 @@ export default {
           console.error("Lỗi khi gọi API:", error);
         });
     },
-  }
+    async fetchAllNews() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const response = await axios.get(
+            "http://localhost:8088/fja-fap/staff/get-all-publish-news",
+            {
+              params: {
+                page: 0,
+                size: 10,
+              },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+
+        if (response.data.code === 0) {
+          this.newsList = response.data.result.content || [];
+        } else {
+          this.showNotification(
+              "Unable to load news: " + response.data.message,
+              "error"
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        this.showNotification(
+            "An error occurred while loading news.",
+            "error"
+        );
+      }
+    },
+
+    navigateToNewsRecord() {
+      this.$router.push({ name: "StudentNewsList" });
+    },
+  },
+  mounted() {
+    this.fetchSessions();
+    this.fetchAllNews();
+  },
 }
 </script>
 

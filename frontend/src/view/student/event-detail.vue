@@ -4,7 +4,7 @@
       <h1>{{ eventDetail.eventName }}</h1>
     </div>
     <p>{{ eventDetail.address }}</p>
-
+    <div>{{eventDetail.eventDate}}</div>
 
     <div class="image-container">
       <img :src="`/${eventDetail.imagePath}`" alt="Event Image"/>
@@ -14,7 +14,7 @@
 
     <div class="actions">
       <button
-          @click="openFeedbackPopup"
+          @click="openFeedbackPopup(eventDetail.eventDate)"
           class="give-feedback-button"
       >
         <VsxIcon iconName="Star" size="20" type="bold"/>
@@ -229,20 +229,26 @@ export default {
         //this.showNotification("Error fetching feedback. Please try again.", "error");
       }
     },
-    openFeedbackPopup() {
-      if (this.eventFeedback) {
-        this.showNotification("You have already submitted feedback.", "error");
+    openFeedbackPopup(eventDate) {
+      const today = new Date();
+      const eventDateObj = new Date(eventDate);
+
+      if (today < eventDateObj) {
+        this.showNotification("The event hasn't started yet. You cannot submit feedback.", "error");
         return;
       }
 
+      // Kiểm tra nếu phản hồi đã được gửi
+      // if (this.eventFeedback) {
+      //   this.showNotification("You have already submitted feedback.", "error");
+      //   return;
+      // }
+
+      // Hiển thị pop-up nếu các điều kiện trên không được thỏa mãn
       this.showFeedbackPopup = true;
     },
-    editFeedback(event_feedback_id) {
-      if (!this.eventDetail.isEditable) {
-        this.showNotification("You cannot edit feedback before the event date.", "error");
-        return;
-      }
 
+    editFeedback(event_feedback_id) {
       this.editForm.feedbackRate = this.eventFeedback.feedbackRate;
       this.editForm.feedbackContent = this.eventFeedback.feedbackContent;
       this.editForm.event_feedback_id = event_feedback_id;

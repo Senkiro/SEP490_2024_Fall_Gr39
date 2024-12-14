@@ -51,7 +51,7 @@
               </div>
               <div class="information">
                 <b>{{ sessions.afternoon.eventResponse.eventName || 'No Title' }}</b>
-                <p>Destination: <b>{{ sessions.afternoon.eventResponse.destination || 'Unknown' }}</b></p>
+                <p>Destination: <b>{{ sessions.afternoon.eventResponse.address || 'Unknown' }}</b></p>
               </div>
             </template>
           </div>
@@ -199,6 +199,86 @@ export default {
       const dates = Object.keys(groupedSessionsByDate);
       return date === dates[0];
     },
+    async fetchData() {
+      try {
+        // Lấy studentId từ sessionStorage
+        const studentId = sessionStorage.getItem("userId");
+        if (!studentId) {
+          console.error("Student ID không tồn tại trong sessionStorage.");
+          return;
+        }
+
+        const token = sessionStorage.getItem("jwtToken");
+
+        // Gọi API để lấy dữ liệu điểm của sinh viên
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-student-mark/${studentId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        const { result } = response.data;
+
+        if (result && result.length) {
+          // Lọc các bài kiểm tra thuộc loại "Daily" và có điểm > 0
+          const dailyExams = result
+              .filter(item => item.mark > 0) // Lấy bài kiểm tra có điểm
+              .filter(item => item.examResponse.examTypeRate.examCategory === "Daily") // Lọc "Daily Exam"
+              .sort((a, b) => a.examResponse.examId - b.examResponse.examId); // Sắp xếp theo examId
+
+          // **Mapping dữ liệu để hiển thị lên biểu đồ**
+          this.chartData = {
+            labels: dailyExams.map(item => item.examResponse.examTitle), // Tiêu đề bài kiểm tra
+            datasets: [
+              {
+                label: "Mark",
+                data: dailyExams.map(item => item.mark), // Điểm bài kiểm tra
+                fill: true,
+                borderColor: "#AF52DE",
+                tension: 0.5,
+                pointBackgroundColor: "#AF52DE",
+                backgroundColor: "#AF52DE",
+              },
+            ],
+          };
+
+          // Lưu thông tin sinh viên từ API
+          const studentInfo = result[0].studentResponse;
+          this.student = {
+            fullname: studentInfo.userInforResponse.fullName,
+            rollNumber: studentInfo.rollNumber,
+          };
+          this.batch = studentInfo.batchName;
+          this.className = studentInfo.classResponse.className;
+
+          // Tính điểm trung bình hiện tại
+          this.currentGPA = studentInfo.avgMark;
+          this.gradeRemark = this.getGradeRemark(this.currentGPA);
+
+          // Lấy điểm của bài kiểm tra giữa kỳ (Mid-term Exam)
+          const midtermExam = result.find(
+              item => item.examResponse.examTypeRate.examCategory === "Mid-term Exam"
+          );
+          this.midtermValue = midtermExam ? midtermExam.mark || 0.0 : null;
+
+          // Lấy điểm của bài kiểm tra cuối kỳ (Final Exam)
+          const finalExam = result.find(
+              item => item.examResponse.examTypeRate.examCategory === "Final Exam"
+          );
+          this.finalValue = finalExam ? finalExam.mark || 0.0 : null;
+
+          console.log("Dữ liệu sinh viên:", this.student);
+          console.log("Dữ liệu biểu đồ:", this.chartData);
+        } else {
+          console.warn("Không có dữ liệu điểm nào khả dụng.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu điểm của sinh viên:", error);
+      }
+    },
     async fetchAllNews() {
       try {
         const token = sessionStorage.getItem("jwtToken");
@@ -229,6 +309,7 @@ export default {
         );
       }
     },
+
     navigateToNewsRecord() {
       this.$router.push({ name: "StudentNewsList" });
     },
@@ -236,6 +317,7 @@ export default {
   mounted() {
     this.fetchAllNews();
     this.fetchSessions();
+    this.fetchData();
   },
 };
 </script>

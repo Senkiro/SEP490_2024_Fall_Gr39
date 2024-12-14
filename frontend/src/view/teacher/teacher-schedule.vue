@@ -194,6 +194,15 @@ export default {
         path: `/teacher/take-attendance/${sessionId}`,
       });
     },
+    navigateToMarkManagement(sessionId) {
+      if (!sessionId) {
+        return;
+      }
+
+      this.$router.push({
+        path: `/teacher/take-attendance/${sessionId}`,
+      });
+    },
     getStatusAttendClass(status) {
       if (status === "Attended") return "yes";
       if (status === "Not happen") return "not-happen";
@@ -236,7 +245,12 @@ export default {
           })
           .then((response) => {
             if (response.data.code === 0) {
-              this.sessions = response.data.result;
+              // Lọc những session có curriculumnResponse
+              this.sessions = response.data.result.filter(
+                  (session) => session.curriculumnResponse && Object.keys(session.curriculumnResponse).length > 0
+              );
+
+              console.log("Filtered Sessions:", this.sessions); // Kiểm tra kết quả sau khi lọc
             } else {
               console.error(
                   "Lỗi khi fetch dữ liệu sessions:",
@@ -247,7 +261,7 @@ export default {
           .catch((error) => {
             console.error("Lỗi khi gọi API:", error);
           });
-    },
+    }
   },
   mounted() {
     this.fetchSessions();

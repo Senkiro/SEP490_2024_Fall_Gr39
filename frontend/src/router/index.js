@@ -746,7 +746,7 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/mark-management',
+        path: '/teacher/mark-management/:sessionId',
         name: 'TeacherMarkManagement',
         component: () => import('../view/teacher/mark-management.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 
@@ -790,7 +790,7 @@ const routes = [
         },
     },
     {
-        path: '/teacher/take-attendance',
+        path: '/teacher/take-attendance/:sessionId',
         name: 'TeacherTakeAttendance',
         component: () => import('../view/teacher/take-attendance.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 

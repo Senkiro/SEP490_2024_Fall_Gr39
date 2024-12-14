@@ -119,26 +119,29 @@ export default {
     },
     async fetchSessions(classId) {
       try {
+        const teacherId = sessionStorage.getItem("userId");
         const token = sessionStorage.getItem("jwtToken");
         const response = await axios.get(
-            "http://localhost:8088/fja-fap/staff/get-session-have-exam",
+            "http://localhost:8088/fja-fap/staff/get-session-have-exam-and-teacher",
             {
-              params: { class_id: classId },
+              params: { class_id: classId, teacher_id: teacherId },
               headers: { Authorization: `Bearer ${token}` },
             }
         );
 
+        // Chuẩn hóa dữ liệu
         this.sessions = response.data.result.map(session => ({
           ...session,
           classResponse: session.classResponse || {},
           curriculumnResponse: session.curriculumnResponse || { examResponse: {} },
         }));
 
+        // Cập nhật trạng thái cho các session đã qua nhưng chưa được cập nhật
         const today = new Date().toISOString().split("T")[0];
         for (const session of this.sessions) {
-          if (session.date === today && session.markStatus === "Not happen") {
+          if (session.date <= today && session.markStatus === "Not happen") {
             await this.updateSessionMarkStatus(session.sessionId, "Not added");
-            session.markStatus = "not-added";
+            session.markStatus = "Not added";
           }
         }
       } catch (error) {
@@ -149,10 +152,9 @@ export default {
       try {
         const token = sessionStorage.getItem("jwtToken");
         await axios.post(
-            `http://localhost:8088/fja-fap/staff/update-session-mark-status/${sessionId}`,
+            `http://localhost:8088/fja-fap/staff/update-session-mark-status/${sessionId}?new_status=${newStatus}`,
             null,
             {
-              params: { new_status: newStatus },
               headers: { Authorization: `Bearer ${token}` },
             }
         );
@@ -168,16 +170,33 @@ export default {
       return "";
     },
     getStatusText(session) {
-      return session.markStatus === "Added"
-          ? "Added"
-          : session.markStatus === "not-added"
-              ? "Not added"
-              : "Not happen";
+      if (session.markStatus === "Added") return "Added";
+      if (session.markStatus === "Not added") return "Not added";
+      return "Not happen";
     },
     isActionDisabled(session) {
-      const sessionDate = new Date(session.date);
-      const today = new Date();
-      return sessionDate > today || session.markStatus === "added";
+      const sessionDate = new Date(session.date); // Ngày của session
+      const today = new Date(); // Ngày hiện tại
+
+      // Kiểm tra nếu session chưa diễn ra
+      if (sessionDate > today) {
+        return true; // Vô hiệu hóa nút
+      }
+
+      // Tính toán số ngày giữa ngày hiện tại và ngày của session
+      const daysDifference = (today - sessionDate) / (1000 * 60 * 60 * 24);
+
+      // Kiểm tra nếu session đã qua hơn 2 ngày
+      if (daysDifference > 2) {
+        return true; // Vô hiệu hóa nút
+      }
+
+      // Kiểm tra trạng thái `markStatus`
+      if (session.markStatus === "Added") {
+        return true; // Vô hiệu hóa nút nếu đã thêm điểm
+      }
+
+      return false; // Không vô hiệu hóa
     },
     getActionText(session) {
       return session.markStatus === "Added" ? "Edit mark" : "Add mark";
