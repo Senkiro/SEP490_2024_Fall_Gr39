@@ -156,6 +156,11 @@ public class SessionServiceImp implements SessionService {
                 () -> new AppException(ErrorCode.CLASS_NOT_FOUND)
         );
 
+        //check student list in class
+        if (classEntity.getStudentEntityList().isEmpty()) {
+            throw new AppException(ErrorCode.STUDENT_LIST_IS_EMPTY);
+        }
+
         //check schedule for one class existed by: find class by id
         //if existed -> throw exception
         if (sessionRepository.existsByClassEntityClassId(classEntity.getClassId())) {

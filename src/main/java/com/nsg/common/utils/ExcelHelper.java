@@ -60,6 +60,11 @@ public class ExcelHelper {
             BatchEntity batch = batchRepository.findByBatchName(batchName)
                     .orElseThrow(() -> new AppException(ErrorCode.BATCH_NOT_EXISTED));
 
+            //check batch status
+            if (batch.getBatchStatus() == 0 || batch.getBatchStatus() == 1) {
+                throw new AppException(ErrorCode.BATCH_IS_CLOSED);
+            }
+
             ClassEntity newClassEntity = new ClassEntity();
             List<ClassEntity> classes = classRepository.findByClassName(className);
             for(ClassEntity classEntity : classes) {
@@ -113,6 +118,9 @@ public class ExcelHelper {
 
                 students.add(student);
             }
+        } catch (AppException e) {
+            // Không chuyển đổi AppException để giữ thông tin lỗi
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
             throw new AppException(ErrorCode.PARSE_ERROR);
