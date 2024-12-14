@@ -140,6 +140,11 @@ public class BatchServiceImp implements BatchService {
                 () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
         );
 
+        //check batch status, if status = 0 -> throw exception
+        if (batchEntity.getBatchStatus() == 0 ) {
+            throw new AppException(ErrorCode.BATCH_WAS_GRADUATED);
+        }
+
         //get list of class in batch
         List<ClassEntity> classEntityList = batchEntity.getClassEntityList();
 

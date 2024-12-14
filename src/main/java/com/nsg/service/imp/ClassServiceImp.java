@@ -79,6 +79,7 @@ public class ClassServiceImp implements ClassService {
         return response;
     }
 
+    @Override
     public ClassResponse toClassResponse(ClassEntity classEntity) {
         ClassResponse response = new ClassResponse();
         response.setClassId(classEntity.getClassId());

@@ -28,7 +28,7 @@ public class ApplicationInitConfig {
                         .username("adminEntity")
                         .password(passwordEncoder.encode("admin1"))
                         .email("admin01@gmail.com")
-                        .roles(UserRole.STAFF)
+                        .roles(UserRole.ADMIN)
                         .isActive(true)
                         .build();
                 userRepository.save(user);

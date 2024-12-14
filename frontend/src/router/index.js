@@ -746,7 +746,7 @@ const routes = [
             ]},
     },
     {
-        path: '/teacher/mark-management/:sessionId',
+        path: '/teacher/mark-management/:sessionId/:examId/:classId',
         name: 'TeacherMarkManagement',
         component: () => import('../view/teacher/mark-management.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 

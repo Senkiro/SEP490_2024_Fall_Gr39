@@ -183,15 +183,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="bold">Participation</td>
-            <td class="bold">Participation</td>
-            <td class="bold">10%</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr v-for="(grade, index) in grades" :key="index">
-            <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
+        <tr>
+          <td class="bold">Participation</td>
+          <td class="bold">Participation</td>
+          <td class="bold">10%</td>
+          <td>{{}}</td>
+          <td></td>
+        </tr>
+        <tr v-for="(grade, index) in grades" :key="index">
+          <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
               :rowspan="calculateRowspan(grades, index, 'category')">
               {{ grade.category }}
             </td>
@@ -453,6 +453,7 @@ const fetchMarkData = async () => {
     console.error("Error fetching mark data:", error);
   }
 };
+// grade.studentResponse.attendanceStatisticsResponse.attendPercentage
 const getGradeRemark = (gpa) => {
   if (gpa < 5) {
     return "Poor";

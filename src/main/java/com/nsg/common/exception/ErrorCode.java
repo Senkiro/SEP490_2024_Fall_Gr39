@@ -31,6 +31,7 @@ public enum ErrorCode {
     YEAR_NOT_AFTER2000(1105, "Year must be after 2000"),
     YEAR_IS_NULL(1106, "Year can not be null!"),
     BATCH_IS_CLOSED(1107, "Batch is closed!"),
+    BATCH_WAS_GRADUATED(1108, "Batch was graduated"),
 
     //Time slot
     TIME_SLOT_NAME_IS_NULL(1120, "Time slot name can not be null!"),
