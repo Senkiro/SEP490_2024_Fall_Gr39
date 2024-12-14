@@ -92,11 +92,10 @@
 
 <script>
 import axios from "axios";
-import {VsxIcon} from "vue-iconsax";
 import TextEditor from "@/components/text-editor.vue";
 
 export default {
-  components: {TextEditor, VsxIcon},
+  components: {TextEditor},
   data() {
     return {
       showEditPopup: false,
