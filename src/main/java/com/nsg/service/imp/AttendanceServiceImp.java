@@ -193,6 +193,14 @@ public class AttendanceServiceImp implements AttendanceService {
         return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
     }
 
+    @Override
+    public Page<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus, int page, int size) {
+        Page<AttendanceEntity> attendanceEntities = attendanceRepository.findByBatchStatus(batchStatus, PageRequest.of(page, size));
+        List<AttendanceResponse> responseList = toListAttendanceResponse(attendanceEntities);
+
+        return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
+    }
+
     //convert from page to list response
     public List<AttendanceResponse> toListAttendanceResponse(Page<AttendanceEntity> attendanceEntities) {
         List<AttendanceResponse> responseList = new ArrayList<>();

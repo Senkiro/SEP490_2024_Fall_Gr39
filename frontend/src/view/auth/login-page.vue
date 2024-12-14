@@ -50,7 +50,7 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            userName: this.username,
+            email: this.username,
             password: this.password
           })
         });

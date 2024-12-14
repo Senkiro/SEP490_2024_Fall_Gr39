@@ -50,7 +50,7 @@ public class AuthServiceImp implements AuthService {
     @Override
     public AuthResponse authenticate(AuthRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByUsername(request.getUserName())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         if(user.isActive()) {
             boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());

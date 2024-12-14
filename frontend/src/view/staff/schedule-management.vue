@@ -101,6 +101,7 @@
                     </div>
                   </template>
                 </td>
+                <td>{{selectedTeacher[session.sessionId]}}</td>
                 <td id="room">
                   <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "" }}</template>
                   <template v-else>
@@ -745,7 +746,6 @@ export default {
         console.error("Session data not found for sessionId:", sessionId);
         return;
       }
-
       const updatedData = {
         date: sessionData.date,
         status: 0,

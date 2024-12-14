@@ -4,13 +4,18 @@ import com.nsg.common.enums.UserRole;
 import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
+import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.user.UserFullDetailsResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.UserEntity;
+import com.nsg.service.AttendanceService;
 import com.nsg.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +25,14 @@ import java.util.List;
 @RequestMapping("/user")
 @SecurityRequirement(name = "Authorization")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
 
+    @Autowired
     private final UserService userService;
+
+    @Autowired
+    AttendanceService attendanceService;
 
     @PostMapping("/create-user")
     public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request, @RequestParam UserRole role) {
@@ -75,4 +85,14 @@ public class UserController {
         userService.deleteUser(userId);
         return "User have been deleted";
     }
+
+    //get attendance by batch status
+    @GetMapping("/get-attendance-by-batch-status")
+    public ApiResponse<Page<AttendanceResponse>> getAttendanceByBatchStatus(@RequestParam int page,
+                                                                            @RequestParam int size) {
+        return ApiResponse.<Page<AttendanceResponse>>builder()
+                .result(attendanceService.getAttendanceByBatchStatus(2, page, size))
+                .build();
+    }
+
 }

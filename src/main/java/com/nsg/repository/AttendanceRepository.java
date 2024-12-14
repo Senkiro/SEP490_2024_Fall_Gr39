@@ -20,6 +20,12 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
 
     Page<AttendanceEntity> findByStudentEntityStudentId(String studentId, PageRequest of);
 
+    @Query("SELECT a FROM AttendanceEntity a " +
+            "JOIN a.studentEntity s " +
+            "JOIN s.batchEntity b " +
+            "WHERE b.batchStatus = :batchStatus")
+    Page<AttendanceEntity> findByBatchStatus(@Param("batchStatus") int batchStatus, Pageable pageable);
+
     void deleteBySessionEntity(SessionEntity session);
 
     @Query("SELECT DISTINCT e FROM AttendanceEntity a JOIN a.sessionEntity.curriculumnEntity.examEntity e WHERE a.studentEntity.studentId = :studentId")
