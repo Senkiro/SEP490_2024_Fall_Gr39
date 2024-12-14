@@ -2,7 +2,7 @@
   <div class="container">
     <div class="headContent">
       <h1>{{ batchName }}</h1>
-      <button @click="confirmBatchSummary">Summary</button>
+      <button @click="confirmBatchSummary">Batch Summary</button>
     </div>
 
     <!-- Phần chuyển đổi tab -->
@@ -50,28 +50,28 @@
         <table>
           <thead>
             <tr>
-              <th class="center">No</th>
-              <th>Fullname</th>
+              <th id="index" class="center">No</th>
+              <th>Full name</th>
               <th>Roll number</th>
               <th>Japanese name</th>
-              <th>Class</th>
-              <th>Email</th>
-              <th class="center">Action</th>
+              <th id="class">Class</th>
+              <th id="email">Email</th>
+              <th id="action" class="center">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(student, index) in students" :key="student.id">
-              <td class="center">{{ index + 1 }}</td>
+              <td id="index" class="center">{{ index + 1 }}</td>
               <td>
                 {{ student.fullname }}
               </td>
               <td>{{ student.rollNumber }}</td>
               <td>{{ student.japaneseName }}</td>
-              <td :style="{ color: student.classResponse?.classColour || '#000' }">
+              <td id="class" :style="{ color: student.classResponse?.classColour || '#000' }">
                 {{ student.classResponse?.className || "Unknown" }}
               </td>
-              <td>{{ student.email }}</td>
-              <td class="center">
+              <td id="email">{{ student.email }}</td>
+              <td id="action" class="center">
                 <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear"
                   @click="navigateToProfile(student.id)" />
               </td>
@@ -828,6 +828,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#index{
+  width: 8%;
+}
+#action{
+  width: 10%;
+}
+#class{
+  width: 10%;
+}
+#email{
+  width: 23%;
+}
 .container {
   .btn-group {
     display: flex;
@@ -842,7 +854,7 @@ export default {
       padding: 10px 40px;
       border-radius: 6px;
       color: #fff;
-      font-weight: semibold;
+      font-weight: bold;
     }
 
     .active-tab {
