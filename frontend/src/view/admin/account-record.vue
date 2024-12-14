@@ -228,38 +228,37 @@ export default {
       }
     },
     async addAccount() {
-      if (!this.newAccount.role) {
-        alert("Please select a role.");
-        return;
-      }
-
       try {
         const token = sessionStorage.getItem("jwtToken");
+        const payload = {
+          fullName: this.newAccount.fullName,
+          email: this.newAccount.email,
+          password: "12341234",
+        };
         const response = await axios.post(
-            `http://localhost:8088/fja-fap/user/create-user-with-role?role=${this.newAccount.role.toUpperCase()}`,
+            `http://localhost:8088/fja-fap/user/create-user?role=${this.newAccount.role.toUpperCase()}`,
+            payload,
             {
-              fullName: this.newAccount.fullName,
-              email: this.newAccount.email,
-              password: "12341234",
-            },
-            {
-              headers: { Authorization: `Bearer ${token}` },
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
         );
 
-        if (response.data && response.data.code === 0) {
+        // Xử lý phản hồi thành công
+        if (response.data.code === 0) {
           alert("Account created successfully!");
-          this.showAddAccountPopup = false;
-          this.fetchUsersByRole(this.currentRole);
+          this.showAddAccountPopup = false; // Close the popup
+          this.fetchUsersByRole(this.currentRole); // Refresh the user list
         } else {
-          console.error("Error creating account:", response.data.message || "Unknown error");
-          alert("Failed to create account. Please try again.");
+          console.error("Error creating account:", response.data.message);
+          alert(`Failed to create account: ${response.data.message}`);
         }
       } catch (error) {
         console.error("Error creating account:", error);
-        alert("Failed to create account. Please check your input or try again later.");
+        alert("An error occurred while creating the account. Please try again.");
       }
-    }
+    },
   },
   watch: {
     // Watcher to update URL when `currentPage` changes
