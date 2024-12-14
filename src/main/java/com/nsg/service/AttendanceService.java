@@ -31,6 +31,8 @@ public interface AttendanceService {
 
     Page<AttendanceResponse> getAttendanceByStudent(String studentId, int page, int size);
 
+    Page<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus, int page, int size);
+
     //get by id
     AttendanceResponse getAttendance(String attendanceId);
 

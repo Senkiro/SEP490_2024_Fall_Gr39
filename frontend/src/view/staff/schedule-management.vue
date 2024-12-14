@@ -744,7 +744,6 @@ export default {
         console.error("Session data not found for sessionId:", sessionId);
         return;
       }
-
       const updatedData = {
         date: sessionData.date,
         status: 0,
