@@ -26,8 +26,8 @@
             <th>Title</th>
             <th>Destination</th>
             <th>Information</th>
-            <th>Avg Rate</th>
-            <th class="center">Action</th>
+            <th id="rate">Average Rate</th>
+            <th id="action" class="center">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -36,16 +36,14 @@
             <td>{{ event.eventName }}</td>
             <td>{{ event.address }}</td>
             <td v-html="event.description"></td>
-            <td>
-              {{ event.avgRate !== null ? event.avgRate.toFixed(2) : 'N/A' }}
+            <td id="rate">
               <span
                   v-for="star in Math.floor(event.avgRate)"
-                  :key="star"
-                  style="color: gold"
-                  class="star"
-              >★</span>
+                  :key="star">
+                <VsxIcon iconName="Heart" :size="15" type="bold" color="#F28287"/>
+              </span>
             </td>
-            <td class="center">
+            <td id="action" class="center">
               <div class="icon-group">
                 <VsxIcon iconName="Eye" :size="25" color="#171717" type="linear" @click="viewEventDetail(event)" />
                 <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"
@@ -54,7 +52,7 @@
             </td>
           </tr>
           <tr v-if="events.length === 0">
-            <td colspan="7" class="center">No record.</td>
+            <td colspan="6" class="center">No record.</td>
           </tr>
         </tbody>
       </table>
@@ -106,10 +104,8 @@
 
 <script>
 import axios from "axios";
-import { VsxIcon } from "vue-iconsax";
 
 export default {
-  components: { VsxIcon },
   data() {
     return {
       events: [],
@@ -255,6 +251,12 @@ export default {
 </script>
 
 <style lang="scss">
+#rate{
+  width: 13% !important;
+}
+#action{
+  width: 10% !important;
+}
 td {
   p {
     width: 100%;

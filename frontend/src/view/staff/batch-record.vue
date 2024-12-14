@@ -32,34 +32,34 @@
       <table>
         <thead>
         <tr>
-          <th class="center">No</th>
+          <th id="index" class="center">No</th>
           <th>Batch</th>
           <th>Year</th>
           <th>Start time</th>
           <th>End time</th>
-          <th class="center">Number of students</th>
+          <th id="number" class="center">Number of students</th>
           <th>Status</th>
-          <th class="center">Action</th>
+          <th id="action" class="center">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(batchEntity, index) in batches" :key="batchEntity.id">
-          <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+          <td id="index" class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
           <td @click="viewBatchDetail(batchEntity)" class="clickable">{{ batchEntity.batchName }}</td>
           <td>{{ batchEntity.year }}</td>
           <td>{{ batchEntity.startTime }}</td>
           <td>{{ batchEntity.endTime }}</td>
-          <td class="center">{{ batchEntity.studentCount || 0 }}</td>
+          <td id="number" class="center">{{ batchEntity.studentCount || 0 }}</td>
           <td
               :class="{
-                'status-progress': getStatus(batchEntity) === 'On progress',
-                'status-not-happen': getStatus(batchEntity) === 'Not happen',
-                'status-graduated': getStatus(batchEntity) === 'Graduated'
+                'on-progress': getStatus(batchEntity) === 'On progress',
+                'not-happen': getStatus(batchEntity) === 'Not happen',
+                'graduated': getStatus(batchEntity) === 'Graduated'
               }">
             {{ getStatus(batchEntity) }}
           </td>
 
-          <td class="center">
+          <td id="action" class="center">
             <VsxIcon iconName="Eye" :size="30" color="#171717" type="linear" @click="viewBatchDetail(batchEntity)"/>
           </td>
         </tr>
@@ -381,4 +381,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#index{
+  width: 8%;
+}
+#number{
+  width: 20%;
+}
+.not-happen{
+  font-weight: normal !important;
+}
 </style>

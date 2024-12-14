@@ -71,7 +71,7 @@
 
     <div class="feedback-summary" style="margin-left: auto" v-if="totalElements > 0">
       <span>Total rate: {{ eventDetail.avgRate}}
-        <span>/5</span><span class="star">★</span>
+        <span>/5</span><span><VsxIcon name="Heart" size="10" type="bold" color="#F28287"/></span>
       </span>
     </div>
 
@@ -92,9 +92,11 @@
           <td>{{ feedback.fullName }}</td>
           <td>{{feedback.batch}}</td>
           <td>
-            <span v-for="star in feedback.feedbackRate" :key="star" style="color: gold" class="star">★</span>
+            <span v-for="heart in feedback.feedbackRate" :key="heart" class="heart">
+              <VsxIcon name="Heart" size="10" type="bold" color="#F28287"/>
+            </span>
           </td>
-          <td v-html="feedback.feedbackContent"></td>
+          <td>{{feedback.feedbackContent}}</td>
         </tr>
         </tbody>
       </table>
@@ -135,11 +137,6 @@ export default {
       isActive: false,
       backupEventDetail: {},
       eventId: this.$route.params.eventId,
-      tabs: {
-        blue: true,
-        green: false,
-        red: false,
-      },
       eventDetail: {
         eventName: "",
         address: "",

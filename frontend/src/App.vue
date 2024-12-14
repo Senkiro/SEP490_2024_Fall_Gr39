@@ -581,7 +581,12 @@ button {
 
 }
 
-
+.on-progress{
+  color: #FF8B03;
+}
+.graduated{
+  color: #6ECBB8
+}
 .success {
   background-color: #4caf50;
 }
