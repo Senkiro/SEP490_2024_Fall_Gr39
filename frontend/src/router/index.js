@@ -714,7 +714,7 @@ const routes = [
         },
     },
     {
-        path: '/teacher/lesson-detail',
+        path: '/teacher/lesson-detail/:id',
         name: 'TeacherLessonDetail',
         component: () => import('../view/student/lesson-detail.vue'),
         meta: { layout: 'teacher', requiresAuth: false, 

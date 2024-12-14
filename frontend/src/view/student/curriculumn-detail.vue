@@ -141,17 +141,27 @@ export default {
         console.error("Lesson ID is missing.");
         return;
       }
-      this.$router.push({ name: 'StaffLessonDetail', params: { id } });
+      switch (this.$route.name){
+        case 'StudentCurriculumnDetail':
+          this.$router.push({ name: 'StudentLessonDetail', params: { id } });break
+        case 'TeacherCurriculumnDetail':
+          this.$router.push({ name: 'TeacherLessonDetail', params: { id } });break
+      }
     },
     viewExamDetail(id) {
       if (!id) {
         console.error("Exam ID is missing.");
         return;
       }
-      this.$router.push({ name: 'StaffExamDetail', params: { id } });
+      switch (this.$route.name){
+        case 'StudentCurriculumnDetail':
+          this.$router.push({ name: 'StudentExamDetail', params: { id } });break
+        case 'TeacherCurriculumnDetail':
+          this.$router.push({ name: 'TeacherExamDetail', params: { id } });break
+      }
     },
     async fetchCurriculumData() {
-      const id = this.$route.params.id;
+      const id = "1";
 
       if (!id) {
         console.error("Invalid ID: No ID provided in the route.");
