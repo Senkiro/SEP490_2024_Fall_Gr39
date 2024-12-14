@@ -16,10 +16,7 @@ import com.nsg.entity.ClassEntity;
 import com.nsg.entity.StudentEntity;
 import com.nsg.entity.UserEntity;
 import com.nsg.repository.*;
-import com.nsg.service.AttendanceService;
-import com.nsg.service.MarkService;
-import com.nsg.service.StudentService;
-import com.nsg.service.UserService;
+import com.nsg.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -52,6 +49,9 @@ public class StudentServiceImp implements StudentService {
 
     @Autowired
     AttendanceRepository attendanceRepository;
+
+    @Autowired
+    ClassService classService;
 
     @Override
     public StudentResponse createStudent(StudentCreattionRequest request) {
@@ -195,7 +195,7 @@ public class StudentServiceImp implements StudentService {
         studentResponse.setBatchName(studentEntity.getBatchEntity().getBatchName());
 
         //set class
-        studentResponse.setClassResponse( ClassMapper.INSTANCE.toClassResponse(studentEntity.getClassEntity()) );
+        studentResponse.setClassResponse( classService.toClassResponse(studentEntity.getClassEntity()) );
 
         //set avg mark
         studentResponse.setAvgMark( studentEntity.getAvgMark() );
