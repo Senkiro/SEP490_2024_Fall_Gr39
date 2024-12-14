@@ -41,5 +41,7 @@ public interface StudentService {
     void markUpdate(String studentId, float avgMark);
 
     List<StudentResponse> getTop10Students(String batchName);
+
+    void changeClassForStudent(String studentId, String classId);
 }
 

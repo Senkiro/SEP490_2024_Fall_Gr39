@@ -49,7 +49,4 @@ public class StudentEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
     List<EventFeedbackEntity> eventFeedbackEntityList;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentEntity", fetch = FetchType.EAGER)
-    List<EssayEntity> essayEntityList;
-
 }

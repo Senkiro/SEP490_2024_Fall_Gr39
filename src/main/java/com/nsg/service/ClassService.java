@@ -2,6 +2,7 @@ package com.nsg.service;
 
 import com.nsg.dto.request.classRequest.ClassRequest;
 import com.nsg.dto.response.classResponse.ClassResponse;
+import com.nsg.entity.ClassEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -31,4 +32,6 @@ public interface ClassService {
     List<ClassResponse> getClassByTeacherId(String teacherId);
 
     void changeClassStatus(String classId);
+
+    ClassResponse toClassResponse(ClassEntity classEntity);
 }

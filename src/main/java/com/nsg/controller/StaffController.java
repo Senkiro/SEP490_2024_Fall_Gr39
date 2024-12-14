@@ -205,6 +205,16 @@ public class StaffController {
                 .build();
     }
 
+    //change class for student
+    @GetMapping("/change-student-class")
+    public ApiResponse<?> changeStudentsClass(@RequestParam String student_id,
+                                                                  @RequestParam String class_id) {
+        studentService.changeClassForStudent(student_id, class_id);
+        return ApiResponse.builder()
+                .message("Change student's class successfully!")
+                .build();
+    }
+
     /**********************************
      * Manage Teacher
      **********************************/
