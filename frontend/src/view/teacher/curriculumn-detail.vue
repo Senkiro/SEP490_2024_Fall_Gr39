@@ -4,6 +4,13 @@
       <h1>{{ curriculumnTitle }}</h1>
     </div>
 
+    <div class="actions">
+      <button @click="navigateToImportCurriculumn">
+        <VsxIcon iconName="Import" size="20" type="bold"/>
+        Import curriculumn detail
+      </button>
+    </div>
+
     <div class="btn-group">
       <button @click="switchTab('curriculumn')" :class="{ 'active-tab': activeTab === 'curriculumn' }">
         Curriculumn
@@ -123,6 +130,9 @@ export default {
     }
   },
   methods: {
+    navigateToImportCurriculumn() {
+      this.$router.push({name: 'ImportCurriculumn'});
+    },
     switchTab(tab) {
       this.activeTab = tab;
     },
@@ -131,22 +141,18 @@ export default {
         console.error("Lesson ID is missing.");
         return;
       }
-      this.$router.push({ name: 'TeacherLessonDetail', params: { id } });
+      this.$router.push({ name: 'StaffLessonDetail', params: { id } });
     },
     viewExamDetail(id) {
       if (!id) {
         console.error("Exam ID is missing.");
         return;
       }
-      this.$router.push({ name: 'TeacherExamDetail', params: { id } });
+      this.$router.push({ name: 'StaffExamDetail', params: { id } });
     },
     async fetchCurriculumData() {
-      const id = this.$route.params.id;
-
-      if (!id) {
-        console.error("Invalid ID: No ID provided in the route.");
-        return;
-      }
+      const id = "1"; // Giá trị cố định
+      console.log("Curriculum ID:", id);
 
       try {
         const token = sessionStorage.getItem("jwtToken");
@@ -163,18 +169,22 @@ export default {
         if (curriculumnResponse.data.code === 0) {
           this.curriculumnTitle = curriculumnResponse.data.result.curriculumnTitle || 'Default Title';
         } else {
-          console.error("Failed to fetch curriculumn title:", curriculumnResponse.data);
+          console.error("Failed to fetch curriculumn title:", curriculumnResponse.data.message || "Unknown error");
         }
 
         if (detailedResponse.data.code === 0) {
           this.curriculumnList = detailedResponse.data.result?.content || [];
         } else {
-          console.error("Failed to fetch detailed data:", detailedResponse.data);
+          console.error("Failed to fetch detailed data:", detailedResponse.data.message || "Unknown error");
         }
+
+        console.log("Curriculum Title:", this.curriculumnTitle);
+        console.log("Curriculum List:", this.curriculumnList);
+
       } catch (error) {
-        console.error("Error fetching curriculum data:", error);
+        console.error("Error fetching curriculum data:", error.message || error);
       }
-    },
+    }
   },
   mounted() {
     this.fetchCurriculumData();
