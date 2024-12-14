@@ -198,7 +198,7 @@
           <td class="bold">Participation</td>
           <td class="bold">Participation</td>
           <td class="bold">10%</td>
-          <td></td>
+          <td>{{}}</td>
           <td></td>
         </tr>
         <tr v-for="(grade, index) in grades" :key="index">
@@ -436,6 +436,7 @@ const fetchMarkData = async () => {
     console.error("Error fetching mark data:", error);
   }
 };
+// grade.studentResponse.attendanceStatisticsResponse.attendPercentage
 const getGradeRemark = (gpa) => {
   if (gpa < 5) {
     return "Poor";

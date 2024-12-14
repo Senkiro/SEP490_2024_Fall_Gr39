@@ -347,7 +347,7 @@ export default {
         }
       } catch (error) {
         console.error("Error during batch summary:", error);
-        this.showNotification("An error occurred while summarizing the batch. Please try again.", "error");
+        this.showNotification(error.response?.data?.message, "error");
       }
     },
     switchTab(tab) {

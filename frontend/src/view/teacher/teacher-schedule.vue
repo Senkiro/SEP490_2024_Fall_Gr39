@@ -194,13 +194,15 @@ export default {
         path: `/teacher/take-attendance/${sessionId}`,
       });
     },
-    navigateToMarkManagement(sessionId) {
-      if (!sessionId) {
+    navigateToMarkManagement(classId, examId, sessionId) {
+      if (!classId || !examId) {
+        console.error("Missing required parameters:", { classId, examId, sessionId });
         return;
       }
 
       this.$router.push({
-        path: `/teacher/take-attendance/${sessionId}`,
+        name: "TeacherMarkManagement",
+        params: { classId, examId, sessionId },
       });
     },
     getStatusAttendClass(status) {
