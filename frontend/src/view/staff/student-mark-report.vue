@@ -16,8 +16,8 @@
           <tr>
             <th>Grade category</th>
             <th>Grade item</th>
-            <th>Weight</th>
-            <th>Value</th>
+            <th id="weight">Weight</th>
+            <th id="value">Value</th>
             <th>Comment</th>
           </tr>
         </thead>
@@ -84,17 +84,14 @@ export default {
   name: "StudentMarkReport",
   data() {
     return {
-      student: {
-        fullname: "Pham The Minh",
-        rollNumber: "FA171392",
-      },
-      batch: "FALL2024",
-      className: "Blue",
+      student: {},
+      batch: "",
+      className: "",
       currentGPA: "",
       grades: [],
-      totalValue: 0.0,
-      totalGPA: 8.6,
-      gradeRemark: "Very Good",
+      totalValue: "",
+      totalGPA: "",
+      gradeRemark: "",
     };
   },
   methods: {
@@ -195,6 +192,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+#value{
+  width: 10% !important;
+}
+#weight{
+  width: 10% !important;
+}
 .bold {
   color: #171717 !important;
   font-weight: bold !important;

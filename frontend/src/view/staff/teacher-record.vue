@@ -24,29 +24,29 @@
       <table>
         <thead>
           <tr>
-            <th class="center">No</th>
-            <th>Name</th>
-            <th>Japanese Name</th>
+            <th id="index" class="center">No</th>
+            <th id="name">Name</th>
+            <th id="japanName">Japanese Name</th>
             <th>Dob</th>
-            <th>Email</th>
-            <th>Gender</th>
-            <th>Status</th>
-            <th class="center">Action</th>
+            <th id="email">Email</th>
+            <th id="gender">Gender</th>
+            <th id="status">Status</th>
+            <th id="action" class="center">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(teacher, index) in teachers" :key="teacher.userId">
             <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-            <td>{{ teacher.fullName }}</td>
-            <td>{{ teacher.japaneseName }}</td>
+            <td id="name">{{ teacher.fullName }}</td>
+            <td id="japanName">{{ teacher.japaneseName }}</td>
             <td>{{ teacher.dob }}</td>
-            <td>{{ teacher.email }}</td>
+            <td id="email">{{ teacher.email }}</td>
             <td>{{ teacher.gender ? 'Male' : 'Female' }}</td>
             <td :class="{ 'status-progress': teacher.active, 'status-inactive': !teacher.active }">
               {{ teacher.active ? 'Active' : 'Inactive' }}
             </td>
             <td class="center">
-              <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewTeacherDetail(teacher)" />
+              <VsxIcon iconName="Eye" :size="32" color="#000" type="linear" @click="viewTeacherDetail(teacher)" />
             </td>
           </tr>
           <tr v-if="teachers.length === 0">
@@ -257,4 +257,26 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+#index{
+  width: 7%;
+}
+#japanName{
+  width: 15%;
+}
+#email{
+  width: 20%;
+}
+#name{
+  width: 15%
+}
+#gender{
+  width: 10%
+}
+#status{
+  width: 10%
+}
+#action{
+  width: 10%
+}
+</style>

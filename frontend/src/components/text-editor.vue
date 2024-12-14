@@ -35,30 +35,6 @@
               :class="{ 'is-active': editor.isActive('orderedList') }">
         <OrderedListIcon/>
       </button>
-      <button @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
-        <TableIcon/>
-      </button>
-      <button @click="editor.chain().focus().addColumnAfter().run()">
-        <AddColumnIcon/>
-      </button>
-      <button @click="editor.chain().focus().deleteColumn().run()">
-        <RemoveColumnIcon/>
-      </button>
-      <button @click="editor.chain().focus().addRowAfter().run()">
-        <AddRowIcon/>
-      </button>
-      <button @click="editor.chain().focus().deleteRow().run()">
-        <RemoveRowIcon/>
-      </button>
-      <button @click="editor.chain().focus().deleteTable().run()">
-        <RemoveTableIcon/>
-      </button>
-      <button @click="editor.chain().focus().mergeCells().run()">
-        <MergeCellIcon/>
-      </button>
-      <button @click="editor.chain().focus().splitCell().run()">
-        <SplitCellIcon/>
-      </button>
     </div>
     <editor-content :editor="editor"/>
   </div>
@@ -72,10 +48,6 @@ import OrderedList from '@tiptap/extension-ordered-list'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import Gapcursor from '@tiptap/extension-gapcursor'
-import Table from '@tiptap/extension-table'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
 import Bold from '@tiptap/extension-bold'
 import Italic from '@tiptap/extension-italic'
 import Underline from '@tiptap/extension-underline'
@@ -88,14 +60,6 @@ import Heading2Icon from 'vue-material-design-icons/FormatHeader2.vue';
 import Heading3Icon from 'vue-material-design-icons/FormatHeader3.vue';
 import BulletListIcon from 'vue-material-design-icons/FormatListBulleted.vue';
 import OrderedListIcon from 'vue-material-design-icons/FormatListNumbered.vue';
-import TableIcon from 'vue-material-design-icons/Table.vue';
-import AddColumnIcon from 'vue-material-design-icons/TableColumnPlusAfter.vue';
-import AddRowIcon from 'vue-material-design-icons/TableRowPlusAfter.vue';
-import RemoveColumnIcon from 'vue-material-design-icons/TableColumnRemove.vue';
-import RemoveRowIcon from 'vue-material-design-icons/TableRowRemove.vue';
-import RemoveTableIcon from 'vue-material-design-icons/TableRemove.vue';
-import MergeCellIcon from 'vue-material-design-icons/TableMergeCells.vue';
-import SplitCellIcon from 'vue-material-design-icons/TableSplitCell.vue';
 
 
 import {Editor, EditorContent} from '@tiptap/vue-3'
@@ -110,15 +74,7 @@ export default {
     Heading2Icon,
     Heading3Icon,
     BulletListIcon,
-    OrderedListIcon,
-    TableIcon,
-    AddColumnIcon,
-    RemoveColumnIcon,
-    AddRowIcon,
-    RemoveRowIcon,
-    RemoveTableIcon,
-    MergeCellIcon,
-    SplitCellIcon
+    OrderedListIcon
   },
 
   props: {
@@ -163,12 +119,6 @@ export default {
         OrderedList,
         StarterKit,
         Gapcursor,
-        Table.configure({
-          resizable: true,
-        }),
-        TableRow,
-        TableHeader,
-        TableCell,
         Heading.configure({
           levels: [1, 2, 3],
         }),

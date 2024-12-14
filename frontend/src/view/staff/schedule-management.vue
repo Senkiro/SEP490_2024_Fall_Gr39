@@ -52,18 +52,18 @@
         <thead>
           <tr>
             <th>Date</th>
-            <th>Slot</th>
+            <th id="slot">Slot</th>
             <th>Teacher</th>
-            <th>Room</th>
+            <th id="room">Room</th>
             <th>Lesson</th>
             <th>Exam</th>
             <th>Event</th>
-            <th>Action</th>
+            <th id="action">Action</th>
           </tr>
         </thead>
         <tbody>
           <template v-for="(sessions, date) in groupedSessions" :key="date">
-            <tr v-if="sessions.some(session => session.note)" :key="date + '-note'">
+            <tr id="date" v-if="sessions.some(session => session.note)" :key="date + '-note'">
               <!-- Cột Ngày -->
               <td :rowspan="1">
                 <div class="schedule-date">
@@ -126,6 +126,7 @@
                 <td id="event">
                   <template v-if="!isEditing[session.sessionId]">{{ session.eventName || "" }}</template>
                   <template v-else>
+                    <div class="edit-teacher">
                     <select v-model="selectedEventTable[session.sessionId]" class="filter-select"
                       v-if="!session.lessonResponse">
                       <option value="" disabled>Select Event</option>
@@ -134,6 +135,7 @@
                         {{ event.title }}
                       </option>
                     </select>
+                    </div>
                     <template v-if="session.lessonResponse">{{ session.eventName || "" }}</template>
                   </template>
                 </td>
@@ -981,6 +983,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#date{
+  padding: 20px 0;
+}
+#room{
+  width: 7% !important;
+}
+#slot{
+  width: 10% !important;
+}
+#action{
+  width: 10% !important;
+}
 .auto-fill{
   p{
     margin: 20px 0;
@@ -1019,6 +1033,7 @@ export default {
     }
 
     #teacher,
+    #event,
     #room {
       width: 250px;
 

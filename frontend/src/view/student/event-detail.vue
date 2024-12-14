@@ -24,27 +24,34 @@
 
     <div v-if="showFeedbackPopup" class="popup-overlay">
       <div class="popup">
-        <h3>Add Feedback</h3>
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showFeedbackPopup=false" />
+        </div>
+        <div class="popup-title">
+          <h2>Add Feedback</h2>
+        </div>
 
-        <VsxIcon
-            v-for="star in 5"
-            :key="star"
-            iconName="Star1"
-            :style="{ color: star <= feedbackForm.feedbackRate ? 'gold' : '#ccc' }"
-            size="24"
-            type="bold"
-            @click="setFeedbackRate(star)"
-        />
+        <div id="rate" class="form-group">
+  <label>Rate <span class="required"> *</span></label>
+          <div class="rate-icon">
+          <VsxIcon
+              v-for="heart in 5"
+              :key="heart"
+              iconName="Heart"
+              :style="{ color: heart <= feedbackForm.feedbackRate ? '#F28787' : '#ccc' }"
+              size="24"
+              type="bold"
+              @click="setFeedbackRate(heart)"
+          />
+          </div>
+        </div>
 
-        <TextEditor
-            v-model="feedbackForm.feedbackContent"
-            placeholder="Enter your feedback here..."
-            rows="4"
-        ></TextEditor>
-
+        <div class="form-group">
+          <label id="label" for="feedback">Feedback </label>
+          <textarea rows="10" id="feedback" v-model="feedbackForm.feedbackContent" required/>
+        </div>
         <div class="actions">
           <button @click="submitFeedback">Submit</button>
-          <button @click="closeFeedbackPopup">Cancel</button>
         </div>
       </div>
     </div>
@@ -62,13 +69,13 @@
       <div class="popup">
         <h3>Edit Feedback</h3>
         <VsxIcon
-            v-for="star in 5"
-            :key="star"
-            iconName="Star1"
-            :style="{ color: star <= editForm.feedbackRate ? 'gold' : '#ccc' }"
+            v-for="heart in 5"
+            :key="heart"
+            iconName="Heart"
+            :style="{ color: heart <= editForm.feedbackRate ? 'gold' : '#ccc' }"
             size="24"
             type="bold"
-            @click="setEditFeedbackRate(star)"
+            @click="setEditFeedbackRate(heart)"
         />
 
         <TextEditor
@@ -93,9 +100,10 @@
 <script>
 import axios from "axios";
 import TextEditor from "@/components/text-editor.vue";
+import {VsxIcon} from "vue-iconsax";
 
 export default {
-  components: {TextEditor},
+  components: {VsxIcon, TextEditor},
   data() {
     return {
       showEditPopup: false,
@@ -103,7 +111,7 @@ export default {
         feedbackRate: 0,
         feedbackContent: "",
         eventId: this.$route.params.id,
-        studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
+        // studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
         event_feedback_id: "",
       },
       eventFeedback: null,
@@ -120,7 +128,7 @@ export default {
         feedbackRate: 0,
         feedbackContent: "",
         eventId: this.$route.params.id,
-        studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
+        // studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
       },
       notification: {
         message: "",
@@ -210,8 +218,8 @@ export default {
     async fetchEventFeedback() {
       try {
         const token = sessionStorage.getItem("jwtToken");
-        const studentId = sessionStorage.getItem("userId");
-
+        // const studentId = sessionStorage.getItem("userId");
+        const studentId = 1;
         const response = await axios.get(
             `http://localhost:8088/fja-fap/staff/get-event-feedback-by-student?student_id=${studentId}&event_id=${this.eventId}`,
             {headers: {Authorization: `Bearer ${token}`}}
@@ -291,6 +299,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#label{
+  align-self: flex-start;
+}
+textarea{
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+#feedback{
+  width: 300px;
+  height: 100px;
+  text-align: start;
+}
+
+#rate{
+  display: flex;
+  width: 100%;
+}
+.rate-icon{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: start;
+  width: 300px;
+}
 .feedback-container {
   margin-top: 20px;
   padding: 10px;
@@ -317,7 +350,7 @@ export default {
     color: #ccc;
 
     &.selected {
-      color: gold;
+      color: #F28787;
     }
   }
 }
