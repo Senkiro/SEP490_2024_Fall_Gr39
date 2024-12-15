@@ -174,4 +174,11 @@ public class EventServiceImp implements EventService {
         return toEventResponseList(eventEntityList);
     }
 
+    @Override
+    public List<EventResponse> findAvailableEvent(String classId) {
+        List<EventEntity> eventEntityList = eventRepository.findEventsWithoutSessionsByClassIdNative(classId);
+        return toEventResponseList(eventEntityList);
+
+    }
+
 }

@@ -88,10 +88,9 @@ public class UserController {
 
     //get attendance by batch status
     @GetMapping("/get-attendance-by-batch-status")
-    public ApiResponse<Page<AttendanceResponse>> getAttendanceByBatchStatus(@RequestParam int page,
-                                                                            @RequestParam int size) {
-        return ApiResponse.<Page<AttendanceResponse>>builder()
-                .result(attendanceService.getAttendanceByBatchStatus(2, page, size))
+    public ApiResponse<List<AttendanceResponse>> getAttendanceByBatchStatus() {
+        return ApiResponse.<List<AttendanceResponse>>builder()
+                .result(attendanceService.getAttendanceByBatchStatus( 1 ))
                 .build();
     }
 

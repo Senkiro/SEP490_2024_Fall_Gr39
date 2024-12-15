@@ -194,11 +194,47 @@ public class AttendanceServiceImp implements AttendanceService {
     }
 
     @Override
-    public Page<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus, int page, int size) {
-        Page<AttendanceEntity> attendanceEntities = attendanceRepository.findByBatchStatus(batchStatus, PageRequest.of(page, size));
-        List<AttendanceResponse> responseList = toListAttendanceResponse(attendanceEntities);
+    public List<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus) {
+        List<AttendanceEntity> attendanceEntities = attendanceRepository.findByBatchStatus(batchStatus);
+        List<AttendanceResponse> responseList = convertToListAttendanceResponse(attendanceEntities);
 
-        return new PageImpl<>(responseList, attendanceEntities.getPageable(), attendanceEntities.getTotalElements());
+        return responseList;
+    }
+
+    public List<AttendanceResponse> convertToListAttendanceResponse(List<AttendanceEntity> attendanceEntities) {
+        List<AttendanceResponse> responseList = new ArrayList<>();
+
+        for (AttendanceEntity attendance : attendanceEntities) {
+            AttendanceResponse attendanceResponse = new AttendanceResponse();
+
+            attendanceResponse.setAttendanceId(attendance.getAttendanceId());
+            attendanceResponse.setDate(attendance.getSessionEntity().getDate());
+            attendanceResponse.setStatus(attendance.getStatus());
+            attendanceResponse.setNote(attendance.getNote());
+
+            attendanceResponse.setSessionId(attendance.getSessionEntity().getSessionId());
+
+            StudentEntity student = attendance.getStudentEntity();
+
+            //convert to student response
+            StudentResponse studentResponse = studentService.convertToStudentResponse(student);
+
+            //get teacher in session
+            SessionEntity session = attendance.getSessionEntity();
+
+            if (session.getUser() != null) {
+                attendanceResponse.setTeacherName(session.getUser().getFullName());
+            }
+
+            attendanceResponse.setStudentResponse(studentResponse);
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
+
+            attendanceResponse.setSessionResponse(sessionService.toSessionResponse(attendance.getSessionEntity()));
+
+            responseList.add(attendanceResponse);
+        }
+
+        return responseList;
     }
 
     //convert from page to list response

@@ -18,4 +18,6 @@ public class ClassResponse {
     int totalStudent;
 
     boolean classStatus;
+
+    String batchName;
 }
