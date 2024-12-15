@@ -24,7 +24,7 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
             "JOIN a.studentEntity s " +
             "JOIN s.batchEntity b " +
             "WHERE b.batchStatus = :batchStatus")
-    Page<AttendanceEntity> findByBatchStatus(@Param("batchStatus") int batchStatus, Pageable pageable);
+    List<AttendanceEntity> findByBatchStatus(@Param("batchStatus") int batchStatus);
 
     void deleteBySessionEntity(SessionEntity session);
 
