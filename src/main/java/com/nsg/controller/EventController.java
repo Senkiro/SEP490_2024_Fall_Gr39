@@ -107,6 +107,14 @@ public class EventController {
                 .build();
     }
 
+    //get available events for schedule of one class
+    @GetMapping("/get-available-events-of-one-class")
+    public ApiResponse<List<EventResponse>> getAvailableEventOfOneClass(@RequestParam String class_id) {
+        return ApiResponse.<List<EventResponse>>builder()
+                .result(eventService.findAvailableEvent(class_id))
+                .build();
+    }
+
     /**********************************
      * Manage Event Feedback
      **********************************/

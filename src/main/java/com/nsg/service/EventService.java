@@ -29,5 +29,7 @@ public interface EventService {
     EventResponse updateEventById(String eventId, EventUpdateRequest request, MultipartFile image);
 
     List<EventResponse> findEventsOfOneClassInSchedule(String classId);
+
+    List<EventResponse> findAvailableEvent(String classId);
 }
 
