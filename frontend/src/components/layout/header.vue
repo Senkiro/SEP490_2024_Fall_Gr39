@@ -29,7 +29,7 @@ export default {
   },
   data() {
     return {
-      userId: "1"
+      userId: sessionStorage.getItem("userId")
     }
   },
   setup() {
@@ -45,19 +45,19 @@ export default {
     navigateToUserProfile() {
       switch (this.$route.meta.layout) {
         case "admin":
-        this.$router.push({ name: 'AdminViewProfile', params: { id: this.userId } });
+        this.$router.push({ name: 'AdminViewProfile', params: { userId: this.userId } });
         break;
 
         case "staff":
-        this.$router.push({ name: 'StaffViewProfile', params: { id: this.userId } });
+        this.$router.push({ name: 'StaffViewProfile', params: { userId: this.userId } });
         break;
 
         case "teacher":
-        this.$router.push({ name: 'TeacherViewProfile', params: { id: this.userId } });
+        this.$router.push({ name: 'TeacherViewProfile', params: { userId: this.userId } });
         break;
 
         case "student":
-        this.$router.push({ name: 'MyStudentProfile', params: { id: this.userId } });
+        this.$router.push({ name: 'MyStudentProfile', params: { userId: this.userId } });
         break;
       }      
     }

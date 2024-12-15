@@ -49,6 +49,9 @@
                 <div class="information">
                   <b>{{ sessions.morning.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</b>
                   <span>Exam: <b>{{ sessions.morning.curriculumnResponse?.examResponse?.examTitle || "N/A" }}</b></span>
+                  <span>
+                    Class: <b :style="{ color: sessions.morning.classResponse?.classColour }">{{ sessions.morning.classResponse?.className || "N/A" }}</b>
+                  </span>
                   <span>Room: <b>{{ sessions.morning.roomNumber || "TBD" }}</b></span>
                   <div class="status-button">
                     <button :class="['table-button', isActionDisabled(sessions.morning.date) ? 'disabled' : '']"
@@ -81,6 +84,9 @@
                 <div class="information">
                   <b>{{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</b>
                   <span>Exam: <b>{{ sessions.afternoon.curriculumnResponse?.examResponse?.examTitle || "N/A" }}</b></span>
+                  <span>
+                    Class: <b :style="{ color: sessions.afternoon.classResponse?.classColour }">{{ sessions.afternoon.classResponse?.className || "N/A" }}</b>
+                  </span>
                   <span>Room: <b>{{ sessions.afternoon.roomNumber || "TBD" }}</b></span>
                   <div class="status-button">
                     <button :class="['table-button', isActionDisabled(sessions.afternoon.date) ? 'disabled' : '']"

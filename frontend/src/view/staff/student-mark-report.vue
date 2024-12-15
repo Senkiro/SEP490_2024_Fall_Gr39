@@ -8,70 +8,103 @@
     <div class="actions">
       <p>Batch: <strong> {{ batch }} </strong></p>
       <p>Class: <strong> {{ className }} </strong></p>
-      <p>Current GPA:<strong> {{ currentGPA }}</strong></p>
     </div>
     <div class="table-container">
       <table>
         <thead>
-          <tr>
-            <th>Grade category</th>
-            <th>Grade item</th>
-            <th id="weight">Weight</th>
-            <th id="value">Value</th>
-            <th>Comment</th>
-          </tr>
+        <tr>
+          <th id="grade-category">Grade category</th>
+          <th>Grade item</th>
+          <th id="weight" class="center">Weight</th>
+          <th id="value" class="center">Value</th>
+          <th>Comment</th>
+        </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="bold">Participation</td>
-            <td class="bold">Participation</td>
-            <td class="bold">10%</td>
-            <td><template v-if="!classStatus">{{ participation }}</template></td>
-            <td></td>
-          </tr>
-          <tr v-for="(grade, index) in grades" :key="index">
-            <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
-                :rowspan="calculateRowspan(grades, index, 'category')">
-              {{ grade.category }}
-            </td>
-            <td>{{ grade.item }}</td>
-            <td></td>
-            <td>{{ grade.value }}</td>
-            <td>{{ grade.comment || "" }}</td>
-          </tr>
-          <!-- Tổng điểm -->
-          <tr>
-            <td class="bold"> </td>
-            <td class="bold">Total</td>
-            <td class="bold">70%</td>
-            <td class="bold">{{ totalValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Mid-term Exam</td>
-            <td class="bold">Mid-term Exam</td>
-            <td class="bold">10%</td>
-            <td>{{ midtermValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Final Exam</td>
-            <td class="bold">Final Exam</td>
-            <td class="bold">10%</td>
-            <td>{{ finalValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Course total</td>
-            <td class="bold" colspan="2">Average</td>
-          </tr>
+        <tr>
+          <td class="bold">Participation</td>
+          <td class="bold">Participation</td>
+          <td class="bold center">10%</td>
+          <td class="bold center">
+            <template v-if="!classStatus">{{ participation }}</template>
+          </td>
+          <td></td>
+        </tr>
+        <tr v-for="(grade, index) in grades" :key="index">
+          <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
+              :rowspan="calculateRowspan(grades, index, 'category')">
+            {{ grade.category }}
+          </td>
+          <td>{{ grade.item }}</td>
+          <td></td>
+          <td class="center">{{ grade.value }}</td>
+          <td>{{ grade.comment || "" }}</td>
+        </tr>
+        <!-- Tổng điểm -->
+        <tr>
+          <td class="bold"></td>
+          <td class="bold">Total</td>
+          <td class="bold center">70%</td>
+          <td class="center bold">{{ totalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Mid-term Exam</td>
+          <td class="bold">Mid-term Exam</td>
+          <td class="center bold">10%</td>
+          <td class="center bold">{{ midtermValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Final Exam</td>
+          <td class="bold">Final Exam</td>
+          <td class="center bold">10%</td>
+          <td class="center bold">{{ finalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Course total</td>
+          <td class="bold" colspan="2">Average</td>
+          <td class="bold center">
+            <template v-if="!classStatus">{{ currentGPA }}</template>
+          </td>
+        </tr>
         </tbody>
       </table>
       <div class="actions">
         <p>Current GPA: <strong>{{ currentGPA }}</strong></p>
-        <p class="grade-remark">
-          <strong>Grade:</strong> <span class="remark">{{ gradeRemark }}</span>
-        </p>
+        <div class="grade-remark">
+          Grade:
+          <template v-if="gradeRemark === 'Poor'">
+            <div class="grade-remark-items poor">
+              Poor
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Fair'">
+            <div class="grade-remark-items fair">
+              Fair
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Good'">
+            <div class="grade-remark-items good">
+              Good
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Very Good'">
+            <div class="grade-remark-items very-good">
+              Very Good
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Excellent'">
+            <div class="grade-remark-items excellent">
+              Excellent
+            </div>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -137,7 +170,7 @@ export default {
             }
         );
 
-        const { result } = response.data;
+        const {result} = response.data;
 
         if (result && result.length) {
           // Lọc Daily Exam
@@ -157,20 +190,28 @@ export default {
 
           // Tính tổng trung bình của Daily Exam
           this.totalValue = (
-              dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length
+              (dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length).toFixed(2)
           );
 
           // Lấy điểm của Mid-term Exam
           const midtermExam = result.find(
               item => item.examResponse.examTypeRate.examCategory === "Mid-term Exam"
           );
-          this.midtermValue = midtermExam ? midtermExam.mark || 0.0 : null;
+          if (midtermExam.mark == "0.0") {
+            this.midtermValue = "";
+          } else {
+            this.midtermValue = midtermExam.mark;
+          }
 
           // Lấy điểm của Final Exam
           const finalExam = result.find(
               item => item.examResponse.examTypeRate.examCategory === "Final Exam"
           );
-          this.finalValue = finalExam ? finalExam.mark || 0.0 : null;
+          if (finalExam.mark == "0.0") {
+            this.finalValue = "";
+          } else {
+            this.finalValue = finalExam.mark;
+          }
 
           // Cập nhật thông tin sinh viên
           const studentInfo = result[0].studentResponse;
@@ -182,8 +223,8 @@ export default {
           this.className = studentInfo.classResponse.className;
           this.currentGPA = studentInfo.avgMark;
           this.gradeRemark = this.getGradeRemark(this.currentGPA);
-          this.participation = studentInfo.attendanceStatisticsResponse.attendPercentage * 0.1;
-          this.classStatus =  studentInfo.classResponse.classStatus;
+          this.participation = (studentInfo.attendanceStatisticsResponse.attendPercentage * 0.1).toFixed(2);
+          this.classStatus = studentInfo.classResponse.classStatus;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -196,12 +237,18 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-#value{
+#grade-category {
+  width: 15% !important;
+}
+
+#value {
   width: 10% !important;
 }
-#weight{
+
+#weight {
   width: 10% !important;
 }
+
 .bold {
   color: #171717 !important;
   font-weight: bold !important;
@@ -210,11 +257,6 @@ export default {
 .container {
   .table-container {
     table {
-
-      // tr,
-      // td {
-      //   border: 2px solid #DFE7FB;
-      // }
 
       tr {
         color: #979B9F;

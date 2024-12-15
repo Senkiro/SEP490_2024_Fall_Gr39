@@ -83,7 +83,7 @@ const routes = [
         }, 
     },
     {
-        path: '/admin/view-profile/:id',
+        path: '/admin/view-profile/:userId',
         name: 'AdminViewProfile',
         component: () => import('../view/admin/my-profile.vue'),
         meta: { 
@@ -132,7 +132,20 @@ const routes = [
     },
     //------------------------------Staff router------------------------
     {
-        path: '/staff/view-profile/:id',
+        path: '/staff/teacher-profile/:userId',
+        name: 'StaffTeacherProfile',
+        component: () => import('../view/admin/my-profile.vue'),
+        meta: {
+            layout: 'staff',
+            requiresAuth: false,
+            breadcrumbs: [
+                {name: "Homepage", link: "/staff"},
+                {name: "Class Record", link:"/staff/class-record"},
+                {name: "Teacher Profile", link:""},
+            ]
+        }, },
+    {
+        path: '/staff/view-profile/:userId',
         name: 'StaffViewProfile',
         component: () => import('../view/admin/my-profile.vue'),
         meta: { 
@@ -627,7 +640,7 @@ const routes = [
 
     //----------------------Teacher router----------------------
     {
-        path: '/teacher/view-profile/:id',
+        path: '/teacher/view-profile/:userId',
         name: 'TeacherViewProfile',
         component: () => import('../view/admin/my-profile.vue'),
         meta: { 

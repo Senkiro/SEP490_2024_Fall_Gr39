@@ -26,7 +26,7 @@
             <th>Title</th>
             <th>Destination</th>
             <th>Information</th>
-            <th id="rate">Average Rate</th>
+            <th id="rate" class="center">Average Rate</th>
             <th id="action" class="center">Action</th>
           </tr>
         </thead>
@@ -36,11 +36,11 @@
             <td>{{ event.eventName }}</td>
             <td>{{ event.address }}</td>
             <td v-html="event.description"></td>
-            <td id="rate">
+            <td id="rate" class="center">
               <span
                   v-for="star in Math.floor(event.avgRate)"
                   :key="star">
-                <VsxIcon iconName="Heart" :size="15" type="bold" color="#F28287"/>
+                <VsxIcon iconName="Heart" :size="18" type="bold" color="#F28287"/>
               </span>
             </td>
             <td id="action" class="center">

@@ -3,17 +3,17 @@
     <div class="daily-information">
       <div id="daily-status">
         <div class="daily-status-bar" id="student-attendance">
-          <p class="status-number">298</p>
+          <p class="status-number">{{totalAttendance }}</p>
           <p class="status-description">students present today</p>
         </div>
 
         <div class="daily-status-bar">
-          <p class="status-number">260</p>
+          <p class="status-number">{{totalMarked }}</p>
           <p class="status-description">exams marked today</p>
         </div>
 
         <div class="daily-status-bar">
-          <p class="status-number">38</p>
+          <p class="status-number">{{unMarked }}</p>
           <p class="status-description">exams unmarked today</p>
         </div>
       </div>
@@ -129,9 +129,6 @@
         <Line id="mark-report" :options="options" :data="chartData" />
       </div>
 
-      <div class="chart-container">
-        <Line id="mark-report" :options="options" :data="chartData" />
-      </div>
     </div>
   </div>
 </template>
@@ -150,6 +147,9 @@ export default {
   },
   data() {
     return {
+      totalAttendance:'',
+      totalMarked:'',
+      unMarked: '',
       currentDate: null,
       currentMonth: null,
       currentWeekday: null,
@@ -234,7 +234,7 @@ export default {
       try {
         const token = sessionStorage.getItem('jwtToken');
         const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/teacher`,
+          `http://localhost:8088/fja-fap/staff/get-all-teacher?`,
           {
             params: {
               page: 0,
@@ -291,6 +291,54 @@ export default {
         );
       }
     },
+    async activeData() {
+      try {
+        // Lấy ngày định dạng YYYY-MM-DD
+        //const date = new Date().toISOString().split('T')[0];
+        const date = "2024-12-16";
+
+        // Lấy token từ sessionStorage
+        const token = sessionStorage.getItem('jwtToken');
+        if (!token) {
+          this.showNotification('Authentication token is missing.', 'error');
+          return;
+        }
+
+        // Gửi yêu cầu tới API
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-daily-report?date=${date}`,
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        // Xử lý kết quả trả về
+        if (response.data.code === 0) {
+          const { totalAttendance, totalMarked, unMarked } = response.data.result;
+
+          // Gán giá trị trả về vào các biến (hoặc state nếu dùng Vuex)
+          this.totalAttendance = totalAttendance || 0;
+          this.totalMarked = totalMarked || 0;
+          this.unMarked = unMarked || 0;
+
+          // Thông báo thành công nếu cần
+          this.showNotification('Student records loaded successfully.', 'success');
+        } else {
+          // Xử lý trường hợp API trả về lỗi
+          this.showNotification(
+              `Unable to load student records: ${response.data.message}`,
+              'error'
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching student records:', error);
+
+        // Hiển thị lỗi chi tiết nếu có
+        const errorMessage =
+            error.response?.data?.message || 'An error occurred while loading student records.';
+        this.showNotification(errorMessage, 'error');
+      }
+    },
     async fetchAllNews() {
       try {
         const token = sessionStorage.getItem("jwtToken");
@@ -327,6 +375,7 @@ export default {
     this.countTeacherRecord();
     this.countStudentRecord();
     this.fetchAllNews();
+    this.activeData();
   },
 }
 </script>

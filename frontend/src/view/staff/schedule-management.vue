@@ -18,7 +18,12 @@
           </option>
         </select>
 
-        <select id="class-filter" class="filter-select" v-model="selectedClassId" @change="fetchSessions">
+        <select
+            id="class-filter"
+            class="filter-select"
+            v-model="selectedClassId"
+            @change="onClassChange"
+        >
           <option value="" disabled>Select Class</option>
           <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
             {{ classItem.name }}
@@ -141,11 +146,11 @@
                 </td>
                 <td>
                   <div
-                      v-if="(session.lessonResponse || session.eventName) && canEditOrSwap(session.date) && !isEditing[session.sessionId]"
+                      v-if="canEditOrSwap(session.date) && !isEditing[session.sessionId]"
                       class="icon-group"
                   >
                     <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
-                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
+                    <VsxIcon v-if="session.lessonResponse" iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
                   </div>
                   <div v-else-if="isEditing[session.sessionId]" class="icon-group">
                     <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8" @click="editSession(session.sessionId)" />
@@ -155,7 +160,7 @@
                     <span class="disabled-message"></span>
                   </div>
                   <div v-else>
-                    <span class="disabled-message">Cannot edit</span>
+                    <span class="disabled-message"></span>
                   </div>
                 </td>
               </tr>
@@ -386,6 +391,10 @@ export default {
     };
   },
   methods: {
+    onClassChange() {
+      this.fetchSessions();
+      this.fetchEvents();
+    },
     async fetchBatches() {
       try {
         const token = sessionStorage.getItem('jwtToken');
@@ -694,24 +703,23 @@ export default {
     async fetchEvents() {
       try {
         const token = sessionStorage.getItem("jwtToken");
-        const response = await axios.get("http://localhost:8088/fja-fap/staff/event", {
-          params: { page: 0, size: 100 },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+            `http://localhost:8088/fja-fap/staff/get-available-events-of-one-class`,
+            {
+              params: { class_id: this.selectedClassId },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
 
-        if (response.data && response.data.result && response.data.result.content) {
-          this.events = response.data.result.content.map(event => ({
-            id: event.eventId,
-            title: event.eventName,
-            address: event.address,
-            image: event.imagePath,
-            status: event.status,
+        if (response.data && response.data.result) {
+          this.events = response.data.result.map(event => ({
+            id: event.eventId, // Gán id từ API
+            title: event.eventName, // Gán title từ API
           }));
+          console.log("Events:", this.events); // Kiểm tra trong console
         } else {
-          console.error("Unexpected response structure:", response.data);
           this.events = [];
+          console.error("Unexpected response:", response.data);
         }
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -792,6 +800,7 @@ export default {
           }
           this.isEditing[sessionId] = false;
           this.fetchSessions();
+          this.fetchEvents();
         } else {
           this.showNotification("Failed to update session. Please try again.", "error");
         }
@@ -994,7 +1003,6 @@ export default {
     this.fetchBatches();
     this.fetchTimeSlots();
     this.fetchCurriculums();
-    this.fetchEvents();
   },
 };
 </script>
@@ -1011,6 +1019,9 @@ export default {
 }
 #action{
   width: 10% !important;
+}
+#teacher{
+  font-weight: normal;
 }
 .auto-fill{
   p{

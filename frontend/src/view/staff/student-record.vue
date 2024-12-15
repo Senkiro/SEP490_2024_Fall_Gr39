@@ -45,9 +45,9 @@
           <th>Fullname</th>
           <th>Roll number</th>
           <th>Japanese name</th>
-          <th>Class</th>
+          <th id="class">Class</th>
           <th>Email</th>
-          <th class="center">Action</th>
+          <th class="center" id="action">Action</th>
         </tr>
         </thead>
         <tbody>
@@ -414,4 +414,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+#action{
+  width: 10% !important;
+}
+#class{
+  width: 10% !important;
+}
+</style>
