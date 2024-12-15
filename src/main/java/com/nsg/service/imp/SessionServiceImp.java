@@ -474,7 +474,7 @@ public class SessionServiceImp implements SessionService {
             tempResponse.setStatus(session.isStatus());
             tempResponse.setSessionAvailable(session.isSessionAvailable());
 
-            tempResponse.setAttendanceStatus(session.getAttendanceStatus());
+            tempResponse.setAttendanceStatus( session.getAttendanceStatus() );
             tempResponse.setMarkStatus(session.getMarkStatus());
 
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
@@ -540,7 +540,77 @@ public class SessionServiceImp implements SessionService {
         //find session by classId
         List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classEntity.getClassId());
 
-        return toListSessionResponse(sessionEntityList);
+        return toListSessionResponseForStudent(sessionEntityList);
+    }
+
+    public List<SessionResponse> toListSessionResponseForStudent(List<SessionEntity> sessionEntities) {
+
+        List<SessionResponse> responseList = new ArrayList<>();
+
+        for (SessionEntity session : sessionEntities) {
+            SessionResponse tempResponse = new SessionResponse();
+            tempResponse.setSessionId(session.getSessionId());
+            tempResponse.setNote(session.getNote());
+            tempResponse.setSessionNumber(session.getSessionNumber());
+            tempResponse.setSessionWeek(session.getSessionWeek());
+
+            LocalDate localDate = session.getDate();
+            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+
+            tempResponse.setDayOfWeek(dayOfWeek);
+
+            tempResponse.setDate(session.getDate());
+            tempResponse.setStatus(session.isStatus());
+            tempResponse.setSessionAvailable(session.isSessionAvailable());
+
+            //this would be attendance status of student in that session
+
+            //get attendance by session id
+            AttendanceEntity attendanceEntity = attendanceRepository.findById( session.getSessionId() ).orElse(null);
+            if (attendanceEntity != null) {
+                tempResponse.setAttendanceStatus( attendanceEntity.getStatus() );
+            }
+            tempResponse.setMarkStatus(session.getMarkStatus());
+
+            tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
+
+            //check null
+            if (session.getCurriculumnEntity() != null) {
+                tempResponse.setCurriculumnResponse(curriculumnService.toCurriculumnResponse( session.getCurriculumnEntity() ));
+            }
+
+            tempResponse.setTimeSlotResponse(timeSlotService.toTimeSlotResponse( session.getTimeSlotEntity() ));
+
+            if (session.getRoomEntity() != null) {
+                tempResponse.setRoomNumber(session.getRoomEntity().getRoomNumber());
+            } else {
+                tempResponse.setRoomNumber(null);
+            }
+
+            if (session.getEventEntity() != null) {
+                tempResponse.setEventName(session.getEventEntity().getEventName());
+                tempResponse.setEventId(session.getEventEntity().getEventId());
+
+                tempResponse.setEventResponse( EventMapper.INSTANCE.toEventResponse( session.getEventEntity() ));
+
+            }else {
+                tempResponse.setEventName(null);
+            }
+
+            if (session.getUser() != null) {
+                tempResponse.setFullName(session.getUser().getFullName());
+                tempResponse.setEmail(session.getUser().getEmail());
+                tempResponse.setUserId(session.getUser().getUserId());
+            } else {
+                tempResponse.setFullName(null);
+                tempResponse.setEmail(null);
+            }
+
+            responseList.add(tempResponse);
+        }
+        //sort
+        Collections.sort(responseList, Comparator.comparingInt(SessionResponse::getSessionNumber));
+        return responseList;
     }
 
     //get session by exam of a class
