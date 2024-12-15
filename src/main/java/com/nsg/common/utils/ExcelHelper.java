@@ -97,7 +97,9 @@ public class ExcelHelper {
                 String fullName = getStringCellValue(currentRow.getCell(1));
                 user.setFullName(fullName);
                 user.setJapaneseName(getStringCellValue(currentRow.getCell(2)));
+                //check email existed?
                 user.setEmail(getStringCellValue(currentRow.getCell(3)));
+
                 user.setRole("STUDENT");
                 String defaultPassword = "12341234";
                 user.setPassword(passwordEncoder.encode(defaultPassword));

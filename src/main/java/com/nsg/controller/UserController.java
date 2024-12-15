@@ -67,7 +67,7 @@ public class UserController {
 
     //get user by userId
     @GetMapping("/{userId}")
-    public ApiResponse<UserInforResponse> teacherDetail(@PathVariable("userId") String userId){
+    public ApiResponse<UserInforResponse> userDetail(@PathVariable("userId") String userId){
         return ApiResponse.<UserInforResponse>builder()
                 .result(userService.getUserInforById(userId))
                 .build();

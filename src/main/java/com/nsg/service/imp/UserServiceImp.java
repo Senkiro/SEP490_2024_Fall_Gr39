@@ -120,7 +120,6 @@ public class UserServiceImp implements UserService {
 
             responseList.add(response);
         }
-
         return responseList;
     }
 

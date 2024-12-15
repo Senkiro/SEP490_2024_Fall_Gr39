@@ -26,7 +26,7 @@
             <td class="bold">Participation</td>
             <td class="bold">Participation</td>
             <td class="bold">10%</td>
-            <td></td>
+            <td><template v-if="!classStatus">{{ participation }}</template></td>
             <td></td>
           </tr>
           <tr v-for="(grade, index) in grades" :key="index">
@@ -92,6 +92,8 @@ export default {
       totalValue: "",
       totalGPA: "",
       gradeRemark: "",
+      classStatus: "",
+      participation: ""
     };
   },
   methods: {
@@ -180,6 +182,8 @@ export default {
           this.className = studentInfo.classResponse.className;
           this.currentGPA = studentInfo.avgMark;
           this.gradeRemark = this.getGradeRemark(this.currentGPA);
+          this.participation = studentInfo.attendanceStatisticsResponse.attendPercentage * 0.1;
+          this.classStatus =  studentInfo.classResponse.classStatus;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
