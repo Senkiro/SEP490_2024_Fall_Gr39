@@ -416,7 +416,9 @@ public class MarkServiceImp implements MarkService {
     public int calculateTotalMarkedInDay(LocalDate date) {
 
         //get batch on progress
-        BatchEntity batch = batchRepository.findByBatchStatus(1);
+        BatchEntity batch = batchRepository.findByBatchStatus(1).orElseThrow(
+                () -> new AppException(ErrorCode.NO_BATCH_ON_PROGRESS)
+        );
 
         //get class list in batch
         List<ClassEntity> classEntityList = batch.getClassEntityList();
