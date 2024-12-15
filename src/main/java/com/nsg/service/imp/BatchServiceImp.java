@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,12 +45,33 @@ public class BatchServiceImp implements BatchService {
         if (batchRepository.existsByBatchName(batchCreationRequest.getBatchName())) {
             throw new AppException(ErrorCode.BATCH_EXISTED);
         }
+
+        //check start time
+        if (checkOverlapDateInBatch( batchCreationRequest.getStartTime() )) {
+            throw new AppException(ErrorCode.INVALID_DATE_OVERLAP);
+        }
+
         BatchEntity batchEntity = batchMapper.toBatchEntity(batchCreationRequest);
 
         //set default status is 2 (Not happen)
         batchEntity.setBatchStatus( 2 );
 
         batchRepository.save(batchEntity);
+    }
+
+    //check overlap date
+    public boolean checkOverlapDateInBatch(LocalDate startDate) {
+
+        //get all batch
+        List<BatchEntity> batchEntityList = batchRepository.findAll();
+
+        //checking date
+        for (BatchEntity batch : batchEntityList) {
+            if (startDate.isBefore(batch.getEndTime())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

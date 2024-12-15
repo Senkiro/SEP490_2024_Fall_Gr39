@@ -5,10 +5,12 @@ import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
+import com.nsg.dto.response.session.SessionResponse;
 import com.nsg.dto.response.user.UserFullDetailsResponse;
 import com.nsg.dto.response.user.UserInforResponse;
 import com.nsg.entity.UserEntity;
 import com.nsg.service.AttendanceService;
+import com.nsg.service.SessionService;
 import com.nsg.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -32,7 +34,7 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    AttendanceService attendanceService;
+    SessionService sessionService;
 
     @PostMapping("/create-user")
     public ApiResponse<?> createUser(@RequestBody @Valid UserCreationRequest request, @RequestParam UserRole role) {
@@ -87,10 +89,10 @@ public class UserController {
     }
 
     //get attendance by batch status
-    @GetMapping("/get-attendance-by-batch-status")
-    public ApiResponse<List<AttendanceResponse>> getAttendanceByBatchStatus() {
-        return ApiResponse.<List<AttendanceResponse>>builder()
-                .result(attendanceService.getAttendanceByBatchStatus( 1 ))
+    @GetMapping("/get-session-by-batch-status")
+    public ApiResponse<List<SessionResponse>> getAttendanceByBatchStatus() {
+        return ApiResponse.<List<SessionResponse>>builder()
+                .result(sessionService.getSessionInBatch())
                 .build();
     }
 

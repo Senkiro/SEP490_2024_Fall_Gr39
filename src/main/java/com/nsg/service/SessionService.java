@@ -71,4 +71,6 @@ public interface SessionService {
                                   String sessionId,
                                   int weekEnd);
 
+    List<SessionResponse> getSessionInBatch();
+
 }

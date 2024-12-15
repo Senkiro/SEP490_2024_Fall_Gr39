@@ -740,72 +740,6 @@ public class SessionServiceImp implements SessionService {
         }
     }
 
-    //swap session to session unavailable
-
-    public void swapToUnavailableSessions(String currentSessionId, String toSessionId) {
-        //get current session
-        SessionEntity currentSession = sessionRepository.findById(currentSessionId).orElseThrow(
-                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
-        );
-
-        //get to session
-        SessionEntity toSession = sessionRepository.findById(toSessionId).orElseThrow(
-                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
-        );
-
-        //map infor to endpoint session sessionCreationRequest
-        SessionUpdateRequest updateRequest = new SessionUpdateRequest();
-
-        //curriculumnId;
-        if (currentSession.getCurriculumnEntity() != null){
-            updateRequest.setCurriculumnId( currentSession.getCurriculumnEntity().getCurriculumnId());
-        }
-
-        //roomNumber;
-        if (currentSession.getRoomEntity() != null) {
-            updateRequest.setRoomNumber( currentSession.getRoomEntity().getRoomNumber() );
-        }
-        //eventId;
-        if (currentSession.getEventEntity() != null ){
-            updateRequest.setEventId( currentSession.getEventEntity().getEventId() );
-        } else {
-            updateRequest.setEventId(null);
-        }
-        //userId;
-        if (currentSession.getUser() != null ) {
-            updateRequest.setUserId(currentSession.getUser().getUserId());
-        }
-        //sessionAvailable;
-        updateRequest.setSessionAvailable( currentSession.isSessionAvailable() );
-        //note;
-        updateRequest.setNote( currentSession.getNote());
-        //markStatus;
-        updateRequest.setMarkStatus( currentSession.getMarkStatus() );
-        //attendanceStatus;
-        updateRequest.setAttendanceStatus( currentSession.getAttendanceStatus() );
-
-        //get mark, attendance status of to session
-        String toMarkStatus = toSession.getMarkStatus();
-        String toAttendanceStatus = toSession.getAttendanceStatus();
-
-        //call function update with updateRequest
-        updateSession(toSessionId, updateRequest);
-
-        //set current session infor to empty and sessionAvailable to unavailable
-        currentSession.setCurriculumnEntity(null);
-        currentSession.setRoomEntity(null);
-        currentSession.setEventEntity(null);
-        currentSession.setUser(null);
-        currentSession.setSessionAvailable(false);
-        currentSession.setNote(null);
-        currentSession.setMarkStatus( toMarkStatus );
-        currentSession.setAttendanceStatus( toAttendanceStatus );
-
-        //save
-        sessionRepository.save(currentSession);
-
-    }
-
     @Override
     public void swapToUnavailableSession(String currentSessionId, String toSessionId) {
         //get current session
@@ -852,4 +786,18 @@ public class SessionServiceImp implements SessionService {
         sessionRepository.save( toSession );
 
     }
+
+    //get all session in batch on-progress
+    @Override
+    public List<SessionResponse> getSessionInBatch() {
+
+        //get list of session by teacher
+        List<SessionEntity> sessionEntities = sessionRepository.findAvailableSessions();
+        if (!sessionEntities.isEmpty()) {
+            return toListSessionResponse(sessionEntities);
+        } else {
+            return null;
+        }
+    }
+
 }

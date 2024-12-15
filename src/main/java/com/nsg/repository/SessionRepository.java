@@ -114,4 +114,18 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
     @Query(value = "DELETE FROM session WHERE class_id = :classId", nativeQuery = true)
     void deleteByClassId(@Param("classId") String classId);
 
+    @Query(value = "SELECT * FROM session s " +
+            "WHERE s.session_available = 1 " +
+            "AND s.curriculumn_id IS NOT NULL " +
+            "AND s.class_id IN (" +
+            "    SELECT c.class_id FROM class c " +
+            "    WHERE c.batch_name IN (" +
+            "        SELECT b.batch_name FROM batch b " +
+            "        WHERE b.batch_status = 1" +
+            "    )" +
+            ")",
+            nativeQuery = true)
+    List<SessionEntity> findAvailableSessions();
+
+
 }

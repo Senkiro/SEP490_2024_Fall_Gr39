@@ -23,13 +23,13 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
 
     Page<AttendanceEntity> findByStudentEntityStudentId(String studentId, PageRequest of);
 
-    @Query(value = "SELECT a.* " +
-            "FROM attendance a " +
-            "JOIN student s ON a.student_id = s.user_id " +
-            "JOIN class c ON s.class_id = c.class_id " +
-            "JOIN batch b ON c.batch_name = b.batch_name " +
-            "WHERE b.batch_status = :batchStatus", nativeQuery = true)
-    List<AttendanceEntity> findAttendanceByBatchStatus(@Param("batchStatus") int batchStatus);
+//    @Query(value = "SELECT a.* " +
+//            "FROM attendance a " +
+//            "JOIN student s ON a.student_id = s.user_id " +
+//            "JOIN class c ON s.class_id = c.class_id " +
+//            "JOIN batch b ON c.batch_name = b.batch_name " +
+//            "WHERE b.batch_status = :batchStatus", nativeQuery = true)
+//    List<AttendanceEntity> findAttendanceByBatchStatus(@Param("batchStatus") int batchStatus);
 
     void deleteBySessionEntity(SessionEntity session);
 
