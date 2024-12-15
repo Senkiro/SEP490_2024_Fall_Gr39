@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="headContent">
-      <div class="input-group">
+      <div class="input-group" id="no-margin">
         <template v-if="isActive">
           <label for="eventName">Title <span class="required">*</span></label>
           <input v-model="eventDetail.eventName" id="eventName" class="input-field" placeholder="Enter event name" />
@@ -10,21 +10,20 @@
           <h1>{{ eventDetail.eventName || N/A }}</h1>
         </template>
       </div>
-
-      <div class="input-group">
-        <template v-if="isActive">
-          <label for="address">Address <span class="required">*</span></label>
-          <input v-model="eventDetail.address" id="address" class="input-field" placeholder="Enter address" />
-        </template>
-        <template v-else>
-          <i>{{ eventDetail.address ||N/A }}</i>
-        </template>
-      </div>
+    </div>
+    <div class="input-group">
+      <template v-if="isActive">
+        <label for="address">Address <span class="required">*</span></label>
+        <input v-model="eventDetail.address" id="address" class="input-field" placeholder="Enter address" />
+      </template>
+      <template v-else>
+        <i>{{ eventDetail.address ||N/A }}</i>
+      </template>
     </div>
 
     <form @submit.prevent="submitForm">
       <div class="image-container">
-        <img :src="previewImage || `/${eventDetail.imagePath}` " alt="Event Image" />
+        <img :src="previewImage || `${eventDetail.imagePath}` || require('@/assets/default-event-image.png') " alt="Event Image" />
         <template v-if="isActive">
           <div class="middle">
             <label for="img" class="upload-btn">
@@ -71,7 +70,7 @@
 
     <div class="feedback-summary" style="margin-left: auto" v-if="totalElements > 0">
       <span>Total rate: {{ eventDetail.avgRate}}
-        <span>/5</span><span><VsxIcon name="Heart" size="10" type="bold" color="#F28287"/></span>
+        <span>/5</span><span><VsxIcon style="margin-bottom: -3px" iconName="Heart" size="18" type="bold" color="#F28287"/></span>
       </span>
     </div>
 
@@ -79,24 +78,24 @@
       <table>
         <thead>
         <tr>
-          <th>No</th>
+          <th class="center">No</th>
           <th>Student</th>
           <th>Batch</th>
-          <th>Rate</th>
-          <th>Feedback</th>
+          <th class="center">Rate</th>
+          <th id="feedback">Feedback</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(feedback, index) in filteredFeedbacks" :key="feedback.feedbackId">
-          <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+          <td class="center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
           <td>{{ feedback.fullName }}</td>
           <td>{{feedback.batch}}</td>
-          <td>
+          <td class="center">
             <span v-for="heart in feedback.feedbackRate" :key="heart" class="heart">
-              <VsxIcon name="Heart" size="10" type="bold" color="#F28287"/>
+              <VsxIcon iconName="Heart" size="15" type="bold" color="#F28287"/>
             </span>
           </td>
-          <td>{{feedback.feedbackContent}}</td>
+          <td id="feedback">{{feedback.feedbackContent}}</td>
         </tr>
         </tbody>
       </table>
@@ -144,7 +143,7 @@ export default {
         description: "",
         status: false,
       },
-      selectedImage: null,
+      selectedImage: "",
       previewImage: "",
       notification: {
         message: "",
@@ -190,6 +189,9 @@ export default {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         this.eventDetail = response.data.result;
+        if(response.data.result.imagePath){
+          this.eventDetail.imagePath="/"+response.data.result.imagePath;
+        }
       } catch (error) {
         this.$emit(
           "showNotification",
@@ -226,7 +228,7 @@ export default {
 
         // Thêm file ảnh nếu có
         if (this.selectedImage) {
-          formData.append("image", this.selectedImage);
+            formData.append("image", this.selectedImage);
         }
 
         const response = await axios.post(
@@ -332,10 +334,14 @@ export default {
 
 
 <style lang="scss" scoped>
+#no-margin{
+  margin: 0;
+}
+#feedback{
+  width: 40% !important;
+}
 .feedback-summary {
   display: flex;
-  margin: 10px 0;
-  font-size: 14px;
   color: #555;
 
   span {

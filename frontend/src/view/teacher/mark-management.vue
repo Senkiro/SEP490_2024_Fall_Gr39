@@ -7,9 +7,7 @@
 
 
     <div class="actions">
-      <p>Class: <b>{{ className }}</b></p>
-      <p>Date: <b>{{ examDate }}</b></p>
-      <p>Slot: <b>{{ examSlot }}</b></p>
+      <p>Class: <b :style="{ color: classColor }">{{ className }}</b></p>
     </div>
 
     <div v-if="notification" class="notification" :class="notificationType">
@@ -64,6 +62,7 @@ export default {
       marks: [],
       examTitle: "",
       className: "",
+      classColor: "",
       examDate: "",
       examSlot: "",
       notification: "",
@@ -93,6 +92,7 @@ export default {
           const firstMark = this.marks[0];
           this.examTitle = firstMark.examResponse.examTitle;
           this.className = firstMark.studentResponse.classResponse.className;
+          this.classColor = firstMark.studentResponse.classResponse.classColour;
           // this.examDate = new Date(firstMark.examResponse.examContent).toLocaleDateString("en-US");
           // this.examSlot = "8:30 - 12:30";
         }
@@ -178,7 +178,7 @@ export default {
       if (mark.mark < 0 || mark.mark > 10) {
         alert("Marks must be between 0 and 10.");
         mark.mark = 0;
-      } else if (!/^\d+(\.\d{1,2})?$/.test(mark.mark)) {npm
+      } else if (!/^\d+(\.\d{1,2})?$/.test(mark.mark)) {
         mark.mark = Math.round(mark.mark * 100) / 100;
       }
     }

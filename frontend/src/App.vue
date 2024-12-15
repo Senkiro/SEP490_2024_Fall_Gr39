@@ -96,6 +96,7 @@ button {
 }
 
 h1 {
+  cursor: context-menu;
   width: fit-content;
   font-size: 36px;
   background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
@@ -105,6 +106,7 @@ h1 {
 }
 
 h2 {
+  cursor: context-menu;
   width: fit-content;
   font-size: 26px;
   background: -webkit-linear-gradient(180deg, #304CB2, #1A2C6F);
@@ -115,12 +117,14 @@ h2 {
 }
 
 h3 {
+  cursor: context-menu;
   font-size: 20px;
   font-weight: bold;
   color: #253f9f
 }
 
 h4 {
+  cursor: context-menu;
   font-size: 20px;
   font-weight: bold;
 }
@@ -158,6 +162,7 @@ button {
   }
 
   .actions {
+    align-items: center;
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -581,6 +586,54 @@ button {
 
 }
 
+.poor{
+  border: 2px solid #C830FE;
+  color: #C830FE;
+  font-weight: bold;
+}
+
+.fair{
+  border: 2px solid #B71C1C;
+  color: #B71C1C;
+  font-weight: bold;
+}
+
+.good{
+  border: 2px solid #FF8B03;
+  color: #FF8B03;
+  font-weight: bold;
+}
+
+.very-good{
+  border: 2px solid #00B968;
+  color: #00B968;
+  font-weight: bold;
+}
+
+.excellent{
+  border: 2px solid #304CB2;
+  color: #304CB2;
+  font-weight: bold;
+}
+
+.invalid-gpa{
+  border: 2px solid #171717;
+  color: #171717;
+  font-weight: bold;
+}
+
+.grade-remark{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  .grade-remark-items{
+    cursor: context-menu;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+  }
+}
 .on-progress{
   color: #FF8B03;
 }
@@ -636,5 +689,8 @@ button {
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+}
+p{
+  cursor: context-menu;
 }
 </style>

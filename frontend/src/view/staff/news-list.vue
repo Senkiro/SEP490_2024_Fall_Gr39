@@ -26,16 +26,6 @@
         </tr>
         </thead>
         <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
         <tr v-for="(newsItem, index) in paginatedNews" :key="newsItem.newId">
           <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
           <td>{{ newsItem.newTitle }}</td>
@@ -192,5 +182,15 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+td {
+  p {
+    width: 100%;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+  }
+}
+</style>
 
 

@@ -73,7 +73,37 @@
                 </div>
                 <div class="score-box-lower">
                   <p class="score">{{ studentData.avgMark }}</p>
-                  <strong class="score-status">{{ getGradeRemark(studentData.avgMark) }}</strong>
+                  <div class="grade-remark">
+                    <template v-if="getGradeRemark(studentData.avgMark) === 'Poor'">
+                      <div class="grade-remark-items poor">
+                        Poor
+                      </div>
+                    </template>
+
+                    <template v-if="getGradeRemark(studentData.avgMark) === 'Fair'">
+                      <div class="grade-remark-items fair">
+                        Fair
+                      </div>
+                    </template>
+
+                    <template v-if="getGradeRemark(studentData.avgMark) === 'Good'">
+                      <div class="grade-remark-items good">
+                        Good
+                      </div>
+                    </template>
+
+                    <template v-if="getGradeRemark(studentData.avgMark) === 'Very Good'">
+                      <div class="grade-remark-items very-good">
+                        Very Good
+                      </div>
+                    </template>
+
+                    <template v-if="getGradeRemark(studentData.avgMark) === 'Excellent'">
+                      <div class="grade-remark-items excellent">
+                        Excellent
+                      </div>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
@@ -236,23 +266,28 @@
           <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showChangeClassPopup=false" />
         </div>
         <div class="popup-title">
-          <h2>Change Class </h2>
+          <h2>Change Class</h2>
         </div>
         <form @submit.prevent="changeClass">
           <div class="form-group">
-            <label>Curent class:</label>
+            <label>Current class:</label>
             <div class="information">
-
+              {{ studentData.classResponse.className || 'N/A' }}
             </div>
           </div>
           <div class="form-group">
             <label for="type-filter">Move to class <span class="required">*</span></label>
             <div class="filters">
-              <select id="class-filter" class="filter-select">
+              <select id="class-filter" class="filter-select" v-model="selectedClassId">
                 <option value="" disabled>Select Class</option>
-                <option></option>
+                <option v-for="classItem in classes" :key="classItem.id" :value="classItem.id">
+                  {{ classItem.name }}
+                </option>
               </select>
             </div>
+          </div>
+          <div class="actions">
+            <button class="btn-submit" type="submit">Confirm</button>
           </div>
         </form>
       </div>
@@ -474,6 +509,7 @@ onMounted(() => {
   fetchStudentData();
   fetchAttendanceData();
   fetchMarkData();
+  fetchClassesByBatch(batchName);
 });
 const isEditing = ref(false);
 const showChangeClassPopup = ref(false);
@@ -569,7 +605,71 @@ const showNotification = (message, type) => {
   }, 3000);
 };
 
+const batchName = "Spring24";
+const classes = ref([]);
+const fetchClassesByBatch = async (batchName) => {
+  try {
+    const token = sessionStorage.getItem('jwtToken');
+    const response = await axios.get(
+        `http://localhost:8088/fja-fap/staff/get-class-by-batch`,
+        {
+          params: { batch_name: batchName, page: 0, size: 100 },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+    );
 
+    if (response.data && response.data.result?.content) {
+      classes.value = response.data.result.content.map((classItem) => ({
+        id: classItem.classId,
+        name: classItem.className,
+      }));
+    } else {
+      console.error("Unexpected response structure", response.data);
+    }
+  } catch (error) {
+    console.error("Error fetching classes:", error);
+    classes.value = [];
+  }
+};
+const selectedClassId = ref('');
+const changeClass = async () => {
+  if (!selectedClassId.value) {
+    showNotification("Please select a class before submitting!", "error");
+    return;
+  }
+  try {
+    const token = sessionStorage.getItem("jwtToken");
+    const response = await axios.get(
+        `http://localhost:8088/fja-fap/staff/change-student-class`,
+        {
+          params: {
+            student_id: studentData.value.studentId,
+            class_id: selectedClassId.value,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+    );
+
+    if (response.data && response.data.success) {
+      // Cập nhật thông tin lớp trong giao diện
+      studentData.value.classResponse = classes.value.find(
+          (cls) => cls.id === selectedClassId.value
+      );
+
+      showNotification("Class changed successfully!", "success");
+      showChangeClassPopup.value = false; // Ẩn popup sau khi đổi thành công
+    } else {
+      showNotification(response.data.message || "Failed to change class", "success");
+      showChangeClassPopup.value = false;
+      fetchStudentData();
+    }
+  } catch (error) {
+    console.error("Error changing class:", error);
+    showNotification(error.response?.data?.message || "Error changing class", "error");
+  }
+};
 
 </script>
 
@@ -679,7 +779,7 @@ const showNotification = (message, type) => {
           width: 350px;
           text-align: center;
           font-size: 14px;
-          gap: 15px;
+          gap: 30px;
 
           .score-box-upper {
             display: flex;

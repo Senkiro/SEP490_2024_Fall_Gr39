@@ -191,11 +191,6 @@ export default {
         return true; // Vô hiệu hóa nút
       }
 
-      // Kiểm tra trạng thái `markStatus`
-      if (session.markStatus === "Added") {
-        return true; // Vô hiệu hóa nút nếu đã thêm điểm
-      }
-
       return false; // Không vô hiệu hóa
     },
     getActionText(session) {

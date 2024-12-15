@@ -5,10 +5,6 @@
     </div>
 
     <div class="actions">
-      <button>
-        <VsxIcon iconName="Chart" size="20" type="bold"/>
-        View statistical chart
-      </button>
       <button @click="showAddBatchPopup = true">
         <VsxIcon iconName="AddCircle" size="20" type="bold"/>
         Add batch
@@ -325,6 +321,10 @@ export default {
       // Xử lý theo batchStatus
       if (batch.batchStatus === 2) {
         return currentDate < startTime ? 'Not happen' : 'On progress';
+      }
+
+      if (batch.batchStatus === 1) {
+        return 'On progress';
       }
 
       if (batch.batchStatus === 0) {

@@ -5,9 +5,6 @@
     </div>
 
     <div class="actions">
-      <button>
-        <VsxIcon iconName="Chart" size="20" type="bold" /> View statistical chart
-      </button>
       <button @click="showAddTeacherPopup = true">
         <VsxIcon iconName="AddCircle" size="20" type="bold" /> Add teacher
       </button>
@@ -177,7 +174,7 @@ export default {
       }
     },
     viewTeacherDetail(teacher) {
-      this.$router.push({ name: 'TeacherDetail', params: { teacherId: teacher.userId } });
+      this.$router.push({ name: 'StaffTeacherProfile', params: { userId: teacher.userId } });
     },
     async addTeacher() {
       try {

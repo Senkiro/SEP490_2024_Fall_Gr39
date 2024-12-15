@@ -118,7 +118,7 @@ export default {
     },
     fetchSessions() {
       return new Promise((resolve, reject) => {
-        const teacherId = sessionStorage.getItem("userId");
+        const teacherId = "e7a14939-c770-4782-9046-0aac28df341e";
         const token = sessionStorage.getItem("jwtToken");
 
         if (!teacherId || !token) {
@@ -167,7 +167,7 @@ export default {
 
       // Nếu session đã qua 2 ngày hoặc chưa diễn ra, nút bị vô hiệu hóa
       if (sessionDate > today || (today - sessionDate) / (1000 * 60 * 60 * 24) > 2) {
-        return true;
+        return false;
       }
 
       return false; // Có thể nhấn nút

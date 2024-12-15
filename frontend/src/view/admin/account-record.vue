@@ -12,58 +12,72 @@
           <option value="student">Student</option>
         </select>
       </div>
-      <button>
-        <VsxIcon iconName="AddCircle" size="20" type="bold" @click="showAddAccountPopup = true" />
+      <button @click="showAddAccountPopup = true">
+        <VsxIcon iconName="AddCircle" size="20" type="bold" />
         Add account
       </button>
     </div>
     <div class="actions">
       <div class="search-container">
-        <input type="text" placeholder="Search..." class="search-field" />
-        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear" />
+        <input type="text" placeholder="Search..." class="search-field"/>
+        <VsxIcon iconName="SearchNormal1" color="#ADB5BD" type="linear"/>
       </div>
     </div>
 
     <div class="table-container">
       <table>
         <thead>
-          <tr>
-            <th class="center">No</th>
-            <th>Full name</th>
-            <th>Email</th>
-            <th>Password</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th class="center">Action</th>
-          </tr>
+        <tr>
+          <th class="center">No</th>
+          <th>Full name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th class="center">Action</th>
+        </tr>
         </thead>
         <tbody>
         <tr v-for="(user, index) in users" :key="user.userId">
-            <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
-            <td>{{ user?.fullName || 'N/A' }}</td>
-            <td>{{ user?.email }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="center">
-              <div class="icon-group">
-                <VsxIcon iconName="Unlock" :size="30" color="#171717" type="linear" />
-                <VsxIcon iconName="Key" :size="30" color="#171717" type="linear" />
-              </div>
-            </td>
-          </tr>
+          <td class="center">{{ index + 1 + (currentPage - 1) * itemsPerPage }}</td>
+          <td>{{ user?.fullName || 'N/A' }}</td>
+          <td>{{ user?.email }}</td>
+          <td :class="user.active ? 'active' : 'inactive'">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </td>
+          <td class="center">
+            <div class="icon-group">
+              <!-- Nếu user.active === true, hiển thị icon "Unlock" -->
+              <VsxIcon
+                  v-if="user.active"
+                  iconName="Unlock"
+                  :size="30"
+                  color="#171717"
+                  type="linear"
+                  @click="confirmToggleUserStatus(user)"
+              />
+              <!-- Nếu user.active === false, hiển thị icon "Lock" -->
+              <VsxIcon
+                  v-else
+                  iconName="Lock"
+                  :size="30"
+                  color="#171717"
+                  type="linear"
+                  @click="confirmToggleUserStatus(user)"
+              />
+            </div>
+          </td>
+        </tr>
         </tbody>
       </table>
       <div class="pagination" v-if="totalPages > 1">
         <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">
-          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />
+          <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717"/>
         </button>
         <button v-for="page in displayedPages" :key="page" :class="{ active: page === currentPage }"
-          @click="changePage(page)">
+                @click="changePage(page)">
           {{ page }}
         </button>
         <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">
-          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717" />
+          <VsxIcon iconName="ArrowRight2" size="20" type="linear" color="#171717"/>
         </button>
       </div>
     </div>
@@ -71,34 +85,28 @@
     <div v-if="showAddAccountPopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddAccountPopup = false" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showAddAccountPopup = false"/>
         </div>
         <div class="popup-title">
           <h2>Add account</h2>
         </div>
         <form @submit.prevent="addAccount">
           <div class="form-group">
-            <label for="username">Email <span class="required">*</span></label>
-            <input type="text" id="email" v-model="newAccount.email" required />
+            <label for="email">Email <span class="required">*</span></label>
+            <input type="email" id="email" v-model="newAccount.email" required />
           </div>
           <div class="form-group">
             <label for="fullName">Full Name <span class="required">*</span></label>
             <input type="text" id="fullName" v-model="newAccount.fullName" required />
           </div>
           <div class="form-group">
-            <label for="japaneseName">Japanese Name <span class="required">*</span></label>
-            <input type="text" id="japaneseName" v-model="newAccount.japaneseName" required />
-          </div>
-          <div class="form-group">
             <label for="role">Role <span class="required">*</span></label>
-            <div class="filters">
-              <select id="role-filter" class="filter-select" v-model="newAccount.role">
-                <option value="" disabled>Select Role</option>
-                <option value="staff">Staff</option>
-                <option value="staff">Teacher</option>
-                <option value="staff">Student</option>
-              </select>
-            </div>
+            <select id="role-filter" class="filter-select" v-model="newAccount.role" required>
+              <option value="" disabled>Select Role</option>
+              <option value="staff">Staff</option>
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+            </select>
           </div>
           <div class="actions">
             <button type="submit" class="btn-submit">Create</button>
@@ -182,11 +190,80 @@ export default {
       }
       this.displayedPages = pages;
     },
+    async toggleUserStatus(user) {
+      if (!user || !user.userId) {
+        console.error("User ID is missing.");
+        return;
+      }
+
+      try {
+        const token = sessionStorage.getItem("jwtToken"); // Lấy token từ sessionStorage
+        await axios.get(
+            `http://localhost:8088/fja-fap/user/change-users-active?userId=${user.userId}`,
+            {headers: {Authorization: `Bearer ${token}`}}
+        );
+
+        // Cập nhật trạng thái `active` trên giao diện
+        user.active = !user.active;
+
+        console.log(`User ${user.userId} status updated to ${user.active ? "Active" : "Inactive"}`);
+      } catch (error) {
+        console.error("Error toggling user status:", error);
+      }
+    },
+    async confirmToggleUserStatus(user) {
+      if (!user || !user.userId) {
+        console.error("User ID is missing.");
+        return;
+      }
+
+      // Hiển thị cửa sổ xác nhận
+      const isConfirmed = window.confirm(
+          `Are you sure you want to ${user.active ? "deactivate" : "activate"} this user?`
+      );
+
+      // Nếu người dùng bấm "OK", gọi API
+      if (isConfirmed) {
+        this.toggleUserStatus(user);
+      }
+    },
+    async addAccount() {
+      try {
+        const token = sessionStorage.getItem("jwtToken");
+        const payload = {
+          fullName: this.newAccount.fullName,
+          email: this.newAccount.email,
+          password: "12341234",
+        };
+        const response = await axios.post(
+            `http://localhost:8088/fja-fap/user/create-user?role=${this.newAccount.role.toUpperCase()}`,
+            payload,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
+
+        // Xử lý phản hồi thành công
+        if (response.data.code === 0) {
+          alert("Account created successfully!");
+          this.showAddAccountPopup = false; // Close the popup
+          this.fetchUsersByRole(this.currentRole); // Refresh the user list
+        } else {
+          console.error("Error creating account:", response.data.message);
+          alert(`Failed to create account: ${response.data.message}`);
+        }
+      } catch (error) {
+        console.error("Error creating account:", error);
+        alert("An error occurred while creating the account. Please try again.");
+      }
+    },
   },
   watch: {
     // Watcher to update URL when `currentPage` changes
     currentPage(newPage) {
-      this.$router.push({ path: '/admin/account', query: { page: newPage } }).catch(() => {
+      this.$router.push({path: '/admin/account', query: {page: newPage}}).catch(() => {
       });
     }
   }

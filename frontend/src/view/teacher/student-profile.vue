@@ -293,7 +293,7 @@
             width: 350px;
             text-align: center;
             font-size: 14px;
-            gap: 15px;
+            gap: 30px;
   
             .score-box-upper {
               display: flex;

@@ -62,9 +62,38 @@
       </table>
       <div class="actions">
         <p>Current GPA: <strong>{{ currentGPA }}</strong></p>
-        <p class="grade-remark">
-          <strong>Grade:</strong> <span class="remark">{{ gradeRemark }}</span>
-        </p>
+        <div class="grade-remark">
+          Grade:
+          <template v-if="gradeRemark === 'Poor'">
+            <div class="grade-remark-items poor">
+              Poor
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Fair'">
+            <div class="grade-remark-items fair">
+              Fair
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Good'">
+            <div class="grade-remark-items good">
+              Good
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Very Good'">
+            <div class="grade-remark-items very-good">
+              Very Good
+            </div>
+          </template>
+
+          <template v-if="gradeRemark === 'Excellent'">
+            <div class="grade-remark-items excellent">
+              Excellent
+            </div>
+          </template>
+        </div>
       </div>
     </div>
   </div>

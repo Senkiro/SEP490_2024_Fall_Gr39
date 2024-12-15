@@ -3,59 +3,70 @@
       <div class="headContent">
         <h1>My Profile</h1>
       </div>
-  
+
       <section class="info-card">
         <div class="info-wrapper">
           <img
-              :src="studentData.userInforResponse.img ? `/${studentData.userInforResponse.img}` : defaultAvatar"
+              :src="
+                studentData.userInforResponse?.img
+                ? `${baseURL}/${studentData.userInforResponse.img}`
+                : defaultAvatar"
               alt="Student Avatar"
               class="avatar"
           />
-  
+
           <div class="details-container">
             <div class="name-id-container">
               <div class="name-id">
                 <h3>
                   <strong>
-                    {{ studentData.userInforResponse.fullName || 'N/A' }} 
-                    - 
-                    {{studentData.userInforResponse.japaneseName || 'N/A' }}
+                    {{ studentData?.fullName || 'N/A' }}
+                    -
+                    {{studentData?.japaneseName || 'N/A' }}
                   </strong>
                 </h3>
-                <p>{{ studentData.rollNumber }}</p>
+                <p>{{ studentData?.rollNumber }}</p>
               </div>
               <button class="btn-edit" @click="toggleEditModal">
                 <VsxIcon iconName="Edit2" :size="18" color="#495057" type="linear"/>
                 Edit
               </button>
             </div>
-  
+
             <div class="details">
               <div class="column column1">
                 <div class="attribute">
                   <p>Email</p>
-                  <strong>{{ studentData.email || 'N/A' }} </strong>
+                  <strong>{{ studentData?.email || 'N/A' }} </strong>
                 </div>
                 <div class="attribute">
                   <p>Gender</p>
-                  <strong>{{ studentData.userInforResponse.gender ? 'Male' : 'Female' }}</strong>
+                  <strong>
+                    {{
+                      studentData?.gender === false
+                          ? "Female"
+                          : studentData?.gender === true
+                              ? "Male"
+                              : "N/A"
+                    }}
+                  </strong>
                 </div>
                 <div class="attribute">
                   <p>DOB</p>
-                  <strong>{{ formatDate(studentData.userInforResponse.dob) }}</strong>
+                  <strong>{{ formatDate(studentData?.dob) }}</strong>
                 </div>
               </div>
-  
+
               <div class="column column2">
                 <div class="attribute">
                   <p>Phone</p>
-                  <strong>{{ studentData.userInforResponse.phone || 'N/A' }}</strong>
+                  <strong>{{ studentData?.phone || 'N/A' }}</strong>
                 </div>
                 <div class="attribute">
                   <p>Password</p>
-                  <strong>{{ studentData.userInforResponse.password || 'N/A' }}</strong>
+                  <strong>{{ studentData?.password || 'N/A' }}</strong>
                 </div>
-              </div>  
+              </div>
             </div>
           </div>
         </div>
@@ -66,19 +77,19 @@
             <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="toggleEditModal"/>
           </div>
           <div class="popup-title">
-            <h2>Edit Student Information </h2>
+            <h2>Edit Information </h2>
           </div>
           <form @submit.prevent="saveChanges">
             <div class="form-group">
               <label for="fullName">Fullname <span class="required">*</span></label>
               <input id="fullName" type="text" v-model="editData.fullName" required/>
             </div>
-  
+
             <div class="form-group">
               <label for="japaneseName">Japanese name <span class="required">*</span></label>
               <input id="japaneseName" type="text" v-model="editData.japaneseName" required/>
             </div>
-  
+
             <div class="form-group">
               <label for="phone">Phone <span class="required">*</span></label>
               <input id="phone" type="text" v-model="editData.phone"/>
@@ -108,7 +119,7 @@
                 <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview"/>
                 <p v-if="fileError" class="error">{{ fileError }}</p>
               </div>
-  
+
             </div>
             <div class="actions">
               <button type="submit" class="btn-submit">Save Changes</button>
@@ -116,23 +127,22 @@
           </form>
         </div>
       </div>
-  
+
       <div v-if="notification.message" class="notification" :class="notification.type">
         {{ notification.message }}
       </div>
-  
+
     </div>
   </template>
-  
+
   <script setup>
   import {ref, onMounted} from 'vue';
   import axios from 'axios';
-  import {useRoute} from 'vue-router';
+  import { useRoute } from "vue-router";
   import defaultAvatar from '@/assets/smiling-young-man-illustration_1308-174669.avif';
-  
-  const studentId = ref('');
+  const route = useRoute(); // Lấy route hiện tại
+  const userId = route.params.userId;
   const studentData = ref({
-    studentId: '',
     rollNumber: '',
     userInforResponse: {
       fullName: '',
@@ -150,14 +160,12 @@
       classColour: ''
     }
   });
-  
-  studentId.value = useRoute().params.id;
-  
+
   const fetchStudentData = async () => {
     try {
       const token = sessionStorage.getItem('jwtToken');
       const response = await axios.get(
-          `http://localhost:8088/fja-fap/staff/get-student/${studentId.value}`,
+          `http://localhost:8088/fja-fap/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -247,7 +255,7 @@
       }
   
       const response = await axios.put(
-          `http://localhost:8088/fja-fap/staff/update-student/${studentData.value.studentId}`,
+          `http://localhost:8088/fja-fap/staff/update-student/${userId}`,
           formData,
           {
             headers: {
@@ -274,9 +282,7 @@
       notification.value.message = "";
     }, 3000);
   };
-  
-  
-  
+
   </script>
   
   <style lang="scss">
@@ -371,7 +377,7 @@
             width: 350px;
             text-align: center;
             font-size: 14px;
-            gap: 15px;
+            gap: 30px;
   
             .score-box-upper {
               display: flex;

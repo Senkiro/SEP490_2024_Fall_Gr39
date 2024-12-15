@@ -33,7 +33,7 @@
         <tbody>
         <tr v-for="(item, index) in filteredSessions" :key="item.sessionId">
           <td class="center">{{ index + 1 }}</td>
-          <td>{{ formatDate(item.date) }}</td>
+          <td>{{ item.date }}</td>
           <td>{{ item.timeSlotResponse?.name || "N/A" }}</td>
           <td>{{ item.classResponse?.className || "N/A" }}</td>
           <td>{{ item.curriculumnResponse?.lessonResponse?.lessonTitle || "N/A" }}</td>
