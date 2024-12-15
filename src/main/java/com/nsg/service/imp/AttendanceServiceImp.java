@@ -195,7 +195,7 @@ public class AttendanceServiceImp implements AttendanceService {
 
     @Override
     public List<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus) {
-        List<AttendanceEntity> attendanceEntities = attendanceRepository.findByBatchStatus(batchStatus);
+        List<AttendanceEntity> attendanceEntities = attendanceRepository.findAttendanceByBatchStatus(batchStatus);
         List<AttendanceResponse> responseList = convertToListAttendanceResponse(attendanceEntities);
 
         return responseList;
