@@ -101,7 +101,6 @@
                     </div>
                   </template>
                 </td>
-                <td>{{selectedTeacher[session.sessionId]}}</td>
                 <td id="room">
                   <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "" }}</template>
                   <template v-else>

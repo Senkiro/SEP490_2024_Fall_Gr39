@@ -46,7 +46,7 @@
               {{ teacher.active ? 'Active' : 'Inactive' }}
             </td>
             <td class="center">
-              <VsxIcon iconName="Eye" :size="32" color="#000" type="linear" @click="viewTeacherDetail(teacher)" />
+              <VsxIcon iconName="Eye" :size="32" color="#5584FF" type="linear" @click="viewTeacherDetail(teacher)" />
             </td>
           </tr>
           <tr v-if="teachers.length === 0">
