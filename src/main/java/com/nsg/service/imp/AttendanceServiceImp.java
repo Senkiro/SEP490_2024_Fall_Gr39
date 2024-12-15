@@ -5,17 +5,16 @@ import com.nsg.common.exception.ErrorCode;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
+import com.nsg.dto.response.attendance.DailyAttendanceAndMarksSummaryResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.student.StudentResponse;
 import com.nsg.entity.AttendanceEntity;
 import com.nsg.entity.BatchEntity;
 import com.nsg.entity.SessionEntity;
 import com.nsg.entity.StudentEntity;
-import com.nsg.repository.AttendanceRepository;
-import com.nsg.repository.ClassRepository;
-import com.nsg.repository.SessionRepository;
-import com.nsg.repository.StudentRepository;
+import com.nsg.repository.*;
 import com.nsg.service.AttendanceService;
+import com.nsg.service.MarkService;
 import com.nsg.service.SessionService;
 import com.nsg.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -353,5 +353,16 @@ public class AttendanceServiceImp implements AttendanceService {
             throw new AppException(ErrorCode.NO_ATTENDANCE_FOR_STUDENT);
         }
 
+    }
+
+    //calculate all student attend in one day
+    @Override
+    public int calculateAttendedStudentInDay(LocalDate date) {
+
+        int numberOfAttendedStudent = 0;
+
+        numberOfAttendedStudent += attendanceRepository.countAttendanceByDate(date);
+
+        return numberOfAttendedStudent;
     }
 }

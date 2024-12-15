@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,13 @@ public class MarkServiceImp implements MarkService {
 
     @Autowired
     AttendanceService attendanceService;
+
+    @Autowired
+    BatchRepository batchRepository;
+
+    @Autowired
+    SessionRepository sessionRepository;
+
 
     @Override
     public void createMark(MarkCreationRequest request) {
@@ -401,6 +409,27 @@ public class MarkServiceImp implements MarkService {
                 calculateAverageMark(student.getStudentId(), participationMark);
             }
         }
+    }
+
+    //calculate all marked mark in one day
+    @Override
+    public int calculateTotalMarkedInDay(LocalDate date) {
+
+        //get batch on progress
+        BatchEntity batch = batchRepository.findByBatchStatus(1);
+
+        //get class list in batch
+        List<ClassEntity> classEntityList = batch.getClassEntityList();
+
+        int numberOfMarked = 0;
+
+        //find mark by exam id and class
+        for (ClassEntity classEntity : classEntityList) {
+            numberOfMarked += markRepository.countMarkedByStatusAndClass(date, classEntity.getClassId());
+
+        }
+        //return number marked
+        return numberOfMarked;
     }
 
 }

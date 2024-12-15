@@ -15,6 +15,7 @@ import com.nsg.dto.request.user.UserCreationRequest;
 import com.nsg.dto.request.user.UserInforUpdateRequest;
 import com.nsg.dto.response.ApiResponse;
 import com.nsg.dto.response.attendance.AttendanceResponse;
+import com.nsg.dto.response.attendance.DailyAttendanceAndMarksSummaryResponse;
 import com.nsg.dto.response.batch.BatchResponse;
 import com.nsg.dto.response.classResponse.ClassResponse;
 import com.nsg.dto.response.mark.MarkResponse;
@@ -37,6 +38,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,9 @@ public class StaffController {
 
     @Autowired
     BatchRepository batchRepository;
+
+    @Autowired
+    SummaryService summaryService;
 
     /**********************************
      * Manage Student
@@ -212,6 +217,14 @@ public class StaffController {
         studentService.changeClassForStudent(student_id, class_id);
         return ApiResponse.builder()
                 .message("Change student's class successfully!")
+                .build();
+    }
+
+    //get daily summary
+    @GetMapping("/get-daily-report")
+    public ApiResponse<DailyAttendanceAndMarksSummaryResponse> getDailyReport(@RequestParam LocalDate date) {
+        return ApiResponse.<DailyAttendanceAndMarksSummaryResponse>builder()
+                .result(summaryService.getDailyAttendanceAndMarksSummary( date ))
                 .build();
     }
 

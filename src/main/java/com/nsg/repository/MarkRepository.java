@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -28,4 +29,19 @@ public interface MarkRepository extends BaseRepository<MarkEntity, String> {
                                                  @Param("classId") String classId);
 
     boolean existsByStudentEntityStudentId(String studentId);
+
+    //count marked in one day
+    @Query(value = """
+    SELECT COUNT(m.mark_id) AS total_marked
+    FROM mark m
+    JOIN curriculumn c ON m.exam_id = c.exam_id
+    JOIN session s ON c.curriculumn_id = s.curriculumn_id
+    WHERE m.status = 1
+      AND s.date = :date
+      AND s.curriculumn_id IS NOT NULL
+      AND s.class_id = :classId
+    """, nativeQuery = true)
+    int countMarkedByStatusAndClass(@Param("date") LocalDate date,
+                                    @Param("classId") String classId);
+
 }

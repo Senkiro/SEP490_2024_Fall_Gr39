@@ -466,6 +466,8 @@ public class StudentServiceImp implements StudentService {
 
             //save
             studentRepository.save(student);
+        } else if (batch.getBatchStatus() == 0 || batch.getBatchStatus() == 1) {
+            throw new AppException(ErrorCode.BATCH_IS_CLOSED);
         }
     }
 

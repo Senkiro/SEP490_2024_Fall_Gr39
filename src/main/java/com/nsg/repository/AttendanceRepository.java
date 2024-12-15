@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -44,5 +45,15 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
 
     @Query("SELECT COUNT(a) > 0 FROM AttendanceEntity a WHERE a.studentEntity.studentId = :studentId")
     boolean existsByStudentId(@Param("studentId") String studentId);
+
+    @Query(value = """
+        SELECT COUNT(*) AS total_attendance
+        FROM attendance a
+        JOIN session s ON a.session_id = s.session_id
+        WHERE a.status = 'Attend'
+          AND s.date = :date
+    """, nativeQuery = true)
+    int countAttendanceByDate(@Param("date") LocalDate date);
+
 
 }

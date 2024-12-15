@@ -68,11 +68,20 @@ public class ClassController {
     }
 
     //delete a class
-    @DeleteMapping("/delete-clas/{class_id}")
+    @DeleteMapping("/delete-class/{class_id}")
     public ApiResponse<?> deleteClass(@PathVariable("class_id") String class_id) {
         classService.deleteClass(class_id);
         return ApiResponse.builder()
                 .message("Delete class successfully!")
+                .build();
+    }
+
+    //change class status
+    @GetMapping("/change-class-status")
+    public ApiResponse<?> changeClassStatus(@RequestParam String class_id) {
+        classService.changeClassStatus(class_id);
+        return ApiResponse.builder()
+                .message("Change class's status successfully!")
                 .build();
     }
 }
