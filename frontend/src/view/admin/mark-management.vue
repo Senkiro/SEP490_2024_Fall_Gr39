@@ -175,7 +175,7 @@ export default {
       if (mark.mark < 0 || mark.mark > 10) {
         alert("Marks must be between 0 and 10.");
         mark.mark = 0;
-      } else if (!/^\d+(\.\d{1,2})?$/.test(mark.mark)) {npm
+      } else if (!/^\d+(\.\d{1,2})?$/.test(mark.mark)) {
         mark.mark = Math.round(mark.mark * 100) / 100;
       }
     }

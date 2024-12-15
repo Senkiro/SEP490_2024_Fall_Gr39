@@ -4,7 +4,7 @@
       <h1>{{ eventDetail.eventName }}</h1>
     </div>
     <p>{{ eventDetail.address }}</p>
-    <div>{{eventDetail.eventDate}}</div>
+    <div>{{ eventDetail.eventDate }}</div>
 
     <div class="image-container">
       <img :src="`/${eventDetail.imagePath}`" alt="Event Image"/>
@@ -25,24 +25,24 @@
     <div v-if="showFeedbackPopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
-          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showFeedbackPopup=false" />
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showFeedbackPopup=false"/>
         </div>
         <div class="popup-title">
           <h2>Add Feedback</h2>
         </div>
 
         <div id="rate" class="form-group">
-  <label>Rate <span class="required"> *</span></label>
+          <label>Rate <span class="required"> *</span></label>
           <div class="rate-icon">
-          <VsxIcon
-              v-for="heart in 5"
-              :key="heart"
-              iconName="Heart"
-              :style="{ color: heart <= feedbackForm.feedbackRate ? '#F28787' : '#ccc' }"
-              size="24"
-              type="bold"
-              @click="setFeedbackRate(heart)"
-          />
+            <VsxIcon
+                v-for="heart in 5"
+                :key="heart"
+                iconName="Heart"
+                :style="{ color: heart <= feedbackForm.feedbackRate ? '#F28787' : '#ccc' }"
+                size="24"
+                type="bold"
+                @click="setFeedbackRate(heart)"
+            />
           </div>
         </div>
 
@@ -59,33 +59,58 @@
     <div v-if="eventFeedback" class="feedback-container">
       <h3>Your Feedback</h3>
       <div class="feedback-content">
-        <p>Rate: <span>{{ eventFeedback.feedbackRate }} </span><VsxIcon iconName = "Heart" size = "24" type="bold"/></p>
-        <div v-html="eventFeedback.feedbackContent || 'No feedback provided'"></div>
+        <div id="rate">
+          <label>Rate: </label>
+          <div class="rate-icon">
+            {{ eventFeedback.feedbackRate }}
+            <VsxIcon
+                id="rate-icon"
+                iconName="Heart"
+                color="#F28787"
+                size="24"
+                type="bold"
+            />
+          </div>
+        </div>
+        <label>Content: </label>
+        <div v-if="eventFeedback.feedbackContent">{{eventFeedback.feedbackContent}}</div>
+        <div v-else>No feedback content</div>
       </div>
+      <div class="actions">
       <button @click="editFeedback(eventFeedback.eventFeedbackId)">Edit Feedback</button>
+      </div>
     </div>
 
     <div v-if="showEditPopup" class="popup-overlay">
       <div class="popup">
-        <h3>Edit Feedback</h3>
-        <VsxIcon
-            v-for="heart in 5"
-            :key="heart"
-            iconName="Heart"
-            :style="{ color: heart <= editForm.feedbackRate ? 'gold' : '#ccc' }"
-            size="24"
-            type="bold"
-            @click="setEditFeedbackRate(heart)"
-        />
+        <div class="exit-icon">
+          <VsxIcon iconName="CloseCircle" :size="25" color="#dae4f3" type="bold" @click="showEditPopup=false"/>
+        </div>
+        <div class="popup-title">
+          <h2>Edit Feedback</h2>
+        </div>
+
+        <div id="rate" class="form-group">
+          <label>Rate <span class="required"> *</span></label>
+          <div class="rate-icon">
+            <VsxIcon
+                v-for="heart in 5"
+                :key="heart"
+                iconName="Heart"
+                :style="{ color: heart <= editForm.feedbackRate ? '#F28787' : '#ccc' }"
+                size="24"
+                type="bold"
+                @click="setEditFeedbackRate(heart)"
+            />
+          </div>
+        </div>
 
         <div class="form-group">
           <label id="label" for="feedback">Feedback </label>
           <textarea rows="10" id="feedback" v-model="editForm.feedbackContent" required/>
         </div>
-
         <div class="actions">
           <button @click="submitEditFeedback">Save Changes</button>
-          <button @click="closeEditPopup">Cancel</button>
         </div>
       </div>
     </div>
@@ -269,7 +294,7 @@ export default {
         const response = await axios.post(
             `http://localhost:8088/fja-fap/staff/update-event-feedback?event_feedback_id=${this.editForm.event_feedback_id}`, // Truyền ID trong URL
             this.editForm,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
 
         if (response.status === 200) {
@@ -294,37 +319,54 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#label{
+#rate-icon{
+  margin-top: -3px;
+}
+#label {
   align-self: flex-start;
 }
-textarea{
+
+textarea {
   padding: 10px;
   border-radius: 5px;
   font-size: 16px;
 }
-#feedback{
+
+#feedback {
   width: 300px;
   height: 100px;
   text-align: start;
 }
 
-#rate{
+#rate {
   display: flex;
   width: 100%;
+  gap: 10px;
 }
-.rate-icon{
+
+.rate-icon {
   display: flex;
   flex-direction: row;
   gap: 5px;
   justify-content: start;
   width: 300px;
 }
+
 .feedback-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 20px;
-  padding: 10px;
+  padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #f9f9f9;
+}
+
+.feedback-content{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .feedback-content p {

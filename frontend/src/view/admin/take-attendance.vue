@@ -34,21 +34,22 @@
                 <div class="radio">
                   <input
                       type="radio"
-                      :id="'attended-' + student.attendanceId"
-                      :value="'Attended'"
-                      v-model="student.status"
-                  />
-                  <label :for="'attended-' + student.attendanceId">Attended</label>
-                </div>
-                <div class="radio">
-                  <input
-                      type="radio"
                       :id="'absent-' + student.attendanceId"
                       :value="'Absent'"
                       v-model="student.status"
                   />
                   <label :for="'absent-' + student.attendanceId">Absent</label>
                 </div>
+                <div class="radio">
+                  <input
+                      type="radio"
+                      :id="'attended-' + student.attendanceId"
+                      :value="'Attended'"
+                      v-model="student.status"
+                  />
+                  <label :for="'attended-' + student.attendanceId">Attended</label>
+                </div>
+
               </div>
             </td>
           </tr>
