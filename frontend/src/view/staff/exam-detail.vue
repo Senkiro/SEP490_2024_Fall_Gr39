@@ -25,7 +25,7 @@
       </div>
     </template>
     <template v-else>
-      <i>Exam type: <b>{{ examDetails?.examTypeRate?.examName }}</b></i>
+      <i>Exam type: <b>{{ examDetails?.examTypeRate?.examCategory }}</b></i>
     </template>
 
 
