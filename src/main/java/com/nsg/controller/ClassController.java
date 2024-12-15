@@ -75,4 +75,13 @@ public class ClassController {
                 .message("Delete class successfully!")
                 .build();
     }
+
+    //change class status
+    @GetMapping("/change-class-status")
+    public ApiResponse<?> changeClassStatus(@RequestParam String class_id) {
+        classService.changeClassStatus(class_id);
+        return ApiResponse.builder()
+                .message("Change class's status successfully!")
+                .build();
+    }
 }
