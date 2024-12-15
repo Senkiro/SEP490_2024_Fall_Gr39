@@ -8,9 +8,11 @@ import com.nsg.entity.SessionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,5 +57,11 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
     """, nativeQuery = true)
     int countAttendanceByDate(@Param("date") LocalDate date);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM attendance WHERE session_id IN (" +
+            "  SELECT session_id FROM session WHERE class_id = :classId" +
+            ")", nativeQuery = true)
+    void deleteByClassId(@Param("classId") String classId);
 
 }

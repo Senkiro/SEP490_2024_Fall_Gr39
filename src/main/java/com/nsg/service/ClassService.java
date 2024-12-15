@@ -34,4 +34,6 @@ public interface ClassService {
     void changeClassStatus(String classId);
 
     ClassResponse toClassResponse(ClassEntity classEntity);
+
+    void deleteClassAndRelatedEntities(String classId);
 }

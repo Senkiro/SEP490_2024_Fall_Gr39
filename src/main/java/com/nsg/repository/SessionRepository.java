@@ -109,4 +109,9 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
 
     List<SessionEntity> findByDate(LocalDate date);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM session WHERE class_id = :classId", nativeQuery = true)
+    void deleteByClassId(@Param("classId") String classId);
+
 }
