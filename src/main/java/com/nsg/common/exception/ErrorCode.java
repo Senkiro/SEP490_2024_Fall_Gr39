@@ -105,6 +105,7 @@ public enum ErrorCode {
     CURRICULUMN_TITLE_NOT_NULL(1321, "Curriculumn title can not be null"),
     CURRICULUMN_LIST_NOT_FOUND(1340, "Curriculumn list not found!"),
     CURRICULUMN_LIST_TITLE_EXISTED(1341, "Curriculumn list title already existed!"),
+    LIST_CURRICULUMN_EMPTY(1342, "Curriculum is empty!"),
 
     //mark
     MARK_NOT_FOUND(1360, "Mark not found!"),

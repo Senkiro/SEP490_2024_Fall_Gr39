@@ -170,6 +170,7 @@ public class ClassServiceImp implements ClassService {
             if (!exists) {
                 ClassResponse classResponse = ClassMapper.INSTANCE.toClassResponse(session.getClassEntity());
                 classResponse.setTotalStudent(session.getClassEntity().getStudentEntityList().size());
+                classResponse.setBatchName( session.getClassEntity().getBatchEntity().getBatchName() );
                 classEntities.add( classResponse );
             }
         }

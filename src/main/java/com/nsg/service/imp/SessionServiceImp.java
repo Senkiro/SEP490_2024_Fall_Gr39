@@ -182,6 +182,11 @@ public class SessionServiceImp implements SessionService {
         //get list of curriculumn inside curriculumnList entity
         List<CurriculumnEntity> curriculumnEntityList = curriculumnListEntity.getCurriculumnEntityList();
 
+        //check curriculumn list empty
+        if (curriculumnEntityList.isEmpty()) {
+            throw new AppException(ErrorCode.LIST_CURRICULUMN_EMPTY);
+        }
+
         //get 2 time_slot entity
         List<TimeSlotEntity> timeSlotEntityList = timeSlotRepository.findAll();
         String morning = timeSlotRepository.findByName("Morning").getTimeSlotId();
