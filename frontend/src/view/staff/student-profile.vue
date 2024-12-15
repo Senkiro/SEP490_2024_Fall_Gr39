@@ -605,7 +605,7 @@ const showNotification = (message, type) => {
   }, 3000);
 };
 
-const batchName = "Spring24";
+const batchName = "Fall24";
 const classes = ref([]);
 const fetchClassesByBatch = async (batchName) => {
   try {

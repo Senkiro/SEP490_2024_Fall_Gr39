@@ -78,7 +78,7 @@
             <div class="shortcut-upper">
               <div class="information">
                 <h2>Schedule</h2>
-                <p class="shortcut-description">10 new updates</p>
+                <p class="shortcut-description"></p>
               </div>
               <div class="logo">
                 <VsxIcon iconName="Calendar" size="25" type="linear" color="#fff" />
@@ -94,7 +94,7 @@
             <div class="shortcut-upper">
               <div class="information">
                 <h2>Mark</h2>
-                <p class="shortcut-description">2 new updates</p>
+                <p class="shortcut-description"></p>
               </div>
               <div class="logo">
                 <VsxIcon iconName="Award" size="25" type="linear" color="#fff" />

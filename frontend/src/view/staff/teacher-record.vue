@@ -84,7 +84,7 @@
           </div>
           <div class="form-group">
             <label for="email">Email <span class="required">*</span></label>
-            <input type="email" id="email" v-model="newTeacher.email" required />
+            <input type="email" v-model="newTeacher.email" required />
           </div>
           <div class="form-group">
             <label for="dob">Date of Birth <span class="required">*</span></label>

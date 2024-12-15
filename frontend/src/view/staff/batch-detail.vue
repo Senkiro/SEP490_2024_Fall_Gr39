@@ -125,6 +125,8 @@
               <td class="center">
                 <VsxIcon iconName="Edit2" :size="30" color="#171717" type="linear"
                   @click="openEditClassPopup(classItem)" />
+                <VsxIcon iconName="Slash" :size="25" color="#171717" type="linear"
+                         @click="deleteClass(classItem.id)"/>
               </td>
             </tr>
             <tr v-if="classes.length === 0">
@@ -169,11 +171,11 @@
           </div>
           <div class="form-group">
             <label for="email">Email <span class="required">*</span></label>
-            <input type="email" id="email" v-model="newStudent.email" required />
+            <input type="email" v-model="newStudent.email" required />
           </div>
           <div class="form-group">
             <label for="class">Class <span class="required">*</span></label>
-            <select id="class" v-model="newStudent.class" required>
+            <select v-model="newStudent.class" required>
               <option value="">Choose class</option>
               <option v-for="classItem in classList" :key="classItem.id" :value="classItem.name">
                 {{ classItem.name }}
@@ -324,6 +326,42 @@ export default {
     };
   },
   methods: {
+    async deleteClass(classId) {
+      try {
+        const token = sessionStorage.getItem('jwtToken');
+        if (!token) {
+          this.showNotification('Authentication token is missing.', 'error');
+          return;
+        }
+
+        // Xác nhận trước khi xóa
+        const userConfirmed = confirm('Are you sure you want to delete this class? This action cannot be undone.');
+        if (!userConfirmed) {
+          return;
+        }
+
+        // Gửi yêu cầu xóa tới API
+        const response = await axios.delete(
+            `http://localhost:8088/fja-fap/staff/delete-class`,
+            {
+              params: { class_id: classId },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+
+        if (response.status === 200) {
+          // Xóa thành công, cập nhật danh sách lớp
+          this.showNotification('Class deleted successfully!', 'success');
+          await this.fetchClass();
+          await this.fetchClassFilter();
+        } else {
+          this.showNotification(response.data.message || 'Failed to delete class.', 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting class:', error);
+        this.showNotification(error.response?.data?.message || 'An error occurred while deleting the class.', 'error');
+      }
+    },
     async confirmBatchSummary() {
       const userConfirmed = confirm("Do you want to summarize this batch?");
       if (!userConfirmed) {

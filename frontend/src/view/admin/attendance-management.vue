@@ -167,7 +167,7 @@ export default {
 
       // Nếu session đã qua 2 ngày hoặc chưa diễn ra, nút bị vô hiệu hóa
       if (sessionDate > today || (today - sessionDate) / (1000 * 60 * 60 * 24) > 2) {
-        return false;
+        return true;
       }
 
       return false; // Có thể nhấn nút
