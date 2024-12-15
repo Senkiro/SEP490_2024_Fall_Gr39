@@ -5,9 +5,11 @@ import com.nsg.entity.StudentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,5 +27,11 @@ public interface StudentRepository extends BaseRepository<StudentEntity, String>
 
     @Query("SELECT s FROM StudentEntity s WHERE s.batchEntity.batchName = :batchName ORDER BY s.avgMark DESC")
     List<StudentEntity> findTop10ByBatchOrderByAvgMarkDesc(@Param("batchName") String batchName, Pageable pageable);
+
+    //delete student
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM student WHERE class_id = :classId", nativeQuery = true)
+    void deleteByClassId(@Param("classId") String classId);
 
 }

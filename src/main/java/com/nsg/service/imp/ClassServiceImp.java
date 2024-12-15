@@ -10,15 +10,14 @@ import com.nsg.entity.BatchEntity;
 import com.nsg.entity.ClassEntity;
 import com.nsg.entity.SessionEntity;
 import com.nsg.entity.StudentEntity;
-import com.nsg.repository.BatchRepository;
-import com.nsg.repository.ClassRepository;
-import com.nsg.repository.SessionRepository;
+import com.nsg.repository.*;
 import com.nsg.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +32,18 @@ public class ClassServiceImp implements ClassService {
     @Autowired
     BatchRepository batchRepository;
     @Autowired
-    private SessionRepository sessionRepository;
+    SessionRepository sessionRepository;
     @Autowired
     private ClassMapperImpl classMapperImpl;
+
+    @Autowired
+    AttendanceRepository attendanceRepository;
+
+    @Autowired
+    MarkRepository markRepository;
+
+    @Autowired
+    StudentRepository studentRepository;
 
     @Override
     public void createClass(ClassRequest request) {
@@ -189,6 +197,26 @@ public class ClassServiceImp implements ClassService {
         classEntity.setClassStatus(!oldStatus);
 
         classRepository.save(classEntity);
+    }
+
+    //delete class
+    @Override
+    @Transactional
+    public void deleteClassAndRelatedEntities(String classId) {
+        // Xóa attendance
+        attendanceRepository.deleteByClassId(classId);
+
+        // Xóa session
+        sessionRepository.deleteByClassId(classId);
+
+        // Xóa mark
+        markRepository.deleteMarksByClassId(classId);
+
+        // Xóa student
+        studentRepository.deleteByClassId(classId);
+
+        // Xóa class
+        classRepository.deleteByClassId(classId);
     }
 
 }
