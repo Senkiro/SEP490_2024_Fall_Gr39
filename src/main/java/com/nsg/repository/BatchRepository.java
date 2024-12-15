@@ -19,5 +19,5 @@ public interface BatchRepository extends JpaRepository<BatchEntity, String> {
 
     Page<BatchEntity> findByBatchNameContaining(String name, PageRequest of);
 
-    BatchEntity findByBatchStatus(int status);
+    Optional<BatchEntity> findByBatchStatus(int status);
 }

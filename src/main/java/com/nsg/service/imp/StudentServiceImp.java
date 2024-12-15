@@ -75,6 +75,12 @@ public class StudentServiceImp implements StudentService {
             throw new AppException(ErrorCode.CLASS_NOT_FOUND);
         }
         ClassEntity classEntity = classes.get(0);
+
+        //Check size
+        if (classEntity.getStudentEntityList().size() == 20) {
+            throw new AppException(ErrorCode.CLASS_IS_FULL);
+        }
+
         student.setClassEntity(classEntity);
 
         batch.getStudentEntityList().add(student);
@@ -218,6 +224,18 @@ public class StudentServiceImp implements StudentService {
     }
 
     public void saveAll(List<StudentEntity> students) {
+
+        //check class size
+        int numberStudent = students.size();
+
+        if (!students.isEmpty()) {
+            int classSize = students.get(0).getClassEntity().getStudentEntityList().size();
+
+            if (classSize + numberStudent > 20) {
+                throw new AppException(ErrorCode.NUMBER_IMPORT_EXCEEDS);
+            }
+        }
+
         studentRepository.saveAll(students);
     }
 
@@ -470,7 +488,5 @@ public class StudentServiceImp implements StudentService {
             throw new AppException(ErrorCode.BATCH_IS_CLOSED);
         }
     }
-
-
 
 }
