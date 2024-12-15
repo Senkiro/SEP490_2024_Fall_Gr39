@@ -736,8 +736,8 @@ public class SessionServiceImp implements SessionService {
     }
 
     //swap session to session unavailable
-    @Override
-    public void swapToUnavailableSession(String currentSessionId, String toSessionId) {
+
+    public void swapToUnavailableSessions(String currentSessionId, String toSessionId) {
         //get current session
         SessionEntity currentSession = sessionRepository.findById(currentSessionId).orElseThrow(
                 () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
@@ -798,6 +798,53 @@ public class SessionServiceImp implements SessionService {
 
         //save
         sessionRepository.save(currentSession);
+
+    }
+
+    @Override
+    public void swapToUnavailableSession(String currentSessionId, String toSessionId) {
+        //get current session
+        SessionEntity currentSession = sessionRepository.findById(currentSessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        //get to session
+        SessionEntity toSession = sessionRepository.findById(toSessionId).orElseThrow(
+                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
+        );
+
+        //only change date, time_slot_id, session number, week, status of two session
+
+        //get date, time_slot_id, session_number, week of toSession and current session
+        LocalDate toDate = toSession.getDate();
+        TimeSlotEntity toTimeSlot = toSession.getTimeSlotEntity();
+        int toSessionNumber = toSession.getSessionNumber();
+        int toWeek = toSession.getSessionWeek();
+        boolean toStatus = toSession.isStatus();
+
+        LocalDate currentDate = currentSession.getDate();
+        TimeSlotEntity currentTimeSlot = currentSession.getTimeSlotEntity();
+        int currentSessionNumber = currentSession.getSessionNumber();
+        int currentWeek = currentSession.getSessionWeek();
+        boolean currentStatus = currentSession.isStatus();
+
+        //change date of current session
+        currentSession.setDate( toDate );
+        currentSession.setTimeSlotEntity( toTimeSlot );
+        currentSession.setSessionNumber( toSessionNumber );
+        currentSession.setSessionWeek( toWeek );
+        currentSession.setStatus( toStatus );
+
+        //change date and time slot of to session
+        toSession.setDate( currentDate );
+        toSession.setTimeSlotEntity( currentTimeSlot );
+        toSession.setSessionNumber( currentSessionNumber );
+        toSession.setSessionWeek( currentWeek );
+        toSession.setStatus( currentStatus );
+
+        //save
+        sessionRepository.save( currentSession );
+        sessionRepository.save( toSession );
 
     }
 }
