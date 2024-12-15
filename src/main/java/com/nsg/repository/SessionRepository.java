@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -105,5 +106,7 @@ public interface SessionRepository extends BaseRepository<SessionEntity, String>
             "ORDER BY date ASC, session_number ASC",
             nativeQuery = true)
     List<SessionEntity> findSessionsHaveEvent(@Param("classId") String classId);
+
+    List<SessionEntity> findByDate(LocalDate date);
 
 }

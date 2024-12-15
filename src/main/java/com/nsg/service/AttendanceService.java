@@ -3,10 +3,12 @@ package com.nsg.service;
 import com.nsg.dto.request.attendance.AttendanceRequest;
 import com.nsg.dto.response.attendance.AttendanceResponse;
 import com.nsg.dto.response.attendance.AttendanceStatisticsResponse;
+import com.nsg.dto.response.attendance.DailyAttendanceAndMarksSummaryResponse;
 import com.nsg.entity.StudentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -43,5 +45,7 @@ public interface AttendanceService {
     void deleteAttendance(String attendanceId);
 
     AttendanceStatisticsResponse getDataAttendanceStatisticsResponse(String studentId);
+
+    int calculateAttendedStudentInDay(LocalDate date);
 
 }

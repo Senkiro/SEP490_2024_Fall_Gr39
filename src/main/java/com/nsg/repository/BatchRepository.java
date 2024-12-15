@@ -18,4 +18,6 @@ public interface BatchRepository extends JpaRepository<BatchEntity, String> {
     void deleteByBatchName(String batchName);
 
     Page<BatchEntity> findByBatchNameContaining(String name, PageRequest of);
+
+    BatchEntity findByBatchStatus(int status);
 }

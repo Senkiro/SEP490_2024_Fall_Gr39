@@ -6,6 +6,7 @@ import com.nsg.dto.response.mark.MarkResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -44,4 +45,6 @@ public interface MarkService {
     void createAllMarkForOneStudent(String studentId);
 
     void courseSummary(String classId);
+
+    int calculateTotalMarkedInDay(LocalDate date);
 }

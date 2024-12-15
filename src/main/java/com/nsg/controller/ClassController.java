@@ -68,7 +68,7 @@ public class ClassController {
     }
 
     //delete a class
-    @DeleteMapping("/delete-clas/{class_id}")
+    @DeleteMapping("/delete-class/{class_id}")
     public ApiResponse<?> deleteClass(@PathVariable("class_id") String class_id) {
         classService.deleteClass(class_id);
         return ApiResponse.builder()
