@@ -101,7 +101,6 @@
                     </div>
                   </template>
                 </td>
-                <td>{{selectedTeacher[session.sessionId]}}</td>
                 <td id="room">
                   <template v-if="!isEditing[session.sessionId]">{{ session.roomNumber || "" }}</template>
                   <template v-else>
@@ -141,17 +140,22 @@
                   </template>
                 </td>
                 <td>
-                  <div v-if="!isEditing[session.sessionId]" class="icon-group">
+                  <div
+                      v-if="(session.lessonResponse || session.eventName) && canEditOrSwap(session.date) && !isEditing[session.sessionId]"
+                      class="icon-group"
+                  >
                     <VsxIcon iconName="Edit2" size="25" type="linear" @click="toggleEdit(session.sessionId)" />
-                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear"
-                      @click="openChangeDatePopup(session.sessionId)" />
+                    <VsxIcon iconName="ArrowSwapVertical" size="25" type="linear" @click="openChangeDatePopup(session.sessionId)" />
                   </div>
-                  <div v-else class="icon-group">
-                    <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8"
-                      @click="editSession(session.sessionId)" />
-                    <!-- Cancel Button -->
-                    <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F"
-                      @click="cancelEdit(session.sessionId)" />
+                  <div v-else-if="isEditing[session.sessionId]" class="icon-group">
+                    <VsxIcon iconName="TickCircle" size="25" type="bold" color="#6ECBB8" @click="editSession(session.sessionId)" />
+                    <VsxIcon iconName="CloseCircle" size="25" type="bold" color="#979B9F" @click="cancelEdit(session.sessionId)" />
+                  </div>
+                  <div v-else-if="!(session.lessonResponse || session.eventName)">
+                    <span class="disabled-message"></span>
+                  </div>
+                  <div v-else>
+                    <span class="disabled-message">Cannot edit</span>
                   </div>
                 </td>
               </tr>
@@ -256,10 +260,14 @@
           <div class="form-group">
             <label for="Week">Week <span class="required">*</span></label>
             <div class="filters">
-              <select id="week-filter" class="filter-select" v-model="popupSelectedWeekIndex"
-                @change="fetchUnavailableSessions">
+              <select id="week-filter" class="filter-select" v-model="popupSelectedWeekIndex" @change="fetchUnavailableSessions">
                 <option value="" disabled>Select Week</option>
-                <option v-for="(week, index) in selectedBatch?.weeks" :key="index" :value="index">
+                <option
+                    v-for="(week, index) in selectedBatch?.weeks"
+                    :key="index"
+                    :value="index"
+                    :disabled="week.start < currentDate"
+                >
                   Week {{ index + 1 }} ({{ week.start }} to {{ week.end }})
                 </option>
               </select>
@@ -954,7 +962,9 @@ export default {
         console.error("Error swapping sessions:", error);
       }
     },
-
+    canEditOrSwap(sessionDate) {
+      return sessionDate >= this.currentDate; // Chỉ cho phép nếu ngày >= ngày hiện tại
+    }
   },
   computed: {
     groupedSessions() {
@@ -971,6 +981,13 @@ export default {
       });
       return grouped;
     },
+    currentDate() {
+      return new Date().toISOString().split('T')[0];
+    },
+    filteredWeeks() {
+      // Lọc những tuần có ngày bắt đầu >= ngày hiện tại
+      return this.selectedBatch?.weeks.filter(week => week.start >= this.currentDate) || [];
+    }
   },
   mounted() {
     this.fetchRooms();
