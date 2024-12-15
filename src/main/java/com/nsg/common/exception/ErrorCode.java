@@ -33,6 +33,7 @@ public enum ErrorCode {
     BATCH_IS_CLOSED(1107, "Batch is closed!"),
     BATCH_WAS_GRADUATED(1108, "Batch was graduated"),
     NO_BATCH_ON_PROGRESS(1109, "No batch on progress"),
+    INVALID_DATE_OVERLAP(1110, "The start date overlaps with an existing batch."),
 
     //Time slot
     TIME_SLOT_NAME_IS_NULL(1120, "Time slot name can not be null!"),

@@ -128,7 +128,7 @@ export default {
         }
 
         axios
-            .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
+            .get(`http://localhost:8088/fja-fap/user/get-session-by-batch-status`, {
               headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {

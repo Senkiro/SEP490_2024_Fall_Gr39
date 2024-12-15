@@ -33,7 +33,7 @@ public interface AttendanceService {
 
     Page<AttendanceResponse> getAttendanceByStudent(String studentId, int page, int size);
 
-    List<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus);
+//    List<AttendanceResponse> getAttendanceByBatchStatus(int batchStatus);
 
     //get by id
     AttendanceResponse getAttendance(String attendanceId);

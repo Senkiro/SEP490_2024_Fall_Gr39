@@ -474,7 +474,7 @@ public class SessionServiceImp implements SessionService {
             tempResponse.setStatus(session.isStatus());
             tempResponse.setSessionAvailable(session.isSessionAvailable());
 
-            tempResponse.setAttendanceStatus(session.getAttendanceStatus());
+            tempResponse.setAttendanceStatus( session.getAttendanceStatus() );
             tempResponse.setMarkStatus(session.getMarkStatus());
 
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
@@ -540,7 +540,77 @@ public class SessionServiceImp implements SessionService {
         //find session by classId
         List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classEntity.getClassId());
 
-        return toListSessionResponse(sessionEntityList);
+        return toListSessionResponseForStudent(sessionEntityList);
+    }
+
+    public List<SessionResponse> toListSessionResponseForStudent(List<SessionEntity> sessionEntities) {
+
+        List<SessionResponse> responseList = new ArrayList<>();
+
+        for (SessionEntity session : sessionEntities) {
+            SessionResponse tempResponse = new SessionResponse();
+            tempResponse.setSessionId(session.getSessionId());
+            tempResponse.setNote(session.getNote());
+            tempResponse.setSessionNumber(session.getSessionNumber());
+            tempResponse.setSessionWeek(session.getSessionWeek());
+
+            LocalDate localDate = session.getDate();
+            DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+
+            tempResponse.setDayOfWeek(dayOfWeek);
+
+            tempResponse.setDate(session.getDate());
+            tempResponse.setStatus(session.isStatus());
+            tempResponse.setSessionAvailable(session.isSessionAvailable());
+
+            //this would be attendance status of student in that session
+
+            //get attendance by session id
+            AttendanceEntity attendanceEntity = attendanceRepository.findById( session.getSessionId() ).orElse(null);
+            if (attendanceEntity != null) {
+                tempResponse.setAttendanceStatus( attendanceEntity.getStatus() );
+            }
+            tempResponse.setMarkStatus(session.getMarkStatus());
+
+            tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
+
+            //check null
+            if (session.getCurriculumnEntity() != null) {
+                tempResponse.setCurriculumnResponse(curriculumnService.toCurriculumnResponse( session.getCurriculumnEntity() ));
+            }
+
+            tempResponse.setTimeSlotResponse(timeSlotService.toTimeSlotResponse( session.getTimeSlotEntity() ));
+
+            if (session.getRoomEntity() != null) {
+                tempResponse.setRoomNumber(session.getRoomEntity().getRoomNumber());
+            } else {
+                tempResponse.setRoomNumber(null);
+            }
+
+            if (session.getEventEntity() != null) {
+                tempResponse.setEventName(session.getEventEntity().getEventName());
+                tempResponse.setEventId(session.getEventEntity().getEventId());
+
+                tempResponse.setEventResponse( EventMapper.INSTANCE.toEventResponse( session.getEventEntity() ));
+
+            }else {
+                tempResponse.setEventName(null);
+            }
+
+            if (session.getUser() != null) {
+                tempResponse.setFullName(session.getUser().getFullName());
+                tempResponse.setEmail(session.getUser().getEmail());
+                tempResponse.setUserId(session.getUser().getUserId());
+            } else {
+                tempResponse.setFullName(null);
+                tempResponse.setEmail(null);
+            }
+
+            responseList.add(tempResponse);
+        }
+        //sort
+        Collections.sort(responseList, Comparator.comparingInt(SessionResponse::getSessionNumber));
+        return responseList;
     }
 
     //get session by exam of a class
@@ -740,72 +810,6 @@ public class SessionServiceImp implements SessionService {
         }
     }
 
-    //swap session to session unavailable
-
-    public void swapToUnavailableSessions(String currentSessionId, String toSessionId) {
-        //get current session
-        SessionEntity currentSession = sessionRepository.findById(currentSessionId).orElseThrow(
-                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
-        );
-
-        //get to session
-        SessionEntity toSession = sessionRepository.findById(toSessionId).orElseThrow(
-                () -> new AppException(ErrorCode.SESSION_NOT_FOUND)
-        );
-
-        //map infor to endpoint session sessionCreationRequest
-        SessionUpdateRequest updateRequest = new SessionUpdateRequest();
-
-        //curriculumnId;
-        if (currentSession.getCurriculumnEntity() != null){
-            updateRequest.setCurriculumnId( currentSession.getCurriculumnEntity().getCurriculumnId());
-        }
-
-        //roomNumber;
-        if (currentSession.getRoomEntity() != null) {
-            updateRequest.setRoomNumber( currentSession.getRoomEntity().getRoomNumber() );
-        }
-        //eventId;
-        if (currentSession.getEventEntity() != null ){
-            updateRequest.setEventId( currentSession.getEventEntity().getEventId() );
-        } else {
-            updateRequest.setEventId(null);
-        }
-        //userId;
-        if (currentSession.getUser() != null ) {
-            updateRequest.setUserId(currentSession.getUser().getUserId());
-        }
-        //sessionAvailable;
-        updateRequest.setSessionAvailable( currentSession.isSessionAvailable() );
-        //note;
-        updateRequest.setNote( currentSession.getNote());
-        //markStatus;
-        updateRequest.setMarkStatus( currentSession.getMarkStatus() );
-        //attendanceStatus;
-        updateRequest.setAttendanceStatus( currentSession.getAttendanceStatus() );
-
-        //get mark, attendance status of to session
-        String toMarkStatus = toSession.getMarkStatus();
-        String toAttendanceStatus = toSession.getAttendanceStatus();
-
-        //call function update with updateRequest
-        updateSession(toSessionId, updateRequest);
-
-        //set current session infor to empty and sessionAvailable to unavailable
-        currentSession.setCurriculumnEntity(null);
-        currentSession.setRoomEntity(null);
-        currentSession.setEventEntity(null);
-        currentSession.setUser(null);
-        currentSession.setSessionAvailable(false);
-        currentSession.setNote(null);
-        currentSession.setMarkStatus( toMarkStatus );
-        currentSession.setAttendanceStatus( toAttendanceStatus );
-
-        //save
-        sessionRepository.save(currentSession);
-
-    }
-
     @Override
     public void swapToUnavailableSession(String currentSessionId, String toSessionId) {
         //get current session
@@ -852,4 +856,18 @@ public class SessionServiceImp implements SessionService {
         sessionRepository.save( toSession );
 
     }
+
+    //get all session in batch on-progress
+    @Override
+    public List<SessionResponse> getSessionInBatch() {
+
+        //get list of session by teacher
+        List<SessionEntity> sessionEntities = sessionRepository.findAvailableSessions();
+        if (!sessionEntities.isEmpty()) {
+            return toListSessionResponse(sessionEntities);
+        } else {
+            return null;
+        }
+    }
+
 }
