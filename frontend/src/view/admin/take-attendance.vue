@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       students: [],
-      sessionId: this.$route.params.sessionId,
+      sessionId: this.$route.params.id,
       notification: null, // Thông báo
     };
   },
@@ -97,7 +97,7 @@ export default {
 
       axios
           .get(
-              `http://localhost:8088/fja-fap/staff/get-attendance-session/${this.sessionId}?page=0&size=16`,
+              `http://localhost:8088/fja-fap/staff/get-attendance-session/${this.sessionId}?page=0&size=20`,
               {
                 headers: { Authorization: `Bearer ${token}` },
               }
@@ -237,27 +237,27 @@ export default {
 
 <style lang="scss" scoped>
 img {
-    width: 150px;
-    border-radius: 20px;
+  width: 150px;
+  border-radius: 20px;
 }
 
 th:last-child,
 td:last-child {
-    width: 10%;
+  width: 10%;
 }
 
 .radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
 
-    .radio {
-        display: flex;
-        width: fit-content;
-        flex-direction: row;
-        gap: 10px;
-    }
+  .radio {
+    display: flex;
+    width: fit-content;
+    flex-direction: row;
+    gap: 10px;
+  }
 }
 
 .notification {

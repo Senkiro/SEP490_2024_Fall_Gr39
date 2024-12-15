@@ -59,7 +59,7 @@
     <div v-if="eventFeedback" class="feedback-container">
       <h3>Your Feedback</h3>
       <div class="feedback-content">
-        <p>Rate: <span style="color: gold">{{ eventFeedback.feedbackRate }} ★</span></p>
+        <p>Rate: <span>{{ eventFeedback.feedbackRate }} </span><VsxIcon iconName = "Heart" size = "24" type="bold"/></p>
         <div v-html="eventFeedback.feedbackContent || 'No feedback provided'"></div>
       </div>
       <button @click="editFeedback(eventFeedback.eventFeedbackId)">Edit Feedback</button>
@@ -78,11 +78,10 @@
             @click="setEditFeedbackRate(heart)"
         />
 
-        <TextEditor
-            v-model="editForm.feedbackContent"
-            placeholder="Edit your feedback here..."
-            rows="4"
-        ></TextEditor>
+        <div class="form-group">
+          <label id="label" for="feedback">Feedback </label>
+          <textarea rows="10" id="feedback" v-model="editForm.feedbackContent" required/>
+        </div>
 
         <div class="actions">
           <button @click="submitEditFeedback">Save Changes</button>
@@ -99,11 +98,8 @@
 
 <script>
 import axios from "axios";
-import TextEditor from "@/components/text-editor.vue";
-import {VsxIcon} from "vue-iconsax";
 
 export default {
-  components: {VsxIcon, TextEditor},
   data() {
     return {
       showEditPopup: false,
@@ -111,7 +107,7 @@ export default {
         feedbackRate: 0,
         feedbackContent: "",
         eventId: this.$route.params.id,
-        // studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
+        studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
         event_feedback_id: "",
       },
       eventFeedback: null,
@@ -128,7 +124,7 @@ export default {
         feedbackRate: 0,
         feedbackContent: "",
         eventId: this.$route.params.id,
-        // studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
+        studentId: JSON.parse(sessionStorage.getItem("studentInfo")).studentId,
       },
       notification: {
         message: "",
@@ -218,8 +214,7 @@ export default {
     async fetchEventFeedback() {
       try {
         const token = sessionStorage.getItem("jwtToken");
-        // const studentId = sessionStorage.getItem("userId");
-        const studentId = 1;
+        const studentId = sessionStorage.getItem("userId");
         const response = await axios.get(
             `http://localhost:8088/fja-fap/staff/get-event-feedback-by-student?student_id=${studentId}&event_id=${this.eventId}`,
             {headers: {Authorization: `Bearer ${token}`}}
@@ -246,10 +241,10 @@ export default {
       }
 
       // Kiểm tra nếu phản hồi đã được gửi
-      // if (this.eventFeedback) {
-      //   this.showNotification("You have already submitted feedback.", "error");
-      //   return;
-      // }
+      if (this.eventFeedback) {
+        this.showNotification("You have already submitted feedback.", "error");
+        return;
+      }
 
       // Hiển thị pop-up nếu các điều kiện trên không được thỏa mãn
       this.showFeedbackPopup = true;

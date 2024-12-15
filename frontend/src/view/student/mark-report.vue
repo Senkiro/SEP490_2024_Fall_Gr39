@@ -6,58 +6,63 @@
     <div class="table-container">
       <table>
         <thead>
-          <tr>
-            <th>Grade category</th>
-            <th>Grade item</th>
-            <th>Weight</th>
-            <th>Value</th>
-            <th>Comment</th>
-          </tr>
+        <tr>
+          <th id="grade-category">Grade category</th>
+          <th>Grade item</th>
+          <th id="weight" class="center">Weight</th>
+          <th id="value" class="center">Value</th>
+          <th>Comment</th>
+        </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="bold">Participation</td>
-            <td class="bold">Participation</td>
-            <td class="bold">10%</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr v-for="(grade, index) in grades" :key="index">
-            <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
+        <tr>
+          <td class="bold">Participation</td>
+          <td class="bold">Participation</td>
+          <td class="bold center">10%</td>
+          <td class="bold center">
+            <template v-if="!classStatus">{{ participation }}</template>
+          </td>
+          <td></td>
+        </tr>
+        <tr v-for="(grade, index) in grades" :key="index">
+          <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
               :rowspan="calculateRowspan(grades, index, 'category')">
-              {{ grade.category }}
-            </td>
-            <td>{{ grade.item }}</td>
-            <td></td>
-            <td>{{ grade.value }}</td>
-            <td>{{ grade.comment || "" }}</td>
-          </tr>
-          <!-- Tổng điểm -->
-          <tr>
-            <td class="bold"> </td>
-            <td class="bold">Total</td>
-            <td class="bold">70%</td>
-            <td>{{ totalValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Mid-term Exam</td>
-            <td class="bold">Mid-term Exam</td>
-            <td class="bold">10%</td>
-            <td>{{ midtermValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Final Exam</td>
-            <td class="bold">Final Exam</td>
-            <td class="bold">10%</td>
-            <td>{{ finalValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Course total</td>
-            <td class="bold" colspan="2">Average</td>
-          </tr>
+            {{ grade.category }}
+          </td>
+          <td>{{ grade.item }}</td>
+          <td></td>
+          <td class="center">{{ grade.value }}</td>
+          <td>{{ grade.comment || "" }}</td>
+        </tr>
+        <!-- Tổng điểm -->
+        <tr>
+          <td class="bold"></td>
+          <td class="bold">Total</td>
+          <td class="bold center">70%</td>
+          <td class="center bold">{{ totalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Mid-term Exam</td>
+          <td class="bold">Mid-term Exam</td>
+          <td class="center bold">10%</td>
+          <td class="center bold">{{ midtermValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Final Exam</td>
+          <td class="bold">Final Exam</td>
+          <td class="center bold">10%</td>
+          <td class="center bold">{{ finalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Course total</td>
+          <td class="bold" colspan="2">Average</td>
+          <td class="bold center">
+            <template v-if="!classStatus">{{ currentGPA }}</template>
+          </td>
+        </tr>
         </tbody>
       </table>
       <div class="actions">
@@ -106,17 +111,16 @@ export default {
   name: "StudentMarkReport",
   data() {
     return {
-      student: {
-        fullname: "Pham The Minh",
-        rollNumber: "FA171392",
-      },
-      batch: "FALL2024",
-      className: "Blue",
-      currentGPA: 7.6,
+      student: {},
+      batch: "",
+      className: "",
+      currentGPA: "",
       grades: [],
-      totalValue: 0.0,
-      totalGPA: 8.6,
-      gradeRemark: "Very Good",
+      totalValue: "",
+      totalGPA: "",
+      gradeRemark: "",
+      classStatus: "",
+      participation: ""
     };
   },
   methods: {
@@ -180,7 +184,7 @@ export default {
 
           // Tính tổng trung bình của Daily Exam
           this.totalValue = (
-            dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length
+              (dailyExams.reduce((sum, item) => sum + (item.mark || 0), 0) / dailyExams.length).toFixed(2)
           );
 
           // Lấy điểm của Mid-term Exam
@@ -205,6 +209,8 @@ export default {
           this.className = studentInfo.classResponse.className;
           this.currentGPA = studentInfo.avgMark;
           this.gradeRemark = this.getGradeRemark(this.currentGPA);
+          this.participation = (studentInfo.attendanceStatisticsResponse.attendPercentage * 0.1).toFixed(2);
+          this.classStatus = studentInfo.classResponse.classStatus;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -217,6 +223,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+#grade-category{
+  width: 20%;
+}
 .bold {
   color: #171717 !important;
   font-weight: bold !important;

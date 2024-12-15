@@ -167,7 +167,7 @@ export default {
 
       // Nếu session đã qua 2 ngày hoặc chưa diễn ra, nút bị vô hiệu hóa
       if (sessionDate > today || (today - sessionDate) / (1000 * 60 * 60 * 24) > 2) {
-        return true;
+        return false;
       }
 
       return false; // Có thể nhấn nút
@@ -185,7 +185,8 @@ export default {
       }
 
       this.$router.push({
-        path: `/teacher/take-attendance/${sessionId}`,
+        name: 'AdminEditAttendance',
+        params: {id:(sessionId)}
       }).then(() => {
         const session = this.sessions.find(item => item.sessionId === sessionId);
         if (session) {

@@ -168,11 +168,7 @@ export default {
       return "";
     },
     getStatusText(session) {
-      return session.markStatus === "Added"
-          ? "Added"
-          : session.markStatus === "not-added"
-              ? "Not added"
-              : "Not happen";
+      return session.markStatus;
     },
     isActionDisabled(session) {
       const sessionDate = new Date(session.date);
@@ -192,7 +188,7 @@ export default {
       }
 
       this.$router.push({
-        name: "TeacherMarkManagement",
+        name: "AdminEditMark",
         params: { classId, examId, sessionId },
       });
     },

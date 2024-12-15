@@ -32,7 +32,7 @@
               <div class="information">
                 <b>{{ sessions.afternoon.curriculumnResponse?.lessonResponse?.lessonTitle || 'No Title' }}</b>
                 <span>Exam: <b>{{ sessions.afternoon.curriculumnResponse?.examResponse?.examTitle || 'N/A' }}</b></span>
-                <span>Class: <b>{{  sessions.morning.classResponse.className  || 'Unknown' }}</b></span>
+                <span>Class: <b>{{  sessions.afternoon.classResponse.className  || 'Unknown' }}</b></span>
                 <span>Room: <b>{{ sessions.afternoon.roomNumber || 'Unknown' }}</b></span>
               </div>
             </template>

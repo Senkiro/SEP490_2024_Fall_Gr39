@@ -135,7 +135,7 @@
           </tbody>
         </table>
 
-        <div class="pagination" v-if="classPagination.totalElements > 1">
+        <div class="pagination" v-if="classPagination.totalElements > 5">
           <button @click="changeClassPage(classPagination.currentPage - 1)"
             :disabled="classPagination.currentPage <= 1">
             <VsxIcon iconName="ArrowLeft2" size="20" type="linear" color="#171717" />

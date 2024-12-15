@@ -70,7 +70,7 @@ const routes = [
         }, 
     },
     {
-        path: '/admin/edit-mark/:id',
+        path: '/admin/edit-mark/:classId/:examId/:sessionId',
         name: 'AdminEditMark',
         component: () => import('../view/admin/mark-management.vue'),
         meta: { 

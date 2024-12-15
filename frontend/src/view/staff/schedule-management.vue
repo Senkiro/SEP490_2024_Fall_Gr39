@@ -36,10 +36,6 @@
           <VsxIcon iconName="AddCircle" size="20" type="bold" />
           Create new schedule
         </button>
-        <button>
-          <VsxIcon iconName="Trash" size="20" type="bold" />
-          Delete schedule
-        </button>
       </div>
     </div>
 

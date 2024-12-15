@@ -7,8 +7,6 @@
 
     <div class="actions">
       <p>Class: <b>{{ className }}</b></p>
-      <p>Date: <b>{{ examDate }}</b></p>
-      <p>Slot: <b>{{ examSlot }}</b></p>
     </div>
 
     <div v-if="notification" class="notification" :class="notificationType">

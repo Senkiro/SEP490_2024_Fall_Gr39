@@ -204,62 +204,66 @@
 
       <table v-else>
         <thead>
-          <tr>
-            <th>Grade Category</th>
-            <th>Grade Item</th>
-            <th>Weight</th>
-            <th>Value</th>
-            <th>Comment</th>
-          </tr>
+        <tr>
+          <th id="grade-category">Grade category</th>
+          <th>Grade item</th>
+          <th id="weight" class="center">Weight</th>
+          <th id="value" class="center">Value</th>
+          <th>Comment</th>
+        </tr>
         </thead>
         <tbody>
         <tr>
           <td class="bold">Participation</td>
           <td class="bold">Participation</td>
-          <td class="bold">10%</td>
-          <td>{{}}</td>
+          <td class="bold center">10%</td>
+          <td class="bold center">
+            <template v-if="!classStatus">{{ participation }}</template>
+          </td>
           <td></td>
         </tr>
         <tr v-for="(grade, index) in grades" :key="index">
           <td v-if="index === 0 || grades[index - 1].category !== grade.category" class="bold"
               :rowspan="calculateRowspan(grades, index, 'category')">
-              {{ grade.category }}
-            </td>
-            <td>{{ grade.item }}</td>
-            <td></td>
-            <td>{{ grade.value }}</td>
-          </tr>
-          <!-- Tổng điểm -->
-          <tr>
-            <td class="bold"> </td>
-            <td class="bold">Total</td>
-            <td class="bold">70%</td>
-            <td class="bold">{{ totalValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Mid-term Exam</td>
-            <td class="bold">Mid-term Exam</td>
-            <td class="bold">10%</td>
-            <td>{{ midtermValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Final Exam</td>
-            <td class="bold">Final Exam</td>
-            <td class="bold">10%</td>
-            <td>{{ finalValue }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="bold">Course total</td>
-            <td class="bold" colspan="2">Average</td>
-            <td>{{ studentData.avgMark }}</td>
-          </tr>
+            {{ grade.category }}
+          </td>
+          <td>{{ grade.item }}</td>
+          <td></td>
+          <td class="center">{{ grade.value }}</td>
+          <td>{{ grade.comment || "" }}</td>
+        </tr>
+        <!-- Tổng điểm -->
+        <tr>
+          <td class="bold"></td>
+          <td class="bold">Total</td>
+          <td class="bold center">70%</td>
+          <td class="center bold">{{ totalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Mid-term Exam</td>
+          <td class="bold">Mid-term Exam</td>
+          <td class="center bold">10%</td>
+          <td class="center bold">{{ midtermValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Final Exam</td>
+          <td class="bold">Final Exam</td>
+          <td class="center bold">10%</td>
+          <td class="center bold">{{ finalValue }}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="bold">Course total</td>
+          <td class="bold" colspan="2">Average</td>
+          <td class="bold center">
+            <template v-if="!classStatus">{{ studentData.avgMark }}</template>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
-
     <div v-if="showChangeClassPopup" class="popup-overlay">
       <div class="popup">
         <div class="exit-icon">
@@ -843,5 +847,21 @@ const changeClass = async () => {
     color: #721c24;
     border: 1px solid #f5c6cb;
   }
+}
+#grade-category {
+  width: 15% !important;
+}
+
+#value {
+  width: 10% !important;
+}
+
+#weight {
+  width: 10% !important;
+}
+
+.bold {
+  color: #171717 !important;
+  font-weight: bold !important;
 }
 </style>

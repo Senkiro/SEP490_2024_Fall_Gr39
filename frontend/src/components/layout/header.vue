@@ -57,7 +57,7 @@ export default {
         break;
 
         case "student":
-        this.$router.push({ name: 'MyStudentProfile', params: { userId: this.userId } });
+        this.$router.push({ name: 'MyStudentProfile', params: { id: this.userId } });
         break;
       }      
     }
