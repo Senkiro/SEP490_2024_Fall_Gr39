@@ -32,6 +32,7 @@ public enum ErrorCode {
     YEAR_IS_NULL(1106, "Year can not be null!"),
     BATCH_IS_CLOSED(1107, "Batch is closed!"),
     BATCH_WAS_GRADUATED(1108, "Batch was graduated"),
+    NO_BATCH_ON_PROGRESS(1109, "No batch on progress"),
 
     //Time slot
     TIME_SLOT_NAME_IS_NULL(1120, "Time slot name can not be null!"),
@@ -61,6 +62,7 @@ public enum ErrorCode {
     CLASS_NAME_EXISTED(1183, "Class name already existed!"),
     STUDENT_LIST_IS_EMPTY(1184, "Student in class is empty!"),
     CLASS_IS_CLOSED(1185, "Class is closed!"),
+    CLASS_IS_FULL(1186, "The class is already full!"),
 
 
     //Lesson
@@ -123,6 +125,7 @@ public enum ErrorCode {
     PARSE_ERROR(1230,"Failed to parse Excel file" ),
     NUMBER_SHEET(1231, "Excel file must have at least 2 sheets: Lessons and Exams."),
     LESSON_SHEET_MISSING(1232, "Lesson sheet is missing"),
+    NUMBER_IMPORT_EXCEEDS(1234, "The number of students in the imported Excel file exceeds the class limit."),
     EXAM_SHEET_MISSING(1233, "Exam sheet is missing");
 
     ErrorCode(int code, String message) {
