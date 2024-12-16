@@ -213,7 +213,7 @@ public class ClassServiceImp implements ClassService {
 
         if (batch.getBatchStatus() == 1 || batch.getBatchStatus() == 0) {
             throw new AppException(ErrorCode.BATCH_IS_CLOSED);
-        } else {
+        } else if (batch.getBatchStatus() == 2) {
             // Xóa attendance
             attendanceRepository.deleteByClassId(classId);
 
