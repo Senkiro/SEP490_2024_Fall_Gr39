@@ -66,4 +66,6 @@ public interface AttendanceRepository extends BaseRepository<AttendanceEntity, S
             ")", nativeQuery = true)
     void deleteByClassId(@Param("classId") String classId);
 
+    List<AttendanceEntity> findBySessionEntitySessionId(String sessionId);
+
 }

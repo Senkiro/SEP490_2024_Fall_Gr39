@@ -540,10 +540,10 @@ public class SessionServiceImp implements SessionService {
         //find session by classId
         List<SessionEntity> sessionEntityList = sessionRepository.findByClassEntityClassId(classEntity.getClassId());
 
-        return toListSessionResponseForStudent(sessionEntityList);
+        return toListSessionResponseForStudent(sessionEntityList, studentId);
     }
 
-    public List<SessionResponse> toListSessionResponseForStudent(List<SessionEntity> sessionEntities) {
+    public List<SessionResponse> toListSessionResponseForStudent(List<SessionEntity> sessionEntities, String studentId) {
 
         List<SessionResponse> responseList = new ArrayList<>();
 
@@ -566,10 +566,13 @@ public class SessionServiceImp implements SessionService {
             //this would be attendance status of student in that session
 
             //get attendance by session id
-            AttendanceEntity attendanceEntity = attendanceRepository.findById( session.getSessionId() ).orElse(null);
-            if (attendanceEntity != null) {
-                tempResponse.setAttendanceStatus( attendanceEntity.getStatus() );
+            List<AttendanceEntity> attendanceEntityList = attendanceRepository.findBySessionEntitySessionId(session.getSessionId());
+            for (AttendanceEntity attendanceEntity : attendanceEntityList) {
+                if (attendanceEntity.getStudentEntity().getStudentId().equals( studentId )) {
+                    tempResponse.setAttendanceStatus( attendanceEntity.getStatus() );
+                }
             }
+
             tempResponse.setMarkStatus(session.getMarkStatus());
 
             tempResponse.setClassResponse(ClassMapper.INSTANCE.toClassResponse(session.getClassEntity()));
