@@ -203,20 +203,32 @@ public class ClassServiceImp implements ClassService {
     @Override
     @Transactional
     public void deleteClassAndRelatedEntities(String classId) {
-        // Xóa attendance
-        attendanceRepository.deleteByClassId(classId);
 
-        // Xóa session
-        sessionRepository.deleteByClassId(classId);
+        ClassEntity classEntity = classRepository.findByClassId(classId);
 
-        // Xóa mark
-        markRepository.deleteMarksByClassId(classId);
+        //get batch by class Id
+        BatchEntity batch = batchRepository.findByBatchName(classEntity.getBatchEntity().getBatchName()).orElseThrow(
+                () -> new AppException(ErrorCode.BATCH_NOT_EXISTED)
+        );
 
-        // Xóa student
-        studentRepository.deleteByClassId(classId);
+        if (batch.getBatchStatus() == 1 || batch.getBatchStatus() == 0) {
+            throw new AppException(ErrorCode.BATCH_IS_CLOSED);
+        } else {
+            // Xóa attendance
+            attendanceRepository.deleteByClassId(classId);
 
-        // Xóa class
-        classRepository.deleteByClassId(classId);
+            // Xóa session
+            sessionRepository.deleteByClassId(classId);
+
+            // Xóa mark
+            markRepository.deleteMarksByClassId(classId);
+
+            // Xóa student
+            studentRepository.deleteByClassId(classId);
+
+            // Xóa class
+            classRepository.deleteByClassId(classId);
+        }
     }
 
 }
