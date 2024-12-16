@@ -108,7 +108,7 @@ export default {
         type: '', // success or error
       },
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       totalElements: 0,
       totalPages: 0,
       isEdit: false, // To track whether we're editing or adding a holiday

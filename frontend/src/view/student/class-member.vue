@@ -64,7 +64,7 @@ export default {
     return {
       students: [],
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       totalPages: 0,
       currentUserId: "", // ID của người dùng hiện tại
     };

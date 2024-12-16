@@ -138,7 +138,7 @@ export default {
       },
       errorMessage: "",
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       totalElements: 0,
       totalPages: 0,
       isLoading: false,

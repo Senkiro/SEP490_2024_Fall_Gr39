@@ -107,7 +107,7 @@ export default {
               const results = response.data.result.content;
               this.students = results.map((student) => ({
                 attendanceId: student.attendanceId,
-                studentName: student.studentResponse?.userInforResponse?.fullName || "N/A",
+                studentName: student.studentResponse?.userInforResponse?.japaneseName || "N/A",
                 rollNumber: student.studentResponse?.rollNumber || "N/A",
                 image: student.studentResponse?.userInforResponse?.profilePicture || defaultAvatar,
                 status: student.status || "",

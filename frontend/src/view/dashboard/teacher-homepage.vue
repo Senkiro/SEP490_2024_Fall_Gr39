@@ -102,32 +102,31 @@ export default {
       }
 
       axios
-        .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          if (response.data.code === 0) {
-            const allSessions = response.data.result;
+          .get(`http://localhost:8088/fja-fap/teacher/get-session-by-teacher?teacher_id=${teacherId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            if (response.data.code === 0) {
+              const allSessions = response.data.result;
 
-            // Lọc 3 ngày gần nhất
-            const today = new Date();
-            const threeDaysLater = new Date();
-            threeDaysLater.setDate(today.getDate() + 3);
+              const today = new Date();
+              const formattedToday = today.toISOString().split("T")[0]; // Lấy yyyy-MM-dd của ngày hôm nay
 
-            this.sessions = allSessions.filter((session) => {
-              const sessionDate = new Date(session.date);
-              return sessionDate >= today && sessionDate <= threeDaysLater;
-            });
-          } else {
-            console.error(
-              "Lỗi khi fetch dữ liệu sessions:",
-              response.data.message || "Lỗi không xác định"
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Lỗi khi gọi API:", error);
-        });
+              const threeDaysLater = new Date();
+              threeDaysLater.setDate(today.getDate() + 3);
+              const formattedThreeDaysLater = threeDaysLater.toISOString().split("T")[0];
+
+              this.sessions = allSessions.filter((session) => {
+                const sessionDate = session.date; // Định dạng đã là yyyy-MM-dd
+                return sessionDate >= formattedToday && sessionDate <= formattedThreeDaysLater;
+              });
+            } else {
+              console.error("Lỗi khi fetch dữ liệu sessions:", response.data.message || "Lỗi không xác định");
+            }
+          })
+          .catch((error) => {
+            console.error("Lỗi khi gọi API:", error);
+          });
     },
     async fetchAllNews() {
       try {

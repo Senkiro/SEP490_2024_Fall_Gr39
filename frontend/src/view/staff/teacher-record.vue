@@ -130,7 +130,7 @@ export default {
     return {
       teachers: [],
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       totalElements: 0,
       totalPages: 0,
       showAddTeacherPopup: false,

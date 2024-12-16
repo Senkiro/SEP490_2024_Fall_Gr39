@@ -269,7 +269,7 @@ export default {
             params: {
               page: 0,
               size: 10000,
-              batch_name: "SPRING24"
+              batch_name: "Fall24"
             },
             headers: { Authorization: `Bearer ${token}` }
           }

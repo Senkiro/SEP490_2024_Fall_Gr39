@@ -5,7 +5,7 @@
     <div class="activities horizontal-activities">
       <div v-for="(sessions, date) in groupedSessionsByDate" :key="date" class="daily-activities">
 
-        <h3 :class="date === Object.keys(groupedSessionsByDate)[0] ? 'no': ''">{{ date === Object.keys(groupedSessionsByDate)[0] ? 'Tomorrow ('+ new Date(date).toLocaleDateString() +')' : new Date(date).toLocaleDateString() }}</h3>
+        <h3>{{new Date(date).toLocaleDateString() }}</h3>
 
         <div class="activities-container">
           <div v-if="sessions.morning" class="activity">
@@ -168,32 +168,37 @@ export default {
       }
 
       axios
-        .get(`http://localhost:8088/fja-fap/staff/get-session-by-student?student_id=${studentId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          if (response.data.code === 0) {
-            const allSessions = response.data.result;
+          .get(`http://localhost:8088/fja-fap/staff/get-session-by-student?student_id=${studentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            if (response.data.code === 0) {
+              const allSessions = response.data.result;
 
-            // Lọc 3 ngày gần nhất
-            const today = new Date();
-            const threeDaysLater = new Date();
-            threeDaysLater.setDate(today.getDate() + 3);
+              // Format ngày hôm nay và 3 ngày tiếp theo theo chuẩn yyyy-MM-dd
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const threeDaysLater = new Date(today);
+              threeDaysLater.setDate(today.getDate() + 3);
 
-            this.sessions = allSessions.filter((session) => {
-              const sessionDate = new Date(session.date);
-              return sessionDate >= today && sessionDate <= threeDaysLater;
-            });
-          } else {
-            console.error(
-              "Lỗi khi fetch dữ liệu sessions:",
-              response.data.message || "Lỗi không xác định"
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Lỗi khi gọi API:", error);
-        });
+              // Chuyển ngày thành dạng chuỗi 'yyyy-MM-dd' để so sánh chính xác
+              const formattedToday = today.toISOString().split("T")[0];
+              const formattedThreeDaysLater = threeDaysLater.toISOString().split("T")[0];
+
+              this.sessions = allSessions.filter((session) => {
+                const sessionDate = session.date; // Giữ nguyên chuỗi từ API
+                return sessionDate > formattedToday && sessionDate <= formattedThreeDaysLater;
+              });
+            } else {
+              console.error(
+                  "Lỗi khi fetch dữ liệu sessions:",
+                  response.data.message || "Lỗi không xác định"
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Lỗi khi gọi API:", error);
+          });
     },
     isFirstDate(date, groupedSessionsByDate) {
       const dates = Object.keys(groupedSessionsByDate);
